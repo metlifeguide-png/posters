@@ -7,12 +7,12 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #000; color: #fff; font-family: sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
-    .header { padding: 12px; text-align: center; font-size: 15px; font-weight: bold; background: #1a1a1a; }
+    body { background: #121212; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .header { padding: 14px 10px; text-align: center; font-size: 15px; font-weight: 700; background: #1f1f1f; border-bottom: 1px solid #333; letter-spacing: -0.5px; }
     .swiper { width: 100%; flex: 1; }
-    .swiper-slide { display: flex; align-items: center; justify-content: center; overflow: auto; }
+    .swiper-slide { display: flex; align-items: center; justify-content: center; overflow: auto; background: #121212; }
     .swiper-slide img { max-width: 100%; max-height: 100%; object-fit: contain; }
-    .swiper-pagination-fraction { color: #fff; font-size: 14px; bottom: 15px !important; }
+    .swiper-pagination-fraction { color: #fff; font-size: 14px; bottom: 15px !important; font-weight: 600; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
   </style>
 </head>
 <body>
@@ -29,22 +29,38 @@
     const container = document.getElementById('slide-container');
     const title = document.getElementById('page-title');
 
-    let images = [];
+    let baseNames = [];
     if (type === 'contest') {
-      title.innerText = "🏆 대회 포스터 (좌우 슬라이드 / 줌 가능)";
-      for (let i = 0; i <= 5; i++) images.push((i < 10 ? '0' + i : i) + '.jpg');
+      title.innerText = "🏆 뚝섬 제작 대회 포스터 (좌우 슬라이드 / 확대 가능)";
+      for (let i = 0; i <= 5; i++) baseNames.push(i < 10 ? '0' + i : '' + i);
     } else if (type === 'official') {
-      title.innerText = "📋 대회사 공식 포스터 (좌우 슬라이드 / 줌 가능)";
-      for (let i = 6; i <= 15; i++) images.push((i < 10 ? '0' + i : i) + '.jpg');
+      title.innerText = "📋 대회사 공식 포스터 (좌우 슬라이드 / 확대 가능)";
+      for (let i = 6; i <= 15; i++) baseNames.push(i < 10 ? '0' + i : '' + i);
+      baseNames.push('pmang01', 'pmang02');
     } else if (type === 'apl') {
-      title.innerText = "🤝 APL 제휴사 안내 (좌우 슬라이드 / 줌 가능)";
-      images = ['apl01.jpg', 'apl02.jpg', 'apl03.jpg'];
+      title.innerText = "🤝 APL 제휴사 안내 (좌우 슬라이드 / 확대 가능)";
+      baseNames = ['apl01', 'apl02', 'apl03'];
     }
 
-    images.forEach(src => {
+    baseNames.forEach(name => {
       const slide = document.createElement('div');
       slide.className = 'swiper-slide';
-      slide.innerHTML = `<img src="${src}" alt="포스터">`;
+      
+      const img = document.createElement('img');
+      img.src = name + '.png';
+      img.alt = '포스터';
+      
+      img.onerror = function() {
+        if (this.src.endsWith('.png')) {
+          this.src = name + '.jpg';
+        } else if (this.src.endsWith('.jpg')) {
+          this.src = name + '.PNG';
+        } else if (this.src.endsWith('.PNG')) {
+          this.src = name + '.JPG';
+        }
+      };
+
+      slide.appendChild(img);
       container.appendChild(slide);
     });
 
