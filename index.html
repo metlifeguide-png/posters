@@ -73,8 +73,8 @@
     let baseNames = [];
     if (type === 'contest') {
       title.innerText = "🏆 뚝섬 제작 대회 포스터 (좌우 슬라이드 / 확대 가능)";
-      // 00, 01, 02, 03, 03-1, 04, 05 apl-1, apl-2, apl-3 순서로 배치
-      baseNames = ['00', '01', '02', '03', '03-1', '04', '05', 'apl-1', 'apl-2', 'apl-3'];
+      // 00, 01, 02, 03, 03-1, 04, apl-1, apl-2, apl-3, 05 순서로 배치
+      baseNames = ['00', '01', '02', '03', '03-1', '04', 'apl-1', 'apl-2', 'apl-3', '05'];
     } else if (type === 'official') {
       title.innerText = "📋 대회사 공식 포스터 (좌우 슬라이드 / 확대 가능)";
       for (let i = 6; i <= 15; i++) baseNames.push(i < 10 ? '0' + i : '' + i);
