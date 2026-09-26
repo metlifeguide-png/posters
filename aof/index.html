@@ -160,6 +160,15 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px;line-
   <div class="verdict" id="ezVerdict"><div class="big">패를 고르세요</div></div>
   <div id="ezResult" style="margin-top:10px"></div>
   <div class="f2t" id="ezF2T">폴드만 할 때 티켓 확률 계산 중…</div>
+  <details class="more" style="margin-top:10px"><summary>⚠️ 계산 한계 (꼭 한 번 읽어주세요)</summary>
+    <div class="hint" style="margin-top:6px">
+    · <b>가장 정확한 것</b>: 앞이 다 폴드일 때 <b>올인</b>, 앞에서 올인했을 때 <b>콜/폴드</b>.<br>
+    · <b>레이즈가 끼는 결론은 [근사]</b>: 작은 3벳과 플랍 이후 플레이를 계산하지 않아요.<br>
+    · <b>숏스택</b>: 티켓 확률 계산(칩 비례 ICM)이 짧은 스택의 생존을 조금 후하게 봐요. 10BB 이하에서 경계 패는 올인·콜 쪽으로.<br>
+    · <b>다른 테이블</b>은 모두 평균 스택으로 봐요. 뒤 자리 스택·성향은 세부 모드에서 넣으면 더 정확해져요.<br>
+    · <b>폴드만 하면 티켓 확률</b>은 탈락 속도 추정치예요. '−1 탈락'을 누를수록 그 게임에 맞춰져요.<br>
+    · 상대가 너무 타이트하거나 루즈하면 계산(내시 균형)보다 그 사람에 맞춰 조정하세요.
+    </div></details>
   <div class="row" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
     <button type="button" class="bt green" data-ez="next">▶ 다음 핸드</button>
     <button type="button" class="bt" data-ez="undo">↶ 되돌리기</button>
@@ -527,13 +536,13 @@ const r1=x=>Math.round(x*10)/10;
 const STD_BB=[50,100,150,200,250,300,400,500,600,800,1000,1200,1600,2000,2400,2800,3200,4000,5000,6000,7000,8000,10000,12000,16000,20000,24000,28000,32000,40000,50000,60000,70000,80000,100000];
 const PM_BB=[50,100,150,200,250,300,400,500,600,800,1000,1200,1600,2000,2000,2400,2800,3200,4000,5000,7000,8000,10000,12000,16000,20000,24000,28000,32000,40000,50000];
 const LEVEL_MIN=7, REG_LEVEL=15, SEC_PER_HAND=40;
-const pmSeats=()=>startOf()==="15:00"?5:25;   // 피망 15시 게임만 5장 GTD
+const pmSeats=()=>25;
 const GAMES={
   wpl:{blinds:STD_BB,times:["18:00","19:00","20:00","21:00","22:00","23:00"],name:"WPL",desc:`1~11위 메인(${TV.wpl}만)<br>12~15위 딥스택`,pay:()=>Array(11).fill(TV.wpl),
        bubbles:[{key:"t1",label:"메인 티켓 (11위 안)",n:11}]},
   hg:{blinds:STD_BB,times:["17:30","19:30","20:30","22:00","23:00"],name:"한게임",desc:`1~9위 2장(${r1(TV.hg*2)}만)<br>10~20위 1장`,pay:()=>Array(9).fill(TV.hg*2).concat(Array(11).fill(TV.hg)),
        bubbles:[{key:"t1",label:"1장 (20위 안)",n:20},{key:"t2",label:"2장 (9위 안)",n:9}]},
-  pm:{blinds:PM_BB,times:["15:00","18:00","19:30","21:00","22:30"],name:"피망",desc:`1~25위 메인 1장 (${TV.pm}만)<br>15시는 5장 GTD`,pay:()=>Array(pmSeats()).fill(TV.pm),
+  pm:{blinds:PM_BB,times:["18:00","19:30","21:00","22:30"],name:"피망",desc:`1~25위 메인 1장<br>(${TV.pm}만)`,pay:()=>Array(pmSeats()).fill(TV.pm),
        get bubbles(){return [{key:"t1",label:`메인 티켓 (${pmSeats()}위 안)`,n:pmSeats()}];}},
 };
 const MODES={chip:{name:"레지 마감 전",desc:"칩EV · 칩 = 가치"},icm:{name:"레지 마감 후",desc:"ICM EV · 티켓 확보"}};
@@ -848,6 +857,8 @@ function drawVerdict(){
     else if(c>=0.5) set("raise",`${q.R||2}BB 레이즈`,`뒤에서 올인하면 <b>폴드</b>`);
     else if(a+b+c>=0.25) set("fold","폴드 (경계)",`가끔 섞는 패예요 (올인 ${pc(a)} · 레이즈 ${pc(b+c)}). 애매하면 폴드`);
     else set("fold","폴드","");
+    if(b>=0.5||c>=0.5) el.innerHTML+=`<div class="why">⚠️ [근사] 레이즈 계산은 작은 3벳·플랍 이후를 빼고 한 거라 방향만 참고하세요.</div>`;
+    if(a<0.5&&b<0.5&&c<0.5&&a>=0.1&&+st.heroStack<=10) el.innerHTML+=`<div class="why">⚠️ 숏스택 경계 패예요. 계산이 짧은 스택의 생존을 조금 후하게 봐서, 블라인드가 곧 오르면 올인 쪽이 나아요.</div>`;
     if(a>=0.5||b>=0.5||c>=0.5) el.innerHTML+=f2tNote();
     drawResultBtns(a>=0.5?"shove":null);
   }else{
@@ -856,6 +867,7 @@ function drawVerdict(){
     const a=q.call[k], vs=+st.qvStack>0?st.qvStack+"BB":"평균 스택";
     if(a>=0.5) set("call","콜",`${P[st.qvil]}(${vs}) 올인 · 필요 승률 ${Math.round(q.need*100)}% · 상대 범위 ${Math.round(q.shPct*100)}%`);
     else set("fold","폴드",`콜하려면 승률 ${Math.round(q.need*100)}% 필요 (칩 기준이면 ${Math.round(q.chipNeed*100)}%) · 콜 범위 ${rangeText(q.call)}`);
+    if(a<0.5&&a>=0.1&&+st.heroStack<=10) el.innerHTML+=`<div class="why">⚠️ 숏스택 경계 패예요. 계산이 짧은 스택의 생존을 조금 후하게 봐서, 블라인드가 곧 오르면 콜 쪽이 나아요.</div>`;
     if(a>=0.5) el.innerHTML+=f2tNote();
     drawResultBtns(a>=0.5?"call":null);
   }
@@ -920,7 +932,7 @@ function drawSafe(){
   const g=GAMES[st.game], o=lastSafe, hero=+st.heroStack, bb=+st.bb, totalChips=st.entries*START;
   let html="";
   for(const b of g.bubbles){
-    const sf=o.safe[b.key], seatChips=totalChips/b.n;
+    const sf=(o.safe||{})[b.key], seatChips=totalChips/b.n; if(!sf) continue;
     if(st.players<=b.n){html+=`<div class="kpi"><div class="k">${b.label}</div><div class="v">확정 ✅</div><div class="d">남은 ${st.players}명이 모두 받아요</div></div>`;continue;}
     const c90=sf.p90==null?null:sf.p90*bb, c95=sf.p95==null?null:sf.p95*bb;
     html+=`<div class="kpi"><div class="k">${b.label} 안정권</div><div class="v">${c90==null?"-":fmtChip(c90)+"칩"}</div>`+
@@ -936,6 +948,7 @@ function drawAdvice(){
   if(!lastSafe) return;
   const g=GAMES[st.game], o=lastSafe, hero=+st.heroStack, avg=avgBB(), P=POSN();
   const main=g.bubbles[g.bubbles.length>1&&(o.heroP.t1>=0.9||st.players<=g.bubbles[0].n)?1:0];
+  if(!o.safe||!o.safe[main.key]) return;   // 게임을 막 바꿔서 안정권 계산이 아직 안 온 경우
   const s90=o.safe[main.key].p90, s95=o.safe[main.key].p95, p=o.heroP[main.key]||0;
   const orbits=hero/(1.5+ANTE*st.tsize);
   let title, tips=[];
@@ -1065,9 +1078,10 @@ document.addEventListener("change",e=>{
 });
 document.addEventListener("input",e=>{
   const t=e.target, v=+t.value;
-  if(t.id==="ezHero"){ if(v>0){ clearTimeout(t._t); t._t=setTimeout(()=>{   // 500 넘게 치면 칩으로 보고 BB로 바꿔요
-      let x=+t.value; if(x>500 && st.bb>0){ x=Math.round(x/st.bb*10)/10; t.value=x; }
-      st.heroStack=x; schedule(); },700);} return; }
+  if(t.id==="ezHero"){ if(v>0){   // 치는 즉시 값을 저장(다른 버튼을 바로 눌러도 안 사라지게). 500 넘으면 칩으로 보고 BB로 바꿔요
+      const toBB=x=>x>500&&st.bb>0?Math.round(x/st.bb*10)/10:x;
+      st.heroStack=toBB(v); clearTimeout(t._t);
+      t._t=setTimeout(()=>{ if(+t.value>500) t.value=st.heroStack; schedule(); },700);} return; }
   if(t.id==="ezEntries"){ if(v>0){st.entries=v; clearTimeout(t._t); t._t=setTimeout(schedule,700);} return; }
   if(t.id==="ezVilStack"){ st.qvStack=t.value===""?"":v; clearTimeout(t._t); t._t=setTimeout(schedule,600); return; }
   if(t.id==="qvStack"){st.qvStack=t.value===""?"":v;clearTimeout(t._t);t._t=setTimeout(schedule,700);return;}
