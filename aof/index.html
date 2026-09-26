@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>새틀 프리플랍 차트</title>
+<style>
+:root{
+  --bg:#f5f3ee; --surface:#ffffff; --surface2:#efece5; --text:#1c1b19; --muted:#6f6a60; --line:#e3ded3;
+  --accent:#0f7a4f; --accent-soft:#e2f2ea; --push:#d9482b; --push-soft:#fbe3dc; --raise:#0f7a4f; --raise-soft:#b9dccb;
+  --call:#1d6fd6; --flat:#7a52c7; --cell:#ece8df; --gold:#b7791f; --gold-soft:#fbf1dd; --dim:#f3f1ec; --vil:#7a52c7; --vil-soft:#efe8fb;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#101412; --surface:#181d1a; --surface2:#1f2521; --text:#ecefe9; --muted:#9aa39c; --line:#2a322d;
+    --accent:#3ccf8e; --accent-soft:#16372a; --push:#ff7a5c; --push-soft:#3d1f18; --raise:#3ccf8e; --raise-soft:#24503b;
+    --call:#6aa8ff; --flat:#b594ff; --cell:#232a25; --gold:#f0b54a; --gold-soft:#3a2d14; --dim:#191e1b; --vil:#b594ff; --vil-soft:#2a2140;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px 48px}
+header{padding:20px 0 6px}
+h1{font-size:22px;margin:0;letter-spacing:-.3px}
+.sub{color:var(--muted);font-size:13px;margin-top:4px;line-height:1.5}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px;margin:12px 0}
+.panel h2{font-size:14px;margin:0 0 10px;color:var(--muted);font-weight:600}
+.panel h3{font-size:13px;margin:14px 0 8px;color:var(--muted);font-weight:600}
+.seg{display:grid;gap:8px}
+.seg.g3{grid-template-columns:repeat(3,1fr)} .seg.g2{grid-template-columns:repeat(2,1fr)}
+.opt{border:1px solid var(--line);background:var(--surface2);border-radius:14px;padding:10px;cursor:pointer;text-align:left;color:var(--text);font:inherit}
+.opt b{display:block;font-size:15px}
+.opt span{display:block;font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.4}
+.opt.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.opt.on span{color:inherit;opacity:.8}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+input,select{border:1px solid var(--line);background:var(--surface2);color:var(--text);border-radius:10px;padding:9px 10px;font-size:16px;width:100%;min-width:0;font-family:inherit}
+.num{display:flex;align-items:stretch;border:1px solid var(--line);background:var(--surface2);border-radius:10px;overflow:hidden}
+.num input{border:0;border-radius:0;background:transparent;padding:9px 6px 9px 10px}
+.num .pk{position:relative;flex:0 0 40px;display:flex;align-items:center;justify-content:center;border-left:1px solid var(--line);color:var(--muted);font-size:13px}
+.num .pk select{position:absolute;inset:0;opacity:0;font-size:16px;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:7px 12px;font-size:13px;cursor:pointer;font-family:inherit}
+.chip.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.chip.hero.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip.vil.on{background:var(--vil);border-color:var(--vil);color:#fff}
+.chip:disabled{opacity:.3;cursor:default}
+.who{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.who .box{border-radius:14px;padding:10px;border:1px solid var(--line)}
+.who .box.h{background:var(--accent-soft)} .who .box.v{background:var(--vil-soft)}
+.who .box .t{font-size:12px;font-weight:700;margin-bottom:6px}
+.who .box.h .t{color:var(--accent)} .who .box.v .t{color:var(--vil)}
+.info{font-size:13px;margin-top:10px;padding:9px 11px;border-radius:10px;background:var(--gold-soft);color:var(--gold);font-weight:600;line-height:1.55}
+.safe{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.kpi{background:var(--surface2);border-radius:12px;padding:10px}
+.kpi .k{font-size:12px;color:var(--muted)}
+.kpi .v{font-size:20px;font-weight:700;margin-top:2px;font-variant-numeric:tabular-nums}
+.kpi .d{font-size:11.5px;color:var(--muted);margin-top:2px}
+.advice{margin-top:10px;border-radius:12px;padding:12px;background:var(--accent-soft);font-size:13.5px;line-height:1.65}
+.advice b.t{display:block;color:var(--accent);font-size:14px;margin-bottom:4px}
+.advice ul{margin:4px 0 0;padding-left:18px}
+details.more{margin-top:12px;font-size:13px}
+details.more summary{cursor:pointer;color:var(--accent);font-weight:600}
+.seats{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin-top:8px}
+.seat{border:1px solid var(--line);border-radius:12px;padding:8px;background:var(--surface2)}
+.seat .pn{font-size:12px;font-weight:700;margin-bottom:5px}
+.seat .num{background:var(--surface)}
+.seat input{font-size:15px;padding:7px 4px 7px 8px}
+.hint{font-size:12px;color:var(--muted);line-height:1.6}
+.summary{font-size:14px;line-height:1.65;margin:4px 0 12px}
+.summary .note{color:var(--muted);font-size:12px}
+.chart{display:grid;grid-template-columns:repeat(13,1fr);gap:2px;user-select:none}
+.c{aspect-ratio:1/1;border-radius:4px;background:var(--cell);display:flex;align-items:center;justify-content:center;
+   font-size:clamp(8px,2.3vw,12px);font-weight:600;color:var(--muted);cursor:pointer;position:relative;overflow:hidden}
+.c.dim{background:var(--dim);color:var(--line)}
+.c .bars{position:absolute;inset:0;display:flex;flex-direction:column-reverse}
+.c .bars i{display:block;width:100%}
+.c em{position:relative;font-style:normal}
+.c.on em{color:#fff;text-shadow:0 0 2px rgba(0,0,0,.35)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px;align-items:center}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+.pick{font-size:13px;margin-top:8px;min-height:20px}
+.tend{margin-top:6px;width:100%;border:1px solid var(--line);border-radius:8px;padding:4px 0;font-size:12px;background:var(--surface);color:var(--muted);cursor:pointer;font-family:inherit}
+.tend.t1{background:#e6eefc;color:#1d4fa8;border-color:#b9cdf3;font-weight:700}
+.tend.t2{background:#fbe3dc;color:#b33a1f;border-color:#f1b9a8;font-weight:700}
+@media (prefers-color-scheme: dark){.tend.t1{background:#17294a;color:#9cc2ff;border-color:#2a4a80}.tend.t2{background:#3d1f18;color:#ffab95;border-color:#6b3326}}
+
+.modebar{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0 4px}
+.modebar button{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:12px;padding:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.modebar button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+body.easy .pro-only{display:none!important}
+body:not(.easy) .easy-only{display:none!important}
+.ez-status{font-size:13px;line-height:1.55;background:var(--surface2);border-radius:10px;padding:8px 10px;margin-top:8px}
+.ez-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.ez-ctl{background:var(--surface2);border-radius:12px;padding:8px}
+.ez-ctl .k{font-size:12px;color:var(--muted);margin-bottom:4px}
+.ez-ctl .row2{display:flex;gap:6px;align-items:center}
+.ez-ctl .row2 b{font-size:20px;min-width:44px;text-align:center;font-variant-numeric:tabular-nums}
+.ez-ctl input{font-size:18px;font-weight:700;padding:6px 8px;text-align:center}
+.bt{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:10px;padding:8px 10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+.bt.red{background:var(--push);border-color:var(--push);color:#fff}
+.bt.blue{background:var(--call);border-color:var(--call);color:#fff}
+.bt.green{background:var(--accent);border-color:var(--accent);color:#fff}
+.ranks{display:grid;grid-template-columns:repeat(13,1fr);gap:3px;margin-top:6px}
+.ranks button{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:8px;padding:9px 0;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit}
+.ranks button.on{background:var(--text);color:var(--bg);border-color:var(--text)}
+.verdict{margin-top:12px;border-radius:16px;padding:16px;text-align:center;background:var(--surface2)}
+.verdict .big{font-size:34px;font-weight:900;letter-spacing:-.5px}
+.verdict .hand{font-size:14px;color:var(--muted);margin-bottom:2px}
+.verdict .why{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+.verdict.push{background:var(--push);color:#fff}.verdict.call{background:var(--call);color:#fff}
+.verdict.raise{background:var(--accent);color:#fff}.verdict.fold{background:var(--cell)}
+.verdict.push .hand,.verdict.call .hand,.verdict.raise .hand,.verdict.push .why,.verdict.call .why,.verdict.raise .why{color:rgba(255,255,255,.85)}
+.ezchart .c{font-size:clamp(8px,2.4vw,12px)}
+.ezchart .c.sel{outline:3px solid var(--text);outline-offset:-2px;z-index:1}
+.f2t{margin-top:12px;border-radius:12px;padding:10px 12px;background:var(--gold-soft);color:var(--gold);font-size:13.5px;line-height:1.6}
+.f2t b{font-size:16px}
+
+.concl{margin-top:8px;padding:9px 11px;border-radius:10px;background:var(--surface2);font-size:13.5px;line-height:1.6;word-break:keep-all}
+.help{font-size:12.5px;color:var(--muted);line-height:1.7}
+.help b{color:var(--text)}
+.busy{opacity:.5;transition:opacity .15s}
+footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px;line-height:1.6}
+</style>
+</head>
+<body class="easy">
+<div class="wrap">
+<header>
+  <h1>♠ 새틀 프리플랍 차트</h1>
+  <div class="sub">게임과 레지 마감 전·후를 고르고 인원·스택을 넣으면 <b>티켓 안정권 스택</b>, <b>지금 스택에 맞는 전략</b>, <b>상황별 올인·콜 차트</b>를 계산해요.</div>
+</header>
+<div class="modebar"><button type="button" id="mEasy" data-ui="easy">⚡ 이지 모드 (실전)</button><button type="button" id="mPro" data-ui="pro">🔍 세부 모드</button></div>
+
+<div class="panel easy-only" id="easy">
+  <div class="chips" id="ezGames"></div>
+  <div class="ez-status" id="ezStatus"></div>
+  <div class="ez-grid">
+    <div class="ez-ctl"><div class="k">남은 인원</div><div class="row2"><button type="button" class="bt red" data-ez="bust">−1 탈락</button><b id="ezPlayers"></b><button type="button" class="bt" data-ez="p+">+</button></div></div>
+    <div class="ez-ctl"><div class="k">내 스택 <b>BB</b> (칩으로 쳐도 자동 변환)</div><div class="row2"><input id="ezHero" type="number" inputmode="decimal" step="0.1" min="0.1"></div><div class="k" id="ezHeroChips" style="margin:4px 0 0"></div></div>
+  </div>
+  <div class="ez-grid">
+    <div class="ez-ctl"><div class="k">게임 시작 시각</div><select id="ezStart"></select></div>
+    <div class="ez-ctl"><div class="k">블라인드 레벨</div><select id="ezLevel"></select></div>
+  </div>
+  <div class="ez-grid" style="grid-template-columns:1fr">
+    <div class="ez-ctl"><div class="k">전체 인원(총 엔트리) — 게임마다 한 번만</div><div class="row2"><input id="ezEntries" type="number" inputmode="numeric" min="2"></div></div>
+  </div>
+  <h3>내 포지션</h3>
+  <div class="chips" id="ezPos"></div>
+  <h3>상황</h3>
+  <div class="seg g2" id="ezScen"></div>
+  <div id="ezVilBox" style="margin-top:8px">
+    <div class="chips" id="ezVil"></div>
+    <label class="f" style="margin-top:6px;max-width:220px">올인한 사람 스택 (BB, 비우면 평균)<input id="ezVilStack" type="number" inputmode="decimal" step="0.1" min="0.1"></label>
+  </div>
+  <h3>내 패 <span class="hint">차트에서 누르기 · 색 = 지금 상황의 정답</span></h3>
+  <div class="chart ezchart" id="ezChart"></div>
+  <div class="legend" id="ezLegend"></div>
+  <div class="verdict" id="ezVerdict"><div class="big">패를 고르세요</div></div>
+  <div id="ezResult" style="margin-top:10px"></div>
+  <div class="f2t" id="ezF2T">폴드만 할 때 티켓 확률 계산 중…</div>
+  <div class="row" style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+    <button type="button" class="bt green" data-ez="next">▶ 다음 핸드</button>
+    <button type="button" class="bt" data-ez="undo">↶ 되돌리기</button>
+    <button type="button" class="bt" data-ez="chart">차트로 보기</button>
+  </div>
+</div>
+
+<div class="panel pro-only">
+  <h2>① 게임</h2>
+  <div class="seg g3" id="games"></div>
+  <h3>② 레지 마감 전 / 후</h3>
+  <div class="seg g2" id="modes"></div>
+</div>
+
+<div class="panel pro-only">
+  <h2>③ 내 상황</h2>
+  <div class="grid2">
+    <label class="f"><b style="color:var(--text)">현재 블라인드 레벨</b><span id="lvHint">시작 시각 기준 자동</span><select id="level"></select></label>
+    <label class="f"><b style="color:var(--text)">내 스택 (BB)</b>내 칩 ÷ 빅블라인드<div class="num"><input id="heroStack" type="number" inputmode="decimal" min="0.5" step="0.1"></div></label>
+  </div>
+  <h3>게임 시작 시각 <span class="hint" id="startHint"></span></h3>
+  <div class="chips" id="startChips"></div>
+  <h3>내 포지션</h3>
+  <div class="chips" id="heroPos"></div>
+  <div class="grid2" style="margin-top:12px">
+    <label class="f">전체 인원(총 엔트리)<div class="num"><input id="entries" type="number" inputmode="numeric" min="2" step="1"></div></label>
+    <label class="f">현재 인원(라이브)<div class="num"><input id="players" type="number" inputmode="numeric" min="2" step="1"></div></label>
+    <label class="f">나보다 칩 적은 사람 (전체, 모르면 비움)<div class="num"><input id="shorter" type="number" inputmode="numeric" min="0" step="1" placeholder="예: 2"></div></label>
+    <label class="f">테이블 인원<select id="tsize"><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></label>
+  </div>
+  <div class="info" id="info"></div>
+</div>
+
+<div class="panel pro-only" id="quick">
+  <h2>④ 빠른 차트</h2>
+  <div class="hint">테이블 스택 (BB, 비우면 평균) — 한 번 넣어두면 포지션이 바뀌어도 사람을 따라 자동으로 옮겨져요</div>
+  <div class="seats" id="behindBox"></div>
+  <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+    <button type="button" class="chip hero on" id="nextHand">▶ 다음 핸드 (포지션 한 칸 이동)</button>
+    <button type="button" class="chip" id="undoHand">↶ 되돌리기</button>
+    <button type="button" class="chip" id="clearTbl">스택·성향 모두 지우기</button>
+  </div>
+  <div class="hint" style="margin-top:6px">자리마다 <b>보통/타이트/루즈</b>를 누르면 그 사람 성향에 맞춰 내 액션을 다시 계산해요. <b>타이트</b> = 먼저 올인하는 범위가 계산값의 60% (콜 범위는 그대로), <b>루즈</b> = 올인·콜 범위 모두 1.6배.</div>
+  <div class="hint" id="nextHint" style="margin-top:6px">다음 핸드: 방금 판의 SB −0.6BB, BB −1.1BB, 나머지 −0.1BB(앤티)를 빼고 모두 한 칸씩 이동해요. 판을 이긴 사람은 스택을 고쳐주세요.</div>
+  <div style="height:12px"></div>
+  <div class="qa">
+    <div class="summary" id="qaSum"></div>
+    <div class="chart" id="qaChart"></div>
+  </div>
+  <h3 style="margin-top:18px">앞에서 누가 올인했나요?</h3>
+  <div class="chips" id="qvPos"></div>
+  <label class="f" style="margin-top:8px;max-width:220px">올인한 사람 스택 (BB)<div class="num"><input id="qvStack" type="number" inputmode="decimal" min="0.5" step="0.1" placeholder="비우면 평균"></div></label>
+  <div class="qb" style="margin-top:10px">
+    <div class="summary" id="qbSum"></div>
+    <div class="chart" id="qbChart"></div>
+  </div>
+  <div class="legend"><span><i class="sw" style="background:var(--push)"></i>올인</span><span><i class="sw" style="background:var(--call)"></i>콜 (오픈 후 콜 포함)</span><span><i class="sw" style="background:var(--raise-soft)"></i>오픈 후 폴드</span><span><i class="sw" style="background:var(--cell)"></i>폴드</span><span>칸 높이 = 빈도</span></div>
+  <div class="pick" id="qpick">칸을 누르면 그 패의 액션 빈도가 나와요.</div>
+</div>
+
+<div class="panel pro-only" id="safePanel">
+  <h2>⑤ 티켓 안정권 스택 · 내 전략</h2>
+  <div class="safe" id="safe"></div>
+  <div class="advice" id="advice"></div>
+  <div class="hint" style="margin-top:8px"><b>안정권</b> = 버블 근처(티켓 수보다 10명 많이 남았을 때)에 이만큼 있으면 티켓 확률이 90%인 칩이에요. 블라인드가 올라도 목표 칩은 그대로라 칩으로 기억하세요. 총칩 = 전체 인원 × 10,000.</div>
+</div>
+
+<details class="panel more pro-only" id="detail">
+  <summary style="font-size:14px">⑥ 자세히 보기 — 빌런 스택 직접 넣기 · 레이즈 상황</summary>
+  <div class="chips" id="scen" style="margin-top:12px"></div>
+  <div class="who" style="margin-top:12px">
+    <div class="box v" style="grid-column:1/-1"><div class="t" id="vilTitle">빌런</div>
+      <div class="chips" id="vilPos"></div>
+      <label class="f" style="margin-top:8px;max-width:220px">빌런 스택 (BB)<div class="num"><input id="vilStack" type="number" inputmode="decimal" min="0.5" step="0.1"></div></label>
+    </div>
+  </div>
+  <div class="hint" style="margin-top:8px" id="scenHint"></div>
+  <details class="more"><summary>다른 자리 스택도 직접 넣기 (기본 = 평균 스택)</summary>
+    <div class="seats" id="seatsBox"></div>
+    <div style="margin-top:8px"><button class="chip" id="resetOthers">다른 자리 모두 평균으로</button></div>
+  </details>
+  <label class="f" style="margin-top:12px;max-width:260px">오픈 레이즈 크기<select id="raise"><option value="2">2BB (민레이즈)</option><option value="2.2">2.2BB</option><option value="2.5">2.5BB</option><option value="3">3BB</option></select></label>
+<div id="result" style="margin-top:12px">
+  <div class="summary" id="summary"></div>
+  <div class="chart" id="chart"></div>
+  <div class="legend" id="legend"></div>
+  <div class="pick" id="pick">칸을 누르면 그 패의 액션 빈도가 나와요.</div>
+</div>
+</details>
+
+<div class="panel help pro-only">
+  <b>레지 마감 전 = 칩EV</b>: 아직 재입장이 되고 인원이 늘어나는 구간이라 칩 = 가치예요. 칩을 모으는 게 정답이라 콜도 넓어요.<br>
+  <b>레지 마감 후 = ICM EV</b>: 티켓 수가 정해져서, 칩을 잃는 손해가 따는 이득보다 커요. 콜은 좁아지고, 짧은 스택 상대 올인은 넓어져요.<br><br>
+  <b>게임별 포인트</b><br>
+  · <b>WPL</b>: 12~15위 딥스택 초대권은 가치 0으로 계산해요. 진짜 버블은 11위예요.<br>
+  · <b>한게임</b>: 20위(1장)와 9위(2장) 버블이 두 번 있어요. 1장만으론 바인이 안 돼서 9위 안이 중요해요.<br>
+  · <b>피망</b>: 25장 게임은 25위까지(15시 게임은 5위까지) 똑같은 티켓이라 스택이 쌓이면 폴드만 해도 따는 경우가 많아요.<br><br>
+  <b>계산 가정</b><br>
+  · 올인에 대한 콜, 먼저 올인 차트가 가장 정확해요. 레이즈가 끼는 상황은 작은 3벳과 플랍 이후를 계산하지 않아서 <b>[근사]</b>예요(리쇼브 범위가 실제보다 넓게 나와요).<br>
+  · 뒤에서는 첫 번째로 반응한 1명만 계산해요(오버콜 무시). 카드 제거 효과도 무시해요.<br>
+  · 앤티는 전원 10%, 레이즈는 스택 10BB 이상일 때만 계산해요.<br>
+  · 레지 마감 후(ICM)에는 <b>블라인드 압박</b>을 넣었어요. 판이 끝나면 모두가 한 바퀴 블라인드를 더 낸다고 보고 계산해서, 짧은 스택이 폴드로 버티는 가치가 줄어들어요.<br>
+  · 블라인드 레벨은 게임 시작 시각부터 7분 레벨·매시 55분 5분 휴식으로 자동 계산해요. 실제와 다르면 레벨을 직접 고르세요.<br>
+  · 결과는 내시 균형 근사라서, 상대가 너무 타이트하거나 루즈하면 거기에 맞춰 조정해야 해요.
+</div>
+<footer>뚝섬 홀덤 · 계산은 이 페이지(내 폰/PC) 안에서만 돼요</footer>
+</div>
+
+<script>
+const ENGINE_SRC = `// 새틀 프리플랍 계산기 v2 - 게임사별 순위 시상(ICM) + 올인/레이즈/콜/리쇼브 내시 근사
+(function(root){
+const RANKS="AKQJT98765432";
+function handName(k){const r=Math.floor(k/13),c=k%13;if(r===c)return RANKS[r]+RANKS[c];return r<c?RANKS[r]+RANKS[c]+"s":RANKS[c]+RANKS[r]+"o";}
+const W=new Float64Array(169);for(let k=0;k<169;k++){const r=Math.floor(k/13),c=k%13;W[k]=(r===c?6:(r<c?4:12))/1326;}
+const POS={2:["SB","BB"],3:["BTN","SB","BB"],4:["CO","BTN","SB","BB"],5:["HJ","CO","BTN","SB","BB"],6:["LJ","HJ","CO","BTN","SB","BB"],
+ 7:["UTG","LJ","HJ","CO","BTN","SB","BB"],8:["UTG","UTG+1","LJ","HJ","CO","BTN","SB","BB"],9:["UTG","UTG+1","UTG+2","LJ","HJ","CO","BTN","SB","BB"]};
+
+// 순위별 상금(pay[0]=1등) ICM: 칩 비례 Plackett-Luce(=Malmuth-Harville). 지수 경주로 '내 앞 인원 수' 분포를 적분
+function icmPay(st, i, pay){
+  if(st[i]<=1e-9) return 0;
+  const K=pay.length; if(!K) return 0;
+  const wi=st[i], M=200; let tot=0;
+  const others=[]; for(let j=0;j<st.length;j++) if(j!==i && st[j]>1e-9) others.push(st[j]);
+  if(others.length<K){ // 살아있는 사람이 전부 입상권
+    let allSame=true; for(let c=1;c<=others.length;c++) if(pay[c]!==pay[0]) allSame=false;
+    if(allSame) return pay[0];
+  }
+  const dp=new Float64Array(K);
+  for(let m=0;m<M;m++){
+    const x=(m+0.5)/M, t=-Math.log(1-x)/wi;
+    dp.fill(0); dp[0]=1;
+    for(const w of others){const p=1-Math.exp(-w*t); for(let c=K-1;c>=1;c--) dp[c]=dp[c]*(1-p)+dp[c-1]*p; dp[0]*=1-p;}
+    let s=0; for(let c=0;c<K;c++) s+=dp[c]*pay[c]; tot+=s;
+  }
+  return tot/M;
+}
+
+function eqVs(E, rng){ // 각 손의 '범위 대비' 승률, 범위 크기
+  let pr=0; for(let k=0;k<169;k++) pr+=W[k]*rng[k];
+  const out=new Float64Array(169);
+  if(pr<1e-9){out.fill(0.5);return [out,0];}
+  const q=new Float64Array(169); for(let k=0;k<169;k++) q[k]=W[k]*rng[k];
+  for(let h=0;h<169;h++){let a=0;const row=E[h];for(let k=0;k<169;k++){if(q[k])a+=q[k]*row[k];}out[h]=a/pr;}
+  return [out,pr];
+}
+const pct=r=>{let p=0;for(let k=0;k<169;k++)p+=W[k]*r[k];return p;};
+
+// cfg: {stacks[BB], opener, pay[], players(라이브 인원), avg(다른 테이블 평균), ante(BB, 전원), raise(오픈 크기 BB), mode:'icm'|'chip', iters}
+// 오프너: 폴드 / 올인 / 레이즈(→ 올인 받으면 콜 or 폴드). 뒤 사람: 올인엔 콜/폴드, 레이즈엔 올인(리쇼브)/콜(플랍 보기)/폴드.
+// 플랍을 보는 경우는 '승률 x 실현율'만큼 팟을 가져간다고 단순화(포지션 없는 블라인드 0.8, 포지션 있으면 0.95).
+function solve(cfg, E){
+  const T=cfg.stacks.length, o=cfg.opener, S=cfg.stacks.map(Number);
+  const a=S.map(x=>Math.min(cfg.ante||0,x)), s=S.map((x,j)=>x-a[j]);
+  const b=new Array(T).fill(0); b[T-2]=Math.min(0.5,s[T-2]); b[T-1]=Math.min(1,s[T-1]);
+  const A=a.reduce((x,y)=>x+y,0), B=b.reduce((x,y)=>x+y,0);
+  const off=Array.isArray(cfg.off)?cfg.off.map(Number):new Array(Math.max(0,(cfg.players||T)-T)).fill(Number(cfg.avg)||10);
+  const pay=cfg.pay;
+  // 블라인드 압박: 판이 끝난 뒤 모두가 한 바퀴 블라인드(pressure BB)를 더 낸다고 보고 ICM 계산 (짧은 스택일수록 폴드가 공짜가 아님)
+  const pr=Number(cfg.pressure)||0;
+  const squeeze=arr=>pr>0?arr.map(x=>x>1e-9?Math.max(0,x-pr):0):arr;
+  const offP=squeeze(off);
+  const val=(fin,idx)=> cfg.mode==="chip" ? fin[idx] : icmPay(squeeze(fin).concat(offP), idx, pay);
+  const base=()=>s.map((x,j)=>x-b[j]);
+  const fFold=base(); fFold[o]=s[o]-b[o]; if(o!==T-1) fFold[T-1]=s[T-1]-b[T-1]+A+B;
+  const F=val(fFold,o);
+  const fAll=base(); fAll[o]=s[o]+A+B-b[o];
+  const Aval=val(fAll,o);
+  const R=Number(cfg.raise)||0;
+  const canRaise = R>0 && s[o] >= Math.max(10, 3*R);
+  const callers=[]; for(let i=o+1;i<T;i++) callers.push(i);
+  const info=callers.map(i=>{
+    const m=Math.min(s[o],s[i]), dead=A+B-b[o]-b[i];
+    const win=base(); win[o]=s[o]+m+dead; win[i]=s[i]-m;
+    const lose=base(); lose[o]=s[o]-m; lose[i]=s[i]+m+dead;
+    const rf=base(); rf[o]=s[o]-R; rf[i]=s[i]+R+dead;                 // o 레이즈 후 폴드
+    const fr=Math.min(R,s[i]);                                          // 플랫 콜 후 플랍
+    const fw=base(); fw[o]=s[o]+fr+dead; fw[i]=s[i]-fr;
+    const fl=base(); fl[o]=s[o]-fr; fl[i]=s[i]+fr+dead;
+    const I={i,eff:m,autoCall:s[i]<=R*1.0001,
+      Wo:val(win,o),Lo:val(lose,o),RFo:val(rf,o),FWo:val(fw,o),FLo:val(fl,o),
+      CW:val(lose,i),CL:val(win,i),CF:val(fAll,i),RSw:val(rf,i),FWi:val(fl,i),FLi:val(fw,i),
+      real:(i>=T-2)?0.75:0.9};
+    I.need=(I.CW-I.CL)>1e-12?(I.CF-I.CL)/(I.CW-I.CL):1;
+    I.chipNeed=Math.max(0,m-b[i])/(2*m+dead);
+    I.oNeed=(I.Wo-I.Lo)>1e-12?(I.RFo-I.Lo)/(I.Wo-I.Lo):1;
+    I.oChipNeed=Math.max(0,m-R)/(2*m+dead);
+    return I;
+  });
+  const n=callers.length, IT=cfg.iters||200;
+  const sh=new Float64Array(169).fill(0.4), ra=new Float64Array(169).fill(canRaise?0.2:0);
+  const mk=v=>callers.map(()=>new Float64Array(169).fill(v));
+  const rc=mk(0.5), cs=mk(0.15), rs=mk(canRaise?0.1:0), fc=mk(canRaise?0.1:0);
+  for(let t=0;t<IT;t++){
+    const al=1/(t+2);
+    const eqC=[],pC=[],eqR=[],pR=[],eqF=[],pF=[];
+    for(let c=0;c<n;c++){let r=eqVs(E,cs[c]);eqC.push(r[0]);pC.push(r[1]);
+      if(canRaise){r=eqVs(E,rs[c]);eqR.push(r[0]);pR.push(r[1]);r=eqVs(E,fc[c]);eqF.push(r[0]);pF.push(r[1]);}}
+    for(let h=0;h<169;h++){
+      let reach=1,ev=0;
+      for(let c=0;c<n;c++){const I=info[c],p=pC[c],e=eqC[c][h];ev+=reach*p*(e*I.Wo+(1-e)*I.Lo);reach*=1-p;}
+      const evS=ev+reach*Aval;
+      let evR=-1;
+      if(canRaise){reach=1;ev=0;
+        for(let c=0;c<n;c++){const I=info[c];
+          const e=eqR[c][h], ce=e*I.Wo+(1-e)*I.Lo, call=I.autoCall||ce>I.RFo;
+          rc[c][h]+=al*((call?1:0)-rc[c][h]);
+          const eo=1-(1-eqF[c][h])*I.real;   // 플랍 실현 승률
+          ev+=reach*(pR[c]*(call?ce:I.RFo)+pF[c]*(eo*I.FWo+(1-eo)*I.FLo));
+          reach*=Math.max(0,1-pR[c]-pF[c]);}
+        evR=ev+reach*Aval;}
+      let bs=0,br=0; if(evS>F||evR>F){ if(canRaise&&evR>evS) br=1; else bs=1; }
+      sh[h]+=al*(bs-sh[h]); ra[h]+=al*(br-ra[h]);
+    }
+    const [eqS]=eqVs(E,sh);
+    const pRa=canRaise?pct(ra):0;
+    const [eqRa]=canRaise?eqVs(E,ra):[null];
+    for(let c=0;c<n;c++){const I=info[c];
+      for(let h=0;h<169;h++){const x=eqS[h]>I.need?1:0; cs[c][h]+=al*(x-cs[c][h]);}
+      if(canRaise&&pRa>1e-9){
+        const callPart=new Float64Array(169); for(let k=0;k<169;k++) callPart[k]=ra[k]*(I.autoCall?1:rc[c][k]);
+        const [eqCall,pCall]=eqVs(E,callPart); const pf=1-pCall/pRa;
+        for(let h=0;h<169;h++){
+          const e=eqCall[h], evRs=pf*I.RSw+(1-pf)*(e*I.CW+(1-e)*I.CL);
+          const ei=eqRa[h]*I.real, evFc=ei*I.FWi+(1-ei)*I.FLi;
+          let xr=0,xf=0; const best=Math.max(evRs,evFc,I.CF);
+          if(best>I.CF){ if(evRs>=evFc) xr=1; else xf=1; }
+          rs[c][h]+=al*(xr-rs[c][h]); fc[c][h]+=al*(xf-fc[c][h]);
+        }
+      }
+    }
+  }
+  return {sh,ra,rc,cs,rs,fc,callers,info,F,Aval,canRaise,R,
+    shPct:pct(sh),raPct:pct(ra),csPct:cs.map(pct),rsPct:rs.map(pct),fcPct:fc.map(pct)};
+}
+
+// 티켓 확률 곡선: 내 스택 x BB, 나머지(라이브-1명)가 남은 칩을 똑같이 나눠 가질 때
+function ticketCurve(total, players, pay, x){
+  const others=Math.max(1,players-1), rest=Math.max(0.01,(total-x)/others);
+  const st=[x].concat(new Array(others).fill(rest));
+  return icmPay(st,0,pay);
+}
+function safeStack(total, players, pay, target){ // pay는 '티켓을 받는지(1/0)' 벡터
+  let lo=0.5, hi=total*0.95;
+  if(ticketCurve(total,players,pay,hi)<target) return null;
+  for(let k=0;k<26;k++){const mid=(lo+hi)/2; if(ticketCurve(total,players,pay,mid)>=target) hi=mid; else lo=mid;}
+  return hi;
+}
+// ===== 실전 보정: 상대 성향(타이트/루즈)에 맞춰 상대 범위를 줄이거나 넓히고, 내 최선의 대응을 다시 계산 =====
+let ORDER=null;
+function strengthOrder(E){ if(ORDER) return ORDER;
+  const s=new Float64Array(169); for(let h=0;h<169;h++){let a=0;for(let k=0;k<169;k++)a+=W[k]*E[h][k];s[h]=a;}
+  ORDER=[...Array(169).keys()].sort((a,b)=>s[b]-s[a]); return ORDER; }
+function adjustRange(freq,factor,E){
+  if(!factor||Math.abs(factor-1)<1e-9) return freq;
+  const target=Math.min(1,pct(freq)*factor), out=new Float64Array(169); let acc=0;
+  for(const h of strengthOrder(E)){ if(acc>=target-1e-9) break; out[h]=1; acc+=W[h]; }
+  return out;
+}
+// 내가 먼저 액션할 때(오프너): 뒤 사람들의 콜/리쇼브/플랫 범위를 성향대로 바꾼 뒤 내 올인·레이즈·레이즈후콜을 다시 고름
+function exploitOpener(r,E,factors){
+  const n=r.callers.length, cs=[],rs=[],fc=[];
+  // 타이트한 사람은 '먼저 올인하는(리쇼브) 범위'만 좁혀요. 버블 근처 콜 범위는 계산값도 이미 매우 좁아서 더 줄이지 않아요(실전에선 오히려 넓게 콜함).
+  // 루즈한 사람은 올인·콜 범위를 모두 넓혀요.
+  for(let c=0;c<n;c++){const f=factors[r.callers[c]]||1, fc_=Math.max(1,f); cs.push(adjustRange(r.cs[c],fc_,E)); rs.push(adjustRange(r.rs[c],f,E)); fc.push(adjustRange(r.fc[c],fc_,E));}
+  const eqC=[],pC=[],eqR=[],pR=[],eqF=[],pF=[];
+  for(let c=0;c<n;c++){let x=eqVs(E,cs[c]);eqC.push(x[0]);pC.push(x[1]); if(r.canRaise){x=eqVs(E,rs[c]);eqR.push(x[0]);pR.push(x[1]);x=eqVs(E,fc[c]);eqF.push(x[0]);pF.push(x[1]);}}
+  const sh=new Float64Array(169),ra=new Float64Array(169),rcall=new Float64Array(169);
+  for(let h=0;h<169;h++){
+    let reach=1,ev=0; for(let c=0;c<n;c++){const I=r.info[c],p=pC[c],e=eqC[c][h];ev+=reach*p*(e*I.Wo+(1-e)*I.Lo);reach*=1-p;}
+    const evS=ev+reach*r.Aval; let evR=-1, callW=0, rsW=0;
+    if(r.canRaise){reach=1;ev=0;
+      for(let c=0;c<n;c++){const I=r.info[c],e=eqR[c][h],ce=e*I.Wo+(1-e)*I.Lo,call=I.autoCall||ce>I.RFo;
+        const eo=1-(1-eqF[c][h])*I.real; const w=reach*pR[c];
+        ev+=w*(call?ce:I.RFo)+reach*pF[c]*(eo*I.FWo+(1-eo)*I.FLo); rsW+=w; if(call) callW+=w; reach*=Math.max(0,1-pR[c]-pF[c]);}
+      evR=ev+reach*r.Aval;}
+    if(evS>r.F||evR>r.F){ if(r.canRaise&&evR>evS){ra[h]=1; rcall[h]=rsW>1e-12?callW/rsW:0;} else sh[h]=1; }
+  }
+  return {sh,ra,rcall,csPct:cs.map(pct),rsPct:rs.map(pct)};
+}
+// 빌런이 먼저 올인했을 때 내 콜: 빌런 올인 범위를 성향대로 바꾼 뒤 필요 승률과 비교
+function exploitCaller(r,E,c,factor){
+  const sh=adjustRange(r.sh,factor,E), [eq]=eqVs(E,sh), need=r.info[c].need, out=new Float64Array(169);
+  for(let h=0;h<169;h++) out[h]=eq[h]>need?1:0;
+  return {call:out, shPct:pct(sh), callPct:pct(out)};
+}
+// 레이즈 없이 계산한 결과에서도 '오픈 후 콜' 평균 비율 (여러 명 중 누가 올인하든)
+function raiseCallMix(r){
+  const out=new Float64Array(169); if(!r.canRaise) return out;
+  let reach=1; const w=r.callers.map((_,c)=>{const p=r.rsPct[c]*reach; reach*=Math.max(0,1-r.rsPct[c]-r.fcPct[c]); return p;});
+  const tot=w.reduce((a,b)=>a+b,0)||1;
+  for(let h=0;h<169;h++){let a=0; for(let c=0;c<w.length;c++) a+=w[c]*r.rc[c][h]; out[h]=a/tot;}
+  return out;
+}
+root.SAT={solve,exploitOpener,exploitCaller,raiseCallMix,adjustRange, icmPay, handName, W, POS, RANKS, ticketCurve, safeStack};
+})(typeof self!=="undefined"?self:globalThis);
+`;
+const EQB64="AfQDcQNqA2kDYwNzA28DbwNyA2ADZwNsA3IDpAM5Az0DOwMzAzsDRQNDA0MDQgNJA00DUQOfA2cDLwMnAyIDKgM4A0UDQANCA0EDSQNOA5wDYwNSAysDEwMbAyQDLwNAA0ADRANGA0oDmQNdA1EDOwMnAwwDGgMiAy4DPwNBA0MDQwOrA2QDUQNCAzQDKAMKAxYDJgMzA0MDRQNGA6UDcANhA04DPgMtAyQDBAMTAyEDMwNDA0MDpANrA28DXANKAz4DLwMoAwUDFAMmAzwDRgOoA24DaQNpA1cDTAM7Ay8DKAMFAxgDKQM5A5cDcQNuA2UDZwNeA0kDQQMuAyYDEgMpAzcDmwNwA3MDawNkA2wDWwNOA0ADPAMsAykDOwOhA3cDdQNvA2oDbgNvA2EDTwNNA1YDMgNDA6IDfgN3A3YDcANuA24DcANiA14DYgNpAzcAdwH0AscCxwLCAsgCxwLDAsgCuwK6AsMCygINAVMCzQLEAsYC0gLUAtMC0wLZAtcC3gLiAvMC8QHMAncCeQKDAowClgKRApYCmQKaAqEC7gLxApcBywJpAngCfQKMApQCkwKVApkCnALrAu0CkwKJAc0CbQJyAn4CiQKRApkClgKbAvQDBQKiApQChwHaAncCcwJ8AoQCkwKQApgC7gL5AqoCnAKOApEB3gJnAmoCfgKKApQClQLvAv4CtQKpApkCkwKBAd8CYQJtAnsChwKUAvMC/wKtArICpQKRAosCgQHeAl4CcwJ4AooC5QMCArMCsQKvAqMClgKNAn8B3AJhAm8CgwLpAwMCtAKyAq4CrwKjApgCiwKAAewCdAKCAuwDCAK4ArkCswKxArICpwKdAo4ClAHtAoIC9AMTAr4CvAK4ArcCsgK1AqMCnQKeAqIB8gB+ASEB9ALHAsACxQLBAsICwgK0AroCvALDATABPQLLAmYCZgJxAn0CeQJ0AncCfAKDAoQCDQL0AVYCvAK8AssCywLTAtEC1wLeAt4C5wLrAokC5AHSAnACeQKBAowCkgKXApYCnQKfAuYCgQLhAooBzgJvAnsCggKIApIClQKeApwC7gKTAvUClgKGAdkCaAJ3AngCiAKVAowCmALrApgC9gKdApAChwHbAm0CagJ/AosCjwKSAukCmAL9AqoCngKUAoQB3gJoAnECfAKGApsC6AKUAv0CsgKkApgCigKDAeECYwJyAoICiALgApQDAwKzArYCnwKYApICgQHmAmoCcgKBAt8CmAMGArkCtgKzAqUCmwKPAoYB5QJ4AoIC5QKdAwkCuAK3ArMCsAKrApoCkAKSAfUCiALqAqMDEALDArwCtQKwArsCqgKcAqECowH2AH8BIQEhAfQCugK7ArgCuQLAAqsCrgK0AroBLAFFAlACygJqAnUCfAJ9AnoCfQJ/AoIChgEwAmoBRAK2Al0CbAJzAnsCdwJ1AnkCggJ/Ag0C7wLiAVcCrgLAAr4CywLSAtUC2wLeAuQC5gKJAn4C0gHMAnICeQKCAo4CmgKZApsCnwLmApMCiQLnAo4B3gJuAnICewKHApkCmAKbAt4CmwKSAuUClAKFAdYCZwJyAnsCiQKXApUC4gKYApoC7wKjApACggHiAmkCcQJ7AooCmQLjApcClQL9AqsCmgKQAokB5AJlAnoCgwKPAtYCmgKWAvwCtwKkApgCiQKCAekCagJ0AoMC2QKYApkDBAK4ArICpQKaApQCfgHrAncCggLcAp4CoAMKAroCtQK2AqgCnwKRAo8B9AKHAt0CoQKjAwsCugK3ArQCtQKqAp8CnwKmAfwAhQEmASgBLgH0ArACsQKwAqwCogKjAqwCswErAUMCUAJNAscCewKDAnoCdwJ9An0CgAKCATECbwFFAkQCuAJvAnYCgQJ7AnkCegKDAoQBNQJrAmABQQKqAmgCbAJyAnkCdgJ9AoECigIMAu4C3gLRAV0CtAKxAr4CwwLUAtkC2wLfAt8CmQKHAn4C3gHXAmYCdQJ/AooCmgKdApsC1gKfApEChgLYAoYB1wJtAnMCfwKQApoCnwLYApkCmwKMAuUClAKFAeACZwJ3AoECjAKXAtgCmAKUApoC8AKbAo4ChQHjAmwCdAJ/Ao0CywKbApkCmwL+AqUCnQKRAoUB6wJpAnoChgLOAp4ClwKaAwACuAKrAp0CkQKEAe4CewKJAtMCngKfAp4DCQK2ArcCrgKhApgCkgHyAoMC2AKgAqMCogMLAr0CuAK4AqkCmgKkAqYCAgB1ASABIwEtATgB9AKbApsCmAKJApACkQKUASoBQAI+Aj0CPgLIAnYCbAJsAnACcwJyAnkBLwJbAUACNwI2ArgCagJyAm4CbgJ0AnICcQE5Al0CTgE9AioCsAJhAmwCbAJvAm4CdAJ4AUACXAJTAkQBPAKZAlMCXQJlAm8CcwJvAnMCDQLvAt8C1QLFAVQCpAKuArkCygLZAtkC2wLCApUCigJ7AmsCzAHIAmYCbQJ/AooClQKZAsACjwKOAoICfgLZAoQBzwJlAnMCggKRApkCuwKMAogCjQKBAuQCiAJ/AdYCZgJ0AnsChwKuAooCiQKLAowC9AKXAowCewHaAmsCdAKBArgCkAKSApACiwMFAqcCnAKQAoUB4wJ0AoACtgKQApECkAKPAwUCsQKoApsCkAKYAegCgQK6ApcCkQKVApEDCQK1ArgCqAKeAqACpAHwAHkBIQEnATABNwFNAfQChAKFAnMCdgKBAn0BLQE+AjkCOgI5AkYC0wJ0Am4CcAJxAnQCeAEzAlcBQQIyAjUCQgLFAnYCbgJvAnMCdgJ4ATkCUwJMATwCKgI4ArsCaQJvAm4CcAJyAncBQwJVAk4CQgE/AjMCrQJhAmICcgJxAnUCdgFcAmMCWwJUAk4BRAKeAlcCYAJtAnYCcwJ4AgwDAQLxAuQC0wLIAVUCpwKxAr8CygLZAtsCrQKPApcChgJ8AnQCywHPAmUCcgKDAooCmAKrAosCjQKQAoICewLWAoIB1QJmAnECgwKOApgCjAKNAooCjAKLAuACkAKGAdkCaAJ2An4CmQKQAo8CjwKNApUC9gKeAo8CgQHnAn8CgwKgApUCkAKTApMCmQMHAqsCoAKWApUB8gKGAqEClwKWApQClQKSAwQCugKvAp8CngKoAfUAeQElASYBLwE4AU0BZAH0AmoCWgJaAl8CYgExAUYCOAI5AjkCTQJUAtICcgJ2AnICcgJzATICVQFCAiwCKAI6AkQC0AJzAnACcAJvAnIBPQJXAkYBPwIlAjECQQLBAnYCbwJuAnQCegFHAlMCRAJEAUECKQI2ArQCZAJxAm8CcAJ1AV4CaAJVAlACQwFIAjACqgJdAmwCeAJ2AnkBbQJxAmQCXQJTAkoBRwKgAlkCYQJsAnoCdwIMAv4C/ALsAtsCzwLIAVYCpQKyAsAC1ALaAogCjQKHApIChgJ6AnQCzgHSAmgCcwKBAo4CeAKQAokCjQKOAoYCfgLYAoEB1AJnAnUCgwJ9ApMCiwKQAooClgKFAusCkgKEAd0CdQKFAoQClAKQAo0CkgKUApMC/QKdApICkQHrAowChQKXApYClQKUApYCmAMMAq4CogKfAqcB9QB2ASABJgEoATwBUAFjAX4B9AI4AjoCPAI/ATABQgI2AjUCNAJFAlUCUQLQAnMCeAJzAnkBNQJYAT4CJwIsAj4CSAJSAs8CdgJxAnACcwE7AlACRQE6AhwCKAI0AkQC0AJvAmkCbQJwAUYCVAJJAjYBOwInAi4CPQK/Am0CbQJpAnMBXwJhAlUCSAI/AUcCLwI4ArkCagJ1Am8CeAFxAm4CYAJSAkkCRAFGAi4CpwJdAmgCdQJzAZMCcAJvAl0CWAJUAkQBRgKhAlYCYAJrAnwCDgL9AvsC9ALrAtwC0ALFAVgCogK2AsUC0QJYApACkgKJAo0ChwJ0AnMCyQHVAmICcQJ8AlkCkQKKApACjAKUAogCfgLcAn8B2gJ2AoMCWAKTApMCjAKJAo4CkgKKAukCjgKNAecCggJeApUCkwKMAo8CkQKVApMC/AKgAp4CoAHzAIgBLQE0AT0BRgFfAXUBjgGwAfQCKAIuAiwBOgFNAkECOgI3AksCUQJUAlQC1wJ8An8ChQFDAloBTAIuAikCQAJDAlcCTALSAnkCgAJ8AUoCVQJJAU4CJAIwAj4CSQJVAs0CfAKBAn0BVAJTAkoCPgFKAiMCMAI2AkQCywJ0AnMCeQFuAmcCVwJQAkIBVgIrAjoCPgLDAn4CfAJ6AYcCcwJjAlsCSwJKAVUCLQI1ArcCdAKDAnsBoQJvAnMCYwJTAlQCSQFaAjECqQJuAnYCgAHGAnMCaAJyAl0CXAJRAkoBWgKfAmYCcAJ4Ag4C/AL7AvYC9gLrAtoC0ALFAW8CuALBAtUCQwKeAp8ClgKXApwCjgKHAoQC2wHfAoUCkAJIAqMCnQKXApcCnQKbApICjQLqAqMB5QKWAkoCpAKjApoCmAKbApsCoAKYAv0CsAKwAfcAgQEuAS4BOgFFAVgBcgGOAa4BwAH0AgsCEAE3AUwCOgI6AjUCRwJPAlICUAJeAtUCfwKCAToCVgFLAjECLQI3AkQCUAJPAlUC0gKCAn4BRQJTAkcBRwIiAi4COAJFAlMCWALQAncCfAFRAlECRwI6AUwCJgIvAjYCQwJYAs4CcAJ4AWoCYQJWAlACPgFLAiUCMAI1AkwC0QJ6AngBhgJtAmQCVgJJAjwBUgInAjMCRwLDAn0CdwGiAmwCawJmAlYCRgJGAVQCLAI8ArcCcgKBAcICbAJsAmoCXQJXAkcCRAFXAjsCqgJrAncB2AJ8AnMCcAJ0Am4CZAJbAlMBUAKqAmECbwIMAwEDAQL7AvcC+QLrAuEC1ALVAW4CxALWAiwCnAKcApsClAKWApcCkAKJAoAC6wHoApMCLwKiAp4CmgKYApYClwKeApUCjAL+ArYB8AB8ASUBLAE0ATwBVwFnAYkBrAG6Ad0B9AIPATIBRwI8AjoCNwJFAlACTwJPAlwCXgLUAoMBNwJZAUYCLAItAjoCRQJMAk0CVgJXAtICgQFDAlUCSgFKAiACLwI5AkUCTQJSAlMCzwJ2AU4CUgJKAjgBSAIjAi0COAI+AlQCVALPAngBZgJfAlYCRwI7AU4CIQIwAjUCSwJYAswCeAF/AmoCYAJSAkkCPgFNAiACJgI7AkwCzQJ0AZ0CawJrAl4CUwJKAjwBTQIhAj4CSALDAn4BwgJrAmgCZwJcAlMCRQI/AU8CMQI8ArUCcgHVAnMCdgJuAnMCbAJaAlYCTAFQAjgCuAJqAfECeQJ1AnMCcgJ1AmYCYgJaAlABVQK/AmsCDQMBAwAC+QL2AvoC9gLsAuAC4wLlAXkC1QIrAp0CngKVApMCmgKUApsClAKJAooC/QHzAHYBHgElAS4BNQFUAWsBhgGpAbwB2AHZAfQBKwE/Aj0CNgI0AkYCTQJMAkYCWAJaAl8C2AExAlkBQQIvAikCOAI/AkkCRgJRAlgCVgLZATwCWQJJAUACIAIqAjcCQAJIAk8CUwJYAtABSQJTAkcCNgFEAiQCLwIyAjsCTQJNAlQC0AFiAmACUQJDAjwBTgIkAigCNAJGAlgCVALTAXwCawJcAlUCSQI9AU0CIQIoAjoCSQJVAtABmgJnAmICVwJSAkQCOgFKAhoCNAI/AkwCzwG6AmMCZgJoAlcCUQJJAjgBSQIoAjICQwK9AdYCbQJwAm4CbgJiAl8CUwJJAU4CLgI4AsIB7wJ5AnECcwJsAnACZQJcAlECSwFVAj0CxgHyAnsCdQJzAnICcQJzAmECXgJUAloBXgLPAg0DAwMBAv4C+gL/AvgC+wLtAuwC8QL5AX0ARAHbArgCvAK9Ar4CuwK3ArgCrgKxArYCvQH0ASoCwAK9ArcCzQLNAskCxwLNAtMC1wLhAucC7QG0AmMCYAJpAnYCfgJ4AnoCgQKBAoMC5gLpAoUBsQJQAmUCagJ1AngCeQJ7AoAChQLkAuMCggJ4AbACTwJeAmgCcAJ7AnwCfwJ9AuUC+AKTAoUCdgHAAloCWgJdAmsCegJ5AnkC4wL7ApcCjAJ/AoEBvwJMAlcCXgJuAnoCegLfAvoCpwKXAoYCgAJzAcMCRQJTAmICcAJ+AuYC8QKhAqEClQKHAngCawHCAkkCVQJgAm0C0wL9AqQCogKiApMChwJ6AmwBywJGAlkCZQLdAwICpQKjAqICnwKVAokCfwJzAcsCXwJrAt8DAwKsAqYCpAKkAqgCkwKKAoACgwHOAmkC6QMLArMCqQKqAqUCogKjApkCjQKRApYB2ACvApUCqwKjAqUCqAKqAqICpgKbApwCoQKpAr4B9ANdA1sDWANpA3YDbgNyA28DdQN5A3oC0QOTAzQDOAM1AzYDOQNHA0IDPgNFA0cDTALKA4wDYwMwAyQDJAMkAzUDQQM8A0IDRANMAsQDhwNdA0sDLAMQAxcDJgM2AzsDPQM+A0gCzQOcA10DUAM8AycDCQMYAyIDMwNAAz8DQwLTA6sDYgNOAz8DMwMmAwoDGwMlAzQDRANIAsgDpQNyA2ADTgM/AzADJQMHAxIDIwMzA0ICyQOkA2oDbANZA0kDPwMuAyQDBwMXAykDNwK9A6UDaQNrA2YDWgNOAzoDMAMkAwcDFQMnAsUDrAN1A2wDZgNqA1wDTAM9Ay4DKQMaAygCxgOuA3UDcQNqA2gDbQNbA1UDPQNDAy4DMALHA7ADeQN1A3EDawNsA3MDZQNQA1UDWQMyAKsBGwEdAZgBmAGqAa8BsAGyAacBrgGsAasBKACLAfQCwwLEAsMCzALEArwCvQLGAssC0AEmAgwBYwLBAsMCxALWAtMCzQLNAtYC2wLeAbQC6QLuAdICeQKAAokClwKeAp8CnAKfAqUBswLpAuoCkwHQAnYCggKIApICnQKZAqACogHBAuwC7QKmApEB2AJ2AnYCggKKApgClgKaAcsC7wL9AqoCngKUAegCegJ2AoIChgKXApcByALtAvsCswKlApUCmAHrAmgCbwKBAosCmQHIAukC+QK3Aq0CoAKUAokB7gJmAnQCfQKMAccC7QL8ArkCuwKnAqICigKAAesCZwJzAoYByALwAwECvgK4ArMCqQKdAo8CiQH0AngCgAHLAvMDBQLBAsECtgK2Aq8CnQKSApsB+QKHAcQC+AMMAsMCwgK6ArcCtgKsAp8CnwKlAf4ArQEkAYIBHgGbAasBrgGvAbMBrgGuAa4BsgErAI0BJQH0AroCwQLAArsCvAK7Ar8CxALHAZQBLwFCAsECawJ1AoAChgKEAoAChAKHAo4BKwINAuwBZAK4ArkCzALGAtACygLUAtsC2wG0AuICgwLcAc0CegKCAosClAKgAp8CngKjAcYC5AKQAuICkgHZAm4CeQKFApACngKaApsBywLnApwC9AKjAo8B6AJuAnsCfQKJApcClQHIAuMCpwLuAqgClQKIAeYCawJzAn8ChwKWAcgC5wKhAv0CsAKhApkCiwHyAmoCeAKCAo8BxQLlAp8C+QK9AqcCnAKNAoQB9wJnAnUChAHJAuoCoAL6Ar4CtgKtAp4ClgKCAfkCeQKMAc0C7AKlAwMCvwK1ArUCpQKeApQCmQH8AoUByALvAqoDBwLGAroCugK1ArACnAKmAqUCAQC1ASIBggF+ASEBqgGvAa8BtAGxAbMBsQG0ATEAkAEkAS4B9AK0ArcCtAKwArYCtQK2Ar8BmwEwAUMCUALBAngCggKGAoICggKEAokCigGXATICZAFAArACZwJ1AnoChgKEAoQCiAKPASwCDQLpAt0BagKuArkCuALGAtAC0gLVAt4BxwLbApIChgLYAdcCdQJ5AoMCjQKcApoCnwHMAt0CmwKOAuUCjAHkAmsCdgKAAo4CmQKaAc8C2QKgApwC4gKYAogB5wJpAnkCgwKPApwB0wLZAp4CowLrAqMCkAKIAe8CbgJ5AoMCkgHNAtkCowKeAvwCqAKfApgCiwH6AnACeQKFAc4C2gKjAqEC/AK5AqgCngKWAokB+gJ7AosBywLhAqYCpAMDArsCvAKtAqMClgKVAfsCiAHOAuUCqgKnAwcCuQK6ArkCsAKkAqQCqgIEAK0BFgF3AXMBbQEgAaIBmwGjAZ0BoQGjAaIBGwB/ASUBJwE0AfQCowKeAp8CngKeAp8CpQGOATEBPQI5Aj8CxAJzAnwCeQJ3AnoCdwKAAYsBOAJWATkCMQKzAmcCcQJ5AnMCewJ7An8BhgFAAlYCSwE4AqsCXgJnAnECeAJ3AnsCegErAgwC6wLgAtABXAKrAq4CtQK+AtQCzwLWAboCyQKVAoUCeQLUAdYCaQJ1An4CiAKcApcBuwLIApsCjAKAAtQChQHXAmcCbAJ+AosClgG6AsQCkwKZAowC5AKSAoMB4AJmAnYCgQKPAbwCwgKUApMClALqApkCkQKCAeYCaAJzAoMBvgLGApwClgKXAv0CqwKaApEChQHuAnkChAG+AsUCmwKXApYDAAKzAqsCngKRApAB9gKDAcECzAKZApkCmAMDArYCtwKtApwCpQKiAf4AowEUAWsBbAFlAXIBFQGUAZMBlwGZAZgBmwEbAHIBHAEoATEBRQH0AoMCgQJ/AoIChwKHAYsBLQE4Ai0CMQJBAsQCcwJuAnACdAJyAnEBgwE0Ak0BNwIoAjUCuAJpAm4CaQJvAnACcgF+AUECTAJBATkCKQKsAl8CaAJrAmwCdwJyAYwBUgJbAlECRgE9Ap0CTwJfAmECawJtAnEBHgIOAuoC2wLOAscBUgKjAqsCtwLGAtIC1AGvAqkCkAKEAnoCbALIAcsCYwJtAnwCjgKXAbQCqQKIAosCgQJ1AtICgQHTAmgCdwJ9ApIBrgKpAo0ChgKKAoAC3wKNAn0B2QJlAnUCfgGzAqcCigKIAosCigLtApoCjAKAAegCegKCAboCpwKTAo8CjgKTAwMCpgKdApQClgHsAokBtQKqApcCjwKQApMC/QK0AqoCnQKgAp8B7wClARUBbwFrAW4BfAF0ARYBlwGUAZYBmQGcAR8AegEkAS0BNAFKAWUB9AJmAmECZQJoAm0BhgEuAToCLAIwAjkCSQLOAmwCbAJzAnQCcwGPATgCRgE7AiMCLwJEAsECcwJwAnACbQJyAYsBQwJDAj0BOwInAjkCtgJoAnACbwJ0AncBkQFWAlkCSwJEAUECNwKoAmECawJzAm0CdQGTAW4CZgJdAlMCTAFHApoCXAJhAmkCeQJ4ASICDQL9AuoC3ALPAsQBVwKeAqsCuQLGAtUBsAKLApECkQKCAngCdgLFAdICaQJ5AoICiAGtAooCigKMAosChAKAAtIChQHZAmMCdAKAAa8CiQKNAooCiAKMAoYC5AKTAoEB6QJxAoEBuQKJApUCjwKNAo4ClAL1AqECkwKSAe8CigG5Ao4ClgKVApMCkQKXAwcCrgKdAqUCqAH5AKUBFQF0AW4BcQF8AXoBdgEYAZQBmAGZAaIBIQB2ASwBLAE4AUkBZwGCAfQCRwJGAkkCSwGLATQBPwIqAisCPQJEAlYCyQJzAnYCdQJ2AYgBPAJIATcCGgIrAjgCRgLMAm0CbwJxAnABhgFFAkYCNgE7AiECOQI6Ar8CcAJyAnQCbQGYAVwCVwJLAkEBQQIpAjICsQJnAnQCcQJ3AZMBdwJlAlQCTAJJAUcCLgKjAmMCbQJ0AnYBkQGSAm8CYAJaAlACTAFHApoCVAJZAmsCdwEeAg0C+QL1AuUC2ALPArsBWwKhAq8CwALOAbACZAKVAosCiwKCAnwCcgLGAdYCZwJ5An8BsQJlApICjAKOApACjAJ9AtkChQHeAnkCiAG1AmcClAKNAooCjwKRAocC6QKQApcB8AKBAbsCbAKRAo8CkAKSApQClwL5AqUCngKoAfEApgEQAXEBawFrAXgBeAFyAXUBEQGKAYwBkAEbAHkBKwEtATIBSgFpAYcBoQH0AicCKgIuAYkBLwE9AjECJgI6AkcCTQJTAs0CcAJ4AnYBhQE9AkcBPAIhAicCOgJEAlECygJ2AnMCcgGEAUQCQAI1AToCHgIuAjcCQwLJAnACcQJuAY8BXQJYAkoCOAFIAisCLAI8ArcCcwJxAnIBlQF5AmUCWQJEAkQBSwIrAjkCsQJqAnkCdQGMAZICbAJgAlMCSgJGAVACMAKhAmYCbAJ2AZMBtgJwAmoCXgJYAlUCSAFPApsCWgJlAnEBIAINAvYC8gLzAuMC2ALGAr4BYQKiAq4CvgGnAkYClgKVApECkwKIAnwCdALLAd0CeAKFAaoCRgKTApMCjQKNApkCigJ/AtUCkQHjAoYBqAJNApYClQKMAowCkgKaAo0C5QKmAqMB8QCfAREBbAFpAWsBdQF4AXYBcAFsARMBigGOARUAcwEiASkBMwFKAWYBgwGiAcEB9AIRAhQBhwEvATwCKgIlAjgCQAJQAk4CSALOAnYCdQGFAToCRwE7Ah0CKgI6AkECTgJNAskCcwJ1AYQBRQJCAjMBPAIdAi0CNgJCAk0CxwJvAnIBkgFYAlQCRgIzAUACIgIrAjcCOQLGAnICbwGLAXkCXgJQAkUCPgFHAicCMgI5AsACdwJsAZABlAJqAl4CUAJHAj4BRwIoAjQCsAJpAncBjgG4AmoCawJiAlACTAJGAUoCMQKoAmICawF9AdsCbgJrAmsCWQJZAlACSAFQAp4CWgJiARoCDQL4AvEC7QLyAuUC2ALLAsABaAK1AsQBqAIwApECjgKNAogClAKGAn0CbQLYAeIChwGrAjEClwKTAowCjgKRApECjQKBAuoCpAHtAJsBCgFlAWYBaAF2AXQBdgF1AWkBaQEUAYkBEQBvAR0BJAEyAUkBYQGAAZ8BvgHXAfQCDAGEASgBOQInAiUCNwI/Ak8CSwJMAlQCzQJ5AYUBMgJEATcCGgIrAjECOgJIAkgCRwLOAnkBgAE+AkICNQEzAiACKQIzAjsCSQJJAsgCcQGQAVYCUwJCAjoBQgIgAi4CNgJAAkoCxgJzAYkBcgJZAkwCPwI7AUECHwIqAjcCPgLIAm4BjQGVAmgCXAJOAj4COgFGAiICLQI4ArkCcQGPAbMCawJlAloCVQJHAkABTQInAjgCrgJqAYAB1AJsAmgCZAJaAk4CSQJEAUsCKQKkAlsBfgHyAm4CZwJlAmwCXgJWAlECQgFWAqsCXwEdAg0C9wLyAvMC8ALzAucC1QLJAtEBZwLAAaYCLAKWApACiwKQAo4CkAKIAnwCfgLqAewAlwEGAWQBYgFmAW8BcAF1AW8BYwFmAWUBEAEHAG4BGAEhASkBQwFhAXsBnQG6AdQB3AH0AX4BJQE3AisCKgIzAj8CRQJJAk0CTwJRAtABgAEtAkMBMwIdAigCMQI4AkcCRgJLAksCzQF9AT8CQQI4ATMCHAIiAjQCOwJGAkcCTgLLAY0BUgJSAkMCOAE7Ah0CJAIrAj4CSAJNAsQBigF0AlwCTAJEAjsBRQIcAioCOAJBAkwCxwGHAY8CYgJXAksCQAI5AUMCGgIlAjUCQwLGAY4BtAJiAmcCVgJLAkUCMQFMAiICMQI7ArwBggHTAmQCZQJjAlgCUAJDAj8BTAIpAjICtgGAAe0CagJmAmICZwJfAk0CTQJDAVECMQK1AYAB8QJtAm0CZwJkAmkCXQJVAk8CUgFbArYBHgINAvsC9wL3AvAC8gLxAucC2gLeAuMBcgBJAPUB2wK4ArcCuQK1ArYCswKlAq4CsQK3AQEBFwLCAlQCTQJaAl0CYgJdAl8CYQJkAmoB9ALoASwCrgKsAsUCwQLJAsUCzgLRAtgC2wLkAnIC2QG0AlkCZQJqAnMCfAJ4AoICggKGAuACcQLYAngBsAJWAmECaAJzAn4CfgKDAoAC4wKCAuoChQJ6Ab0CTwJeAmQCawJ6AnkCgwLfAocC6QKQAn8CdwG+AlACVAJhAm0CdwJ7AuACiAL1Ap4CjQKBAnUByQJMAloCYgJwAn0C2wJ/AvQCpAKVAoQCeAJvAcUCRgJbAmUCcALPAnwC+wKmAqkClQKIAnsCbgHEAk8CWgJhAtUCiAL8AqcCqgKiApQCjgJ9AnABzwJbAmoC2QKNAwYCsAKpAqICmwKeAokCgQKAAdUCbQLfAowDCQKyAqwCpgKmAqYClwKPAo8CmQHdAIEA9wD0AX4BeQGNAZEBkwGQAY4BkgGPAY8A+wBVAdwCuQK4ArcCuwK6ArQCuQK5AsACwwEAAfQBPAK5AroCvQLJAsgCxQLIAswC0ALUAZEC5QLiAbUCXQJnAnYCfAKFAocCiQKLApABkgLeAuMCiAG2AmMCbAJsAncCggKJAogCjwGkAuEC5wKVAoMBwAJcAmQCawJxAn4CgAKGAaoC5QL3ApwCjQJ/AcoCXAJZAmQCcgKAAoEBrALgAvMCpgKPAoYCiAHRAlICWwJlAnICfgGuAtwC8wKuAqQCjQKBAnIBzQJNAl8CbQJ2AaMC4gLwAqoCrAKZAooCgQJvAdcCTAJbAmYBpQLoAvYCsgKqAqMClQKJAoACcgHXAl4CawGhAusC/AKxAqsCpwKnApsCjQKCAoYB4QJwAakC7AMAArgCsQKoAqgCqQKdAowCjgKYAekAuQIcApICpAKjAqgCpwKmAqoCnAKdAqICpwI0ALQChQKmAqUCqwKwAq4CqQKrAqwCrwKyArwCrAH0A00DRgNYA2MDcgNtA20DcAN0A3sCygLKA3oDNwMzAzQDNAM6A0MDQgNEA0cDTALKAscDdwNaAzADJgMnAygDMwNCAz8DRQNIAs4CzgOJA14DTAMsAxQDHQMmAy0DQgNDA0YCyQLUA5kDYQNIAz0DKAMRAxYDIQMxA0IDRgLLAtIDqANhA1ADQQM3AyUDCgMZAykDOgNFAs8C0QOkA28DWwNOAz4DMAMnAwcDGQMqAzcCvgLRA6MDaANoA1wDTAM/AzADIwMKAxgDJwLFAtEDpwNvA2sDbANeA1ADPAMsAywDGgMqAscC2AOrA3IDbwNrA2sDXwNNAz8DQwMtAzACygLZA68DeQNyA3MDbANzA2QDUANVA1cDNgDBAXEBLAEyAaQBsQG2AbwBwQG6AbcBvAG5AYUAsAEnAScBmAGvAbsBvAG+AbcBvgHBAb0BOgEvAJsB9AK5ArsCvAK9Ar0CvQK+Ar8CxwE5AS8CDgF1AsICxQLEAtIC0QLRAtEC0QLaAbwBtALfAugB0wKGAosCkwKgAqMCowKrAqoB0AHFAuMC6AKiAeICegKFAo0ClQKdAqICpgHRAdEC5gLsAqkClAHoAnsCfQKFApICmwKcAdkB3QLpAv8CswKgApUB9QKBAn0ChwKSAp8B2wHcAuwC/AK7AqgCnwKbAfoCcgJ4AooClAHTAdgC5AL2AsYCsQKlApkCjAH8AmwCegKGAdQB1wLmAv0CwQK+Aq8CowKcAosCAQJ+AosB0AHZAuoDAgLMAsICvgKxAqUClAKYAgYCjwHTAdsC8gMHAskCxAK7AsECsgKkAqUCqAIOAMYBbwEsAYsBMAGyAbMBwAG8Ab8BuwG7Ab8BiACzASUBfQEnAakBtwG4Ab0BwgHDAcMBvgE8AS4AogEvAfQCsAKyArYCtAKzArMCvQK6AaUBmgE3AU4CvQJ3An8ChgKOAosCjAKQApIBOgEuAgwC5AF0ArQCugLFAsMC0QLSAtYC2AHOAcsC2wKWAtoB4wJ6AoYCjQKUAqUCoAKrAdIB1ALbAp0C4gKbAfACdwJ7AocClAKcAp4B2QHbAt4CpQLsAqECkwH3AnQCfwKFApQCnAHYAdgC3QKtAvECrAKSApEB/AJxAn4CigKWAdgB3gLgAqkC+AK3AqMCnQKTAgECcQJ+AokB2QHbAtsCrQL6AsICswKlApcCiAIEAn0CjgHXAdsC4gKwAv8CxgK/Aq8CqQKUApoCCAKLAdsB4QLnArUDAALIAsECvwK0AqcCpQKoAhYAvgFlAR0BfAF5ATABpgGuAaoBqAGxAa4BsAF/ALIBJAFzAXABJAGnAa8BqwGuAbABsQG1ASMBKwCQAS0BOAH0AqYCngKfAp0CoQKiAqkBmgGOATgBRAI7ArsCbwJ5AoYCfAKFAn4CiQGVAYUBQAJTAUMCsAJmAnMCfQKBAoECgwKFAT0BMgIOAucC2wFmAqoCuQKxAsEC1QLNAtcBxwHCAscCkQKFAtMB1gJyAnsCgQKVAp0CngHKAcQCywKYAooC5AKUAekCbAJ5AoUCkgKcAckBxQLFAqEClALgApYCiAHnAmkCeAJ+ApABxgHIAsMCnAKdAu0CpAKYAokB8gJxAnkChAHIAdICygKiAp8C+wKsAqMCkwKHAfcCfwKIAcoB0ALKAqECowL7AroCrgKeApQCmwH+Ao0BzQHOAtACpAKmAv8CuQK6Aq0CoQKjAqUCAwCwAVwBHQF1AXIBfgEjAaQBoAGlAaQBowGpAXIArwESAWgBZgF1ASQBnwGkAaEBqAGpAakBJwEfAIUBLAE2AUIB9AKKAocCgQKFAooCiwGOAYgBNQE7Ai8CQgK+AnkCfQJwAnUCgQJ5AYoBfwE/AkUBQQI0Aq0CZwJuAnwCeQJ3AnoBkwGMAVMCVQJPAT4CowJcAmMCcAJ7AnYCfgEsATICDALjAtcCxwFlAq4CqQK1AsECzwLUAb0BvAKvApEChwJ7AtMB2gJrAnECewKOApwBvgG6Aq8ClwKNAoMCzwKFAeACagJ0An0CjQG6AcACqwKRApUCigLcAo4CgAHmAmMCdQKFAbgBvgKsApECkgKaAusCnwKSAoUB6AJ8AoMBwgHEAq8CmQKeApcC+gKwAqEClQKXAfUCiQG/AcMCrwKWApcCmwMAAr4CrgKfAqACpwH7AKMBUgEVAW0BZwF2AXIBGAGWAZEBmAGcAZ8BagChARUBYgFiAWwBdQEaAZIBmwGYAZkBowEfASAAdgErATIBSgFeAfQCaAJiAmICZQJuAYcBfAEzATUCJQIxAkACvQJ2AnMCbAJxAnIBhAF5AUICPAE3AiwCNAKxAmcCbwJqAnACdgGSAYIBUgJQAkABOwIuAqECXgJkAnECbgJ0AYsBjwFtAlcCVAJMAUMCnQJXAlsCZwJyAnQBIgEgAg0C5QLZAssCvwFYApwCpAKwAsYC1gGwAa4CigKTAocCewJwAsMB0wJiAnQCggKRAbEBtAKDAocCjwKAAncC0AJ/AdoCZwJzAoABsgG0AoYCjwKJApECggLhApECgAHlAnYChQG3AbcCiwKNAo0CjAKTAu4CnwKNApUB8AKGAbwBwQKUApQCkAKSApMC/gKpAp0CogKnAfoAqAFXARcBcQFtAXoBegF1ARkBnAGZAZsBogFwAKYBGwFkAWYBbwF6AXwBHwGVAZoBnQGfASMBIwB7ASsBNAFJAWEBgAH0AkcCRwJJAksBhQF/ATUBNwIeAi8CPQJDAssCbwJvAnMCcAGLAXoBRQI2ATwCKAI1Aj4CvQJ2AnICcAJxAZIBiwFXAkYCPQE+AicCNgKsAmkCcwJ0AnoBkAGUAXMCVQJMAkUBRQIyAqACYQJoAnkCcwGSAZEBkgJjAl4CVwJQAUoCmAJTAl8CbAJ6ASYBIwINAvMC5QLWAscCvgFgAp0CqwK3AsgBtQG0AmQCjAKNAooCegJzAsIB2wJqAnQCgQGzAbQCaQKOAooCkQKEAoEC0wKEAdwCcwKEAbwBtwJsAo4CjQKRApICjQLhAo4ClgHqAoUBwQG+Am4CkAKQApUCjwKaAvICngKgAqYB8wCmAVIBEQFzAW8BegF5AXgBcgEWAZMBkgGXAW4AqgEbAWgBZgFxAXgBfAF1ARsBoAGcAZsBGgEgAHsBKwE1AUsBZwGGAaEB9AInAikCLAGMAYIBOgE9AhwCLQI7AkwCUgLIAnYCdQJ0AYYBegFGAjgBPgIcAicCPgJFAsMCbgJyAncBlgGJAVcCRQI4AUICIwI0AkMCuQJ0AngCdAGUAZMBdAJXAkgCQAFHAiwCNwKtAmoCdgJ0AZIBkwGXAmECVgJQAkwBTgIyAqQCXgJwAnwBlAGQAbkCbgJgAl0CUgJNAVICkwJaAmYCcgEhASQCDQLyAu0C3wLVAskCuwFjApoCqAK4AacBrQJDApQCkwKSAoQCgQJyAr0B3gJ3AoMBrgG0AkcCkQKRAo8CkwKLAoAC1AKTAeYCiAGuAboCSQKTApQCjAKWApkCjALfAqICpAHxAKcBTwEKAW8BbgF0AXUBeAF3AW8BFgGRAZABZwCjARIBZAFkAW4BdAF1AXIBeAEaAZQBmQEXARwAeAEqATUBRwFjAYYBoQHBAfQCEQIUAYQBfwE5ATkCIQInAjUCSgJPAk4CygJ0AnYBiAF9AT8COAE6AhwCLAI4AkQCUALFAnICcwGVAY0BVAJBAjgBPQIdAioCNAI8AsECbwJsAY4BkwFzAlECSgI3AUcCJgIuAj0CuAJwAnEBkQGTAZcCZAJTAkUCRQFPAikCOQKwAmcCeQGQAYwBtgJrAmICTAJOAkUBTAIuAqACZQJvAYABjAHXAm0CagJcAlgCTgJIAVMCmAJUAmMBIAEoAg4C9QLyAuoC4gLYAsICugFqAqoCtwGqAbICLQKQApICjAKPAoYCfgJ2AtUB5gKGAa0BtwIwApECkAKLAowCmQKMAoEC4gKnAewAnwFOAQoBZgFlAXYBcgF5AXgBaAFmARYBkgFnAKEBDQFhAV8BcQF2AXQBcwFwAXIBGwGXARABGAB0ASkBKwFGAV4BgwGfAb8B1wH0AhQBhAF4ATEBNwIdAi4CMgJFAkgCSwJSAscCdwGBAXsBPwI4ATICHAIrAjcCQgJKAksCwwJ1AZMBiAFRAkACNQFAAh0CLAIzAkMCUQLGAm4BiQGOAWoCUgJFAjcBRAIeAisCNgI/AsQCbwGMAZQBlAJdAlQCRgI6AU8CIgIwAkICvAJzAZMBkQG0AmMCXgJVAkICQAFVAiYCMwKqAmgBgQGLAdcCZgJsAl4CUAJJAkABUAIoApsCXgGDAYkB8wJtAmsCagJYAlkCTwJCAVkCogJfAR4BIQINAvgC8wLvAuwC4gLTAssCzQFtAr0BrAG2AjACkgKSAo4CiQKTAokCeAKCAuoB7ACaAUcBAQFpAWQBdwFwAXYBdQFsAWoBZwEPAWUAnAEKAVoBXgFoAXcBdQFyAXIBcwFvARgBDQEUAG0BIQEuAT8BXQF6AZ0BvAHUAdQB9AF9AXUBLAEzAhwCJwIyAjwCSAJLAk0CTQLKAX0BeQE2AjUBMQIgAioCLwI8AkgCSAJNAscBiAGCAVICRQI2ATwCIQIpAjQCPQJKAk0CygGMAZEBbwJMAkYCNgFDAhwCKAIzAkACSQK/AY0BjAGLAlQCUgJFAjsBRgIaAikCMwJAAskBjgGOAbQCZwJWAk0CRQIyAUsCJwIpAjwCtQGCAYcB1QJjAmUCWQJPAkUCQQFOAiYCLwKtAYIBiwHvAmYCZQJiAl8CTwJGAkQBUgI3Aq8BhQGJAfQCbQJsAmwCaQJdAlcCSgJTAVkCswEdASACDQLzAvQC8QLuAvAC5QLYAtgC3gFxAEwA+gD9AdsCswKvAq8CqwKtAp4CowKlAqwBAgEeAjQCvQJRAl0CZQJZAmACYwJjAmMCaAEEAlcBHgKvAkMCTwJaAmECYwJcAmQCZAJrAfQC6ALaATQCoQK0ArECvALLAswCzALXAtcC2wJ2AmkCygGsAlcCYwJpAnMCfwJ/An8CigLcAoACewLeAn4BwAJNAl4CYwJxAn4CgAKFAtwCiAJ9AtoCgwJ2Ab0CTgJaAmQCcAJ+An8C0wKEAoUC5wKLAoICdAHEAlECWAJjAnUCggLZAocChgL1ApwCjAJ7AnMBywJTAloCaAJzAskChAKFAvoCpQKUAokCewJyAcgCTQJaAmcCzQKJAocC+QKmAqkClQKOAoECcgHRAl0CaALQAo4CjwMDAqsCpQKoApoCjgJ7An8B3AJuAtMCjwKSAwcCsQKmAqYCpwKbAo0CkgKUAd0AhQD3AV8A+QF9AYsBlQGRAZgBkwGVAZMBjwD/AFwA/wHbArYCsAK0ArACrAKrAq4CtgK7AXYBAwEeArkCTgJaAmACbAJpAmYCaQJwAnMBAAH0AuIBOwKnAq8CvAK4AskCxQLLAtAC0QGTAtoCcQLTAbMCYgJqAnMCewKDAocCigKOAacC2gKEAtkChgG9Al0CXgJqAnMCfwKCAocBrgLfAogC6AKSAn8BzQJWAmMCawJvAoMCfgGqAtgCjQLnApoCjAJ4Ac8CVAJcAmgCcgJ9AbAC2AKSAvMCpAKOAoUCdwHcAlMCXAJtAngBqALSAo8C7wKvApkCiAJ+AnYB1gJPAl8CagGlAt8CjwL4Aq4CqwKeAo8CggJzAd0CYAJwAaYC4gKTAvwCsgKpAqsCmgKSAoAChQHjAnIBqQLkApoC/QK3Aq4CqQKsAp0CkAKWApYB7ACWAVEBBAEGAYgBmgGcAaIBowGfAaEBngGfAWMAhQD6APwBhAGSAZsBogGgAaEBoQGkAaUBDwEGAG4B2gKxArACswK1ArMCrgKvArcCvAEOAQYB9AFPArkCtwK8AskCxgLFAscCzgLXAZoBlQLaAt4BuwJxAnMCgAKGApICkQKWApcBrQGkAtQC3gKTAcQCYQJzAngCfQKMAokCjAGyAbMC3ALoAp0ChAHLAmACYwJsAnUChAKFAbsBvALhAvACqAKRAoEB3gJiAl4CbwKAAokBugG8AtkC7wKvApsCigKJAd8CWAJjAmsCewG1AbYC3QLsArgCowKVAoQCeQHlAlQCZgJsAbYBuQLeAvUCuQKzApwClQKAAnwB5gJiAnIBtgG/AuIC9gK+Aq0CsAKhApQCigKKAfQCdgGyAbkC6QMAAsECsgKvArMCpAKSApoCnQH3AL0CHQIXApECpwKrAqwCqQKuApoCoQKeAqgCNwC4AhYChAKoAq8CsQKtArECrAKtArECtQI0AjMAsQJzApoCpAKtArMCsQKrAq8CsQK1ArQCrQKZAfQDNQNJA1YDYQNvA28DcANyA3UCzALIAsQDZwM1AzIDMgM4AzoDQgNEA0cDSQLUAtACzAN6A1gDMQMkAyMDKAM1A0YDRgNKAs0C0QLQA4cDXANLAy4DFgMWAyQDNQNDA0ICzALTAtQDmANaA04DOwMqAwoDEwMpAzkDRwLTAtAC1AOjA2EDTwNBAzcDKwMJAxsDLQM9ArwCzQLTA6ADbANcA1ADPQMzAyUDBwMWAyUCwQLRAtADpgNuA28DYgNRA0QDKgMmAxwDKALDAtMC2AOoA3IDbwNvA2MDVgM/A0QDLgMwAskC2ALbA64DeANzA3ADcANoA04DVANXAzYA1QF/AXgBOgE+Ab4BvgHDAcwBxAHGAcgByAGYAMQBbwEwATgBtwHAAcUBzgHHAcsBzgHLAY8BiwC1ASYBKwGtAbkBwwHKAcwBxwHLAcwBRwFBAS8AswH0ArECswKzArgCtAK5ArcCvgFKAUEBLgIMAYACuwLAAsMC0ALNAs4C1ALWAdcB0gHHAtoC6gHpAooCiwKWAqECrwKoAqwB2wHfAdMC2ALkAqMB8wJ9Ao4CjAKgAqcCqAHdAd8B4ALcAusCqwKeAfwCfgKDAowCmAKoAewB6wHnAt0C+QKzAqQCnQIGAoUCfgKSAp4B4QHqAeoC3AL5ArwCrwKfAqECCgJ1AoACjQHlAekB6gLiAvgCxwK5AqwCoAKPAhACgAKOAeQB6AHrAuQC/gLKAsQCuAKvApwCnwIVApIB5QHpAfAC6AL/AtACyQLDArkCqgKtArECGQDNAXABbwEoAYABOAGwAbcBwAG4AboBuQG+AYMAxAFoAS8BgQE1AbMBuQG9AcEBvgG9AcABhAGBALQBIwFxAS0BpgG3AbkBuwHBAboBwQE0ATkBMQCfATcB9AKeAqACpwKhAqACpgKqAZ4BlAGNAUQBQgK3AnACfAKAAo0CjQKNApMBSgE9ATUCDQLhAXYCrQKxAroCugLKAtEC1AHLAcwBxgLJApAC1wHeAn8ChQKJApACogKpAdUB0wHPAsgClwLaApgB7AJ4AnoCiQKVAqQB2QHaAdgCzQKgAukCnwKRAfUCcgJ9AogClQHRAdoB1QLJAqYC6wKrApoCkwH7AmsCeQKGAdQB3gHaAs4CpwL2ArkCqgKcAowCAgKAAowB2QHeAdwC0AKrAvgCwAK0AqYCmAKWAggCkAHaAdwB3gLSArQC+wLFAsACswKjAqcCpwISAMQBawFnASoBfAGHAS0BpwG0AaoBsAGvAbEBfgDEAV8BHAFzAYEBMAGkAbABrgGuAbcBtwF+AXIAtAEkAWkBeQEqAagBqwGtAbMBtgG2ATcBLAEsAJIBNQFKAfQCiAKOAogCigKSAo8BmQGLAYMBPwFEAkMCtwJvAnYCgwKBAoMChAGlAZoBiwFVAlYBRwKtAmgCdAJzAoEChgKHAT4BOwE4Ag0C4gLQAXACqAK1Aq8CvALOAtABwQHDAb8CrgKOAogCygHeAnECdwKIApICnQHTAc0ByAKwApYCjQLcApAB6AJtAngCiAKNAcMByAHIAqwCoAKUAtwCkwKHAfECbQJ3AoMBxwHSAdACsgKZAqIC6gKjApQCiAH1An4CjAHNAdIB0AKyAp4CoQL0ArECpAKXApgCBQKIAc8B1QHSArICpAKlAvcCvwKyAqcCoAKmAgkAuQFcAVwBHQF2AXwBfwEnAaQBnwGjAaMBqAFzALMBUQEiAW4BdwF/AScBogGkAacBrgGwAXUBbACuARYBYgFvAW8BKwGlAZwBngGjAawBLAEwAR8AhwE1AUgBYAH0AmwCZwJrAmsCcAGOAYIBewFCAT0CMwI9ArkCcwJ2AnsCdgJ+AaIBlAGFAVgCSgFAAjMCrQJmAm8CeQJ7AnwBmQGbAZABbgJZAlABRgKcAmACYgJ0An4CfAEyATQBNwIOAuUC0gLFAWcCpwKhArQCwALRAcABwgG7ApICjwKBAnoC0QHhAmMCdAKGApMBuwHFAb4CiwKYAo0CgwLKAoUB4wJnAnQCgwG8Ab8BvgKQApMCmwKPAtkCjgKFAesCdwKGAcABwwG/ApECmwKWAp0C7AKfAo0ClgH3AocByQHOAcgClwKfAp0CmwL5Aq8CogKgAqcCAQCoAVQBVgEWAW8BfAF5AXIBGAGTAZUBmwGgAXAApwFKARgBYgFvAXoBdQEcAZcBmgGgAaEBbAFjAKUBFwFaAWIBawFyAR0BlgGZAaABoAEdAR8BIgB5ATABQQFaAXwB9AJBAkcCSAJMAYgBewFvATwBPAIlAjACPgK1Am8CbgJwAnUBkQGMAXcBVQJBATwCJQIvAqkCaAJ0AnMCcwGPAY4BgwFrAksCQAFCAjICnAJdAmcCeAJzAY8BjAGMAZACWgJPAkcBRwKRAlcCYgJsAnsBKQEnASgCDgLgAtECwwK5AV4ClAKoArMCwAGyAa8BsAJkApIChAJ6AnACvwHYAmgCcAKBAbcBtAGzAmcCkAKPAoQCegLQAoEB5QJ3AoMBuwG5AbYCaAKNAosCjwKNAt0CjQKQAesCgwG6AcEBwAJuApICjgKRApUC7gKcAp4CowHyAKgBVQFRARMBcgF5AXoBeQF5ARsBkAGWAZkBbwCsAUkBHgFkAXUBfwF4AXsBHgGbAaABogFwAWEApgEXAV0BbAF4AXUBeQEgAZoBnQGdARwBIwEjAHkBNAFHAWABgQGnAfQCJwIrAisBiAF7AXEBPgE5AiACMAI5AkUCwQJxAncCdAGVAY4BgwFZAjgBQAImAjMCPQK3AnMCcgJ1AZABmwGOAW0CRQI9AUMCLAI3AqgCaQJ4AnEBjwGXAZMBjwJTAkkCRwFPAjECmQJfAmoCeAGaAZIBkQG5Al8CWQJRAlMBWAKOAl0CZQJwASgBLQEqAg0C7gLeAswCxAK5AWUClgKhArQBqwG2AbACRgKQApICiAJ/AncCvQHiAnUCgwGyAbgBtAJHAowCkAKXAo0ChQLNAo8B6gKEAa8BwQG+Ak0ClwKVApQClwKUAtsCngKjAfIApAFTAVIBDQFrAXoBeAF6AX8BbAEYAZUBlQFtAKYBTAEUAWQBbQF5AXgBeQFyAR8BoQGdAWYBXwCkARcBXAFjAXMBfAF5AXIBHgGWAZsBHAEdASEAeAEvAUgBXgF9AaEBwQH0AhMCEAGDAYABbgFBATsCHwItAjcCSgJOAsECcQJ3AZMBhwGCAVACNQE7AhoCJgI4Aj8CvwJxAm8BkAGTAYkBcAJCAjcBQgIlAjACOQK1AnQCbwGSAY4BkgGOAkwCRAI/AU4CKwI1AqcCbAJzAY8BlQGUAbYCYwJWAksCSgFRAjQCngJhAm8BhQGRAY8B2QJvAl4CVQJSAkwBVQKQAlYCYAElASgBKgINAuoC7ALbAtECwwK4AWsCpAK2Aa4BsgG1Ai8CjwKPApMChQKCAnQCzQHmAoIBrgG8AbcCLQKUApICjwKRAowCfwLdAqQB7wCiAU8BSwEKAWcBdAF2AXQBewFnAXEBGQGQAWgApAFJAQ0BYAFtAXgBewF3AXUBdQEaAZ0BZgFdAKEBFwFYAWoBZwF3AXUBcwF0ASEBmwERARgBGgB2ATEBQgFWAX0BoAG9AdUB9AIRAYQBeQFuAT0BMwIfAiYCOAJBAlECTwLGAnEBjwGJAYABUAI4ATgCHwIqAjgCRAJOAsQCcQGNAY0BiAFnAkECOwE+Ah0CLQIyAkECvQJwAZQBjgGSAY0CTwJEAjcBSgInAi0COgKwAngBlQGRAY0BuAJhAlECQAJCAU4CKwI8AqsCbgGFAZIBiQHWAmsCXgJVAkYCRgFPAi0CmgJfAYYBiwGMAfACaAJwAl4CUgJSAkUBWQKdAmABIQEqAScCDQL0AuoC7ALZAtACwgLEAW0CtwGyAbgBtAIrApACjQKNAo8CiAJ7AnkC3gHpAJ4BTAFJAQQBXgFwAXEBbgF4AWsBbAFyARgBYwCcAUMBDQFZAWkBdgF2AXgBdgFzAW8BGwFiAVgAnAEOAVYBXwFvAXYBeAF0AXIBcQEeAREBFwERAHMBKgE+AVkBeAGdAb0B2AHXAfQBeQF4AWsBOAE0AhkCJwIwAkACTAJFAlECwgGNAYQBeAFOAjQBOQIfAiECMwI8AkwCTgLBAYkBkAGGAWgCQgI3AUICGAImAjMCQAJIAsMBjAGOAY8BjQJNAkQCNwFDAiACJgIyAjoCvQGUAY8BjwG1Al0CTwJFAjkBUAIlAjACPAK3AYEBjgGJAdUCYwJYAlECPwI/AVECKQIxAqsBiAGOAYwB7wJlAmoCYAJPAk8COgFXAjQCqQGIAZEBjQHxAm8CZgJmAl8CWgJLAk4BXQKtASEBKAEkAg0C8ALuAusC6QLbAtIC0wLZAXAATwD9AQIBAgHcAqgCpQKhAqIClAKXApoCnwEEASQCNQI0ArwCYgJqAl0CYgJkAmQCaAJrAQgCVgEeAiwCrgJTAl4CZAJdAmICYAJnAmsBDQJVAk4BHAKeAkoCTwJaAmACYAJlAmQCbwH0AuYC1wLKATgCqQKiArUCvwLOAs4C1QLWAtECgwJ3Am0C0wG+Ak0CXwJkAnQCgQKDAoUC0wKSAn8CdQLLAnkBvwJPAlgCagJ3AoUCgALLAooCjgKCAtsCfQJyAcgCSgJbAmcCdQKFAssCggKHAogC5wKLAnoCcwHIAlACVwJqAm8CvwKGAowChwL3ApkCjQJ/AnIB0wJVAl0CbAK7AoQCiwKJAvwCpAKbApACewJ4AdgCXAJkAsQCkQKMAo0C/wKpAqYCoAKHAoMChAHdAm8CxAKSApICkgMIAqsCqAKvApsCkQKRApQB4ACLAPsBZwFfAPoBjAGTAZUBlAGVAZcBlgGVAQUAYQD/AQYB2wKoAqcCpQKjAqQCowKqAqkBdwEKASECNAK6AmMCaQJvAm4CbgJrAm0CbwFyAQ4CUwEgAqcCVAJdAmYCbQJtAmgCbwJwAQIB9ALgAs4BQAKgAq4CrQK8AsYCxwLPAtEBowLOAn8CdQLMAbwCWAJfAnACdgKFAoQCiwGoAtICkAKBAtoChAHNAlYCXwJnAnoCgAKDAaoCygKZAosC1wKHAnoBzwJTAl0CawJ3AoQBqwLJApAClQLrApEChQJyAdcCVAJfAmoCeQGrAswCkwKRAvMCoAKMAoICdgHdAk4CYgJuAawCzQKRApMC9QKtAp4CkgKHAnoB5QJhAm4BrQLUApYClwL5AqgCqwKaApACiAKFAeoCcAGrAtkCnwKaAv0CsgKtAq4CnQKTApYClwH0AJcBVQEHAWoBCgGVAZoBpAGfAZ4BoQGeAaEBZgCLAP4BZQD/AZIBnAGlAaIBqAGmAaYBpwEQAQUAcQEJAdwCqAKpAqYCowKiAqkCqQKyAX8BdwEOASQCugJbAmUCbQJ5AncCegJ6An0BEQEIAfQC3AFRAqYCrwK8ArsCxQLGAsoCyQG0AakC0wKDAtIBxgJkAmwCdQJ9ApACjAKRAbABtQLTAowC1wKNAc4CWwJnAnICfAKJAosBugG3As8CkwLnApUCiQHbAlwCZQJsAn8CigG9AbUC0AKeAuQCnAKMAn8B4AJYAmQCbQJ9AbIBuwLRApwC7QKpApUCjAJ4AecCVwJjAnABtwHAAs8CnAL0ArQCogKWAocCfQHyAmYCbgG7AcAC1wKcAvUCtgKvAqAClwKMAocB8AJ0AbwBvgLcAqkC+wK2ArICsAKmApYClwKaAf0ArQFfAV4BFgEYAaQBpgGkAbIBqgGuAbABsgFwAJ0BVQEMAQsBnQGnAasBsgGzAbUBswGxAXABYACOAQABBAGVAaMBrAGyAbABsAGwAbMBHgEVAQoAgQHcAqQCqQKmAqwCqgKnAqsCsAEeARoBDAH0AV4CtwK0ArkCwgLGAscCxwLNAboBsQGmAs4C4QHSAnECdwJ+AoYCmgKYApsBwQHBAbMC0QLdApUB2wJmAmwCcwKGApYCkAHAAcABwQLRAuICngKKAeECZgJtAnoChAKMAcwBzQHMAtIC8QKqApICiQHxAmwCZwJ0An8BxQHGAcoC0wLsArQCoAKVApAB+AJcAmICdAHEAcoBygLSAu8CvQKtApcCjwJ+AfsCbQJ3AcQBzAHKAtcC9wK+ArsCqQKfAo4CjwH6AnkBxQHMAcgC3AL4AsUCugK3AqgCnwKfAqACBADBAhsCGgIcAosCrAKpAqcCrQKeApwCoAKkAjgAvAIYAhsCfgKwAq8CrQKtAq4CrAK1ArUCOAIyALgCFQJ0AqUCpwKxAqwCqgKuArYCtwI8AjUCLQCzAmgCpgKkAqsCrAKvAq4CtQK0ArACqAKXAooB9AM0A0IDUQNbA2sDaQNuA3ECzwLRAs4CwgNnAzUDMgM1AzYDNwNGA0gDSgLOAtUC0ALLA3YDWgMtAyEDJAMqAzgDTANKAs4C0ALVAs4DhQNbA0kDLAMTAxYDKAM5A0cCzQLRAtAC1QOSA10DTgM7AysDDwMbAygDOwK7AtEC1ALSA6ADXANRA0IDMwMpAwkDGAMrAsMC0QLWAtEDoQNwA2ADTwNDAzEDLQMaAy0CwALWAtcC2gOkA3EDcgNgA1IDRQNCAy8DLwLNAtcC3ALcA6kDdAN0A3UDZwNTA1MDWgMyANwBewF5AXYBNAFPAbUBvwHBAcUBwgHFAcQBmQDYAXIBbgE6AT0BvwHBAccBygHLAcgBzAGSAYUAwgFiATQBOAG0AbwBwAHMAcwBzAHIAZEBhgF3ALYBLQExAaUBtQHDAcgByQHJAc8BPwFIAUIBMQC0AfQCmwKgAp8CpwKlAqgCqQFdAU0BQgE5Ag4BhgKyArYCugLGAsoCyQLPAdgB1gHNAcsCygLeAegCiAKNApgCoQKsArAB2QHbAdoB1ALLAuMCogH1An4ChQKSAp0CogHhAeAB3AHiAskC5AKnApYB+gJ5AoYCjwKYAeEB6AHlAeYCyQL0ArUCoAKbAgsCfQJ8ApEB5AHoAeYB5wLOAvcCvgKwAqACoAIMAn4CkQHlAeUB5AHoAs8C9ALNAr4CqwKcAqECEgKMAeIB6AHrAeoC0QL5AsoCxgK7AqoCqwKrAhcAzgF2AW0BbwE3AZUBOwGyAboBuAG5AbsBuQGKANEBZgFmAS8BigE8Aa8BrwG6AbsBvwHGAYcBfADBAV0BLgGCATsBtAGzAcEBvAG9Ab4BhQF+AXUAtgEoAXgBMQGrAbkBuAG7AcIBwQFGAToBOQE0AKYBTQH0AooCiwKJAosCkgKRAa8BpwGbAZQBWAFIAqwCbAJ2AoECiwKRApABUgFNAUQBPAINAtYBfAKnAq4CtwK7AsgCzAHRAcoBzwHDAq4CjQLRAegCdwKAAo0CmAKmAdMB0wHQAc4CrgKYAtQClwHuAnACewKIAp8B1wHbAdcB2gKuApsC4QKeApACBAJvAnsCigHXAdgB2QHYArACqQLmAqcClAKHAgECgwKHAdwB3wHgAdsCswKuAvECtQKoAp0CnwIRAo4B2QHbAd0B4AK1AqoC9QLFArcCogKkAqsCDwDGAWoBZgFmASoBiwGHATQBqwGyAbIBsAG2AYAAwgFgAV0BMAGBAYkBMgGuAbEBsgG1AbQBgAF8AMABVQEjAXUBgQE3AaoBqgGwAbEBuQF/AXUBaACwASUBbAF5AS8BqgGvAbEBsAG4ATMBOwEsAS8AlwFIAV4B9AJpAmoCbwJvAnQBpwGgAY4BigFaAUcCOAKwAmsCdwKCAoYChwGiAaYBoAGQAXECVgFNAqMCYAJpAnsCiQKIAUABQgFEATgCDQLVAssBcwKeAqoCqQK8AsoBxgHDAcUByAKQAosCggLEAeQCcQJ7AocClAHKAc4ByQHPApIClgKJAtMCjAHzAm4CewKEAcsBywHKAccCkgKfApQC1gKVAoQB9gJ1AocBzwHOAc4B0gKUAqACoALmAqYClQKXAgACjgHVAdIB1AHUApYCpQKoAvgCsAKhAqYCqQIOALoBXwFgAVoBJQGDAYYBhAEpAaQBpQGqAa0BeACyAVYBVAEiAXcBgAGAASkBpQGmAa0BrQF1AXEAtQFIASUBawF6AYEBKwGjAaQBpgGsAXUBbQFiAK4BGAFoAXIBdQEzAaMBngGnAagBKQEsAS0BJgCNAUkBXQF/AfQCSAJLAk0CTgGgAZQBigF8AVYBQQIwAjoCsQJzAnsCfwJ8AZgBmAGQAYkBbAJKAUoCMwKgAmMCcQKAAnsBnAGYAZ0BiQGMAlcCTQFNApQCXQJjAnECeQE2ATwBNwE6Ag0C1gLIAr0BbwKdAqQCrQK8AcMBwAHBAbkCbgKJAoACeALHAekCZwJ4AoQBwQHCAcEBvgJuApYCjwKCAs0CgwHuAngChgHCAcUBxAHDAm4CmwKaApIC1wKTApAB9gKDAcQBzAHDAcYCbwKaApsCoALrAqACoQKhAfkAqQFXAVYBTgEUAXkBdgF3AXsBHQGQAZQBmwFtAK0BSwFIARgBcAF9AXgBeAEfAZsBnwGiAWoBZgCmAUUBFwFnAWwBeQFyASUBmAGeAaABaQFlAVYApgEbAVsBZQFyAXkBJwGaAZcBnAEaASIBIwEiAH0BQQFfAX4BoAH0AicCKQIpAZgBiAF/AXYBVAE+AiICMgI5Aq4CeAJvAncBkQGUAYkBfAFtAjwBRwIlAjMCowJvAnQCcgGNAZcBkAGJAY4CTgJCAUsCLAKXAmECbAJ1AZIBkgGOAY8BrAJVAkoCRgFOAowCWgJeAmkBIgEqAS4BMQINAtYCyQK6ArEBaQKOAp4CqgGsAbMBtQGsAkUCkAKEAn8CcQKxAd0CbwKAAa0BtQG5AbQCSAKNApUCiQJ/AsUCkQHqAn4BtAHCAb0BuAJIApcCkgKSAowC0gKfAp8B8QCnAU8BUwFPAQ8BdQF3AXkBewF0ARoBlAGbAWwAqwFPAUkBFgFxAXwBeQF2AXgBIQGfAaEBagFfAKkBRQEWAWcBbwF+AXYBegEjAZ0BoAFpAWEBVwCkARoBWwFnAW0BegF3AScBmQGjARoBIQEiASEAfwFDAV0BeQGdAcEB9AITAhMBlQGJAX0BdAFRATsCGQIvAjgCRAK/AmoCcwGRAZsBhAF/AWwCLgFFAh8CMQJBAq4CcwJ0AZQBlQGRAY0BjAJGAjoBSgImAjcCogJqAnYBlwGWAY8BjQG0Ak4CRQJDAU0CMwKWAl8CbQGOAZEBkgGNAdcCWQJYAlACSwFaAowCXAJjASYBKQEsATICDgLpAtQCyQK9ArABbAKbAqwBsQG9AbMBuAItAo4CkQKEAn0CcQLEAegCggGvAbsBuwG9AjECkwKQApACiwJ+AtcCngHxAKUBUgFKAU0BDQF5AXMBeAF/AXUBeAEZAZQBaQCqAUgBSgETAW0BcQF0AXQBdwF5ASABmgFlAWAAowE9ARIBZQFxAXgBeAF2AXYBJQGbAWkBXgFSAKEBFAFbAWUBcgF4AXEBdwEiAZcBEwEZAR4BIQB6AUABVgF5AZsBvwHVAfQCEQGRAYwBgwFzAVIBNwIZAiwCNgJEAlICuAJzAYwBjQGHAYABZwIzAT4CFgIiAjcCPQK8AmoBjQGQAZABigGJAkACMgFEAiUCLAI/AqwCcgGUAZABkwGPAawCUQJAAj0BUgIqAjICnwJnAYkBjgGUAZIB1QJhAlECSwJFAVcCLwKZAlkBiQGUAZQBkgHuAmQCXgJVAk4CRgFcApcCXwEnASoBLAEyAg0C5ALmAtYCxALAAr0BcAKwAa8BtQG2AbQCLQKLAogCjgKEAn4CewLZAfAApQFNAUwBSQEJAXUBcgFzAXUBbwFwAXABGAFrAKABRgFFAQsBbgF2AXEBewF6AXYBdwEdAWgBWQCgAT4BEAFjAW4BcgF3AXEBdQFzASEBXgFaAVEAnwESAVUBZAFqAXMBdAFxAXcBJgESARcBHwEbAHcBPwFXAXQBmgG/AdYB1wH0AY0BggF6AXQBTAE6AhsCIgI0AkECSwJLAr8BjwGTAYQBegFsAjIBQgIYAiECNQI/AlMCuAGPAY4BkwGEAYYCQAIyAUICGgIoAjQCPwK3AY0BkAGOAZMBswJOAkICMgFOAigCLwI7ArABhQGRAY0BjAHXAl0CTwJEAj0BVQInAi4CogGHAZABjgGNAesCagJfAk0CSgJDAVkCNQKcAYgBjgGRAYwB8wJqAmUCXwJaAkwCTQFfAqgBIgEoASsBLwINAuYC5gLlAtECywLKAswBdgA9APQA+gECAQkB2wKMAooCiQJ6An4CggKGAQMBGwInAiICIQK9AlwCVwJQAlkCVgJYAlsBBQJEARoCGAIaAqsCVQJWAlYCUgJTAlUCYAEMAkECOwEUAhECngJDAkYCVwJTAlUCWQJbARcCRQI0Ai4BGQKLAjkCQQJIAlACUwJXAlsB9ALjAtcCxAK2ASsClgKiAq0CwQLNAtIC1gK1AoECdAJpAmECuwGpAksCWQJlAnMCfwKBArICgAJ8AnICaALOAnQBsQJPAlkCZgJzAoQCsgJ2AnwCegJsAtYCewJxAbsCSgJaAmYCbgKfAnkCewJ4AnsC7AKKAn8CbgHAAk0CWwJoAqgCfAJ8An0CfQL7ApgCiwKCAnIBzAJgAmoCpwKEAn8CgAJ6AvoCpwKbAokCfgKEAdICbwKoAoUCgQKDAoIDBAKrAqgClgKJApECkgHXAIQA4wFVAVUBTwD5AYUBgAGHAYEBhwGJAYgA8ABMAPwBBAENAdwClgKSAowCiwKQApIClgFmAQcBGgIjAh0CtgJcAmYCXQJfAlsCYAJmAWgBDgJEARgCFgKrAk4CVAJcAloCYQJfAmQBZQEaAj8CNwEYApsCQQJIAlQCYAJfAlwCZgEFAfQC4gLSAsABMQKlAp8CrwK5AsoCygLPAZwCvQKBAnACZgLJAb4CUAJeAmECdQKDAoIBmQK4AoYCeQJ1AskCdQG/AkkCWAJmAnICgwGVArgCgAKIAngC1QKEAnEBxAJNAlwCaAJ2AZcCsgKAAoACgALhAosCfwJyAc8CUgJZAmQBoAK5AoUChgKCAvYCmAKLAoICbwHXAmMCagGhArgChgKHAokC9gKpAp0CkgJ8AoMB2wJrAZ0CxAKLAowCiAL5AqUCqgKcAowCkwKXAecAlwFGAPMBXwFhAQkBjQGTAZMBkQGSAZIBlwFVAIsA+wFYAVYA/QGNAY8BkQGQAZQBlQGWAP4BAQBfAQUBDQHaApUClgKRApEClAKXApYBbQFkARQBHAIhArMCXQJjAnECZQJmAmgCcAFxAWkBFQJCARoCpgJNAloCXgJpAmsCZQJuAREBBgH0AtkCygFEAqACqQKqArQCxgLIAssBogGmArwCfwJ0AsYBwAJaAmICaQJ6AoICgQGhAaoCvQKGAnoC1wJ+Ac8CVgJbAm8CfQKIAaYBqwK3ApYChgLUAokCeQHNAlkCXQJsAnoBpgGsArgCjQKPAuQCkwJ/AnEB1gJSAl4CawGtAa8CuwKPAo8C8QKfApECgQJzAeECXwJtAa0BsgK+ApACkgLzAq8CogKNAoIChwHkAm4BswGuAsMCkAKWAvoCrQKvAp8CjwKWApwB6gCmAVQBUgEBAWoBEwGUAZgBoAGYAZgBoQGlAWMAmAFCAQYBYgEIAZcBnQGdAZ4BogGmAaUBYwFTAIoBAAFSAQEBkwGYAaIBowGnAagBpAEKAQ8BCgBuAQ4B2wKTApACkwKPApgCmAKaAXsBcwFlARoBJgKvAlQCXgJsAnICdAJ1AnQBJAEWAQ8B9ALTAVICoQKlArMCtALCAsQCzAGsAa8BpwK3AoICzwHJAmYCbwJzAoQCiwKSAa8BtQGxAroChALNAocB0AJlAmUCbwKCAogBugG3AbMCvAKOAt8CjwKEAeICVgJhAnQCewGwAbcBtQK2ApUC3gKWAocCewHiAlUCXAJwAbgBvQGzAr4CnALwAqcClwKRAnsB6wJhAnMBugG8AbkCugKaAu8CtAKiApYChAKKAfACdgG4AbwBvQLDAp8C9gK8AqsCpQKQApgClwH6ALQBYQFiAVoBCgEjAZoBpQGpAaYBqgGtAawBcgCsAVcBVgEQARgBogGkAacBsAG1Aa4BsAFuAWUAnAFGAQ4BDQGZAagBqwGwAbABswGyAWoBYgFVAJAA/gEHAZIBngGnAbABswGwAbQBFQEcARYBBwCBAdoCkAKOApIClAKXApYCnAEyASgBHgEVAfQBXwKwAqwCsQK8Ar0CwALGAbIBtQGtAakCuQLUAc0CcQJ3AnwChwKYApgBtQG7AboBtAK8AtMCjgHXAmICagJ5AoIClAG9AcABwgHBArsC2QKcAooB4wJkAmsCeAKCAb8BxAHGAckCvQLpAqICkgKIAfMCaQJpAnkBwwHGAcsByALBAucCrwKgApECigH6AmwCdgHHAcUBxwHGAsAC7QK+AqkCmQKOAo0B+QJzAcQBygHNAckCwgLyAsICtwKpApgCoQKdAgAAwAIOAg8CCgIRApQCpAKgAqECkgKdApoCmgIoAMECEAIPAhECjAKrAqcCpwKgAqgCpgKtAisCKAC8AgYCBQKCAqoCrQKqAqYCqwKoAqwCKAIrAiQAtwH/AnICoQKoAqwCqAKtArACrwIqAiwCIgIWALMCYgKgAqECpwKqAq0CsQKuAr0CtwKkApYCiQH0AzUDRANRA1wDbwNuA3ICyQLOAs0CwgK/A2QDNAMwAy8DMwM7A0sDTQLEAssC0ALGAsQDcwNbAzADIwMhAyoDPQNKAsYCyALHAs4CyQODA1sDRQMsAxMDGwMsAz4CtALEAscCzQLOA48DWANMAz4DKAMNAxkDKAK+As8CzgLNAtEDowNjA1EDQwMyAysDIgMuArwCywLQAs8C1QOjA3YDZwNXA0MDRAMvAy8CvwLRAtIC1ALTA6cDdQN2A2cDUgNaA1YDMwDeAXEBgAF6AYIBRAFKAbkBuQG9AcMBxwHEAY4A3wFyAXoBcwE9AUsBsQG/Ab0BxgHIAcsBmQGMANQBbgFuAT4BRQG6AcEBxQHLAcsBxwGbAYsBiADEAV4BOwE7AbUBwwHCAc4ByQHJAZsBkAGEAXcAtgE2ATwBsAG4AcYBzwHPAc0BUgFDAUgBRwE5ALMB9AKHAo8CiQKXApECkwFSAVsBVQFEAUMCDgGEAq4CqgKzAsECwAK9AdQB1AHWAc4BygKsAtAB7QKCAoUCkwKeAqsB2wHXAdgB3wHVAq8C1QKaAfICeQKIApACowHZAd4B3wHeAeMCrwLVAqMCkwH9AnkCfwKIAeAB5QHmAewB6AK4AukCrwKkApcCCgKRAokB5AHlAewB6QHsArcC6wLBArACngKmAg8CiQHfAeMB6AHpAeYCtQLrAs0CuAKlAqoCrgIZANIBdQFxAXYBcwE6AZEBPgGwAa4BuAG4AcABjgDQAXIBcAFvAToBmQFAAbYBvAG9AboBxAGKAYQAywFjAWIBLwGMAUcBsgG0Ab4BvAG/AYoBigF2AMUBXQE3AYABOwG5AbUBwgG+AccBiQGJAXwBcQCzATIBfAE4Aa4BtgG5AbwBxwFGAUkBPwFDATwApAFhAfQCbwJrAnECcgJ2AasBrgGiAZgBkAFwAUsCoQJrAnICfQKIAosBSgFPAVMBRgFBAg0CxwGAAp8CoQKyArECxQHOAc0BywHQAckCjwKIAsAB6wJ3AoMCkAKZAc0B1AHSAdIB1QKSApMCxQKOAfECbAJ7AowB0gHfAdEB1gHcApUCngLaAp0CjAIDAnkCjAHXAdoB2QHaAd8ClAKkAtkCpgKaApkCAQKJAdwB3QHiAd4B4wKdAqsC8QK4AqgCqwKoAgwAwgFsAXABbQFpATABiAGLAS8BqgGzAbMBtAGLAMYBZgFjAWUBMwGJAYcBNwGsAbEBsgG9AYQBfQDCAVsBWwE3AYUBigE8AaUBtAG1AbQBhQF+AXAAwAFSAS4BdAGCAT8BqwGwAbABtQGEAXgBcwFqALIBLgFyAX0BNwGvAbABsgG0ATsBOQE+ATUBNwCXAVkBeQH0AkoCUAJWAlEBpQGkAaABlAGMAW4BSAI2Ap8CaAJ6AoUCgAGmAaIBpAGUAY0BjwJSAU8ClAJlAm4CegKFATsBRQFHAUsBQwIMAswCugF1ApACpwKhArYBwQHMAcMBxgHKAmwChgKAArkB6AJvAncCggHPAdEBywHLAcsCcQKVAocCywKHAfQCcwKBAc4B1gHTAcoBzwJ2AqMCkwLOApQCjAH8AoYB0wHOAdIB0gHSAnUCoQKlAt0CoQKdAqICBQC1AWQBYAFhAV4BHgF7AXwBfgElAZwBnQGiAX0AtQFeAVgBWwEqAYcBfQGBATEBrwGoAaoBfQF3ALsBUwFUAScBeAGEAX8BLwGsAaUBqwF3AXUBawCzAUcBLgF1AXkBgAExAakBpAGsAXQBcgFrAWIAsgEiAWcBcQF1AToBpAGkAacBJwEvATQBNAEsAIwBXwF9AZ4B9AIuAisCMQGVAZwBkgGLAX0BbAFAAigCOAKiAm8CgAJ3AZIBlwGeAZEBiQGQAkYBSgIwApUCZgJzAnwBmQGbAZsBmwGQAbUCUgJIAU8ChQJaAmcCdQExATcBPgE8AUQCDgLMArkCsAFvApYClQKmAbQBvgHEAb8BugJQAo8CggJ4ArkB6QJvAoABsAHFAcQBwwG/Ak0CmAKPAoICvQKPAeoChgG6AcYBwwHCAckCTgKUApwCjwLIApsCmAH0AKUBVQFTAU8BTwEPAXIBcAFzAWoBFwGQAZABbgCoAVABSgFMARQBfQF1AXQBdQEiAZ4BoAFuAWoApgFLAUMBEwFtAXcBdQF0AScBlwGeAWoBaQFcAKIBOQEeAWcBbwF0AXUBKQGaAZwBZwFjAVgBTgCiAR4BXQFmAW0BcAEpAZYBnQEbAR4BIgEmASsAeQFRAXcBmAG6AfQCDgIQAYkBlQGKAYEBcwFoATwCHgIqAjkCpgJxAmkBiQGWAZIBhQGDAYUCNAFEAiMCLQKYAmECbwGMAY0BiwGMAYYBrQJHAjcBRwIkAowCXwJlAYUBkQGPAYwBkAHSAlECSQJBAVACfgJMAlYBJwEuATABMQE1AgwCyQK9Aq4CpQFrApQCogGsAbYBuAGwAbMCKgKPAoECdgJpArYB5AJ5AbABvAG9AbEBtwIqAowCiAKBAncCyAKbAekAowFYAVwBUAFLAQ8BdQFyAXkBbAFuARwBlAFvAKkBUgFOAU4BGQF7AXsBdwF4AXYBIgGbAW8BaAClAUYBSAEbAXIBegF0AXABeQEiAZsBaAFmAV8AogFAARcBYgFtAXUBdgF3ASQBmgFlAWQBXAFQAKABHwFXAWIBaQF5AX4BMAGdARYBHgEgASQBKAB6AVcBdgGSAb0B2gH0AhEBiQGQAYYBeQF4AWYBNQIXAiECLwJAArQCagGOAZABkgGIAX4BhAIqAUYCHgIrAjgCqAJuAZABlAGPAY8BjAGsAjsCNAFHAiICLAKWAmMBhgGRAZIBkgGPAdACSwJHAjsBUgImAooCVgGMAZcBkwGQAZEB8AJZAlYCSQJCAVsCjQJgASMBLQEvATEBOAIOAtoCyQLAAq0CuQFwAqQBrwHAAbgBuQG1Ai8CiQKMAoACdQJ7AscB7QCiAVABUAFNAU0BDQFwAW8BcAFuAXABcAEVAW8ApQFOAU0BSQESAXcBcwFxAXYBeQF1ASQBZQFiAKIBQgE9AREBagF0AW8BdAF8AXoBHgFjAWEBXACeATwBFAFhAWwBdQFzAXkBdwEnAWMBXQFXAU0AngEZAVgBYQFsAXEBdQF1ASkBEgEZAR0BHAEiAHYBVQFyAZcBtwHYAdcB9AGFAY0BiQF/AXIBYwE/AhACJQIwAj0CTAKzAYkBjAGRAX8BfQGCAi0BPAIXAh8CLgI9ArABjwGSAYsBjwGIAaoCPgIuAUYCIgIsAjUCogGGAYoBjQGMAY8BzgJNAjsCOgFNAiMCKgKTAYkBlQGTAYsBkAHvAlcCTQJFAj0BWAIuApwBhwGXAZIBkwGMAe8CawJYAlYCSQJOAWACmAEjAScBKAExATUCDgLbAtkCzwK+Ar8CwgF1AEMA+gD9AQoBEgEmAdwCewJ3AmECYgJpAmwBBQEVAh0CHQIcAi4CygJVAlUCUwJdAl8CXgEJAj4BHwIXAhYCIQK8Al0CWAJUAloCXwJcAQwCOgI2ARsCDQIdAqoCTwJZAlgCWAJbAl8BFQJAAjgCJwEaAhAClgJGAlACVwJXAlwCWQEzAkwCRgI8AjYBHwKWAj0CQwJTAl8CXwJjAfQC9gLkAtgCwQK5ASwClwKiArECwQLPAtICnQKAAoECdQJoAmICvwG0Ak0CWAJlAnIChQKYAngCegJ8AnICbQLLAnQBvAJLAlsCaAJ0AokCewJ+An0CfgJzAt8CgAJtAcQCTQJaAmYCjgJ+AngCgAJ+AoQC8QKLAn4CcwHJAmECbgKSAoUCgQJ+AoAChAL+ApgCkAJ/AoQB1AJsAo8ChAJ+AoICfwKDAv4CrAKcAo4CjQKTAd0AeADvAVABTQFJAVMA5wF3AXoBdQF7AX4BfQDtAD0A+QEBAQsBHwHaAnoCcQJvAm8CdgJ0AWEBAwEUAhcCFAImArYCWQJUAlUCVQJaAlcBYAEJAjUBFwIJAhwCrQJNAloCTQJVAlsCWAFWARYCMwInARMCEgKbAkICUAJUAk0CWwJVAWcBKwJCAjkCMwEaAo0COgJEAkwCUwJYAlsA8gH0AtwCywK8ArgBKgKSAp8CrAK6AskCygGIApcChAJzAmgCXgK4AasCTQJYAmMCcQKAAZAClwJ7AnwCawJmAsYCcAG8AksCWgJqAnYBjAKZAnYCdQJ4AmoC1wJ6AnEBwQJPAlYCZwGNApUCeAJ6AncCfwLlAosCfgJqAcwCXgJtAZUCnQJ+AngCegJ8AvYCmAKPAnoCgwHUAmwBlAKZAn4CfgKCAn4C+gKlAp8CiQKLApEB3gCHAT4A8gFWAVcBXgD3AYQBiAGFAYQBiAGMAVEAhgDrAUwBTQFTAP4BggGDAYMBigGPAYwA/wDxAE8BAgENASEB3AJ7AnUCdAJ1An4CeQFrAWABDAEYAhUCIgKwAlgCZQJaAl8CYAJiAWkBWAEVAjUBGAIbAqQCSAJYAl8CZAJhAmQBdAFnASwCQQI7ARsCkwJGAkgCVgJeAmICXwEEAQwB9ALdAsoCuQE5ApwCnQKqArYCxQLJAZsBlgKfAoECdQJhAskBwQJOAl0CagJ5AoIBmAGYApsCigJ6AnUCxQJ0AcUCSwJgAmsCdAGXAZ0ClwKEAoYCeQLWAoACbQHIAk8CYQJrAZwBoAKcAoYCggKHAuUCjAJ+AnYB1QJhAmwBoAGjAqECiQKKAocC8QKdApECfgKJAeMCbAGiAagCpQKJAokCiAL0Aq4CngKSApAClgHjAJoBTAFLAQMBYgFtAQQBiwGWAY0BkgGWAZMBXACaAT4A9AFaAWMBDQGLAZQBjwGYAZwBnAFYAUwAhwD8AUsBVwEFAZEBkwGRAZcBlgGcAQ4BAAEAAGEBEAEfAdsCegJ9AnsCeAKBAoABcwFnAVwBFwEdAh0CrAJYAl8CbAJpAmgCbgF/AXgBaQExAj8BJgKkAlACVAJdAmcCbwJpARABHQELAfQC0gLGAUkCmQKkAqYCsgLFAscBowGiAaUCnQJ5AnECxQHDAloCYQJsAn8CiwGtAaYBqQKjAocCegLUAoEB0gJTAmMCbgJ/AacBqQGsAqACjQKFAs0ChwJ4AdcCTwJhAm0BpgGqAbECoAKLApIC3wKUAoACdQHeAmMCaQGtAawBsgKoAo8CkgLzAqEClQKFAooB6QJ3Aa0BsQGyAqYClAKSAvECswKjApAClQKYAe8AqgFaAVgBVAEQAX0BFQGVAZ8BnQGfAZ8BnwFpAKkBSgFFAQMBbwEaAZUBnAGkAaMBqQGkAWkBWwCgAT8BBgFjAREBlAGcAaABngGjAaIBZQFWAUsAjAEEAVgBBgGPAZ0BowGmAacBpgEdAQ4BEQELAHIBHgHbAncCfAJ7AnwCgQJ8AYcBggF0AWYBLwEpAqUCWAJcAmsCdQJwAnYBJwEsAR4BFgH0As4BWAKdAqACrgKvAsACwQGrAaYBrAGpApoCfgLCAdACYwJsAnQChQKSAbEBrgGvAa8CpAKAAsgCgwHaAl0CZgJ1AoIBtQG5AboBvAKgAosC2AKLAn4B5gJaAmkCbgG6AbYBuAG5AqMCmQLaApoChgJ6AewCXwJqAbsBvgG9AbwCpQKeAusCrgKdAosCjQH0AnYBtwHCAcQBvwKoAp4C7QK7AqYClgKYApsB+gC7AVcBYQFjAWIBHAEgAZ4BpAGeAawBqgGrAWcAtQFUAVkBXAEUASEBnAGfAaQBqgGtAa0BcQFpAKsBVAFNARUBIQGcAaMBqAGxAbEBsgFyAWkBZACdAUUBEQEYAZgBqAGrAbEBrQGxAW8BZAFbAVMAjgEKARIBkgGeAawBugG1AbYBLQEfASIBGQEUAIQB2gJ4AnoCfAKAAoIChQEvATABLwEiARoB9AFiAp0CowKiAroCuwK1AbIBrwG2Aa0BoQKeAsQB0AJpAm4CgAKGApUBugG4AbYBvgG4Ap4CyAKQAdkCYQJtAngChAG5AcQBvQHDAcQCnwLSApkChQHlAl0CZgJzAcMBxwHEAcsBywKnAuICpgKSAoUB+gJyAnEBxgHKAc4BzAHPAqkC5AKsAp8CiwKbAfoCdgHDAcUByAHKAcgCqwLkAr0CrAKWApoCmwIDAMQCCgINAhICEQIgApMCoQKiApMClgKbApsCKQDDAgACAAIEAhIClgKhAqECnQKhAqcCowIqAh4AwAIAAfgCEgKDAqUCowKhAqECpAKlAisCGwIdALoB9QIKAngCogKmAqUCpgKqAqYCKQIbAhoCDQC7AgACbAKbAp4CoQKjAqoCpgI/AioCKAIfAhsAtAJkAp0CoAKoAqwCswKpArwCvgKvAp8CkAKGAfQDMwNAA00DXgNuA3QCxwLHAsYCxALAAr0DYQM0AysDLwM2AzwDTQLFAsUCvALIAsUCwAN0A1YDLgMkAyYDLAM8ArcCwALIAsUCxALCA4ADWANHAywDEAMXAywCuQLCAsYCwwLKAtEDkgNeA00DOgMsAx8DLwK+AsYCygLKAs8C0AOkA2YDVANDA0kDMAMvArwCxgLIAsoCzALTA6YDeANoA1YDVgNeAzIA5AGBAXsBgQF7AYIBQQFIAboBuwHBAcgBxwGcAN4BbgF6AX0BfwFFAU4BugG9AcEByQHMAZgBjADXAW0BcQF2AToBSwG2AbwBwgHKAcwBmgGSAYgA0gFrAWkBQAFMAbYBvAHDAcsB0AGZAZIBjQGCAMcBYAFBAUUBtQHDAckB0gHQAZ0BmAGOAYIBdwC4AToBRwGyAcABygHRAdgBUQFWAUwBTwFLAUsAtQH0AmoCbAJtAnoCeQFdAVgBYQFVAVQBUAINAYoCnAKeAqICtAK2AdMB1AHPAdsBzwHMAosCwAHrAnwCggKPApsB1QHYAdYB1wHgAd0CjgLDApMB9AJyAn0CiAHdAeAB2wHhAeMB6AKTAssCoAKMAgkCggKJAeoB5AHjAegB7AHsApoC4AKrApsCnwIVAo0B5wHmAeQB5wHqAfACngLcArsCpQKnArMCEwDVAX4BfgF2AXUBewE3AY8BQQGzAbUBwgHAAZEAzQFyAW0BcgFzAT0BjAFFAa8BtgG+Ab4BlAGPANIBawFtAW0BPwGRAUgBsQG6Ab0BwAGOAYUBhgDSAVoBYwEzAYgBTAGxAbgBuwHCAZABiQGBAXwAxAFbAToBiAFIAbUBtwHGAccBjwGKAYYBeQFxALkBPgF9AUkBsAG+AccBwwFGAUkBSwFEAUgBRQCoAX4B9AJKAlECVQJWAa4BqQGtAaQBmQGUAY0BTwKTAmMCcwJ5AokBTwFSAVIBWAFRAU4CDQK5AX4CiQKUAqICowHOAcwBzgHKAdIBzwJpAn8CsQHsAm4CegKFAdAB1QHSAdQB0wHdAnICigK3AocB9wJ9AoIB2wHdAdoB3AHeAeICeQKXAswClQKWAgAChgHeAdkB3QHbAdkB4wJ0AqUC0QKhAqMCpAIHAMcBagFpAW0BaQFpASkBhwGLATEBoQGtAa4BigDDAWYBawFoAWoBMQGHAYUBNwGvAbEBsAGHAYQAxwFjAWEBZwEzAY0BhwE7AasBsgG1AYQBfQF8AMQBXAFfATkBhgGLAUABrwG2AbUBfgGBAXYBdQC+AVABMQF/AYUBRQGnAbEBswGDAYcBfwF1AWwAtQE1AXYBgAFGAa8BuQG4ATcBPAE+AUIBOgFGAJsBfAGeAfQCLAIyAjQBowGiAagBmwGWAZYBjgFNAjACkAJqAnQCfgGoAaQBowGlAZkBlwGxAkYBUAKEAl4CagJ2AUABQAFIAUsBVgFOAg4CuAKsAXoChAKUApMBvwHIAccByQHGAcsCSgKGAnQCqQHiAnQCfQHHAcsBzgHQAdAB0QJXApACgwK4ApMB+gKCAckByQHVAdEB0gHRAlYCnAKNAroCnAKdAfwAtQFeAV0BXwFYAV4BHgF8AYABdAElAZwBnwF6ALQBYgFfAVoBYAEiAX8BewF+ASgBqgGnAXsBdgC3AVYBVAFTAScBgQGAAX4BMAGpAagBeAF5AXMAswFIAVgBLAF0AYEBfwEzAacBqAFxAW4BbAFiALABRwEtAW0BdwF5AToBqwGpAXUBcwFuAWQBYQCtAScBawFuAXkBQgGoAasBJwEuATIBNgE5AS4AigF7AZcBvAH0AhgCGAGUAZkBmwGWAYQBhAGJAUYCIAIuApgCYwJ1AZgBmQGVAZgBkgGJAawCOQFJAiQCiwJeAmgBjwGVAZcBlgGYAZABzwJLAkEBTwJ9AlICXQEyATUBOAFBAUYBUAIMAroCrAKdAXQCkAKSAbkBwgHEAcEBwQHBAjYCgQJ6AmcCugHtAnsBugHFAcQBwwHFAckCNwKOAoUCegK6ApgB9AClAVQBWQFRAU4BUwEPAW4BcwFlAWsBGwGTAW4ApAFRAVEBTwFMARYBbwF0AW8BcQEgAZwBcQFoAKYBTQFMAUsBGQF2AW8BcgF4ASQBnwFqAWUBZAClAUEBRgEaAWoBcAFwAXQBKwGgAWMBaAFfAVIAnAE8ASABXwFoAXQBdQEsAZUBaQFlAWYBXQFQAJ0BKAFgAWMBaAF3ATQBnAEZAR8BIwEjASgBLQB6AW4BkwG2AdAB9AIQAYoBiQGSAYEBeQF8AYABPAITAh8CLgKVAmkBiwGNAYkBkAGCAXwBpwIsAUUCGQInAoYCXgGEAYgBiwGLAYoBiAHJAjsCMAFKAhsCewJOAYcBjAGOAY8BjQGTAegCQQI7AjQBUgJ/AlABJQEpAS4BNgE4AUICDAK7Aq0CnwKiAW4CkwGrAbkBtAG3AbcBtwIrAoICfAJtAm0CugHkAKUBUwFWAVMBSQFPAQ0BcQF1AW0BcQF0ARgBbgCgAVEBUwFOAVEBFAFwAXIBcwF8AXoBIQFtAWcAogFMAUoBSgEUAXQBdQF0AXcBeQEpAWkBagFjAKYBQAE/ARgBbAF1AXcBeQF4ASUBaAFlAV0BWACeATgBHAFgAW0BdgF0AX4BMAFnAWYBZwFWAVAAmwErAV0BaAFxAX8BfgE1ARYBHgEfASEBJwEzAHQBbwGSAbQB0AHYAfQBhwGJAY0BgAF6AXIBfwE3AgsCGQIoAjMCoQGLAZEBjQGTAYgBfQGoAiYBQgIWAiUCMwKWAYUBiwGRAYcBjwGLAcgCNgIvAUYCFgIkAoYBigGPAZEBkgGNAZoB7AJBAjkCLwFSAi4CiQGMAZcBmAGUAZEBlgHzAk8CTgI/AkMBWAKQASYBJwEqATMBOgE+AgwCzALBAq0CrwKyAXUARAD5AP8BBgEQASgBPAHcAlUCRwJGAksCTgEJASACIAIgAhkCLQI5AsYCVwJcAlgCWwJhAQgCPAEdAg8CDwIeAisCxgJWAlYCVwJcAlsBFQI+Ai0BHAILAhMCJwK2AlkCWQJWAlQCXAEdAj4CLgIoARsCDwIXAqgCTAJbAlQCWwJZATYCUAJHAjkCMwEkAhQCngJCAlYCXwJaAl8BSwJgAk0CRQI9AjYBIQKLAjoCRQJUAl4CYQH0AvEC7wLfAtECxAK0AS8ClgKnArgCxwLVAnsCfQJ9An4CbAJrAl4CvgG1AkoCWgJlAnsCaAJ/AnsCegJ/AnUCZwLLAnQBvgJRAlwCbgJoAoACegJ+AnoChAJ5AuECgAJtAcMCXAJvAmsCgwKCAn4CfQKAAoIC8wKSAoMCfwHLAnACbwKIAoICggJ/AoYChQMDAp0CkAKPApgB2gB9AOoBUAFQAU8BWQFZAOoBeAF5AXwBfQGBAO4AQwD7AQUBDwEgAT8B2wJXAlYCVAJTAlkBYAEIARYCCwINAiQCLALIAlcCVQJVAlQCXAFkARACLAEVAgkCFQIlArQCXAJRAloCWgJaAV4BHgIxAigBGAINAh4CpgJQAlECUwJYAloBaAEwAj4CMwItAR0CFAKZAkYCUQJSAlgCXAFoAVECUgJGAkICOQEhApACPwJGAk8CXwJfAPcB9ALvAt8CzgK/ArIBLwKWAp4CrgK+AswBjwJ7AnwCfgJ1AmoCXAK3AbkCTwJcAmgCeQGOAngCfwJ3AnsCdgJpAsUCdAG/Ak0CWwJrAZECdgJ7AnoCegJ+AnsC1wJ8AmoBzAJfAmkBlQJ6AnwCeAJ3An0ChQLoAo8CfAKDAdMCbwGdAoIChgKJAoQCfQKGAvoCoAKRAo8CkwHdAHkBMwDrAU4BTQFaAVEA7AF5AXUBfQF9AYYBQQB2AO0BQQFIAU0BWADrAXkBfAF+AYABhgDzAPUAQAD/AQoBHQE5AdsCVgJRAlECVAJdAWMBWwEHARQCCAIZAikCsQJcAlUCVgJWAlkBWgFPARkCJwETAg4CGQKkAksCWAJXAlgCVQFsAWIBKwI3Ai4BGAISApUCRAJKAlYCVgJXAWcBZAFJAkMCPAIyASIChwI7AkACTQJWAlsA+QD5AfQC2gLJArsCsQExAokCmwKmAroCzQGSAYcCdwJ8AnACaAJbArYBtwJNAlgCZwJ2AYsBigJ0AnYCfgJvAmUCwAJyAbwCSAJbAmYBjQGPAnUCegJ3An0CcQLaAoICcAHJAlkCZwGUAZUCeQJ8AnwCeQKBAuQCkAJ7AoABzgJzAZoBnQJ+AoACgAKGAoQC9gKbAo4CiwKRAd0AjAE/AT4A+QFcAWYBYgD8AYsBhQGCAYoBkQFRAIgBNQD6AUwBXAFkAP4BiAGIAYoBjAGRAUoBQgCHAOkBQwFQAVcBAwGFAYcBhAGLAZQBAQEBAPgAUAEMASABOgHaAlgCWQJaAlsCWwFmAV0BVQEXARoCFAIlArECXwJfAlsCXgJkAXYBbwFiAS4CNAEiAhoCogJUAlcCYwJgAmkBcwF1AWcBSwI/AjsBJAKTAkQCTQJSAmcCaAEJAQkBDwH0AtICxgK2ATwCmAKWAqgCuALHAaABnQGaAn4CfgJxAmUCvwHHAlACWgJqAncBmQGjAZ8CfAKMAn4CcAK+AnIBygJPAlwCbgGbAZ0BpAJ9AoACigJ8AtMCgQJyAdICXwJpAZ8BpwGfAoIChQKHAokC3gKPAoACgwHdAm4BqAGoAaEChwKMAooCjQL0AqICkAKUApYB6ACeAU8BSgFFAQMBagFsAQ0BkAGVAZIBlQGWAWIAmgFDAUABBgFoAW4BDAGOAZUBmAGaAZ0BWwFZAJgBNQD8AV4BYQEPAYoBkgGVAZQBlgFdAU4BQACOAP0BUQFaAQMBjgGVAZwBmQGbAQ0BEQEBAQYAYwEdAToB2wJcAloCXAJfAmIBgAFzAW4BZAEsASQCHgKoAlsCXwJlAmoCawGAAYABcwFvAU4CRwEoApQCTwJSAmQCbwJuARcBGgEfARYB9ALOAr8BUQKPAp0CogKwAsEBqQGfAaABpAJ8AnkCcQK6Ac4CVQJhAm0CfgGmAakBrgGqAn8ChQJ8AsoCegHcAkwCYgJxAakBsQGsAagCggKOAoYC0gKGAnoB3AJhAnEBrgGvAa4BrwKEAo8CkwLcApYCgwKJAeMCbAGyAbUBtQGwAocClQKYAu0CpQKQApoCmAH1AKoBVQFUAVgBVAEPAXQBGQGUAZQBogGeAaQBaACpAVMBUwFQARQBfAEZAZgBngGhAaoBqAFnAWIApwFIAUcBBAFtAR0BkQGYAaMBogGjAWYBXAFXAJoBPQEOAWABFgGZAZ8BpAGkAaQBawFhAVMBSgCNAQUBWwETAZEBmgGiAagBqAEaAR8BEQEbARUAdQE8AdwCWQJYAmMCZAJmAYYBigGHAXcBagFKASsCmAJUAlICZAJsAnYBJAEpAS0BIgEaAfQCvwFXAo8CkgKoAqsCvQGsAbABrAGtAaYCfAJ5ArcB0AJaAmgCcwKAAasBsQGwAbMBuQJ9An4CuQKFAdgCVwJeAmwBtAG9Ab0BvAG/AoYCjQLPAosCfAHtAmMCdAG0AboBuAG5Ab0ChAKYAtACmwKBAooB7QJvAbsBvwG+AcABxQKGApwC4QKtApUCmAKXAfwAuQFnAWQBZgFjAWQBHQEgAaQBnwGiAawBrgF1ALgBUAFgAWABYwEgASQBnAGiAaoBrgGwAXMBYACxAVMBVQFUARUBKQGYAZwBowGuAa0BdAFwAWcArQFLAVABHgEjAaEBoQGpAbEBsQF2AW4BXwFeAJ8BRgEXAR0BmwGmAa4BtgG2AXQBcwFqAWEBWgCNARgBIQGWAaIBtAG+AbsBKQEwAR8BIwEmASQAhwHbAlsCWgJfAmgCaQE0ATYBNwEyASkBKQH0AWUCkgKNApoCqwKqAbcBsgGzAbMBswGrAnwCtgHQAmICcAJ7AoYBuAG6AbUBvAHEAb8CewK1AoAB3QJcAmICbwG/AcABvwHBAcIByQKCAr0CkAJ6AesCYgJvAcYByAHHAcwB0AHTAowC0wKfAo0CjQH9AnsBxQHIAcUBzAHLAdMCiwLXAq8CkgKXAqAB/wDAAgkCCgIGAggCGQIZApICogKOApQCmwKeAiUAwwH9AgICAQIRAh0CkQKhApgCoQKiAqUCHwIXAMMB8wHxAf8CDgKRAp4CmgKZApkCogIkAhkCCgC+AewB/AIKAoECoQKZApsCngKlAiACGQINAgcAvAHzAgACdQKbAp0CngKkAqYCNwIpAhkCGAIRALgB+wJoApkCngKkAqICrAI0Aj0CJwIlAhgCGAC0Al4CmQKbAqICrAKxArkCuQK3AqwClwKRAoMB9AMwAz0DTgNhA20CxgLCAsACwgK+ArsCvANhAzMDLQMzAzYDQQK1AsECvAK8Ar4CxgLEA20DVgMvAxwDIwMsArUCwwK/ArwCvQLHAsgDgwNcA0YDLwMlAzECuQLCAsICuwLEAsgC0QOVA2EDTANOAy4DMQK/AswCxwLGAsgC0ALVA6kDagNWA1YDYAMxAOMBhwGAAX8BgQGDAYMBQwFHAbcBvAHHAc4BowDhAYABfQF/AYEBhQFKAU4BuAHAAcYBzgGcAZYA3gFnAXQBfAF9AUwBUAG2Ab8BxgHOAZcBlAGGAN4BagFwAXcBQQFXAbcBvQHBAcgBngGVAYwBggDVAWoBcQFKAVQBvAHCAcMBzgGZAZ8BkgGDAYYAxQFmAUkBVAG4AcUBygHRAZsBmwGaAY4BhQF/AL0BTAFVAbgByAHVAd0BUgFSAV8BUAFZAVkBVgC4AfQCRgJRAlICWgFWAVsBXgFlAV8BWQFhAg0BjAKCAocCjQKkAdMB1AHQAdAB2QHaAdQCawKpAfECagJ1AoYB2AHiAdUB2gHdAeEB3wJuArACiQH2AnQCfQHnAegB4wHfAeMB4gHzAnMCtwKTApQCBgKCAe0B6wHiAegB7QHzAfoCfALIAp8CnQKhAhkA1AF7AXcBdwFxAXUBdgE2AZIBPwGsAaoBtAGVANYBeQF1AW8BfAF7AT0BlAFHAbQBuwHDAY4BjQDPAWsBaQFvAXcBRAGVAUQBrwG4Ab8BkAGMAYoA1QFlAW4BcQFHAZEBTwGzAbsBwgGNAYsBgwF7ANIBYwFoAT4BiwFRAbEBvAHAAY8BkAGNAYMBfgDHAWMBRwGDAVMBuwG9AckBkAGQAYsBhwF8AXsAuQFKAYUBWAG6AckBzwFBAUoBTQFSAUsBVgFbAKsBogH0Ai0CNwI9Aa4BrAGpAaoBqAGiAZwBswFPAn0CVwJiAnEBRwFRAVUBXQFiAV4BZQINAqEBhAJ2AnsCjwHDAdAByQHQAc0B1gHUAksCdAKbAe4CbwKEAcsB1QHTAdMB0gHZAeQCVAKFAqMCiwH6AnwB0QHbAdsB3AHeAeIB7AJYAowCuQKZApgCCgDCAW0BbAFtAWcBZgFlASgBiAF6ATEBoAGpAYYAxQFnAWkBZQFqAWwBLwGPAYIBOAGwAbQBhgGDAL8BYQFjAWMBbQE4AYkBigE4AaYBtQGFAYABeQC/AVwBXwFgATQBhgGJAUEBrgG2AYEBfQF8AW4AwAFWAVsBPwGFAYcBRgGpAbQBggGCAXkBeQFvAL4BVQE2AXoBggFQAbABugGDAYUBfgF8AXQBaACyAUYBdQF+AVABugHAATABOgFCAUABRgFAAU4AmgGXAbsB9AIVAhwBoQGeAZ4BogGaAZUBkgGsAUsCIwJ/Al4CaAGZAaMBnAGhAaUBmgGZAdICPwFRAnECUAJYAUABSAFHAUkBVQFgAV0CDAKhApcBewJ8AogBwAHKAccByAHLAcsB1AIyAnYCaAKgAe8CdwHCAdABzwHXAdAB0gHeAjoCggJyAq8CkgH8AKwBYQFiAV4BXAFXAV4BFAF9AXIBdgElAZwBeAC1AV0BYQFZAV0BWgEiAX0BfAF/AS8BpQF4AXYArgFWAVQBVgFaASIBfAF4AYEBLAGoAXMBdgFoAK8BUAFTAVYBKAF8AX4BfAE4Aa4BcwFxAWkBZACvAUsBUAEsAXcBfAF+ATwBqQF1AXYBawFmAWYAqwFKATcBbgF1AYcBQAGrAXYBdwFvAWkBYwFiAKwBNAFvAXQBhQFTAbUBIQEqAS4BMAE4AT0BPQCHAZYBsQHTAfQCFQGVAZUBjgGbAY8BiQGHAagBQgISAiMCfQJYAYoBlwGSAZMBlgGRAZABygIsAUkCGQJzAlABjAGWAZMBmQGZAZsBnAHsAjoCLgFPAnECRwE0ATsBOQE/AUYBTwFfAg0CpAKTApQBdgKLAbUBywHFAcMByAHJAc4CMwJ1AmoCbAKwAe4AogFUAU0BTwFRAU8BUAEOAWwBaAFnAWoBGQFqAKYBTwFSAUwBUgFRARMBcQFyAXEBdwEiAWsBagCjAUkBTAFMAUwBEgFuAWwBbwF1AR8BZgFrAV8AoQFAAUQBSwEXAW0BcAF1AXABKwFjAWQBXgFcAKEBRgFCAR4BbwFzAXIBdgExAWQBZQFgAWABVACeAT0BIwFjAWwBeQF6ATgBYwFoAWYBXQFWAVMAmwEyAV8BagFzAX8BRwETARwBGwEhAScBKwE+AHsBjgGrAcwB0wH0AYsBiQGEAY8BggF4AXwBngE5AgkCEQImAoABegGLAYgBjAGNAYUBgAHFAh0BPQIMAhQCbwGDAYsBiQGLAY0BkgGOAeECKgIhAUsCGQJzAYkBjgGOAZEBkgGRAZsB6QI9AjACMQFUAnQBKgErAS8BLgE4AUMBUgIMAqkClQKbAp0BbgBAAPUBAAEFARABLQE9AWAB2gIiAiYCJgIuAQIBHwIgAiACFQIuAjQCOALKAlUCWgJZAloBDQI6ARkCDQIQAh8CKgI4AsICVAJYAlUCWgEPAjgCLgEVAfwCDwIVAigCvwJOAlkCUwJUAR0CPQIrAhwBGwIHAhUCIgKyAlYCUQJUAlsBNgJTAkICLgIrASICDQIaAq0CTwJcAlgCWQFQAlgCUAI7AjcCLgEjAhUCmQJAAlACXQJdAW0CWQJWAkgCPwI8AjEBIgKSAjoCRwJUAl0B9AL2AuwC6QLbAtACwgK4ATIClQKoArgCxgJAAoACeQJ1AnkCcwJnAl0CvQG2Ak0CWwJlAkMCgAJ9AncCewKCAnYCagLPAnIBvwJeAmsCQwJ9An0CeQJ7AoIChQJ2AuMCgQKDAckCbwJIAoUCfQJ8An8CfwJ/AosC9AKQApQCjgHUAHoA6QFUAVEBUAFcAV0BWwDrAXUBfAF9AYUA9wBEAP8BAQEPASQBPwFdAdsCMgIwAjUCNAFpAQwBFwIMAhACIwIuAjoCxQJYAlwCVwJaAWEBEAIsARgB/QIOAhsCJgLBAlYCUwJXAlkBZgEfAjMCGwEXAggCFQIlAqwCVgJSAlgCWAFyATACPQIxAigBIAIRAhsCowJNAlsCVAJWAXABUQJQAkICOgIwASMCFAKWAkQCTwJbAlcBawFtAmECSwJJAjgCNgEmAo0CPAJKAlMCXwDyAfQC7ALqAtkCzgLDAq8BMAKUAqQCsQLBAYkCUAKBAnYCfAJxAmgCWwK1Ab4CTgJZAmkBkQJUAoACegJ5AoACeAJqAsoCcwHIAlwCbwGTAlkCewJ6AnwCdwKEAnkC2wJ/AoUB0QJqAZcCVQKDAoECfQJ/AoEChgLtApMCkQKYAd0AfwE7AOsBUwFUAWABWwFhAO0BgAF8AYABggFHAH4A7wFHAUoBVQFgAVcA7wF4AX4BfQGGAPQA9QBEAPwBCwEjATkBXgHbAi8CMgI0AjQBYgFWAQ8BFAIBAhACIAItAsACVwJUAlsCWQFhAVgBGAIcARgCDAIYAiMCsQJaAlkCVQJaAWwBaAExAjUCJgEhAhACHQKhAk0CXQJZAl0BbgFtAU0CPwI5AjIBLAIZApYCRQJTAl8CWwFrAWwBcQJOAkgCPAI1ASgCigI/AkoCWgJkAPwA/AH0AusC1gLGArkCrQE5AosCnwKuAr4BjQGRAk0CeQJ/AnACawJjArEBvAJOAl0CawGUAZcCVQJ8AnwCfQJ2AnACygJvAcYCXgJtAZoBmgJSAnwCeQKBAoACegLaAoACgQHSAm0BngGbAlYCfwJ/AoACfgKKAukCjgKPApIB1wB/ATYBNgDrAU4BWwFYAVYA9AF2AX4BgQGAAUcAfAExAOsBRQFPAV0BVwDzAX4BfQGDAYEBRAE6AHkA7AE7AUcBUQFVAPUBegF9AYUBgQDzAPUA+QBFAQsBGwE4AVYB2gIvAjICMAIzAWABUwFKARYBEwIGAhoCIAKuAlkCWwJZAlUBbgFgAVIBLAInARoCCQIYAp0CTQJcAlkCWQFsAWwBXgFFAjkCKgEgAg0CkAJDAlACWAJVAWoBagFsAWoCRAI7AjUBJgKDAj4CRgJNAlkA/wD+AP0B9ALSAsQCtwKrATgCigKYAqUCvgGOAY8BjgJPAn0CcwJmAlgCsQG+AksCWgJlAZUBkgGQAk8CfwKAAnUCaALEAmoBwwJaAmkBlQGXAZQCUgJ9An4ChQJzAtICgQKBAc8CbQGdAaABmgJWAoECgQKCAoIC5wKLApQCkAHeAJEBQwFEAT0A+AFnAWYBYgD9AYsBiwGMAZEBUwCPATsBOAD9AVwBZwFmAQMBigGGAY4BkgFTAUQAjQEtAPcBVAFbAWEBAwGIAYYBigGSAUwBRAE5AIcA7wFIAVIBWQEJAYkBhQGHAYsBAQD9AQQA9wBWAR8BOgFYAdsCPAI0AjwCNQF8AXABYgFaAS0BHwITAh8CpQJYAmICXAJgAXYBfQFuAWEBRAIwASMCGQKXAk8CVgJmAmABfAFzAXgBagFsAkICNQErAokCQAJOAlkCZgENAQ8BEgEWAfQCzAK8AqwBSQKWApQCoQKxAaABmwGeAZwCWgJ/Am0CZQK3Ac0CTgJZAmkBngGdAZsBngJYAokCfwJ0ArsCdQHSAmACaQGkAaEBowGhAloCggKKAoACzQKBAoAB2wJrAagBqAGkAaYCWwKGAoYCjgLcApMCkAKTAeYAnAFXAVABTgFNAQQBbQFuAQwBjAGRAZUBlwFhAJ8BSAFHAUUBBAFzAXABEAGQAZgBkwGdAWQBWwCaAUABPAEIAWUBbQESAYsBnAGTAZsBXAFaAU0AmQE1AP8BWwFnARcBjwGSAZcBmQFdAVcBTAE+AIsBBAFQAV0BEgGTAZoBlwGaARIBFAEUAQkBDwBlATkBWQHcAjMCOwI8Aj4BewGCAXMBbgFoAUoBKAIcApoCUQJfAmwCawF9AX4BgAF3AW8BbAI9AS0CjwJGAlMCXwJwARgBGgEiASQBHAH0ArwCrgFUAoUClgKYAqoBoQGoAaQBnwGnAlgCfAJtAq0BzgJSAlwCbgGtAasBrgGpAbICXAKCAnQCwwJ3AdsCXwJpAa0BsAGwAagBrwJjApECgQLDAn0CfQHfAmwBsgG0Aa4BswGzAmECjAKQAtECkwKMApIB6gCtAV0BXgFYAVoBYAESAXQBGAGXAaEBowGfAXAAqQFUAU8BWAFWARYBcgEZAZMBnAGhAaMBcAFnAKoBSQFWAVIBGQF4ASEBlgGbAaYBowFtAWMBXgCnAUQBSQEMAW4BJQGXAZ0BqAGjAW4BYwFcAVYAmgFBARQBZgEgAZ4BowGoAaYBbQFkAV8BWQFMAI0BEwFgARwBlgGhAa0BqgEdASIBIwEUASABIAB0AV0B2wI3AjwCQQJAAYoBjAGNAYMBeAFvAWwBLAKHAkwCVgJhAmwBJgElAS8BMQEsASwB9AKtAV4CfQKGApgCmQGrAasBqQGsAa8BqQJVAm0CpQHQAlQCYQJqAa8BsgG3AbIBtwG5AlkCfAKxAngB3QJgAmsBvgG6Ab4BvQG/Ab4CYQKGAsMChQKIAfACbwG9AbgBuwG5AbsBwwJnApUCxgKTApIClAHzALkBZwFlAV8BYwFpAWYBGgEjAZ4BpAGpAbABfQC6AV8BXQFgAWUBZwEjAS0BoAGiAagBtwF5AXYAuAFNAVcBYAFjASUBKgGbAaMBqAG2AXUBcQFfALEBSwFXAVgBFwEvAZUBngGmAa8BdQF2AWkBXwCtAVIBUQEkASsBogGlAasBtgF3AXcBbwFkAV4AowFOASgBLgGgAbEBtAG6AXQBeAF0AWcBZQFYAJIBKAEwAaIBrwG8AcIBKgExATIBKQEuATEBMgCHAdsCNQI8AkACSgEwATkBOwE9ATwBOgE7AfQBZwJ2AnsChQKWAbABtAGxAbMBvQG0AbUCVgKeAdcCVAJdAmoBtQG9AbkBtQG6AcIBxAJeAqcCdQHkAlsCZgHAAcQBwQG9Ab4BxQHVAmICrgJ+AoQB7QJrAc0BywHLAcgBygHUAd0CbALAApICjAKOAfwAwAIKAgcCBAIFAhICEwIWApACjgKRApkCnwImAMQB+gH2AfkCCAIVAhYCjQKZAp4CmwKcAiMCGwDBAe4B7AIBAggCFQKIApYCnAKTAp0CHQIMAgkAvQHiAfMCAAIHAooCkQKXApoCmAIgAhECCAH3AL0B7gH6AgQCeQKaApsClgKaAi0CJAIbAgYCBQC8AfYB/QJzApkCoQKiAqICLAIsAiMCFgIOAg8AugH9AmoCmAKfAqMCpgI0Ai8CMQIhAhoCGAIYALUCXAKZAp0CpgKvArYCuAKvArACnwKUAooCgQH0Ay0DQANPA2ICrgK/AroCuwK5ArgCuQK+A18DLQMqAzADMQKzAr8CvwK3AroCwwLCAsMDbwNWAy4DMwMzArwCwwK/AroCuwLCAswCxQOEA1kDVwMsAzQCugLHAsECugK/AsACyQLRA5QDXQNhA2IDNADjAYoBhQGDAXwBggGCAYABRgFJAa0BtwHAAZ8A4QGCAX4BegGCAYABfwFHAU4BtwHBAcYBogGbAOEBdgF3AX8BfgGGAUsBVQG6AcIBwQGWAZYBkADfAWMBdgF7AYUBVAFaAbQBvQHDAZgBlAGQAXwA2QFvAXgBdwFLAVwBtQG+AcABngGbAY8BkgGEANUBbwFxAVgBYwHEAcYBxgGdAZ0BnQGVAYsBhwDEAWwBXwFkAcQBzwHSAZ4BmQGbAZgBkwGOAYYAvAFmAWsBxQHWAd8BUwFUAV0BXgFSAWMBawFyALsB9AIsAjMCOAFXAVsBYgFkAWgBbAFyAXUCDQGNAmUCawJ1AcwB2QHWAdMB0wHeAeAB5gJKAogB7gJnAm8B0gHdAdsB1gHVAeQB6gHwAlMCjwKEAfwCcAHcAeUB5gHgAeUB6AHoAgACVwKWApACiwIJANABdQF2AW4BdAF0AXcBdQEyAYIBPgGsAbYBkwDRAXQBcAFvAXIBcQFvATkBjgFAAbABtwGNAYkAzwFwAWoBcAF0AXQBPQGOAUgBtQG/AY4BjAGFAM0BagFrAXABdAFAAYsBSgGsAbgBkQGJAYQBgQDNAWIBbQFtAUQBjgFTAbYBuQGOAYwBiwGHAX0AzQFgAWUBQQGOAVwBvAG8AY0BjgGIAYUBggF7AMIBZgFUAYoBXQHBAcMBjgGMAZABjgGHAYABeAC1AWEBkQFpAcUB1wFAAUQBSQFQAVQBUgFiAW0AqAG8AfQCFgIhAaEBrAGpAagBsgGqAaIBqAHUAVICXQJAAk4BTgFSAVIBWAFgAWgBbQF0AgwCfgGGAmkCaQHDAdMB0wHOAdQB0wHaAdwCLwJbAocB8QJmAc8B0gHUAdQB2AHcAeQB8QI9AmcCkwKCAfsAvwFwAWYBZQFpAW0BZQFnASMBeAF9ATMBpQGIAL8BawFmAWYBZwFrAWYBKAGDAYYBOgGtAYMBewC+AV4BXgFqAWsBZgExAYIBgwE+AawBgAF7AX0AuwFWAWABYAFiATUBgwGIAT0BrAF+AX4BewF0AMABWQFgAWEBOwGKAYkBSQGtAYIBgAF8AXQBcAC8AVgBWAFHAYEBiQFSAbMBgAF+AX0BegFzAXAAvAFZAUYBfgGKAWIBtQGDAYABgQF+AXsBdQFtALIBWwGGAYoBawHCATABNwE6AUMBRwFQAVABYwCZAbUB0gH0AhQBkQGfAaABnQGjAZoBmAGcAcgBRwIIAmECQwGUAaABnwGeAZ0BpwGnAaoB6wInAVMCXgJDAT4BRAFMAU0BVQFhAW8BcwIMAoIChQF+Am8ByAHNAcsByQHJAcoB1gHkAjACWQJcApEB8wCvAV4BYAFZAVsBYQFaAVoBFwFwAXEBdgErAXsAsQFcAVkBVgFZAVYBYAEaAXcBfQF+ASwBeAFyALEBVAFSAVgBWwFXASABdgF5AYABMwF1AXABbQCrAUoBUwFbAVUBKAF4AXkBegExAXkBbwFrAWkArQFQAUkBVAEsAX8BewGBATgBegFyAW4BbQFmAKoBRQFPATIBcwGDAYUBRgF0AXIBdAFpAWYBZACsAU0BRQFyAYABigFSAW0BbwFyAXEBagFoAWIApwFEAXcBgAGQAWgBIgEnASoBKgE3AT4BTwFSAIYBsAHHAdQB9AGEAY8BkgGVAZIBkAGRAY8BwwE+AfkCEAJiAYoBkgGWAZIBkwGZAZkBmwHiAhYBSQIMAl8BjQGYAZYBlAGYAZ0BpAGmAeoCIQIiAVECXwExATkBPQE7AUgBUAFkAXkCDQKDAoICiAF4AFEBAwEIARIBHQE6AVABcAGQAdoCEAITAhIBFQErAiECIwIbAiwCOgI7AjgCyAJrAmgCZwEZAkUBKgIVAhACIgIuAjcCMwLHAmgCZwJmAR8CQAIzASwCBwIXAiUCLQI2AsACYwJjAmcBKQI9AjYCIwEtAgcCEQIeAiUCxgJaAl8CYwFJAlECQgI4AikBNAIPAhsCJwK3AmMCYgJiAV8CXAJRAkECMwIvATECEwIaAqgCWQJkAmMBgAJaAl0CTwJCAj0CMAEzAhUCoQJPAl4CbgGoAl8CWwJaAkgCRwI9AjgBOgKRAkcCVwJkAfQC8gLwAu0C6wLgAtECxAK5AUgCpQK6AsgCKwKOAooChQKEAo0CfgJ6AmwCzgHGAnECeAIxAo0CjAKEAoICiQKNAoQCeQLiApcB0AJ7AjgCkQKOAosChwKIAosCkAKKAvUCowKjAdsAdwDmAVQBTgFNAV4BXAFYAVgA7AFsAXUBewDrAEMA+wEDAQ8BJgE/AV4BhAHbAg0CFAIVAWwBBgEXAhACCgIgAigCNAI0AsQCXAJdAmEBZAEWAjIBGwH+Ag4CIAIjAjkCuwJXAlYCWgFiARwCLQIiARcCAAINAhoCKAK+AlcCWgJXAW8BNgI8AjECJAEkAgoCFAIcArECVwJXAl4BbQFPAksCPwIvAiQBKAIQAhwCqAJTAmACXQFpAXACXgJFAj8CNwIvAScCFAKXAkUCUQJdAWgBmAJXAlkCTQJAAj0CNAEpAo0CPAJJAlkA9gH0AusC5gLnAtkCyAK9Aq0BOAKSAqUCtgGDAi8CgwJ+AnsCeQJ0AmsCYAK6AcACYwJsAYcCMQKEAnwCfwJ6AoQCdAJuAs0ChwHJAnIBigIzAoMCfwJ4AnoChgKIAnwC3gKSApEB0wB6ATUA5QFSAU8BXwFbAV8BVgDtAXUBcgF4AUQAfwDsAUkBRQFUAVsBXgFTAPIBegF8AYQA7QD4AEUBBAEIASUBPQFlAYQB2wIRAhECEwFjAVkBCwEVAf4CEwIgAioCOAK+AlkCXwJfAVwBVQEXAh4BFAIDAhECHwInAroCVwJUAlsBbQFoATACMwIiASECCQIWAiUCqgJZAlYCWwFqAXIBUQI8Ai4CKwEgAhICGgKgAlECXQJXAW0BaQF0AkkCOgI4AjMBLAIYApQCTAJWAmABbwFnAZsCWgJKAkQCPwI3AS4ChgI/AkgCVgD4AP0B9ALlAuMC1QLGAr4CsAE6Ao0CogKuAYsBkAIwAn8CfQJ+AnECbAJiArgBvwJdAm0BjAGTAjMCgAJ/An8ChAJ2AnECyAKEAcwCcgGNAZcCNAKDAnwCggKCAosCewLXApMClAHYAIMBNwE1AOwBTQFdAV4BWwFfAPIBeAF6AXoBRgB9AS8A7wFKAVUBYgFcAV0A9gF9AYABgwFCAT4AgADyAT8BTAFXAWEBXAD2AXsBggGFAO4A+QD8AEgBDAEfATwBXQGEAdsCDwISAhMBYQFXAUwBFQEWAgICDgIZAi8CtwJbAlYCXAFwAWgBWwEyAh8BGwILAhYCIgKsAlwCVgJcAWsBcwFkAUgCLAIlASMCEQIeAp0CUgJdAmEBbgFxAXIBbAI+AjUCLAEsAhgCiwJHAlUCXAFzAXIBbwGZAkwCSQI8AjUBLQKEAkACSwJTAPsBAgEDAfQC5ALTAsYCtgKmAUIChwKWAqkBjgGUAZcCMQKAAoYCcQJsAmQCrwHHAl8CagGMAZkBmAIvAoECfgKGAoICcgLAAoYB0AJuAZEBnQGWAjMChQJ/An0CiQKEAtQCkQKRAdcAgQE5ATIBMQDqAVwBXAFaAVsA8gF0AXUBegFGAIIBLQErAOwBVAFeAV0BXQD1AX4BhAGFAT8BPACAASIA8AFLAVMBWQFbAPsBfgF8AYMBQwE5ATAAfADvAUIBSAFQAVYA+gF5AX0BhgDxAPUA+wD8AEgBHwE6AVYBegHbAhECEwIRAW0BaAFZAVMBKwEaAgUCEwIeAqQCWQJZAlkBagFwAWIBWwFIAiQBJAIIAhYCkgJQAl4CWQFpAW0BagFcAWkCLwIkASoCDwKGAkMCUgJbAW8BbAFpAWsBjgJBAjkCKwEvAoACNgJFAlYA/QEBAQUBBAH0AsoCuwKuAqABQAJ8ApMCpQGFAZIBkwGOAi8CfgJ2AmoCXAKoAcACXQJrAY8BmwGWAZQCLgJ+An4CcgJrAr0CgAHNAmoBjgGeAZcBnQIyAoMCfQKFAnkCyAKOApEB2QCKAUUBSQFEAUMA9AFdAWIBYQD9AXoBfAGGAVUAjgFBAUEBQAD+AWgBZAFmAQUBjwGOAZABUwFPAIwBNwExAPsBXgFoAV4BCQGMAYoBjwFUAU8BRQCMASwA/QFUAVsBZAEKAYoBigGQAU8BSAE/ATQAjAD0AU0BUgFfARIBjwGIAYsA/AEHAQQBCgD/AFkBOQFWAXwB2gIWAhgCGgF1AX4BbwFjAV0BSQEmAgsCGQKaAlgCYAJdAXMBcgF5AWoBYwFrAikBIgIOAooCTgJXAmMBdQF3AXgBdQFpAZACPwI0ATACfAI+Ak4CWQEIAQ8BEwEVAR4B9ALAAqwCogFOAoQChwKYAZgBogGlAZ4BnQI1AnoCbgJjAqkBzgJVAmYBkQGiAZ4BoAGgAjoChwJ9Am8CrwJ+AdMCawGZAagBoAGiAaYCOAKFAo0CgQK/ApECjQHcAJ8BUgFQAVABSwFRAQgBagF0AQ4BhAGOAYkBYQCbAUcBTAFJAU8BCQFoAWwBEAGPAZoBmAFgAV4AnAFDAUUBRAEMAXEBbgETAZABmAGZAV8BYAFTAJgBOQE9AQwBZQFuARwBkwGTAZcBWwFcAVMBSACXATMBBwFfAWgBHwGQAZcBmQFeAV0BVQFSAUYAkAETAVUBYgEcAZcBnQGbAQkBEQESARsBEAEWAGgBWgF/AdoCGQIfAiABgQF/AYMBeAFsAWoBbQEkAhQCgwJPAlgCaAGBAYABfQGCAXsBbAGTAjMBLwJ2AkYCUAJXARcBIAEiASIBLQEoAfQCqQKcAVUCdAKDAooBnQGrAaUBowGnAaoCNgJ0AmYClQHUAlsCZAGkAbIBrgGvAbEBsAI8An8CdQKuAoIB4QJmAaABrAGtAbIBrgGzAkACjQJ9Aq0CiwKOAecApwFbAVYBXwFXAVwBWAEQAXUBGAGNAZIBlQFuAK4BXgFbAVABVwFbARYBdgEiAZkBnwGlAW0BZwCpAU8BSwFQAVoBGAF1AR8BmgGfAaMBbQFqAWQAqwFJAU4BVQEeAXgBJAGWAaIBqQFpAWYBXAFTAKYBSAFKARUBcAEuAZgBnQGkAWkBaQFpAWEBVgCcAUUBIwFoAS8BnwGhAa0BaAFuAWgBYQFdAU8AkAElAWkBMAGdAa0BsgEdASMBKAEqAR4BLwEzAHsBfQHbAhYCHgIjAYsBjQGFAZABgwF7AXsBkgEqAnMCQAJMAlkBJAErASoBMgE6ATwBPwH0ApABZAJrAnICgAGiAasBrgGxAasBuwG1AjcCXwKJAdQCVgJkAa0BtgGxAbQBugG7AcECOwJxApYCewHgAmIBsAG9AbwBuwG9AcIBzQJAAnoCpwKKAokB8gC6AWkBZwFmAWMBbQFiAWcBHwEjAZUBnAGfAXwAuAFoAWQBXQFmAWsBYwEiASoBoAGkAakBegF5ALgBXAFVAV8BaAFpASYBLQGgAagBpwF2AXIBbwC1AUcBVQFhAWMBKQEvAZwBogGpAXYBcgFwAVgAtQFNAVgBXAEhATcBnQGjAasBegF2AXcBbQFgAKoBVQFaAS8BOAGoAa0BrgF7AXcBewFwAWoBYwChAVUBNwE8AacBuAG5AXQBdAF2AXYBbgFjAWgAkgE/AUcBqQG8AcsBKwEzATcBNwExATsBQwFKAIkB2wIUAiACJQEvATsBOAFCAUgBRgFMAVgB9AFsAlkCXgJkAa4BugG6AbkBtQG+AcEBxgI0AnwB1AJKAl0BswG9Ab0BvQG7AcQBzgHWAj4ChAJxAeYCVgG5AcUBvgHAAcABywHOAecCQgKKAnwCewHuAMICDAICAf8B/QIOAg8CFAITAnkCmAKYApoCHQDEAf0B8QHuAgICDwIPAhIChwKYAp0CnAIkAhEAxQHsAecB9gICAg4CDQKFApUCmAKaAiACEgIDAMMB3gHtAfcCBQIQAoMCkwKZApcCFQILAgEB8AC/Ad0B5AH1Af8CfwKOApECkwIoAhkCEgIGAfUAwAHrAfcCAAJ5ApgClgKbAiQCJwIgAhECAgIDALwB9AH8Am4CmQKeAqICKgIpAiwCHgIMAhACCwC5AfcCZAKXAp8CqwIyAioCLAIqAhsCGgIYAhEAuwJbApYCoQKqAqACsAKuAqYCqAKaApMChAJ8AfQDLgM+A00CuwK7ArsCuQK2Ar4CvAK/ArwDWQMuAz0DQgK7AsQCuwK4ArQCtALDAsECwgNuA2UDLwNGAr8CwAK4ArgCuAK+AscCzALNA4ADagNvAy4A1gGHAX4BfgF/AX0BgAGBAYYBMAE+AbABugGiAOEBggGBAXgBgAGDAYUBgQFGAUoBvwG/AZkBnADeAXwBdwF3AYUBgQF+AU4BUAHAAcIBmwGZAZQA4QFzAX0BewGBAYABUgFYAbsBvwGTAZoBkQGMAN8BawF5AXoBgQFaAVwBuQHBAZsBlgGWAZMBfwDbAW8BfAF5AVIBagHCAcUBmwGZAZkBmQGOAYsA2AF2AXoBZAFrAc0B0gGXAZsBoAGZAZwBkQGMAMwBfgFyAXcBzwHcAZsBmgGaAZ0BmgGWAZQBlAC+AYMBiwHgAe8BQwFWAVsBYQFsAWQBdAF9AY8AugH0AhUCHQFKAVsBYQFmAW4BeQF/AYgBmwINAYwCUQJXAdEB1wHbAdkB1gHeAekB6gH+AjICbwH1AlcB1AHjAd0B3wHdAeUB7AH9Ag0COAJ6AnMCAQC/AXkBdgF0AW4BdAFyAXMBdwEnAYcBMAGwAY8A0wF1AXMBbwF1AXMBdAFvAToBjgFEAbYBjgGNANABbgFqAW8BcwF1AXQBQAGUAU0BuQGOAYkBggDSAWgBbwFxAXQBeAFHAZIBTgG3AYsBhgGFAYYA0AFsAW0BbQFwAUoBjAFPAboBjQGPAYoBjAF/AM8BaQFtAXEBUwGcAV4BvgGOAZIBhwGHAX8BggDRAWsBbgFUAZYBbQHEAYwBjQGNAYwBhgGKAYYAxQFzAW0BmAF1AdQBjQGPAYsBjgGPAY0BhwGLALgBfQGoAYcB2AEuAUMBRgFSAVUBYQFlAXYBigCqAdMB9AIXAZ8BqgGpAa0BsgGyAbQBtwG+AewBUgJJAisBPgFRAVYBWgFcAWwBewGGAZUCDQJkAYsCUAHJAdUB0AHUAdEB1QHiAe4B+gIxAkcCbwH5ALEBZQFnAWUBYgFnAWoBZQFsARMBeQF+ASYBgwDBAWIBZAFjAWUBagFoAWkBKgGGAY0BMgGHAYIAwQFiAV8BZAFjAWgBZwEwAYUBigE7AYEBfgF8AMMBWwFiAWUBZQFnATQBiAGJAT0BfAF6AXgBdAC9AVcBXgFkAWQBPgGFAY8BRgGAAYQBfQF4AW8AwAFgAVwBZgFCAZIBkgFVAYIBgQF9AXsBegF1ALwBYAFjAVUBiwGaAWIBegF9AYIBegF3AXwBeQC8AWIBWQGQAZgBeQGDAX8BfQGDAX8BegF+AX4AtwFzAZoBpQGGASABMgE6AT8BQwFQAV4BaAGEAJsBywHRAfQBlAGaAaUBoQGdAagBqQGpAbUB3gFIAfMCSAGZAaEBoQGlAaMBrAGyAbUBxAHqAgcBVAJJAS8BQgFKAUsBVAFgAWwBhwGXAg0CaQJqAX0ATQD/AQkBDwEaATABTwFrAY8BpQHcAfcB+QELASMCIAIfAhoCKgI1AjkCNwJBAs4CagJoARMCQwEjAhQCDwIgAjACNgI1AkECyAJlAmYBGwJDAjIBJwIDAhQCIQIsAjECPQLDAmICYAEtAjwCMQIkASUCBAIRAh0CJwI8AsICXwJhAUACSAI7AjACJQEqAggCFgIZAjQCwQJcAl8BWgJbAkwCQgIuAiUBLwILAhgCKQK2AmECXgGAAlcCWwJNAj8CNAIpATMCEAIlAqgCXAJlAaUCWAJUAlMCSgI7AjkCMwE1AhwCmgJVAl4BvQJlAl0CWgJjAlACSwJGAjoBLQKeAkkCVAH0AvUC8gLyAusC7QLgAtMCwALJAUwCtgLJAhMCjAKMAoEChQJ+AocCfAJ0AmwC4gHNAn8CEwKSAokChwKCAokChQKOAoYCegL3AqYB2AB4AOUBUAFQAUoBWAFYAVUBVwFKAOcBbwFvAOYAPAD4AP4BDgEiAUEBXwGDAaIB2wH2AfsBYAEAARcCEQINAhYCKgI0AjQCOwLAAl8CXQFfAQkCLwEXAf8CCgIWAikCNAIyAsACXQJaAWQBGwIoAh4BFwIAAhACHgImAjUCvwJUAlgBbQEvAjkCKwIiARkCAwIJAhcCKgK6AlECUwFqAVMCSAI+AjICIQEmAggCEwIgArMCXAJZAWgBcgJZAksCNwIrAigBJQIGAhgCoAJSAl0BaAGUAlECVgJLAj0CNgIrASkCDwKWAkgCVgFaAbkCWAJVAlYCRgI9Aj0CLgEtAo0CPgJOAPMB9ALxAvAC5QLhAtsCxgLCArMBPgKiArYBfwIWAoMCfAJ+AngChAJ0AmsCYQLQAckCcwGLAhYCgwKCAoACeAKBAoECegJuAt8ClQHOAHUBNQDiAU8BUQFWAVkBXQFeAUkA5wFzAXcBQwBzAOcBSAFFAUwBXgFbAVYBUgDwAXoBfgDsAPIAQQECAQ0BHgE8AWIBfwGlAdoB9QH5AWEBWQEKARgB/gIOAhgCKgI1AjgCvgJcAlwBXQFXARkCHgESAgICDwIeAicCMwK8AlQCWgFsAWMBLQI1Ah0BGgICAhcCHQIkArgCVQJVAXABcAFMAjcCMAIkASICDQIWAiECsAJaAlcBbgFtAXMCRAI8AisCKQEpAhMCHwKhAlUCXwFrAWgBkwJYAk0COgIxAi8BKQISApYCSQJSAV4BZQG4AlECVQJDAkMCOgIuAS0ChwI/AkMA9gD3AfQC6QLiAuQC1QLHArkCqQFBAp0CsAGGAZECFgKDAn8CeQKAAnYCbgJhAsoByAJqAYoBkwIYAoYCfgJ6AoECggJ7AmsC2wKXAdEAfQE2AS8A5AFOAVgBWQFYAVgBUgDtAXUBdQFFAHwBKgDuAUcBUgFgAV4BXAFTAPcBgQGCAUEBNgB5AOsBOwFGAVcBWQFaAVQA8wF7AYIA7wDwAPMAQgEGARoBNgFYAYEBogHbAfgB+QFfAVUBTAEWARcCAQIQAiECKgI8ArYCVgJbAWsBYgFZASoCIAEbAfwCEgIdAikCtwJYAl0BaAFuAWIBSAIvAh0BJQIHAhQCHwKnAlkCVgFqAW4BbgFrAkACLAInASwCDgIYAp8CTwJdAXEBbgFsAZkCSgI/AjYCMwExAhUCkAJKAlYBYwFqAWkBtwJaAkoCRQI3Ai8BLwKCAjsCRwD2APgA/wH0AuAC4gLPAsMCtgKmAUYCmwKjAYsBlAGRAhQCfgJ6AoICdQJtAmQCwQHKAmoBigGYAZMCGQKBAnwCgAKDAnsCbwLSApIB0wCEAToBMgEwAOgBXQFbAV4BXAFRAPEBdgF8AUYAggEwASoA7AFRAV0BYAFaAVcA+wGDAYYBPgE+AH0BJwDuAUkBVgFfAV4BVQD2AX0BgwFCAToBLwB6APABQQFPAVUBWAFYAP4BgAGDAOwA8wD0APkARwEaATgBVgF6AaMB2wH6Af0BawFmAVkBTAEnARcCAAIMAh0CLgKzAlcCWAFqAXEBZgFdAUUCHQEeAgUCFQIiAqICWwJbAW4BbgFxAWgBZgIpAiYBKwILAhsCkwJPAlsBbQFvAWwBaQGQAjYCMQIuAS4CFQKIAksCVQFkAW0BawFoAbkCSwJBAj0CMwEyAnoCNgJLAP0BAwEGAQgB9ALfAswCvgKvAp8BRAKPAqMBiAGXAZUBkQIUAnkCfgJ3AmsCYgK4AdECZAGQAZ4BmQGWAhYCggJ9AoACeQJuAssCjgHUAHwBOQE1ATYBMADjAVMBUgFUAUwA7wFzAXgBSQB+ATUBMgEvAOsBXgFcAVgBVQD2AXwBgQFGAUUAfAEqASYA7QFOAVcBVwFWAP4BfgGGAT8BPQE1AHkBIQDyAUYBTQFZAVYA/AF4AX4BRAE7ATQBKwB4APEBQAFJAVIBWAD/AYQBfgDtAPIA9wD4AQEARQEwAVMBdwGYAdwB+AH5AWQBaQFhAVYBTwFBARcCAAILAh0CmAJVAk4BZAFqAWsBXgFaAWICHwEhAgcCEgKIAk0CVgFmAWgBawFoAV8BjAIvAiYBJQIKAoACQQJPAVsBbwFqAWIBagGzAj4CLQIqASoCbwI2AkAA+wEHAQQBBgEJAfQCvgKvAqUClAFGAoAClwGHAZQBlwGRAZECEgJ6Am4CYAJVAq0BxQJjAYcBmQGUAZcBlgISAnkCfwJ1AmgCvAKJAdEAjQFFAUMBQwE+AUEA8gFjAWABWgD9AYIBgwFTAIwBPwE7AUABPQD7AWIBXAFgAQMBigGJAVQBUwCKATkBNQE8AP0BZgFkAWQBBgGQAYkBUwFKAUwAhgEvAS8A/gFZAWUBYAENAYoBiAFNAUoBRgE7AIgBKgECAVQBWQFkARQBigGJAVABUAFJAUEBOQCFAP8BSgFTAVkBHwGPAZEA9wEDAQMBCQEOAQYAVgFVAXYBngHcAgAB/AFvAW0BdwFsAWIBWwFmASACCQIUAosCTAJaAXIBcAFyAXMBaQFmAY8CJAEmAggCewJBAk8BagF0AXcBdwFzAW4BsgIzAicBLAJpAjQCPwEIAQ0BEwEZARwBKgH0Aq0CoAKNAUwCfgKEAZcBowGfAaMBpgGjAhoCcQJkAlUCqwHWAmABlAGiAaMBoQGkAagCGwKCAnECZwKuAn4B1QCaAVABTQFOAUsBTAFKAP0BagFhAQcBhgGMAV8AnAFLAUoBSgFOAU4BBAFrAWwBEAGSAZsBWgFfAJgBRQFDAUUBSQEHAWcBZwEQAY8BmgFaAVkBUwCXATwBPgFFAQ8BbgFpARcBlgGZAVgBVgFSAVEAmQE4AUEBEgFmAWkBHwGTAZsBXQFdAVcBUQFIAJcBOQEOAWEBZgErAZIBmwFdAV0BXAFUAU4BQgCKAR0BXgFiAS4BpwGnAQcBEQEOARUBFgEZASsAZQF6AZ0B3AH8AgcBfgF+AXgBgAF0AXQBbAGKASUCAgJ0Aj4CTQFuAX0BfAF8AX4BegF0AbECIgEpAmACMQI/ARUBIgEhASUBKgE5ATsB9AKVAoEBWAJsAoIBnQGtAaYBpwGrAakBtgIdAmECUwKVAdUCXgGnAbEBrwGyAbIBswG6AiUCbgJgAqUCgAHnAKgBXQFZAVQBVwFYAVkBVgEMAWQBFAGOAZcBaQCrAVkBUgFSAVcBXAFVAQ8BdAEdAZcBmwFrAWgArAFMAVEBVQFWAVcBFQF2ASYBmQGiAWcBZgFoAKQBSAFMAVQBWgEYAXEBJQGWAZkBbQFhAWEBWQClAUgBVAFTARsBeAErAZoBngFmAWYBZwFXAVcApQFEAUsBHQFwAToBnwGjAWoBawFqAWgBYgFWAJwBSAExAXQBPAGtAa8BaAFsAWYBZwFiAV0BWACMATgBdAFHAa4BvgEZAR4BHgEkAS0BJQE3AUEAeQGeAdwB/QIGAXwBiAGGAYQBjAGFAYIBiQG0ASwCTQIqAjMBKAEmAS8BMgE5AUMBSAFTAfQCbwFgAlgCXQGsAa4BrAGvAbMBtAG8AcoCGQJDAn4B1wJQAa8BtQG5AbUBugG5AcQB1gInAlICgAJwAeMArAFoAWIBagFkAWMBZwFkAWkBDQETAZgBnQF1ALoBXwFmAV8BYwFoAWcBYwEdASgBpgGlAXgBdgC8AV0BYAFhAWMBaAFkASsBLgGmAaQBdgF1AWwAvgFZAVwBYAFjAWcBKwEwAaMBrgFwAW4BawFqALcBSAFhAWQBZQE3ATgBogGlAXYBeQF1AW0BXgC2AVEBXAFhAS8BQwGmAasBdQF+AXIBcwFuAWMArgFcAWIBPwFLAbQBuQF7AX4BeAF2AW4BbQFuAKIBXwFNAVEBugHHAXYBdQF5AX4BcwFxAXABcwCSAWABagHBAdIBGgEuATABOQFAAT8BUwFfAWwAjwHbAfwCCgEfATUBPwFCAUkBVAFbAWcBeQH0AWsCQAJDAbABuAG3AbkBuwG+Ac4BzgHgAhYCYQHcAkABtgG+AcIBvgHBAcAB0AHgAe0CIAJkAmEB6wC8AfwCAwH9AfoCBQIBAgsCDgIJAnoCkwKTAh0AvwH0Ae8B7gH6AgAB/wIKAgsCgAKSApcCGgIRALwB5wHkAfECAAIDAgwCCgJ+Ao8ClgIXAgsCAgDCAdgB5gHzAf0CAwIGAn0CjwKRAhACAwH2Ae0AuwHcAecB8gH6AgsCfAKMAo8CHAIRAgcB/QHuAL0B3gHlAfQB/wJ9Ao0CkAIfAhwCEwIKAfwB7gC8Ad8B8QIGAnQClgKWAiUCHAIfAhYCDAH7Af0AuQHyAfoCbQKZAp0CKQIgAiICJQIWAg0CCwIEALoB+gJiApUCnwIiAigCKQIhAigCGgIUAhQCFAC6AlwClgKgApwCqgKnAqICpAKiApwCkAKIAn0B9AM7A00CtQK2ArcCrwKxArQCvAK5ArsCuANqAysDQAK3AroCtwKzArQCtQK8AsACwgLCA3wDawMtAL8BdAFwAXEBbQF0AWkBcwFyAWMBJAEpAasBiQDOAXABbwFtAW8BbgF3AW8BcAEzAT0BtwGNAYoAzgFqAWsBaQFsAXIBdQFxAT4BRgGxAYsBiAGGAMwBaAFoAWoBcQFxAXMBRAFLAbQBjAGHAYIBewDOAWoBZQFzAXABeQFNAVEBswGIAYUBiQGHAXwAxgFXAW8BdQF5AVQBWwG7AYcBigGHAYUBiQF2AMkBZgFrAXQBWAFpAboBjAGJAY8BiQGHAYUBhgDDAXQBeQFsAXcBzwGKAYwBigGOAYgBiQGIAY0AtQGBAX8BigHcAXcBhQGLAYkBiwGTAY0BkgGeAKsBlwGfAfUBMgFGAUsBTQFZAWgBagF8AZABqACtAfQCFwE5AU4BUgFTAV8BZwF9AYgBlgGxAg4BhQIdAb8BzQHOAc0BzwHSAdcB7wH9AhoCLwI7AfAArQFmAWYBZgFfAWgBZQFjAWUBWAESAX0BIgF9AMABaAFcAV0BZAFmAWcBYAFjASQBiQEzAX4BfQC+AV0BWgFgAWUBYwFkAWUBMQGJATkBgAF4AXYAwAFaAVwBXAFiAWUBZQEyAYgBPwGEAXoBegFxALsBVwFhAWEBYgFoATwBiQFMAX4BfgF7AXUBcgC6AV8BXAFnAWgBRgGIAUwBegF7AXwBfwF+AXcAuQFfAWcBawFWAZgBXwF5AX8BgQF/AXcBdAF5ALcBawFkAWABoQF1AX0BeQF7AX8BfwF/AX0BggC1AXkBfwGlAYkBcAF8AXsBfgF9AYIBhAGEAYsApgGRAb0BoAEfATIBOAFFAUUBUQFkAWYBiwGlAJsB0QH0AZIBogGcAaIBoAGkAa8BswHBAdkB7gFPAg8BLQFEAUIBTQFTAWABbgF/AZcBsQINAi0BeQBHAPwBAwEMARUBMgFIAWQBkAGgAbwB2wH2AQkBIgIdAhsCHQIqAi4CLwIzAj4CQALLAmgBDwJHASECGAIRAh4CJgIxAiwCOgI+AsoCYwEYAkICMgElAgQCDwIbAigCLQI2AjoCxwJgASQCOwItAiQBKAIDAgwCGQImAjsCNwLBAmABQQJHAjsCLgIhASwCBAIRAhoCOAI8AsUCYQFWAlMCSAI7Ai0CIgEqAf4CDQIhAi8CwwJcAX0CUwJUAkkCOgI0AiIBLwIBAh0CKAK0Al8BpQJVAk4CUwJEAjsCKgIoASwCFgIlAqoCWwG3AmICXAJcAlkCVwJEAjsCNQEtAhcCqgJPAdUCaQJiAl0CYAJhAlECSwI8AjgBMwKvAlYB9AL9AvUC7wLrAvEC7QLfAs0C1gLUAVECygISAo0CiQKIAoQChAKBAoYCewJ2AnoC9wHVAHEA4AFLAUoBSgFYAVMBVAFVAUUBTADnAW0A5QA6APUA/AEHASMBQQFfAYEBogG4AdsB9wFbAP0BEAIPAg0CGAIkAjECMQI0AjYCxwJfAVoBBgIpARUCAAIKAhYCJQIvAjACNgK+AlcBVwEUAigCHAESAgMCCQIaAiMCMwIrAr4CWgFkATACNgIsAiMBHQIDAg4CEgIjAjICuwJRAWMBSwJFAjwCKgIeASICBAILAh0CJgK/AlEBZQFuAlMCQQI5Ai4CIAEmAgACEwIeAq0CWgFrAY8CTgJRAkcCOAIuAiQBJQILAhUCpAJQAVsBtwJVAlACTQJGAjYCMgIrASQCEQKXAkcBXAHSAlcCVAJRAlQCRQI7AjoCMAEyApoCRgDrAfQC8QLqAugC5gLnAtQCywK+AsMBRAK0AX8CEwKEAoMCewJ6AncCfgJ1AmoCbgLhAdAAcwEwAN8BSAFJAVcBWAFYAVUBSwFMAOgBcwE8AHMA4wFDAUIBTQFVAVMBVAFVAVcA8QF7AOIA7AA9AP4BBgEeATkBXQF8AaEBuwHbAfQBWQFVAQYBEAH9AgwCGAIpAjICNAIzAsECWwFcAVMBEQIeARECBAIIAhoCJAIvAjUCvAJXAWkBYgEqAi8CIQEZAfwCDwIVAiQCMAK5AlYBZwFqAUcCNgIrAhoBHgIFAg4CGgIkAroCUAFmAWwBbwJJAjoCMAIhASYCBQIVAiECrwJaAWsBbQGWAlQCRQI4AioCJwEpAg0CFQKcAlIBXAFkAbUCUAJSAkoCOgI3AisBLQINApICRwFcAWUB0gJXAlMCUQJJAkICPAIxATEClgJMAPMA9wH0Au0C5gLkAuUC2ALJAroCuwFJArIBhQGOAhMCfgJ9AnoCeQJ+AnQCaQJtAtsB0QB5AS8BMADeAUoBWAFVAVsBXAFRAU0A7wF1AUIAdwEnAOUBRAFRAVkBWQFbAVUBWgD2AXsBOAE3AHYA5gE4AUcBTwFbAVoBVwFYAPABewDlAOwA8gBAAQQBGAE2AVcBgQGhAbkB2wH3AVsBUQFMAREBDgIAAg0CFgIlAjQCMAK2AlwBaAFhAVgBLgIiARkB/wIOAh4CJQI4ArcCVQFqAXABXwFAAiwCHAEeAgACDAIYAicCsgJUAWoBcAFsAWYCOQIvAhwBLQIKAhUCIAKpAlcBbwFuAWwBlgJHAkACKwIrAS4CEgIaApsCVAFkAWwBaAG5AlQCSAI5AjQCKwEwAg8CjgJDAWcBbAFlAdQCWAJXAkUCQQI5Ai8BOQKVAkYA+QD+APsB9ALkAt8C3gLOAsICsgK5AUcCqQGLAZIBjgIVAn4CgAJ4An0CeQJpAmsC2QHPAH4BNQExAS4A3wFZAVUBVgFfAVEBVADyAXYBRQB+AScBKQDlAVIBWgFbAV4BWwFbAPUBgQE/AT0AeQEcAOkBRQFKAVsBWwFXAVYA9QF9AT0BNgEqAHYA6gE9AUoBTQFbAVwBWQD0AXkA6QDvAPMA8QBEARkBNQFUAXoBoAG7AdsB9QFuAV8BVgFOASgBEwH8AgkCGQIpAjUCsAJcAWgBbgFeAVkBQwIZARkB/AIKAhgCJwKwAlcBawFxAWwBYwFkAisCGAEkAgUCFgIdAqICVgFtAWwBbwFrAY4COQIpAioBLQITAhQCkwJQAWYBaQFpAWcBugJIAjcCLgItATQCEgKMAkUBYwFqAWkBagHUAlgCQgI9AjUCLQE3AokCSAD9AQABAgEEAfQC2wLaAssCvQKtAq4BSgKjAYwBlwGYAZECFQJ8AnkCgAJ1AmoCZwLNAc4AegE3ATUBMwEyAOMBTwFUAVoBSwFSAO4BdwFEAIABMgEzAS0A6AFVAVoBWQFbAWAA+AGEAUYBQQB9ASYBIgDtAVEBXAFXAVkBXAD5AXwBQwE/ATsAeQEeAPABRwFSAV0BWAFZAP4BggFAAUABMgEqAHcA9AE6AUgBTQFbAVoBBAF+AO4A8gD1APkA+wBFATEBVAFyAZsBvgHaAfkBZAFsAWEBVgFKAT8BGAH8AgYCFwInAqYCUgFoAWsBbwFhAVkBZAIVASACBgIPAh0CmQJXAWYBcQFnAWoBZgGFAioCIwEmAgQCFQKHAksBXwFuAWkBagFqAa4COAItAiQBNAIKAnwCPAFqAXABbwFuAW8B1gJFAkACNAIqATQCgQJEAPcBAgEEAQkBDQH0AtACwgKxAp4CpwFHApUBjQGaAZcBkgGTAhQCeAJ6AnECZAJrArsBzwB5ATYBOAEyATEBNwDhAVUBVgFNAVEA8gF1AUAAewEyATMBLAE1AOUBVAFXAU8BVAD1AX8BTQFBAH0BKgEpAS4A7gFVAVYBVQFZAPwBfwFAAT0BOAB5ASQBKAD0AUsBWQFRAVUA/AGCAUIBPQE5AS0AdgEbAPcBSAFOAVMBVwECAYMBQQE/ATkBNAEqAHIA/QFEAUUBUAFZAQ4BfQDqAPIA9wD1AP0BBABEAU4BbwGRAbIB3AH1AWYBYwFnAV8BVQFQAVwBFwH1AgQCFAKJAk0BYwFkAWgBYwFeAVcBhwITARwB/gIOAnkCRAFbAWQBZAFiAWoBYQGsAicCGgElAf8CbQI2AWEBZAFoAWYBagFuAc4CMgIsAhoBLAJrAjkA+wEBAQMBCgEOARgB9AKzAp0CjgKUAUYChgGNAZUBmAGVAZIBkgISAnICZQJVAlkCrAHJAIcBQQE9AUABOgFAAT0A6wFeAVYBWAD8AYcBVQCNATkBQwE7AT0BQgDzAWEBXgFiAQEBiwFKAU0AiQE3ATkBOgE4APoBWwFdAWIBBgGLAU4BTgFHAIUBMAE0ATcA/AFbAVsBYwEPAYkBSAFOAUgBPwCIASoBMwECAVYBXwFkARIBiQFOAUsBRgFGAT8AgQEnAQ8BVQFZAWcBHwGQAVABUQFLAUcBOgE8AIIBCAFRAVgBZwEtAZkA9QEAAQQBCgEMARgBFQBTAXUBlAG3AdsB/wFyAXABbgF1AWgBZwFiAYYBIwH4AgwCdQJCAWQBdAFyAWYBdgFrAWkBrQISAScB/gJiAjMBbAF0AXIBcwFxAXoBdwHLAh4CGgEvAmACNQEJARQBEAEaAR0BJgE1AfQCkwKFAokBTgJ9AZcBoAGiAaQBpQGkAawCGgJfAlUCTgKkAdkAmQFLAU4BSQFHAU0BSAFLAP8BWwFfAQgBigFeAJMBSwFKAUUBSgFLAUcA/wFpAWsBEwGTAV8BWwCbAUMBPwFKAUcBSQEHAWgBagEVAZEBWgFWAVQAkgE5AUIBRAFJAQsBYwFmARgBjgFhAVgBUQFJAJYBPQFAAUIBEQFpAWsBJAGOAV8BVgFbAVIBTwCRATgBQgEaAWYBcwEoAZIBWAFZAVcBUwFLAUkAlAE9ARwBZQFuATsBmgFWAVkBWAFZAVIBTQFJAIcBMQFjAXIBRAGrAQUBDQEOARYBGwElASUBOgBkAZUBuQHcAf4BbwF6AXcBdgF9AXkBcwF3AaoBJgHqAlMCJAF0AX0BegF7AX0BiAGEAYcBzwIIAS0CUgInARsBHQEfASYBKwE3AUsBVQH0Am8CcwFZAlwBoQGmAasBqwGlAa8BuQHBAhsCRQJMAoIB1wCbAVoBWAFXAVABWAFSAVYBWgD+AWgBBQGUAWgAqwFWAVQBUgFXAVQBVQFYARMBewEfAZkBZwFmAKkBVAFUAVQBUwFbAVoBFAFyAR0BngFtAWgBXgCpAUwBUAFRAVsBWwEbAXQBJgGdAWUBYAFcAVoApAFMAUsBUwFVASMBdwEoAZwBagFsAWYBZAFaAKUBSgFOAVQBKwF/ATsBnwFpAW4BagFjAV0BXQClAU0BUwEwAYEBSQGpAWUBbAFtAWgBZQFnAVsAnAFVAUYBgAFVAbgBZwFpAWgBZwFnAWsBYwFqAI8BWQGNAWYBxwEGARsBIAEoASsBOQE6AVIBZAB6AbYB2wH+AXwBhwGHAYQBhgGTAZMBlQGlAdIBMAI3Ag8BEgEqAS4BNgE8AUoBWgFjAXkB9AJVAWcCPgGlAa8BtAGzAbIBswG/AcwB5AIbAjECXgHeAJIBVAFWAVkBVgFQAVMBVwFbAUUA/QEDAY4BZQClAU0BTwFTAVgBUgFWAVEBVwEQARcBlgFoAWIApQFQAU4BTQFRAVMBUgFVARMBGwGVAWkBYwFeAKQBSQFSAVABUgFYAVkBGwEkAZoBZAFjAWEBWQCmAUcBSQFRAVgBVwEkASsBmwFkAWUBYQFeAVsApAFCAU8BXAFZATIBLwGaAWQBZQFfAV4BWwFNAJ8BSQFSAVUBLgFGAaUBaQFlAWgBZQFfAV4BWwCaAVQBXQFIAVQBtwFlAWMBZwFnAWgBawFgAWQAkQFkAWEBYwHHAVEBYQFkAWIBaAFqAWYBbQF3AIMBeQGEAeEBBgEYAR4BJwEwATsBPQFTAWoBhwB+AdoB+gEUASUBLQEvAToBQQFUAV8BdQGTAfQBWAIHAaABqwGyAbMBtQG2AbsBzQHfAf0CGAIkAdoAtgH7AfMB9AH2AgAB9gH9AgECAwIAAnACigIaALoB7wHsAe0B8gH8AfkB+AIFAgYCgQKNAhMCBwC7AeIB4AHqAfMB+AH+AgICAgJ7Ao8CDAIFAfQAugHTAeAB4wHxAf0B/gICAnsCiwILAf4B+AHuALkB1gHXAegB8gH+AgACeQKJAhYCDQIEAfgB7wC5AdkB5wHsAf4CBAJ4AogCFAIUAgUB/wH0Ae4AuAHTAegB7gH7AnoCkAIdAhUCGgILAgUB+wHrALoB4gHuAfkCcgKUAiACFwIWAhkCDQIJAfgB+wC8AewB9wJqApcCGAIfAhwCGAIbAhUCBwIIAgIAuQHzAl0ClAIbAh8CIAIeAhcCIwISAhMCEQIMAL0CYwKZApcCpAKfAqECngKhAqICmgKPAoECkAH0A0gCrQKwArMCqwKsArACrwK8AroCuwK6A3wDIgClAWYBYAFhAWUBZwFiAVwBZgFSAVUBEwEZAX8AuAFhAWMBYAFlAV8BXgFnAWIBYQEoATIBewF4ALgBWQFdAVsBXwFiAWMBYAFiASsBNQF6AXYBcgC4AVYBWAFgAWEBZQFkAWYBMQE7AXkBeAF0AW8AuQFcAVoBWgFlAWoBZgE4AUABeQF9AXoBcgF1ALkBXwFfAWIBYgFvAUQBUAF8AXwBfAFxAXIBcgC5AVsBYgFmAW0BVQFYAXgBeQF1AXoBfAF5AW0AtwFmAWwBcQFdAXQBeQF+AXsBewF9AXwBeQF9ALQBeAGCAXkBiQFtAXYBdgF6AX4BfQGCAYYBkgCiAZEBmQGfAWkBdQF+AX4BhAGFAYgBigGYAagAqAHLAdkBHgE0ATYBPwFFAVMBYgFrAYwBqgHhAKAB9AEpATsBPwFGAUsBXQFsAYMBlAGzAe0CDQF2AEYA9AD+AQsBEAEuAUcBYwGKAZ4BuQG9AdsA/wEhAiQCIAIaAicCMwIvAi0CQAI9AkICygEJAj8BHgIVAg0CGwIpAiwCJwI6AjsCPALLARUCPwI2AR8CAwIOAhkCHwIuAjkCOgI2AscBJAI9AiwCIwEbAgYCDwITAiQCNAI5AjkCxgFAAksCNQIwAiQBKQIJAgwCFQIuAjgCOQLFAVkCVAJGAjsCMQIlASwCAQIKAh8CLgI9AsIBeQJLAk4CQAI2Ai0CIwEpAfsCFwImAjMCvgGgAlICSgJLAkACNgIrAhsBLgIMAhkCIAK3AbACXgJbAlcCWgJPAkgCOAIvASkCFAIfArkB1QJdAl4CXgJYAmECVAJBAjkCMgExAikCuwHWAmkCYwJdAlwCWwJbAlECRwJDAkgBOwK/AfQC/AL1AvAC7gLyAu8C7QLcAuQC6ALsAVQAagDVAUUBRwFIAVEBUQFRAVMBRAFGAUsA5QDdADgA8AD5AQMBHAE+AVoBfAGbAbcBvAHbAVwA/AEPAg0CBwIaAiUCJwIqAi4CMQIyAsgBWQEEAi8BEAH/AgwCEwIaAicCJwIsAjACwAFWAQ8CKgIcARECAAINAhYCHAImAi0CMwLAAWMBJAI6AiwCHgEXAgUCCwIaAiICLAIoAsEBZAFPAkACNwImAiMBIgICAg8CHwIjAi8CwQFgAWYCSwJAAjMCKQIgARwB/QINAhgCHQK9AWMBkwJNAkgCQAI0AjACHQEhAgMCFgIcAq8BVwG1AlECSwJKAkACPAIrAiMBKAIFAhMCpgFWAdICVQJQAkoCTwJHAjcCMwIqAS4CGwKkAVsB1QJaAlYCUQJOAlMCSAJDAjkCPQE4Aq0A7AH0AvQC8QLqAucC5gLqAtoCzwLTAtYBSQBxASoA2AFFAUUBVwFSAVIBVQFFAUoBSgDnATUAbwDcAT4BPgFPAVEBUgFXAVIBUQFSAO0A3wDoADkA9gEBARkBOQFUAXoBnwG4AbgB2wFWAU4A/wENAfgCCgIWAiACKAIqAjECNALEAVYBSQEMAiABDAH9AgsCFAIlAisCLQIyAr0BZwFdASUCKwIbARYCAAIHAhYCJQIrAjACwAFqAWoBQwI2AiQCIAEgAgQCCwITAiQCNAK+AWYBYgFqAkcCMwIqAiMBIQIGAg0CGQIjArkBawFlAZICTgJEAjoCLQIdAScCAgIUAh0CqwFaAWUBtAJSAlECSAI7AiwCKgEwAgsCGAKeAV8BZQHQAlUCTwJUAkUCOQIvAiYBMQIaAqYBXwFkAdUCWgJQAlECUAJGAj0CNAI2ATUCqQDzAPQB9ALsAukC5gLhAuMC1wLKAsoCzgFJAHIBLAElAN0BRwFTAVQBUwFcAU4BTgFTAOoBPwBzASUA4QFBAU8BWQFTAVkBUwFVAVgA8QE2ATAAbwDhATMBRAFSAVQBWAFVAVcBVgD1AOEA6wDoADoBAAEWATYBUQF6AZsBuwG9AdsBVgFOAT8BDAEMAf8CCAIUAiICMAIrAjQCuQFlAVwBWAElAh8BFAH/AgoCFgImAjcCLwK3AWYBagFfAUICKQIeAR4CAQINAhcCJQIxArUBZgFfAWgBYQI4AigCHAEiAgACDAIRAiUCugFsAWcBaQGSAkICNQIvAiABLgIIAhQCHwKtAV0BaQFlAbUCSwJGAjYCLQIoATACCQIUAp0BYQFmAWIBzwJSAlECRwI2AjMCKgE1AhsCmwFgAWUBagHTAlcCVgJTAkQCPgI1AjUBPQKiAPgA9wD8AfQC4wLiAuAC3ALSAsECwwLLAUwAeAEwASwBLgDdAVcBUwFUAVkBUAFQAVUA7gE+AHcBJgEiAOEBUAFYAVUBWAFcAVwBXQDxATwBNwB2AR8A6AFCAVEBWAFYAVQBWAFWAPQBNwExAScAcADpATQBRAFJAVYBUQFUAVgA+ADgAOsA7QDwAD8BGAEzAVIBeQGgAbcBuwHbAWYBYAFSAUkBJgEVAgMCBQIWAh8CMQIzArMBaQFmAV8BVAFAAiABHAH+Ag8CFgIjAjECrgFpAWQBaAFcAWECIwIdASAB+wIKAhgCIAKwAWkBawFpAWcBjQI1Ai0CHgEpAgMCEAIfAqABYQFwAWwBYwG2AkICOgIrAigBMAILAhcClAFmAWgBagFnAdICUgJEAjYCLgInATQCGQKVAWQBbQFrAWoB0wJVAlYCQwJDAjYCMwE8Ap0A+gD+AP8BBQH0AtsC2ALaAs0CuwLDAsIBTwB6ATEBMwExASsA3wFWAVIBVwFNAVIBTgDpAUMAfQEuAS4BLwDlAVUBVwFWAVwBWgFYAPgBQwFAAHUBJAEgAOkBTQFWAVMBXAFdAVoA9wFCAToBNgB1ARgA7QFDAUwBWgFTAVYBWwD6AT0BNgEyASMAdADvAT4BQwFOAVEBVQFdAQIA5ADvAO4A8gD2AEEBMwFLAXMBmgG+AbkB2gFlAWoBYAFWAUoBPQEVAfgCBQIXAh8CMQKqAWIBawFiAV4BUwFiAhUBGAH1AgYCFgIfAqUBaQFpAWgBZwFiAYcCJQIUASgCAAIMAh4CmAFgAW4BZgFpAWUBsAI1AiYCHQEqAgMCEwKIAV8BcAFuAWwBZgHWAkACNQIvAigBMwIWAogBZAFuAW4BaAFsAdQCVgJEAjkCNQIyATgCiwD2AQEBAgEGAQ0B9ALPAs8CvgKuArQCtgFIAHoBNgE4ATQBMAEzAOQBUAFTAU0BUQFUAPABRgB8ATEBLgEuATIA6wFRAVQBVgFXAVoA9gFCAUAAfAEtAScBLwDoAVUBWQFSAVwBXwD6AUIBPwE5AHgBHwEjAPEBTQFXAVQBWQFbAP0BQAE7ATYBLgB0AR4A8wFAAU0BVgFZAWABAgE9AUMBOwEsASYAcwD9AT0BRwFUAVwBXwENAOoA7gD0APcA+wEEAEIBSgF0AZIBsQG9AdwBYwFiAWQBWwFQAUwBXQETAe4B/AIKAhoClgFpAWcBagFmAWIBXAGBAgsBHwIAAgQCEgKEAV0BYgFmAWsBawFjAagCGwIaASEB/AIGAnwBYwFnAWcBaAFrAW8BzQIuAiQCGAEsAhECegFnAXEBbwFwAW8BcAHWAjwCLwIpAi0BOQJ8APkBAgEHAQgBEAEZAfQCvAKyAqACogKlAUkAeAEzAS0BMwEwATABLgDcAVUBSAFKAU0A7QFFAHUBMgEzATABMQE0AOEBUQFOAVcBWAD3AUIBPwB1AScBKQEuASoA6gFOAU8BTwFVAPgBQQE8ATUAeAElASgBKQDvAVMBUQFXAVkA/wE5AToBOAExAHMBIgEjAPABSAFWAVgBWgEDAUABPgE5AT0BMQByARsA9wFDAUwBYAFcAQ8BPAFDAToBNQEtASsAcAEMAUMBTAFaAWYBHADlAO4A8gD0APwBBwERAD8BbAGQAa4BtQHcAV0BYgFeAWYBWgFYAVMBfAEXAegB9wIEAnABWAFgAV0BXwFjAVsBWwGoAgEBHAHrAfoCYQFaAWcBZgFlAWgBaQFmAcMCEgIIASgB+QJpAWIBagFqAWsBaAFuAXYBzgInAhwCGwEsAmUA+wD+AQUBDAEOARkBLAH0ApUCjAKLAowBQwCGAUUBPgE+AT8BQAE5AToA7AFQAVMBVAD7AVAAgwE8ATgBOAE7AT4BOgDvAVsBWwFgAQEBUQFLAIQBNgE0ATsBOgE/APYBXAFcAV8BAwFNAUsBRACAAS8BNQE2ATkA+gFUAVwBYAENAU0BSwFCAUAAgQEtATEBOAD9AVwBXQFkARcBUgFMAUkBQwE/AIEBMAEwAQsBWQFnAWgBGQFMAUkBSgFFAUIBPACAAS0BFwFbAWMBbAEnAUsBSAFNAUYBQwE7ATkAfgEgAVwBZgFzAT8A9AD7AP8BAQEMARcBIgEoAFQBkQGrAbgB2wFeAWwBbQFkAW8BZwFrAW4BpgEbAdsB7gJRAWIBbgFtAW0BbwFzAXcBegHBAfsBJgHrAlEBbQFzAXQBbwFzAXgBgwGJAc0CBAIJAS4CVAEMAQ4BEQEWARsBKgE2AVMB9AJxAnMCdgFSAIoBSwFMAUkBTgFKAUkBRgFIAOsBXAFfAPwBWwCYAUkBTAFEAUwBSwFLAUMBAwFnAWwBDgFZAVwAmAFEAUEBRwFJAUsBSgEJAWcBcAEQAVsBWAFWAJoBPgFFAUEBRgFMAQ0BaQFtARYBVwFVAVIBSQCVAT4BRgFHAUgBFgFqAWoBHQFfAVwBWgFYAVAAlgFDAUABRwEgAXEBcwEqAVoBXwFWAVgBUgFSAJIBQwFHAS4BbgF7ATsBWAFXAVoBWAFYAVMBVgCSAUkBLwF2AX4BUwFYAVUBWgFdAVUBVQFVAVYAiwFSAYEBjwFlAPMBCgERARQBIAEpATsBQQFeAGgBsAG3AdsBbgF6AX0BeQF6AYABgQGIAZYByAEmAc4CNwFyAX4BfwF/AX4BhAGTAZMBowHNAesBLQI1AQQBGQEeAScBLQE6AUgBXAF3AfQCVAJXAVkAhgFKAUcBSQFEAUgBSgFJAUoBOADqAV4A9wFXAJMBSQFCAUQBQwFIAUMBSgFCAP4BagEKAVkBWgCTAUMBQwFFAUgBRgFIAUYBBgFmARABVgFSAU4AlAE7AUEBSAFIAUoBSgELAW8BFQFXAVIBUQFJAJUBPQFEAUIBRwFJAREBbQEeAVcBVQFSAVABRwCOAT4BPQFLAU0BIAFtASkBWwFdAVgBUwFQAU4AkgFBAUUBTAEvAXsBOQFZAVkBXQFUAU4BUAFRAJIBSwFPATkBfAFNAVQBVwFZAVQBWAFcAVYBXACHAVgBVQGMAWYBRQFWAVUBVwFaAVcBXQFeAWwAfgFuAaEBfwDxAQkBDQEWAR0BLAE6AUMBaAGEAGwBuQHbAW4BegF7AX0BgQF9AY8BmgGcAbcB0AEuAfsBAAEVAR4BJQElATQBRgFdAXUBlAH0AhIBVQB/AUYBRQFCAUIBRAFAAUEBSAE4ATIA6wDvAVIAjwFDAUMBPgFGAUkBQAFAAUUBRAD+AQUBTwFQAJEBQAFAAUMBQQFBAUIBRAFBAP4BCgFUAVIBSwCRATcBQQFCAUEBRQFFAUQBCgEPAVQBUQFOAUgAjgE9AT0BPwFHAUkBSgEPARwBVgFRAUwBUQFLAJIBOgFAAUYBUAFNASEBJgFVAVcBUgFQAU0BTQCKATUBRQFLAVABLgE2AVABVQFXAVIBUAFRAUgAiAFHAVABVgE4AUsBWgFRAVYBWAFVAVYBVAFaAIYBXQFmAVcBYAFFAVcBVAFXAVcBWwFaAV8BbQB5AXUBeQF+AUIBUwFRAVYBWgFfAWoBaAF4AYcAfQGtAbsA8QEHAQ0BDwEbAS0BPAFEAWYBigHEAGwB2wD8ARIBGgEdASYBMgFDAVwBcgGRAdYB9AFNALEB9gHyAewB5gH4AfMB8wH1AfEB+AH1AmsCEAC2AeoB5wHkAeoB+QHvAfcB9wH7AfwCdgILAf8AsgHaAdIB5QHtAe4B9QH3AfwB/AJ3AgsB/AHxALIBzwHWAd8B5wH2AfYB+QH/AngCCAH0AesB5AC2AdEB2QHaAe8B9wH3AfgCcgIRAgEB/gHuAegAtQHPAdwB4wH0Af8B+wJzAgsCCgIFAfkB7gHlALYB1QHhAewB9AIEAnMCDgILAgsCAAHzAewB6QC3AdAB3gHsAfoCegIUAgsCEQIKAgIB/gH1AewAtAHfAe0B9QJwAg0CFQIQAhECDwIMAgEB9gH6ALoB5wHvAmsCEAIaAhcCFQIUAhcCEwIBAgUB/QC7AfgCbwITAhgCFwIZAhoCGQIfAg8CEQIKAg4AxgJyApQCnwKfApwCmgKgAp8CpQKWAo8CkwKbAfQ=";
+const TICKETS=/*__TICKETS__*/{"WPL메인": 250000, "WPL딥스택": 80000, "HPT": 220000, "피망": 92700, "APL메인": 500000, "APL": 50000, "슈퍼컵": 100000};
+(new Function(ENGINE_SRC))();
+function decodeE(b64){const bin=atob(b64);const E=[];for(let i=0;i<169;i++){const row=new Float64Array(169);for(let j=0;j<169;j++){const p=(i*169+j)*2;row[j]=((bin.charCodeAt(p)<<8)|bin.charCodeAt(p+1))/1000;}E.push(row);}return E;}
+function doSafe(q){const out={heroP:{},safe:{}};
+  // 안정권: '티켓 수 + 10명' 남았을 때 다른 사람이 똑같이 나눠 가졌다고 보고 티켓 확률 90%/95%가 되는 칩 (총칩 기준)
+  for(const t of q.targets){const ref=Math.min(q.players,t.n+10), pay=Array(t.n).fill(1);
+    out.safe[t.key]={ref, p90:SAT.safeStack(q.total,ref,pay,0.9), p95:SAT.safeStack(q.total,ref,pay,0.95)};
+    out.heroP[t.key]=SAT.icmPay([q.hero].concat(q.field),0,pay);}
+  out.heroEV=SAT.icmPay([q.hero].concat(q.field),0,q.payWon); return out;}
+// 폴드만 해서 티켓까지 가는 확률 (몬테카를로): 나는 모든 판 폴드(앤티·블라인드만 냄), 다른 사람은 레벨당 일정 비율씩 탈락
+// (짧은 스택일수록 먼저 탈락: 가중치 1/스택), 탈락자의 칩은 무작위 한 명에게. 7분 레벨, 핸드당 40초.
+function doF2T(q){
+  const sims=q.sims||1500, hpl=q.handsPerLevel, T=q.T, res={};
+  let rs=12345; const rnd=()=>{rs=(rs*1103515245+12345)&0x7fffffff; return rs/0x7fffffff;};
+  for(const tg of q.targets){
+    let ok=0, lvSum=0, lvN=0;
+    for(let s=0;s<sims;s++){
+      const oth=q.others.slice(); let hero=q.hero, pos=q.pos, L=q.level, hand=0, alive=oth.length+1;
+      if(alive<=tg.n){ok++; continue;}
+      let carry=0;
+      while(hand<3000){
+        const bb=q.blinds[Math.min(L,q.blinds.length)-1];
+        hero-=bb*0.1; if(pos===T-2) hero-=bb/2; if(pos===T-1) hero-=bb;
+        if(hero<=0) break;
+        carry+=q.rate*(oth.length)/hpl;           // 이번 핸드 기대 탈락 수
+        while(carry>=1 || (carry>0 && rnd()<carry)){
+          carry=Math.max(0,carry-1);
+          if(!oth.length) break;
+          let wsum=0; for(const x of oth) wsum+=1/Math.max(1,x);
+          let r=rnd()*wsum, k=0; for(;k<oth.length;k++){ r-=1/Math.max(1,oth[k]); if(r<=0) break; }
+          k=Math.min(k,oth.length-1); const chips=oth[k]; oth.splice(k,1);
+          if(oth.length) oth[Math.floor(rnd()*oth.length)]+=chips;
+          alive--; if(alive<=tg.n) break;
+        }
+        if(alive<=tg.n){ok++; lvSum+=L; lvN++; break;}
+        hand++; pos=(pos-1+T)%T; if(hand%Math.round(hpl)===0) L++;
+      }
+    }
+    res[tg.key]={p:ok/sims, level:lvN?lvSum/lvN:null};
+  }
+  return res;
+}
+const WORKER_SRC = ENGINE_SRC + "\n" + decodeE.toString() + "\n" + doSafe.toString() + "\n" + doF2T.toString() + `
+let E=null;
+onmessage=e=>{const m=e.data;
+  if(m.type==="init"){E=decodeE(m.b64);return;}
+  if(m.type==="solve"){postMessage({type:"solve",id:m.id,r:SAT.solve(m.cfg,E)});}
+  if(m.type==="safe"){postMessage({type:"safe",id:m.id,out:doSafe(m.q)});}
+  if(m.type==="f2t"){postMessage({type:"f2t",id:m.id,out:doF2T(m.q)});}
+};`;
+// 웹 워커(백그라운드 계산)가 막힌 환경(일부 미리보기·앱 내 브라우저)에서는 화면에서 바로 계산
+let worker=null, E_MAIN=null;
+try{worker=new Worker(URL.createObjectURL(new Blob([WORKER_SRC],{type:"text/javascript"})));worker.postMessage({type:"init",b64:EQB64});
+    worker.onerror=()=>{worker=null;};}catch(err){worker=null;}
+function send(msg){
+  if(worker){try{worker.postMessage(msg);return;}catch(e){worker=null;}}
+  setTimeout(()=>{ if(!E_MAIN) E_MAIN=decodeE(EQB64);
+    if(msg.type==="solve") onResult({type:"solve",id:msg.id,r:SAT.solve(msg.cfg,E_MAIN)});
+    if(msg.type==="safe") onResult({type:"safe",id:msg.id,out:doSafe(msg.q)});
+    if(msg.type==="f2t") onResult({type:"f2t",id:msg.id,out:doF2T(msg.q)}); },10);
+}
+if(worker) worker.onmessage=e=>onResult(e.data);
+
+const START=10000, ANTE=0.1;
+const TV={wpl:(TICKETS["WPL메인"]||250000)/10000, hg:(TICKETS["HPT"]||220000)/10000, pm:(TICKETS["피망"]||92700)/10000};
+const r1=x=>Math.round(x*10)/10;
+// 게임사 블라인드 구조 (BB, 칩) · 7분 레벨 · 앤티 = BB의 10% · 레지 마감 15레벨
+const STD_BB=[50,100,150,200,250,300,400,500,600,800,1000,1200,1600,2000,2400,2800,3200,4000,5000,6000,7000,8000,10000,12000,16000,20000,24000,28000,32000,40000,50000,60000,70000,80000,100000];
+const PM_BB=[50,100,150,200,250,300,400,500,600,800,1000,1200,1600,2000,2000,2400,2800,3200,4000,5000,7000,8000,10000,12000,16000,20000,24000,28000,32000,40000,50000];
+const LEVEL_MIN=7, REG_LEVEL=15, SEC_PER_HAND=40;
+const pmSeats=()=>startOf()==="15:00"?5:25;   // 피망 15시 게임만 5장 GTD
+const GAMES={
+  wpl:{blinds:STD_BB,times:["18:00","19:00","20:00","21:00","22:00","23:00"],name:"WPL",desc:`1~11위 메인(${TV.wpl}만)<br>12~15위 딥스택`,pay:()=>Array(11).fill(TV.wpl),
+       bubbles:[{key:"t1",label:"메인 티켓 (11위 안)",n:11}]},
+  hg:{blinds:STD_BB,times:["17:30","19:30","20:30","22:00","23:00"],name:"한게임",desc:`1~9위 2장(${r1(TV.hg*2)}만)<br>10~20위 1장`,pay:()=>Array(9).fill(TV.hg*2).concat(Array(11).fill(TV.hg)),
+       bubbles:[{key:"t1",label:"1장 (20위 안)",n:20},{key:"t2",label:"2장 (9위 안)",n:9}]},
+  pm:{blinds:PM_BB,times:["15:00","18:00","19:30","21:00","22:30"],name:"피망",desc:`1~25위 메인 1장 (${TV.pm}만)<br>15시는 5장 GTD`,pay:()=>Array(pmSeats()).fill(TV.pm),
+       get bubbles(){return [{key:"t1",label:`메인 티켓 (${pmSeats()}위 안)`,n:pmSeats()}];}},
+};
+const MODES={chip:{name:"레지 마감 전",desc:"칩EV · 칩 = 가치"},icm:{name:"레지 마감 후",desc:"ICM EV · 티켓 확보"}};
+const SCEN={
+  open:{name:"내가 먼저 (앞 모두 폴드)",vil:"뒤에서 콜할 수 있는 큰 스택",vilAfter:true},
+  vs:{name:"빌런 올인 → 나",vil:"먼저 올인한 빌런",vilAfter:false},
+  vr:{name:"빌런 레이즈 → 나 [근사]",vil:"먼저 레이즈한 빌런",vilAfter:false},
+  rc:{name:"내 레이즈 → 빌런 올인 [근사]",vil:"뒤에서 올인한 빌런",vilAfter:true},
+};
+const $=id=>document.getElementById(id);
+const st={game:"hg",mode:"icm",entries:150,players:40,bb:400,tsize:9,scen:"open",hero:6,vil:8,qvil:5,heroStack:20,vilStack:30,others:{},tbl:[],tend:[],hist:[],ui:"easy",ezScen:"open",pick:{k:null},settled:{},bustLog:[],caller:null,shorter:"",raise:"2",qvStack:"",level:null,modeManual:false,starts:{}};
+function load(){try{const s=JSON.parse(localStorage.getItem("sat_v10")||"null");if(s) Object.assign(st,s);}catch(e){}}
+function save(){try{localStorage.setItem("sat_v10",JSON.stringify(st));}catch(e){}}
+const POSN=()=>SAT.POS[st.tsize];
+const avgBB=()=>Math.max(1,st.entries*START/Math.max(2,st.players)/Math.max(1,st.bb));
+// 시작 시각: 직접 고른 값이 없으면 오늘 일정 중 지금 진행 중일 가능성이 가장 큰(가장 최근에 시작한) 게임
+function autoStart(game){
+  const times=GAMES[game].times, now=new Date(), mins=now.getHours()*60+now.getMinutes();
+  const past=times.filter(t=>{const [h,m]=t.split(":").map(Number);return h*60+m<=mins;});
+  return past.length?past[past.length-1]:times[times.length-1];
+}
+const startOf=()=>st.starts[st.game]||autoStart(st.game);
+// 시작 시각부터 지금까지 레벨 (매시 55분~00분 5분 휴식은 레벨 시간에서 뺌)
+function autoLevel(){
+  const [h,m]=startOf().split(":").map(Number), now=new Date(), start=new Date(now);
+  start.setHours(h,m,0,0); if(start>now) start.setDate(start.getDate()-1);
+  let played=0; const mins=Math.min(12*60,Math.floor((now-start)/60000));
+  if(mins>=12*60) return 1;
+  for(let i=0;i<mins;i++){const t=new Date(start.getTime()+i*60000); if(t.getMinutes()<55) played++;}
+  return Math.min(GAMES[st.game].blinds.length, Math.floor(played/LEVEL_MIN)+1);
+}
+const curLevel=()=>st.level||autoLevel();
+function applyLevel(){
+  const L=curLevel(), g=GAMES[st.game];
+  st.bb=g.blinds[Math.min(L,g.blinds.length)-1];
+  if(!st.modeManual) st.mode = L<=REG_LEVEL ? "chip" : "icm";
+}
+const won=v=>v>=10000?(v%10000?Math.floor(v/10000)+"만"+(v%10000):v/10000+"만"):String(v);
+// 폴드만 할 때 버티는 시간: 핸드마다 앤티(BB 10%), 내 차례에 SB·BB, 7분마다 블라인드 상승
+function foldSurvival(heroBB, pos){
+  const g=GAMES[st.game], T=st.tsize, hpl=LEVEL_MIN*60/SEC_PER_HAND;
+  let L=curLevel(), chips=heroBB*g.blinds[L-1], p=pos, hands=0;
+  while(chips>0 && hands<2000){
+    const bb=g.blinds[Math.min(L,g.blinds.length)-1];
+    chips-=bb*0.1; if(p===T-2) chips-=bb/2; if(p===T-1) chips-=bb;
+    hands++; p=(p-1+T)%T; if(hands%Math.round(hpl)===0) L++;
+  }
+  return {min:Math.round(hands*SEC_PER_HAND/60), level:Math.min(L,g.blinds.length)};
+}
+
+function opts(arr){return '<option value="">선택</option>'+arr.map(v=>`<option value="${v}">${v.toLocaleString?v.toLocaleString():v}</option>`).join("");}
+function fillPickers(){
+  const people=[];for(let v=2;v<=60;v++)people.push(v);for(let v=65;v<=300;v+=5)people.push(v);for(let v=350;v<=1000;v+=50)people.push(v);
+  const bbs=[100,150,200,250,300,400,500,600,800,1000,1200,1500,2000,2500,3000,4000,5000,6000,8000,10000];
+  const stacks=[];for(let v=1;v<=30;v+=0.5)stacks.push(v);for(let v=31;v<=100;v++)stacks.push(v);for(let v=110;v<=300;v+=10)stacks.push(v);
+  document.querySelectorAll("select[data-for]").forEach(s=>{const k=s.dataset.for;s.innerHTML=opts(k==="bb"?bbs:(k==="entries"||k==="players")?people:stacks);});
+  window.STACK_OPTS=opts(stacks);
+}
+function fix(){
+  const n=st.tsize;
+  if(st.players>st.entries) st.entries=st.players;
+  if(st.hero>n-1) st.hero=n-1;
+  if(st.qvil>=st.hero) st.qvil=st.hero-1; if(st.qvil>n-2) st.qvil=n-2; if(st.qvil<0) st.qvil=0;
+  const sc=SCEN[st.scen];
+  if(sc.vilAfter){ if(st.vil<=st.hero) st.vil=Math.min(n-1,st.hero+1); }
+  else { if(st.vil>=st.hero) st.vil=Math.max(0,st.hero-1); if(st.vil>n-2) st.vil=Math.max(0,n-2); }
+}
+function detailValid(){const n=st.tsize,sc=SCEN[st.scen]; return sc.vilAfter? st.hero<=n-2 : st.hero>=1;}
+function drawStatic(){
+  $("games").innerHTML=Object.entries(GAMES).map(([k,g])=>`<button type="button" class="opt ${st.game===k?"on":""}" data-g="${k}"><b>${g.name}</b><span>${g.desc}</span></button>`).join("");
+  $("modes").innerHTML=Object.entries(MODES).map(([k,m])=>`<button type="button" class="opt ${st.mode===k?"on":""}" data-m="${k}"><b>${m.name}</b><span>${m.desc}</span></button>`).join("");
+  $("scen").innerHTML=Object.entries(SCEN).map(([k,s])=>`<button type="button" class="chip ${st.scen===k?"on":""}" data-sc="${k}">${s.name}</button>`).join("");
+  for(const k of ["entries","players","heroStack","vilStack","shorter","qvStack"]) if(document.activeElement!==$(k)) $(k).value=st[k];
+  { const g=GAMES[st.game], al=autoLevel();
+    $("level").innerHTML=`<option value="">자동 · ${al}레벨 ${won(g.blinds[al-1]/2)}/${won(g.blinds[al-1])}</option>`+
+      g.blinds.map((b,i)=>`<option value="${i+1}">${i+1}레벨 · ${won(b/2)}/${won(b)}${i+1<=REG_LEVEL?" (레지 중)":""}</option>`).join("");
+    $("level").value=st.level||"";
+    $("startChips").innerHTML=g.times.map(t=>`<button type="button" class="chip ${startOf()===t?"on":""}" data-st="${t}">${t}${st.game==="pm"&&t==="15:00"?" (5장)":""}</button>`).join("")+
+      (st.starts[st.game]?`<button type="button" class="chip" data-st="auto">자동</button>`:"");
+    $("startHint").textContent=st.starts[st.game]?"(직접 고름)":"(지금 시각 기준 자동)";
+    $("lvHint").textContent=st.level?"직접 고름 (자동으로 돌리려면 '자동' 선택)":`${startOf()} 시작 · 7분 레벨 · 휴식 반영`; }
+  $("tsize").value=st.tsize; $("raise").value=st.raise;
+  const P=POSN(), n=st.tsize, sc=SCEN[st.scen];
+  if(!document.activeElement||!document.activeElement.dataset||document.activeElement.dataset.behind==null)
+    $("behindBox").innerHTML = P.map((p,i)=>i===st.hero
+      ? `<div class="seat" style="border-color:var(--accent)"><div class="pn">${p} · 나</div><div class="num"><input type="number" value="${st.heroStack}" disabled></div></div>`
+      : `<div class="seat"><div class="pn">${p}${i>st.hero?" · 뒤":""}</div><div class="num"><input type="number" inputmode="decimal" step="0.1" min="0.1" placeholder="평균 ${r1(avgBB())}" value="${st.tbl[i]??""}" data-behind="${i}"></div>`+
+        `<button type="button" class="tend t${st.tend[i]||0}" data-tend="${i}">${tendN(i)}</button></div>`).join("");
+  $("heroPos").innerHTML=P.map((p,i)=>`<button type="button" class="chip hero ${i===st.hero?"on":""}" data-hp="${i}">${p}</button>`).join("");
+  $("qvPos").innerHTML=st.hero<1?`<span class="hint">${P[st.hero]}는 첫 자리라 앞에서 올인할 사람이 없어요.</span>`:
+     P.map((p,i)=>{const ok=i<st.hero&&i<=n-2;return ok?`<button type="button" class="chip vil ${i===st.qvil?"on":""}" data-qv="${i}">${p}</button>`:"";}).join("");
+  $("vilPos").innerHTML=P.map((p,i)=>{const ok=sc.vilAfter? i>st.hero : (i<st.hero && i<=n-2);return `<button type="button" class="chip vil ${i===st.vil?"on":""}" data-vp="${i}" ${ok?"":"disabled"}>${p}</button>`;}).join("");
+  $("vilTitle").textContent="빌런 · "+sc.vil;
+  const avg=avgBB();
+  $("scenHint").textContent = !detailValid() ? `${P[st.hero]}에서는 이 상황이 없어요. ${sc.vilAfter?"BB는 먼저 액션할 수 없어요.":"첫 자리 앞에는 빌런이 없어요."} 내 포지션을 바꾸거나 다른 상황을 골라주세요.` : sc.vilAfter
+    ? `앞 자리는 모두 폴드, ${P[st.hero]}(나) 다음 자리들은 기본 평균 ${r1(avg)}BB이고 빌런 자리만 ${st.vilStack}BB예요.`
+    : `${P[st.vil]}(빌런)가 먼저 액션하고, 그 사이 자리는 폴드한 상황이에요. 나머지 뒤 자리는 평균 ${r1(avg)}BB예요.`;
+  $("seatsBox").innerHTML=P.map((p,i)=>{
+    const fixed=i===st.hero?"나":(i===st.vil?"빌런":"");
+    const v=i===st.hero?st.heroStack:(i===st.vil?st.vilStack:(st.others[i]??r1(avg)));
+    return `<div class="seat"><div class="pn">${p}${fixed?" · "+fixed:""}</div><div class="num"><input type="number" inputmode="decimal" step="0.1" min="0.5" value="${v}" data-seat="${i}" ${fixed?"disabled":""}></div></div>`;}).join("");
+  const g=GAMES[st.game];
+  const lines=g.bubbles.map(b=>st.players>b.n?`${b.label}까지 ${st.players-b.n}명`:`${b.label} 확정권`);
+  const warn = (avg>400||avg<2) ? `<br>⚠️ 평균 ${r1(avg)}BB — 전체 인원·현재 인원·레벨을 확인해 주세요.` : "";
+  $("info").innerHTML=`${curLevel()}레벨 ${won(st.bb/2)}/${won(st.bb)} · 평균 스택 <b>${r1(avg)}BB</b> <span style="font-weight:500">(${st.entries}명 × 10,000 ÷ ${st.players}명)</span>`+
+     (curLevel()<=REG_LEVEL?`<br>레지 마감 전 (${REG_LEVEL}레벨까지) → 칩EV`:`<br>레지 마감 후 → ICM`)+(st.modeManual?" · 계산 기준은 직접 고른 값":"")+warn+
+     (st.mode==="icm"?`<br>${lines.join(" · ")}`:`<br>레지 마감 전: 칩EV로 계산해요 (인원이 더 늘 수 있음)`);
+  $("safePanel").style.display = "";
+}
+function stacks(){
+  const n=st.tsize, avg=r1(avgBB()), arr=[];
+  for(let i=0;i<n;i++) arr.push(i===st.hero?+st.heroStack:(i===st.vil?+st.vilStack:(+st.others[i]||avg)));
+  return arr;
+}
+let seq=0,pending={},safeId=0,f2tId=0,lastF2T=null,last=null,lastSafe=null,lastQA=null;
+const want={};
+// 테이블 회전: 버튼이 한 칸 돌면 모든 사람의 포지션 번호가 1 줄어요 (BB→SB→BTN→…, UTG→BB)
+function shiftTbl(delta){ // delta: 포지션 번호 변화량
+  const n=st.tsize, out=new Array(n).fill(null), td=new Array(n).fill(0);
+  for(let i=0;i<n;i++){ const j=((i+delta)%n+n)%n; if(st.tbl[i]!=null) out[j]=st.tbl[i]; td[j]=st.tend[i]||0; }
+  st.tbl=out; st.tend=td; st.hero=((st.hero+delta)%n+n)%n;
+}
+function rotateTo(pos){ // 내 포지션을 직접 바꾸면 같은 자리 배치 그대로 돌려요
+  const d=pos-st.hero; if(!d) return; st.hist.push({tbl:st.tbl.slice(),tend:st.tend.slice(),hero:st.hero,heroStack:st.heroStack,players:st.players,settled:Object.assign({},st.settled)}); shiftTbl(d);
+}
+function nextHand(){
+  const n=st.tsize; st.hist.push({tbl:st.tbl.slice(),tend:st.tend.slice(),hero:st.hero,heroStack:st.heroStack,players:st.players,settled:Object.assign({},st.settled)}); if(st.hist.length>30) st.hist.shift();
+  const avg=r1(avgBB()), cost=i=>i===n-1?1+ANTE:(i===n-2?0.5+ANTE:ANTE);
+  const done=st.settled||{};
+  for(let i=0;i<n;i++){
+    if(done[i]) continue;   // 이번 판 결과를 이미 넣은 사람은 블라인드·앤티까지 계산돼 있음
+    if(i===st.hero){ st.heroStack=Math.max(0.1,r1(+st.heroStack-cost(i))); continue; }
+    if(st.tbl[i]!=null) st.tbl[i]=Math.max(0.1,r1(+st.tbl[i]-cost(i)));
+  }
+  st.settled={}; st.pick={k:null};
+  shiftTbl(-1);
+}
+function quickStacks(){const n=st.tsize,avg=r1(avgBB()),arr=new Array(n).fill(avg);arr[st.hero]=+st.heroStack;
+  for(let i=0;i<n;i++) if(i!==st.hero && +st.tbl[i]>0) arr[i]=+st.tbl[i];
+  return arr;}
+// 다른 테이블 사람들: 총칩에서 우리 테이블 칩을 뺀 나머지. '나보다 칩 적은 사람 수'를 넣으면 그만큼은 짧은 스택으로 둔다
+function fieldOff(table){
+  const n=table.length, M=Math.max(0,st.players-n), totalBB=st.entries*START/Math.max(1,st.bb);
+  const R=Math.max(M*0.5, totalBB-table.reduce((a,b)=>a+b,0));
+  if(!M) return [];
+  const hero=+st.heroStack, avgOff=R/M;
+  const kT=table.filter((x,i)=>i!==st.hero&&x<hero).length;
+  const k=Math.max(0,Math.min(M, (st.shorter===""||st.shorter==null)?-1:(+st.shorter-kT)));
+  if(k<=0) return new Array(M).fill(avgOff);
+  let short=Math.min(hero*0.6, avgOff), rest=(R-k*short)/Math.max(1,M-k);
+  if(M-k>0 && rest<hero){rest=hero*1.05; short=Math.max(0.5,(R-(M-k)*rest)/k);}
+  return new Array(k).fill(short).concat(new Array(M-k).fill(M-k>0?rest:0));
+}
+function fmtChip(c){return c>=10000?(Math.round(c/1000)/10)+"만":Math.round(c).toLocaleString();}
+function schedule(){applyLevel();fix();drawStatic();drawEasy();save();clearTimeout(schedule.t);$("result").classList.add("busy");$("quick").classList.add("busy");
+  schedule.t=setTimeout(()=>{
+    const g=GAMES[st.game], sc=st.scen, n=st.tsize;
+    const base={pay:g.pay(),players:+st.players,avg:avgBB(),ante:ANTE,mode:st.mode,iters:300,
+                pressure: st.mode==="icm" ? 1.5+ANTE*st.tsize : 0};   // 블라인드 압박: 한 바퀴 비용
+    const job=(kind,cfg)=>{const id=++seq;pending[id]=kind;want[kind]=id;cfg.off=fieldOff(cfg.stacks);send({type:"solve",id,cfg:Object.assign({},base,cfg)});};
+    if(st.hero<=n-2) job("qa",{stacks:quickStacks(),opener:st.hero,raise:+st.raise}); else {want.qa=null; lastQA=null; drawQuickA(null);}
+    if(st.hero>=1){const qs=quickStacks(); if(+st.qvStack>0) qs[st.qvil]=+st.qvStack; job("qb",{stacks:qs,opener:st.qvil,raise:0});} else {want.qb=null; lastQB=null; drawQuickB(null);}
+    if(st.ui==="pro" && $("detail").open && detailValid()){const opener=(sc==="open"||sc==="rc")?st.hero:st.vil; job("detail",{stacks:stacks(),opener,raise:(sc==="vs"?0:+st.raise)});}
+    else {want.detail=null; $("summary").innerHTML=""; $("chart").innerHTML=""; $("legend").innerHTML=""; $("result").classList.remove("busy");}
+    const qs=quickStacks(), field=qs.filter((x,i)=>i!==st.hero).concat(fieldOff(qs));
+    send({type:"safe",id:++safeId,q:{total:st.entries*START/Math.max(1,st.bb),players:+st.players,targets:g.bubbles.map(b=>({key:b.key,n:b.n})),hero:+st.heroStack,field,payWon:g.pay()}});
+    const tg=g.bubbles.filter(b=>st.players>b.n).map(b=>({key:b.key,n:b.n}));
+    send({type:"f2t",id:++f2tId,q:{targets:tg,hero:+st.heroStack*st.bb,pos:st.hero,T:n,level:curLevel(),blinds:g.blinds,
+      others:field.map(x=>x*st.bb),rate:bustRate().rate,handsPerLevel:LEVEL_MIN*60/SEC_PER_HAND,sims:1200}});
+  },150);}
+function onResult(m){
+  if(m.type==="solve"){const kind=pending[m.id]; delete pending[m.id]; if(want[kind]!==m.id) return;
+    if(kind==="detail"){last=m.r;drawResult();$("result").classList.remove("busy");}
+    if(kind==="qa"){lastQA=m.r;drawQuickA(m.r);drawAdvice();}
+    if(kind==="qb"){drawQuickB(m.r);}
+    if(!Object.values(want).some(id=>id&&pending[id])) $("quick").classList.remove("busy");}
+  if(m.type==="safe"&&m.id===safeId){lastSafe=m.out;drawSafe();drawAdvice();}
+  if(m.type==="f2t"&&m.id===f2tId){lastF2T=m.out;drawF2T();drawVerdict();}
+}
+function paint(chartId, layers, dimMask){
+  window.CURS=window.CURS||{}; window.CURS[chartId]=layers;
+  let html="";
+  for(let k=0;k<169;k++){let bars="",tot=0;
+    for(const [arr,col] of layers){const f=Math.max(0,Math.min(1,arr[k]));tot+=f;bars+=`<i style="height:${(f*100).toFixed(0)}%;background:${col}"></i>`;}
+    const dim=dimMask&&dimMask[k]<0.05;
+    html+=`<div class="c ${tot>=0.5?"on":""} ${dim?"dim":""}" data-k="${k}" data-ch="${chartId}"><div class="bars">${bars}</div><em>${SAT.handName(k)}</em></div>`;}
+  $(chartId).innerHTML=html;
+}
+// 범위를 '22+ A2s+ K9o+' 같은 한 줄로
+function rangeText(freq){
+  const R=SAT.RANKS, inR=k=>freq[k]>=0.5, parts=[];
+  let pairs=[];for(let i=12;i>=0;i--) if(inR(i*13+i)) pairs.push(i);
+  if(pairs.length){ // 가장 높은 페어부터 연속이면 'XX+'
+    let low=0; if(inR(0)){low=0;while(low+1<=12&&inR((low+1)*14))low++; parts.push(low===0?"AA":R[low]+R[low]+"+"); pairs=pairs.filter(i=>i>low);} 
+    for(const i of pairs) parts.push(R[i]+R[i]);}
+  for(const suited of [true,false]){
+    for(let h=0;h<12;h++){ // 높은 카드 h, 키커 k>h (인덱스가 클수록 낮은 카드)
+      const ks=[];for(let k=h+1;k<=12;k++){const idx=suited?h*13+k:k*13+h; if(inR(idx)) ks.push(k);}
+      if(!ks.length) continue;
+      let runs=[],a=ks[0],b=ks[0];for(let x=1;x<ks.length;x++){if(ks[x]===b+1)b=ks[x];else{runs.push([a,b]);a=b=ks[x];}}runs.push([a,b]);
+      const sfx=suited?"s":"o";
+      for(const [p,q] of runs){
+        if(p===h+1) parts.push(q===p?R[h]+R[p]+sfx:R[h]+R[q]+sfx+"+");
+        else parts.push(q===p?R[h]+R[p]+sfx:R[h]+R[q]+sfx+"-"+R[h]+R[p]+sfx);
+      }
+    }
+  }
+  return parts.length?parts.join(" "):"없음";
+}
+const TEND=[{f:1,name:"보통"},{f:0.6,name:"타이트"},{f:1.6,name:"루즈"}];
+const tendF=i=>(TEND[st.tend[i]||0]||TEND[0]).f, tendN=i=>(TEND[st.tend[i]||0]||TEND[0]).name;
+let E_UI=null; const EUI=()=>E_UI||(E_UI=decodeE(EQB64));
+let lastQB=null;
+function drawQuickA(r){
+  if(r) lastQA=r; else r=null;
+  const P=POSN(), f1=x=>(x*100).toFixed(1)+"%";
+  if(!r){window.QA=null; drawVerdict(); $("qaSum").innerHTML=`<b>앞이 다 폴드 → 내 액션</b><br><span class="note">BB는 앞이 다 폴드하면 이긴 판이라 차트가 없어요.</span>`;$("qaChart").innerHTML="";return;}
+  const factors={}; let adj=[];
+  r.callers.forEach(i=>{factors[i]=tendF(i); if(tendF(i)!==1) adj.push(`${P[i]} ${tendN(i)}`);});
+  let sh,ra,rcall,callPcts;
+  if(adj.length){const x=SAT.exploitOpener(r,EUI(),factors); sh=x.sh; ra=x.ra; rcall=x.rcall; callPcts=x.csPct;}
+  else {sh=r.sh; ra=r.ra; rcall=SAT.raiseCallMix(r); callPcts=r.csPct;}
+  const W=SAT.W, pct=a=>{let p=0;for(let k=0;k<169;k++)p+=W[k]*a[k];return p;};
+  const rc=new Float64Array(169), rf=new Float64Array(169); for(let h=0;h<169;h++){rc[h]=ra[h]*rcall[h]; rf[h]=ra[h]*(1-rcall[h]);}
+  $("qaSum").innerHTML=`<b>앞이 다 폴드 → ${P[st.hero]}(나 ${st.heroStack}BB)</b><br>올인 <b>${f1(pct(sh))}</b>`+
+    (r.canRaise?` · 오픈 후 올인 받으면 콜 <b>${f1(pct(rc))}</b> · 오픈 후 폴드 <b>${f1(pct(rf))}</b> <span class="note">[근사]</span>`:` <span class="note">(10BB 미만 → 올인·폴드만)</span>`)+
+    (adj.length?`<br><span class="note">실전 보정: ${adj.join(", ")}</span>`:"")+
+    (r.info.length?(()=>{const a=Math.round(Math.min(...r.info.map(x=>x.need))*100),b=Math.round(Math.max(...r.info.map(x=>x.need))*100);return `<br><span class="note">내 올인에 뒤 사람이 콜하려면 승률 ${a===b?a:a+"~"+b}% 필요</span>`;})():"");
+  const t1=rangeText(sh), t2=rangeText(rc), t3=rangeText(rf);
+  $("qaSum").innerHTML+=`<div class="concl">👉 <b>올인</b>: ${t1}`+(r.canRaise&&t2!=="없음"?`<br>👉 <b>오픈 → 올인 받으면 콜</b>: ${t2}`:"")+(r.canRaise&&t3!=="없음"?`<br>👉 <b>오픈 → 올인 받으면 폴드</b>: ${t3}`:"")+`</div>`;
+  paint("qaChart",[[sh,COL.push,"올인"],[rc,COL.call,"오픈 후 콜"],[rf,COL.fold2,"오픈 후 폴드"]]);
+  window.QA={sh,rc,rf,canRaise:r.canRaise,R:r.R,shPct:pct(sh),need:r.info.length?Math.max(...r.info.map(x=>x.need)):null}; drawVerdict();
+}
+function drawQuickB(r){
+  if(r) lastQB=r;
+  const P=POSN(), f1=x=>(x*100).toFixed(1)+"%";
+  if(!r){window.QB=null; drawVerdict(); $("qbSum").innerHTML="";$("qbChart").innerHTML="";return;}
+  const c=r.callers.indexOf(st.hero), x=r.info[c], f=tendF(st.qvil);
+  let call=r.cs[c], callPct=r.csPct[c], shPct=r.shPct;
+  if(f!==1){const y=SAT.exploitCaller(r,EUI(),c,f); call=y.call; callPct=y.callPct; shPct=y.shPct;}
+  const vs=+st.qvStack>0?+st.qvStack:r1(avgBB());
+  $("qbSum").innerHTML=`<b>${P[st.qvil]}(${+st.qvStack>0?"":"평균 "}${vs}BB) 올인 → ${P[st.hero]}(나 ${st.heroStack}BB) 콜</b> <b>${f1(callPct)}</b><br>`+
+    `<span class="note">필요 승률 ${(x.need*100).toFixed(1)}% (칩 기준 ${(x.chipNeed*100).toFixed(1)}%) · ${P[st.qvil]} 올인 범위 `+
+    (f!==1?`계산 ${f1(r.shPct)} → <b>${tendN(st.qvil)} ${f1(shPct)}</b>로 보정`:`${f1(shPct)}로 계산 (성향 보통)`)+`</span>`;
+  $("qbSum").innerHTML+=`<div class="concl">👉 <b>콜</b>: ${rangeText(call)}</div>`;
+  paint("qbChart",[[call,COL.call,"콜"]]);
+  window.QB={call,need:x.need,chipNeed:x.chipNeed,shPct,callPct}; drawVerdict();
+}
+// ================= 이지 모드 =================
+const RK="AKQJT98765432";
+function bustRate(){ // 레벨당 탈락 비율 (남은 사람 대비). '−1 탈락' 기록이 쌓이면 실제 속도로 학습
+  const L=st.bustLog||[]; if(L.length>=3){const a=L[0],b=L[L.length-1], mins=(b.t-a.t)/60000;
+    if(mins>=5 && a.p>b.p){const lv=mins/LEVEL_MIN, avgP=(a.p+b.p)/2; return {rate:Math.min(0.6,(a.p-b.p)/lv/avgP), learned:true, perLv:(a.p-b.p)/lv};}}
+  return {rate:0.12, learned:false, perLv:0.12*st.players};
+}
+function handIdx(){return st.pick&&st.pick.k!=null?st.pick.k:null;}
+// 이지 모드 차트: 지금 상황의 정답 색으로 칠하고, 누르면 그 패를 골라요
+function paintEz(){
+  const el=$("ezChart"); if(!el) return; let layers=[], leg=[];
+  if(st.ezScen==="open"){ const q=window.QA;
+    if(st.hero===st.tsize-1){ el.innerHTML=""; $("ezLegend").innerHTML=`<span>BB는 앞이 다 폴드하면 이긴 판이에요. '앞에서 올인'을 눌러 콜 차트를 보세요.</span>`; return; }
+    if(q){ layers=[[q.sh,COL.push],[q.rc,COL.call],[q.rf,COL.fold2]]; leg=[["올인",COL.push],["레이즈→올인 받으면 콜",COL.call],["레이즈→폴드",COL.fold2]]; } }
+  else { const q=window.QB; if(q){ layers=[[q.call,COL.call]]; leg=[["콜",COL.call]]; } }
+  let html=""; const sel=handIdx();
+  for(let k=0;k<169;k++){ let bars="",tot=0;
+    for(const [arr,col] of layers){const f=Math.max(0,Math.min(1,arr[k]));tot+=f;bars+=`<i style="height:${(f*100).toFixed(0)}%;background:${col}"></i>`;}
+    html+=`<div class="c ${tot>=0.5?"on":""} ${sel===k?"sel":""}" data-ezk="${k}"><div class="bars">${bars}</div><em>${SAT.handName(k)}</em></div>`; }
+  el.innerHTML=html;
+  $("ezLegend").innerHTML=leg.map(([t,c])=>`<span><i class="sw" style="background:${c}"></i>${t}</span>`).join("")+`<span><i class="sw" style="background:var(--cell)"></i>폴드</span>`;
+}
+function drawEasy(){
+  const P=POSN(), n=st.tsize, g=GAMES[st.game];
+  document.body.classList.toggle("easy",st.ui==="easy");
+  $("mEasy").classList.toggle("on",st.ui==="easy"); $("mPro").classList.toggle("on",st.ui==="pro");
+  $("ezGames").innerHTML=Object.entries(GAMES).map(([k,x])=>`<button type="button" class="chip ${st.game===k?"on":""}" data-g="${k}">${x.name}</button>`).join("")+
+    `<span class="hint" style="align-self:center">${startOf()} 게임 · <a href="#" data-ui="pro" style="color:var(--accent)">시간·설정 바꾸기</a></span>`;
+  const lines=g.bubbles.map(b=>st.players>b.n?`${b.label}까지 <b>${st.players-b.n}명</b>`:`${b.label} ✅`);
+  const av=avgBB(), bad=av<3||av>300;
+  $("ezStatus").innerHTML=`${curLevel()}레벨 ${won(st.bb/2)}/${won(st.bb)} · 평균 ${r1(av)}BB · ${st.mode==="icm"?"ICM(마감 후)":"칩EV(마감 전)"}<br>${lines.join(" · ")}`+
+    (bad?`<br><b style="color:var(--push)">⚠️ 평균 ${r1(av)}BB는 이상해요. 전체 인원·남은 인원(또는 게임 시작 시각)을 먼저 맞춰주세요.</b>`:"");
+  $("ezPlayers").textContent=st.players;
+  if(document.activeElement!==$("ezHero")) $("ezHero").value=st.heroStack;
+  $("ezHeroChips").textContent=`= ${Math.round(st.heroStack*st.bb).toLocaleString()}칩`;
+  { const al=autoLevel();
+    $("ezStart").innerHTML=`<option value="auto">자동 (${autoStart(st.game)})</option>`+g.times.map(t=>`<option value="${t}">${t}${st.game==="pm"&&t==="15:00"?" (5장)":""}</option>`).join("");
+    $("ezStart").value=st.starts[st.game]||"auto";
+    $("ezLevel").innerHTML=`<option value="">자동 · ${al}레벨 ${won(g.blinds[al-1]/2)}/${won(g.blinds[al-1])}</option>`+
+      g.blinds.map((b,i)=>`<option value="${i+1}">${i+1}레벨 · ${won(b/2)}/${won(b)}</option>`).join("");
+    $("ezLevel").value=st.level||""; }
+  if(document.activeElement!==$("ezEntries")) $("ezEntries").value=st.entries;
+  if(document.activeElement!==$("ezVilStack")) $("ezVilStack").value=st.qvStack;
+  $("ezPos").innerHTML=P.map((p,i)=>`<button type="button" class="chip hero ${i===st.hero?"on":""}" data-hp="${i}">${p}</button>`).join("");
+  $("ezScen").innerHTML=`<button type="button" class="opt ${st.ezScen==="open"?"on":""}" data-ezs="open"><b>앞 모두 폴드</b><span>내가 먼저 액션</span></button>`+
+    `<button type="button" class="opt ${st.ezScen==="vs"?"on":""}" data-ezs="vs"><b>앞에서 올인</b><span>콜할지 말지</span></button>`;
+  $("ezVilBox").style.display=st.ezScen==="vs"?"":"none";
+  $("ezVil").innerHTML= st.hero<1?`<span class="hint">UTG 앞에는 사람이 없어요.</span>`:
+    `<span class="hint" style="align-self:center">누가?</span>`+P.map((p,i)=>i<st.hero&&i<=n-2?`<button type="button" class="chip vil ${i===st.qvil?"on":""}" data-qv="${i}">${p}</button>`:"").join("");
+
+  drawVerdict(); drawF2T();
+}
+function drawVerdict(){
+  if(!$("ezVerdict")) return; paintEz();
+  const P=POSN(), k=handIdx(), el=$("ezVerdict"), n=st.tsize;
+  const set=(cls,big,why)=>{el.className="verdict "+cls; el.innerHTML=(k!=null?`<div class="hand">${SAT.handName(k)} · ${P[st.hero]} ${st.heroStack}BB</div>`:"")+`<div class="big">${big}</div>`+(why?`<div class="why">${why}</div>`:"");};
+  if(k==null){set("","패를 고르세요","");drawResultBtns(null);return;}
+  if(st.ezScen==="open"){
+    if(st.hero===n-1){set("","체크 / 이긴 판","BB에서 앞이 다 폴드하면 블라인드를 가져가요.");drawResultBtns(null);return;}
+    const q=window.QA; if(!q){set("","계산 중…","");return;}
+    const a=q.sh[k], b=q.rc[k], c=q.rf[k], pc=x=>Math.round(x*100)+"%";
+    if(a>=0.5) set("push","올인",`올인 범위 ${pc(q.shPct)} 안${a<0.85?` (빈도 ${pc(a)}, 섞어서)`:""}`);
+    else if(b>=0.5) set("raise",`${q.R||2}BB 레이즈`,`뒤에서 올인하면 <b>콜</b>`+(a>0.15?` · 올인도 가끔(${pc(a)})`:""));
+    else if(c>=0.5) set("raise",`${q.R||2}BB 레이즈`,`뒤에서 올인하면 <b>폴드</b>`);
+    else if(a+b+c>=0.25) set("fold","폴드 (경계)",`가끔 섞는 패예요 (올인 ${pc(a)} · 레이즈 ${pc(b+c)}). 애매하면 폴드`);
+    else set("fold","폴드","");
+    if(a>=0.5||b>=0.5||c>=0.5) el.innerHTML+=f2tNote();
+    drawResultBtns(a>=0.5?"shove":null);
+  }else{
+    if(st.hero<1){set("","—","UTG 앞에는 사람이 없어요.");return;}
+    const q=window.QB; if(!q){set("","계산 중…","");return;}
+    const a=q.call[k], vs=+st.qvStack>0?st.qvStack+"BB":"평균 스택";
+    if(a>=0.5) set("call","콜",`${P[st.qvil]}(${vs}) 올인 · 필요 승률 ${Math.round(q.need*100)}% · 상대 범위 ${Math.round(q.shPct*100)}%`);
+    else set("fold","폴드",`콜하려면 승률 ${Math.round(q.need*100)}% 필요 (칩 기준이면 ${Math.round(q.chipNeed*100)}%) · 콜 범위 ${rangeText(q.call)}`);
+    if(a>=0.5) el.innerHTML+=f2tNote();
+    drawResultBtns(a>=0.5?"call":null);
+  }
+}
+function f2tNote(){ // 폴드만 해도 티켓이 거의 확실하면 차트보다 폴드를 우선하라는 안내
+  const g=GAMES[st.game], o=lastF2T; if(!o||st.mode!=="icm") return "";
+  const tg=g.bubbles.filter(b=>st.players>b.n); if(!tg.length) return "";
+  const x=o[tg[0].key]; if(!x||x.p<0.95) return "";
+  if(tg.length>1||g.bubbles.length>1&&tg[0].key==="t1") return `<div class="why">※ 1장은 폴드만 해도 ${Math.round(x.p*100)}%. 이 액션은 2장(9위 안)을 노리는 선택이에요. 1장만 원하면 폴드.</div>`;
+  return `<div class="why"><b>※ 폴드만 해도 티켓 확률 ${Math.round(x.p*100)}%</b> — 굳이 위험을 질 필요가 없어요. AA·KK 같은 최상위 패가 아니면 폴드가 안전해요.</div>`;
+}
+function drawResultBtns(kind){
+  const P=POSN(), n=st.tsize, box=$("ezResult"); if(!box) return;
+  if(!kind){box.innerHTML="";return;}
+  if(kind==="shove"){
+    if(st.caller==null||st.caller<=st.hero) st.caller=n-1;
+    box.innerHTML=`<div class="hint">결과를 누르면 스택이 자동으로 바뀌어요</div><div class="row" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">`+
+      `<button type="button" class="bt green" data-res="steal">모두 폴드 (스틸)</button><button type="button" class="bt blue" data-res="win">콜 받고 이김</button><button type="button" class="bt red" data-res="lose">콜 받고 짐</button></div>`+
+      `<div class="chips" style="margin-top:6px"><span class="hint" style="align-self:center">콜한 사람</span>`+P.map((p,i)=>i>st.hero?`<button type="button" class="chip vil ${i===st.caller?"on":""}" data-caller="${i}">${p}</button>`:"").join("")+`</div>`;
+  }else{
+    box.innerHTML=`<div class="hint">결과를 누르면 스택이 자동으로 바뀌어요</div><div class="row" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px">`+
+      `<button type="button" class="bt blue" data-res="cwin">콜해서 이김</button><button type="button" class="bt red" data-res="close">콜해서 짐</button></div>`;
+  }
+}
+function stackOf(i){return i===st.hero?+st.heroStack:(+st.tbl[i]>0?+st.tbl[i]:r1(avgBB()));}
+function applyResult(res){
+  const n=st.tsize, h=st.hero, a=ANTE, blind=i=>i===n-1?1:(i===n-2?0.5:0);
+  st.hist.push({tbl:st.tbl.slice(),tend:st.tend.slice(),hero:st.hero,heroStack:st.heroStack,players:st.players,settled:Object.assign({},st.settled)});
+  const A=a*n, B=1.5;
+  if(res==="steal"){ st.heroStack=r1(stackOf(h)-a+(A+B-blind(h))); st.settled={[h]:1}; }
+  else{
+    const v= res==="win"||res==="lose" ? st.caller : st.qvil;
+    const sh=stackOf(h)-a, sv=stackOf(v)-a, m=Math.min(sh,sv), dead=A+B-blind(h)-blind(v);
+    const heroWins = res==="win"||res==="cwin";
+    let nh=heroWins?sh+m+dead:sh-m, nv=heroWins?sv-m:sv+m+dead;
+    st.heroStack=r1(Math.max(0,nh));
+    if(nv<=0.05){ st.tbl[v]=null; st.tend[v]=0; st.players=Math.max(2,st.players-1); logBust(); }
+    else st.tbl[v]=r1(nv);
+    st.settled={[h]:1,[v]:1};
+    if(nh<=0.05){ $("ezVerdict").className="verdict fold"; $("ezVerdict").innerHTML=`<div class="big">탈락 😢</div><div class="why">↶ 되돌리기로 취소할 수 있어요</div>`; }
+  }
+  st.pick={k:null};
+  schedule();
+}
+function logBust(){ st.bustLog=(st.bustLog||[]).concat([{t:Date.now(),p:st.players}]).slice(-40); }
+function drawF2T(){
+  const el=$("ezF2T"); if(!el) return; const g=GAMES[st.game], o=lastF2T, br=bustRate();
+  if(st.mode!=="icm"){el.innerHTML=`레지 마감 전(칩EV) 구간이에요. 칩을 모으는 게 우선이라 '폴드로 버티기'는 마감 후부터 봐요.`;return;}
+  const tg=g.bubbles.filter(b=>st.players>b.n);
+  if(!tg.length){el.innerHTML=`🎉 남은 인원이 모두 티켓권이에요.`;return;}
+  if(!o){el.textContent="폴드만 할 때 티켓 확률 계산 중…";return;}
+  const L=curLevel();
+  const parts=tg.map(b=>{const x=o[b.key]; if(!x) return ""; const mins=x.level?Math.max(0,Math.round((x.level-L)*LEVEL_MIN)):null;
+    return `${b.label} <b>${Math.round(x.p*100)}%</b>`+(x.level?` <span style="font-size:12px">(버블 예상 ${Math.round(x.level)}레벨, 약 ${mins}분 뒤)</span>`:"");});
+  const p0=o[tg[0].key]?o[tg[0].key].p:0;
+  const tip=p0>=0.85?"👉 폴드로 버틸 만해요. 큰 팟은 피하세요.":(p0>=0.5?"👉 반반이에요. 확실한 스틸만 하고 콜은 아끼세요.":"👉 폴드로는 어려워요. 차트대로 먼저 올인해서 칩을 늘리세요.");
+  el.innerHTML=`지금부터 <b>폴드만</b> 하면: ${parts.join(" · ")}<br>${tip}<br><span style="font-size:12px">탈락 속도: 레벨당 약 ${r1(br.learned?br.perLv:br.rate*st.players)}명 (${br.learned?"'−1 탈락' 기록으로 학습":"기본값 — '−1 탈락'을 누를수록 정확해져요"})</span>`;
+}
+function redrawQuick(){ if(lastQA) drawQuickA(lastQA); if(lastQB) drawQuickB(lastQB); }
+const fmtBB=v=>v==null?"도달 불가":(v>=100?Math.round(v):r1(v))+"BB";
+function drawSafe(){
+  const g=GAMES[st.game], o=lastSafe, hero=+st.heroStack, bb=+st.bb, totalChips=st.entries*START;
+  let html="";
+  for(const b of g.bubbles){
+    const sf=o.safe[b.key], seatChips=totalChips/b.n;
+    if(st.players<=b.n){html+=`<div class="kpi"><div class="k">${b.label}</div><div class="v">확정 ✅</div><div class="d">남은 ${st.players}명이 모두 받아요</div></div>`;continue;}
+    const c90=sf.p90==null?null:sf.p90*bb, c95=sf.p95==null?null:sf.p95*bb;
+    html+=`<div class="kpi"><div class="k">${b.label} 안정권</div><div class="v">${c90==null?"-":fmtChip(c90)+"칩"}</div>`+
+      `<div class="d">지금 블라인드로 <b>${c90==null?"-":r1(sf.p90)+"BB"}</b><br>여유권(95%) ${c95==null?"-":fmtChip(c95)+"칩"}<br>티켓 1장당 칩(총칩÷${b.n}) ${fmtChip(seatChips)}</div></div>`;
+  }
+  html+=`<div class="kpi"><div class="k">지금 내 티켓 확률 (${hero}BB = ${fmtChip(hero*bb)}칩)</div><div class="v">${g.bubbles.map(b=>Math.round((o.heroP[b.key]||0)*100)+"%").join(" / ")}</div><div class="d">현재 ${st.players}명 남은 상황 기준</div></div>`;
+  const orbit=1.5+ANTE*st.tsize;
+  const fs=foldSurvival(hero,st.hero);
+  html+=`<div class="kpi"><div class="k">폴드만 하면</div><div class="v">약 ${fs.min}분</div><div class="d">${fs.level}레벨쯤 칩이 바닥 (7분마다 블라인드 상승, 핸드당 ${SEC_PER_HAND}초 가정)<br>지금 블라인드 그대로면 ${r1(hero/orbit)}바퀴</div></div>`;
+  $("safe").innerHTML=html;
+}
+function drawAdvice(){
+  if(!lastSafe) return;
+  const g=GAMES[st.game], o=lastSafe, hero=+st.heroStack, avg=avgBB(), P=POSN();
+  const main=g.bubbles[g.bubbles.length>1&&(o.heroP.t1>=0.9||st.players<=g.bubbles[0].n)?1:0];
+  const s90=o.safe[main.key].p90, s95=o.safe[main.key].p95, p=o.heroP[main.key]||0;
+  const orbits=hero/(1.5+ANTE*st.tsize);
+  let title, tips=[];
+  const pushPct = lastQA?Math.round(lastQA.shPct*100):null;
+  const raisePct = lastQA&&lastQA.canRaise?Math.round(lastQA.raPct*100):null;
+  const openTxt = pushPct==null?null:(raisePct?(pushPct>=1?`올인 ${pushPct}% + 레이즈 ${raisePct}%`:`레이즈 ${raisePct}% (올인은 거의 없음)`):`상위 ${pushPct}% 패로 올인`);
+  const need = lastQA&&lastQA.info&&lastQA.info.length? Math.round(Math.max(...lastQA.info.map(x=>x.need))*100):null;
+  if(st.mode==="chip"){
+    title="레지 마감 전: 칩을 모으는 구간이에요";
+    tips.push("티켓 확률보다 칩 기대값이 기준이에요. 좋은 자리에선 레이즈·콜을 넓게 가져가도 돼요.");
+    if(hero<=12) tips.push(`${hero}BB는 올인·폴드 구간이에요. 앞이 다 폴드면 차트대로 먼저 올인하세요.`);
+    else if(hero<avg) tips.push("평균보다 적어요. 레지 마감 전에 평균 이상을 만드는 게 목표예요. 짧은 스택 상대 스틸을 적극적으로.");
+    else tips.push("평균 이상이에요. 레지 마감 후 안정권(아래 수치)까지 칩을 더 모으는 걸 목표로 하세요.");
+    if(s90) tips.push(`참고: 안정권 목표는 약 ${fmtChip(s90*st.bb)}칩이에요 (블라인드가 오르면 BB 수는 줄어도 칩 목표는 같아요).`);
+  }else if(s95 && hero>=s95){
+    title=`안정권이에요 (${main.label} ${Math.round(p*100)}%)`;
+    tips.push("큰 팟을 피하고 폴드 위주로 가세요. 올인에 콜은 AA·KK 같은 최상위 패만.");
+    tips.push("짧은 스택이 먼저 올인해도 콜할 이유가 거의 없어요. 버블은 다른 사람들이 터뜨려요.");
+    if(g.bubbles.length>1 && main.key==="t1") tips.push("한게임: 1장은 거의 확보. 2장(9위 안)을 노리려면 짧은 스택 상대로만 스틸하세요.");
+  }else if(s90 && hero>=s90){
+    title=`거의 안정권이에요 (${main.label} ${Math.round(p*100)}%)`;
+    tips.push(`여유권(${fmtChip(s95*st.bb)}칩)까지 ${r1(s95-hero)}BB 남았어요. 나보다 짧은 스택 상대로만 올인·스틸하세요.`);
+    tips.push("나를 커버하는 큰 스택과는 싸우지 마세요. 콜은 매우 좁게.");
+  }else if(hero>=avg){
+    title=`평균 이상 · 안정권까지 ${s90?fmtChip((s90-hero)*st.bb)+"칩 ("+r1(s90-hero)+"BB)":"?"} 더 필요`;
+    tips.push("이 구간이 칩을 가장 효율적으로 모을 수 있는 자리예요. 뒤에 짧은 스택이 많을 때 레이즈·올인으로 블라인드를 가져오세요.");
+    tips.push("나를 커버하는 큰 스택이 뒤에 있으면 스틸을 줄이세요. 올인 받으면 필요 승률이 크게 올라가요.");
+    if(need) tips.push(`지금 설정에서 올인에 콜하려면 승률 ${need}% 이상이 필요해요 (칩 기준보다 훨씬 높음).`);
+  }else if(hero>12){
+    title=`평균 이하 · 안정권까지 ${s90?fmtChip((s90-hero)*st.bb)+"칩 ("+r1(s90-hero)+"BB)":"?"} 더 필요`;
+    tips.push("버블 압박을 받는 쪽이에요. 콜은 좁게, 대신 앞이 다 폴드면 먼저 올인이 콜보다 훨씬 유리해요.");
+    tips.push(`폴드만 하면 ${r1(orbits)}바퀴 버텨요. ${main.label}까지 ${Math.max(0,st.players-main.n)}명 남았으니, 버블이 멀면 스틸로 칩을 늘려야 해요.`);
+    if(openTxt) tips.push(`지금 ${P[st.hero]}에서 앞이 다 폴드면 ${openTxt} (위 빠른 차트).`);
+  }else{
+    title=`숏스택 (${hero}BB) · 올인·폴드 구간`;
+    { const fs=foldSurvival(hero,st.hero); tips.push(`블라인드가 7분마다 올라서 폴드만 하면 약 ${fs.min}분이면 바닥이에요. 콜 차트에서 경계에 있는 패(연한 칸)는 콜 쪽으로 기울이세요.`); }
+    tips.push("레이즈 후 폴드는 칩 낭비예요. 앞이 다 폴드면 차트대로 올인만 하세요.");
+    tips.push(`폴드만 하면 ${r1(orbits)}바퀴 버텨요. ${main.label}까지 ${Math.max(0,st.players-main.n)}명이면 기다릴 수 있는지 먼저 판단하세요.`);
+    if(openTxt) tips.push(`지금 ${P[st.hero]}: ${openTxt}.`);
+  }
+  $("advice").innerHTML=`<b class="t">${title}</b><ul>${tips.map(t=>`<li>${t}</li>`).join("")}</ul>`;
+}
+const COL={push:"var(--push)",raise:"var(--raise)",call:"var(--call)",flat:"var(--flat)",fold2:"var(--raise-soft)"};
+function drawResult(){
+  const r=last, P=POSN(), sc=st.scen, f1=x=>(x*100).toFixed(1)+"%";
+  const mode=st.mode==="chip"?"칩EV":"ICM";
+  let layers,sum,legend,dimMask=null;
+  if(sc==="open"){
+    const c=r.callers.indexOf(st.vil), x=r.info[c];
+    layers=[[r.sh,COL.push,"올인"],[r.ra,COL.raise,"레이즈"]];
+    sum=`[${mode}] <b>${P[st.hero]}</b>(나 ${st.heroStack}BB) 앞이 다 폴드 → 올인 <b>${f1(r.shPct)}</b>`+(r.canRaise?` · 레이즈 <b>${f1(r.raPct)}</b> <span class="note">[근사]</span>`:"")+
+      (x?`<br><span class="note">${P[st.vil]}(빌런 ${st.vilStack}BB)가 내 올인에 콜 ${f1(r.csPct[c])} · 콜 필요 승률 ${Math.round(x.need*100)}%</span>`:"")+
+      (!r.canRaise?`<br><span class="note">스택 10BB 미만 → 올인·폴드만 계산</span>`:"");
+    legend=[["올인",COL.push],["레이즈",COL.raise],["폴드","var(--cell)"]];
+  }else{
+    const i=(sc==="rc")?st.vil:st.hero, c=r.callers.indexOf(i), x=r.info[c];
+    if(sc==="vs"){
+      layers=[[r.cs[c],COL.call,"콜"]];
+      sum=`[${mode}] <b>${P[st.vil]}</b>(빌런 ${st.vilStack}BB) 올인 → <b>${P[st.hero]}</b>(나 ${st.heroStack}BB) 콜 <b>${f1(r.csPct[c])}</b><br>`+
+        `필요 승률 <b>${(x.need*100).toFixed(1)}%</b> <span class="note">(칩 기준 ${(x.chipNeed*100).toFixed(1)}%) · 빌런 올인 범위 ${f1(r.shPct)}로 계산</span>`;
+      legend=[["콜",COL.call],["폴드","var(--cell)"]];
+    }else if(sc==="vr"){
+      if(!r.canRaise){layers=[[r.cs[c],COL.call,"콜"]];sum=`빌런 스택이 10BB 미만이라 레이즈 대신 올인으로 계산했어요. <b>${P[st.vil]}</b> 올인 → 내 콜 <b>${f1(r.csPct[c])}</b>`;legend=[["콜",COL.call],["폴드","var(--cell)"]];}
+      else{
+      layers=[[r.rs[c],COL.push,"올인"],[r.fc[c],COL.flat,"콜"]];
+      sum=`[${mode}] <b>${P[st.vil]}</b>(빌런 ${st.vilStack}BB) ${r.R}BB 레이즈 → <b>${P[st.hero]}</b>(나 ${st.heroStack}BB)<br>`+
+        `<span class="note">[근사]</span> 올인 <b>${f1(r.rsPct[c])}</b> · 콜 <b>${f1(r.fcPct[c])}</b> <span class="note">(빌런 레이즈 범위 ${f1(r.raPct)})</span>`;
+      legend=[["올인(리쇼브)",COL.push],["콜",COL.flat],["폴드","var(--cell)"]];}
+    }else{
+      if(!r.canRaise){layers=[[r.sh,COL.push,"올인"]];sum=`내 스택이 10BB 미만이라 레이즈 없이 올인·폴드만 계산했어요. 올인 <b>${f1(r.shPct)}</b>`;legend=[["올인",COL.push],["폴드","var(--cell)"]];}
+      else{
+      const call=new Float64Array(169),fold=new Float64Array(169);
+      for(let h=0;h<169;h++){call[h]=r.ra[h]*r.rc[c][h];fold[h]=r.ra[h]*(1-r.rc[c][h]);}
+      layers=[[call,COL.call,"콜"],[fold,COL.fold2,"레이즈 후 폴드"]]; dimMask=r.ra;
+      let pc=0,pr=0;for(let h=0;h<169;h++){pc+=SAT.W[h]*call[h];pr+=SAT.W[h]*r.ra[h];}
+      sum=`[${mode}] 내가 <b>${P[st.hero]}</b>에서 ${r.R}BB 레이즈 → <b>${P[st.vil]}</b>(빌런 ${st.vilStack}BB) 올인<br>`+
+        `<span class="note">[근사]</span> 레이즈한 패 중 콜 <b>${pr?f1(pc/pr):"-"}</b> · 필요 승률 <b>${Math.round(x.oNeed*100)}%</b> <span class="note">(칩 기준 ${Math.round(x.oChipNeed*100)}%) · 흐린 칸 = 처음부터 레이즈 안 하는 패</span>`;
+      legend=[["콜",COL.call],["레이즈 후 폴드",COL.fold2],["레이즈 안 함","var(--dim)"]];}
+    }
+  }
+  $("summary").innerHTML=sum;
+  $("legend").innerHTML=legend.map(([t,c])=>`<span><i class="sw" style="background:${c}"></i>${t}</span>`).join("")+`<span>칸 높이 = 빈도</span>`;
+  paint("chart",layers,dimMask);
+}
+document.addEventListener("click",e=>{
+  const ez=e.target.closest("[data-ezk]"); if(ez){st.pick={k:+ez.dataset.ezk}; save(); drawVerdict(); const v=$("ezVerdict"); if(v.getBoundingClientRect().top>window.innerHeight-120) v.scrollIntoView({behavior:"smooth",block:"center"}); return;}
+  const t=e.target.closest("button,a,[data-k]"); if(!t) return;
+  if(t.dataset.g){st.game=t.dataset.g;st.level=null;st.modeManual=false;st.bustLog=[];schedule();return;}
+  if(t.dataset.m){st.mode=t.dataset.m;st.modeManual=true;schedule();return;}
+  if(t.dataset.sc){st.scen=t.dataset.sc;schedule();return;}
+  if(t.dataset.st){ if(t.dataset.st==="auto") delete st.starts[st.game]; else st.starts[st.game]=t.dataset.st; st.level=null;st.modeManual=false;schedule();return;}
+  if(t.dataset.hp){rotateTo(+t.dataset.hp);schedule();return;}
+  if(t.dataset.ui){e.preventDefault(); st.ui=t.dataset.ui; if(st.ui==="pro") window.scrollTo(0,0); schedule(); return;}
+  if(t.dataset.ezs){st.ezScen=t.dataset.ezs; drawEasy(); save(); return;}
+
+  if(t.dataset.caller){st.caller=+t.dataset.caller; drawVerdict(); return;}
+  if(t.dataset.res){applyResult(t.dataset.res); return;}
+  if(t.dataset.ez){const a=t.dataset.ez;
+    if(a==="bust"){st.hist.push({tbl:st.tbl.slice(),tend:st.tend.slice(),hero:st.hero,heroStack:st.heroStack,players:st.players,settled:Object.assign({},st.settled)}); st.players=Math.max(2,st.players-1); logBust(); schedule(); return;}
+    if(a==="p+"){st.players++; if(st.bustLog&&st.bustLog.length) st.bustLog.pop(); schedule(); return;}
+    if(a==="next"){nextHand(); schedule(); return;}
+    if(a==="undo"){const h=st.hist.pop(); if(h){st.tbl=h.tbl;st.tend=h.tend||[];st.hero=h.hero;st.heroStack=h.heroStack;if(h.players)st.players=h.players;st.settled=h.settled||{};} schedule(); return;}
+    if(a==="chart"){st.ui="pro"; schedule(); setTimeout(()=>$("quick").scrollIntoView({behavior:"smooth"}),200); return;}
+  }
+  if(t.dataset.tend!=null){const i=+t.dataset.tend; st.tend[i]=((st.tend[i]||0)+1)%TEND.length; save(); drawStatic(); redrawQuick(); return;}
+  if(t.id==="nextHand"){nextHand();schedule();return;}
+  if(t.id==="undoHand"){const h=st.hist.pop(); if(h){st.tbl=h.tbl;st.tend=h.tend||[];st.hero=h.hero;st.heroStack=h.heroStack;if(h.players)st.players=h.players;st.settled=h.settled||{};} schedule();return;}
+  if(t.id==="clearTbl"){st.tbl=[];st.tend=[];schedule();return;}
+  if(t.dataset.vp){st.vil=+t.dataset.vp;schedule();return;}
+  if(t.dataset.qv){st.qvil=+t.dataset.qv;schedule();return;}
+  if(t.id==="resetOthers"){st.others={};schedule();return;}
+  if(t.dataset.k&&window.CURS){const kk=+t.dataset.k,ch=t.dataset.ch,L=window.CURS[ch]||[];
+    $(ch==="chart"?"pick":"qpick").textContent=SAT.handName(kk)+": "+L.map(([a,,n])=>`${n} ${Math.round(a[kk]*100)}%`).join(" · ");}
+});
+document.addEventListener("change",e=>{
+  const s=e.target;
+  if(s.dataset.for&&s.value){st[s.dataset.for]=+s.value;s.value="";schedule();return;}
+  if(s.dataset.seatpk&&s.value){st.others[s.dataset.seatpk]=+s.value;s.value="";schedule();return;}
+  if(s.id==="tsize"){st.tsize=+s.value;st.others={};st.tbl=[];st.tend=[];st.hist=[];schedule();return;}
+  if(s.id==="raise"){st.raise=s.value;schedule();return;}
+  if(s.id==="ezStart"){ if(s.value==="auto") delete st.starts[st.game]; else st.starts[st.game]=s.value; st.level=null; st.modeManual=false; schedule(); return; }
+  if(s.id==="ezLevel"){ st.level=s.value?+s.value:null; st.modeManual=false; schedule(); return; }
+  if(s.id==="ezEntries"){ const v=+s.value; if(v>0){st.entries=v; schedule();} return; }
+  if(s.id==="ezVilStack"){ st.qvStack=s.value===""?"":+s.value; schedule(); return; }
+  if(s.id==="level"){st.level=s.value?+s.value:null;st.modeManual=false;schedule();return;}
+
+});
+document.addEventListener("input",e=>{
+  const t=e.target, v=+t.value;
+  if(t.id==="ezHero"){ if(v>0){ clearTimeout(t._t); t._t=setTimeout(()=>{   // 500 넘게 치면 칩으로 보고 BB로 바꿔요
+      let x=+t.value; if(x>500 && st.bb>0){ x=Math.round(x/st.bb*10)/10; t.value=x; }
+      st.heroStack=x; schedule(); },700);} return; }
+  if(t.id==="ezEntries"){ if(v>0){st.entries=v; clearTimeout(t._t); t._t=setTimeout(schedule,700);} return; }
+  if(t.id==="ezVilStack"){ st.qvStack=t.value===""?"":v; clearTimeout(t._t); t._t=setTimeout(schedule,600); return; }
+  if(t.id==="qvStack"){st.qvStack=t.value===""?"":v;clearTimeout(t._t);t._t=setTimeout(schedule,700);return;}
+  if(t.id==="shorter"){st.shorter=t.value===""?"":Math.max(0,Math.round(v));clearTimeout(t._t);t._t=setTimeout(schedule,700);return;}
+  if(t.dataset.behind!=null){ const i=+t.dataset.behind; st.tbl[i]= t.value===""?null:(v>0?v:st.tbl[i]); clearTimeout(t._t);t._t=setTimeout(schedule,700);return;}
+  if(!(v>0)) return;
+  if(["entries","players","heroStack","vilStack"].includes(t.id)){st[t.id]=v;clearTimeout(t._t);t._t=setTimeout(schedule,700);return;}
+  if(t.dataset.seat!=null){st.others[t.dataset.seat]=v;clearTimeout(t._t);t._t=setTimeout(schedule,700);}
+});
+load(); fillPickers(); schedule();
+$("detail").addEventListener("toggle",()=>{ if($("detail").open) schedule(); });
+setInterval(()=>{ if(!st.level){const L=autoLevel(); if(GAMES[st.game].blinds[L-1]!==st.bb) schedule();} },60000);
+</script>
+</body>
+</html>
