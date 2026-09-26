@@ -146,6 +146,9 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px;line-
   <div class="ez-grid" style="grid-template-columns:1fr">
     <div class="ez-ctl"><div class="k">전체 인원(총 엔트리) — 게임마다 한 번만</div><div class="row2"><input id="ezEntries" type="number" inputmode="numeric" min="2"></div></div>
   </div>
+  <div class="ez-grid" style="grid-template-columns:1fr">
+    <div class="ez-ctl"><div class="k">내 칩 등수 (로비 순위, 모르면 비움)</div><div class="row2"><input id="ezRank" type="number" inputmode="numeric" min="1" placeholder="예: 25"><span class="hint" id="ezRankHint" style="white-space:nowrap"></span></div></div>
+  </div>
   <h3>내 포지션</h3>
   <div class="chips" id="ezPos"></div>
   <h3>상황</h3>
@@ -485,17 +488,21 @@ function doF2T(q){
     for(let s=0;s<sims;s++){
       const oth=q.others.slice(); let hero=q.hero, pos=q.pos, L=q.level, hand=0, alive=oth.length+1;
       if(alive<=tg.n){ok++; continue;}
-      let carry=0;
+
       while(hand<3000){
         const bb=q.blinds[Math.min(L,q.blinds.length)-1];
         hero-=bb*0.1; if(pos===T-2) hero-=bb/2; if(pos===T-1) hero-=bb;
         if(hero<=0) break;
-        carry+=q.rate*(oth.length)/hpl;           // 이번 핸드 기대 탈락 수
-        while(carry>=1 || (carry>0 && rnd()<carry)){
-          carry=Math.max(0,carry-1);
+        // 사람마다 탈락 위험 = 기본 비율 × (평균 대비 짧을수록 커짐, 최대 3배) → 짧은 스택이 많으면 버블이 빨리 터져요
+        let avgO=0; for(const x of oth) avgO+=x; avgO/=Math.max(1,oth.length);
+        const hz=oth.map(x=>Math.min(3,Math.pow(avgO/Math.max(bb*0.5,x),0.8)));
+        let hsum=0; for(const w of hz) hsum+=w;
+        const lam=q.rate*hsum/hpl;                  // 이번 핸드 기대 탈락 수
+        let kills=Math.floor(lam)+(rnd()<lam-Math.floor(lam)?1:0);
+        while(kills-->0){
           if(!oth.length) break;
-          let wsum=0; for(const x of oth) wsum+=1/Math.max(1,x);
-          let r=rnd()*wsum, k=0; for(;k<oth.length;k++){ r-=1/Math.max(1,oth[k]); if(r<=0) break; }
+          let wsum=0; for(let i=0;i<oth.length;i++) wsum+=Math.min(3,Math.pow(avgO/Math.max(bb*0.5,oth[i]),0.8));
+          let r=rnd()*wsum, k=0; for(;k<oth.length;k++){ r-=Math.min(3,Math.pow(avgO/Math.max(bb*0.5,oth[k]),0.8)); if(r<=0) break; }
           k=Math.min(k,oth.length-1); const chips=oth[k]; oth.splice(k,1);
           if(oth.length) oth[Math.floor(rnd()*oth.length)]+=chips;
           alive--; if(alive<=tg.n) break;
@@ -553,7 +560,7 @@ const SCEN={
   rc:{name:"내 레이즈 → 빌런 올인 [근사]",vil:"뒤에서 올인한 빌런",vilAfter:true},
 };
 const $=id=>document.getElementById(id);
-const st={game:"hg",mode:"icm",entries:150,players:40,bb:400,tsize:9,scen:"open",hero:6,vil:8,qvil:5,heroStack:20,vilStack:30,others:{},tbl:[],tend:[],hist:[],ui:"easy",ezScen:"open",pick:{k:null},settled:{},bustLog:[],caller:null,shorter:"",raise:"2",qvStack:"",level:null,modeManual:false,starts:{}};
+const st={game:"hg",mode:"icm",entries:150,players:40,bb:400,tsize:9,scen:"open",hero:6,vil:8,qvil:5,heroStack:20,vilStack:30,others:{},tbl:[],tend:[],hist:[],ui:"easy",ezScen:"open",pick:{k:null},settled:{},bustLog:[],caller:null,shorter:"",rank:"",raise:"2",qvStack:"",level:null,modeManual:false,starts:{}};
 function load(){try{const s=JSON.parse(localStorage.getItem("sat_v10")||"null");if(s) Object.assign(st,s);}catch(e){}}
 function save(){try{localStorage.setItem("sat_v10",JSON.stringify(st));}catch(e){}}
 const POSN=()=>SAT.POS[st.tsize];
@@ -616,6 +623,7 @@ function drawStatic(){
   $("modes").innerHTML=Object.entries(MODES).map(([k,m])=>`<button type="button" class="opt ${st.mode===k?"on":""}" data-m="${k}"><b>${m.name}</b><span>${m.desc}</span></button>`).join("");
   $("scen").innerHTML=Object.entries(SCEN).map(([k,s])=>`<button type="button" class="chip ${st.scen===k?"on":""}" data-sc="${k}">${s.name}</button>`).join("");
   for(const k of ["entries","players","heroStack","vilStack","shorter","qvStack"]) if(document.activeElement!==$(k)) $(k).value=st[k];
+  if(+st.rank>0 && document.activeElement!==$("shorter")) $("shorter").value=shorterCount();
   { const g=GAMES[st.game], al=autoLevel();
     $("level").innerHTML=`<option value="">자동 · ${al}레벨 ${won(g.blinds[al-1]/2)}/${won(g.blinds[al-1])}</option>`+
       g.blinds.map((b,i)=>`<option value="${i+1}">${i+1}레벨 · ${won(b/2)}/${won(b)}${i+1<=REG_LEVEL?" (레지 중)":""}</option>`).join("");
@@ -690,11 +698,17 @@ function fieldOff(table){
   if(!M) return [];
   const hero=+st.heroStack, avgOff=R/M;
   const kT=table.filter((x,i)=>i!==st.hero&&x<hero).length;
-  const k=Math.max(0,Math.min(M, (st.shorter===""||st.shorter==null)?-1:(+st.shorter-kT)));
+  const sc=shorterCount();
+  const k=Math.max(0,Math.min(M, sc==null?-1:(sc-kT)));
   if(k<=0) return new Array(M).fill(avgOff);
   let short=Math.min(hero*0.6, avgOff), rest=(R-k*short)/Math.max(1,M-k);
   if(M-k>0 && rest<hero){rest=hero*1.05; short=Math.max(0.5,(R-(M-k)*rest)/k);}
   return new Array(k).fill(short).concat(new Array(M-k).fill(M-k>0?rest:0));
+}
+// 나보다 칩 적은 사람 수: 이지 모드의 '내 등수'가 있으면 (남은 인원 − 등수), 없으면 세부 모드 입력값
+function shorterCount(){
+  if(+st.rank>0) return Math.max(0, st.players - Math.min(+st.rank, st.players));
+  return (st.shorter===""||st.shorter==null)?null:+st.shorter;
 }
 function fmtChip(c){return c>=10000?(Math.round(c/1000)/10)+"만":Math.round(c).toLocaleString();}
 function schedule(){applyLevel();fix();drawStatic();drawEasy();save();clearTimeout(schedule.t);$("result").classList.add("busy");$("quick").classList.add("busy");
@@ -833,6 +847,9 @@ function drawEasy(){
       g.blinds.map((b,i)=>`<option value="${i+1}">${i+1}레벨 · ${won(b/2)}/${won(b)}</option>`).join("");
     $("ezLevel").value=st.level||""; }
   if(document.activeElement!==$("ezEntries")) $("ezEntries").value=st.entries;
+  if(+st.rank>st.players) st.rank=st.players;
+  if(document.activeElement!==$("ezRank")) $("ezRank").value=st.rank||"";
+  { const sc=shorterCount(); $("ezRankHint").innerHTML = +st.rank>0 ? `${st.players}명 중 ${st.rank}등 → 나보다 적은 사람 <b>${sc}명</b>` : "비우면 모두 평균으로 계산"; }
   if(document.activeElement!==$("ezVilStack")) $("ezVilStack").value=st.qvStack;
   $("ezPos").innerHTML=P.map((p,i)=>`<button type="button" class="chip hero ${i===st.hero?"on":""}" data-hp="${i}">${p}</button>`).join("");
   $("ezScen").innerHTML=`<button type="button" class="opt ${st.ezScen==="open"?"on":""}" data-ezs="open"><b>앞 모두 폴드</b><span>내가 먼저 액션</span></button>`+
@@ -924,7 +941,10 @@ function drawF2T(){
     return `${b.label} <b>${Math.round(x.p*100)}%</b>`+(x.level?` <span style="font-size:12px">(버블 예상 ${Math.round(x.level)}레벨, 약 ${mins}분 뒤)</span>`:"");});
   const p0=o[tg[0].key]?o[tg[0].key].p:0;
   const tip=p0>=0.85?"👉 폴드로 버틸 만해요. 큰 팟은 피하세요.":(p0>=0.5?"👉 반반이에요. 확실한 스틸만 하고 콜은 아끼세요.":"👉 폴드로는 어려워요. 차트대로 먼저 올인해서 칩을 늘리세요.");
-  el.innerHTML=`지금부터 <b>폴드만</b> 하면: ${parts.join(" · ")}<br>${tip}<br><span style="font-size:12px">탈락 속도: 레벨당 약 ${r1(br.learned?br.perLv:br.rate*st.players)}명 (${br.learned?"'−1 탈락' 기록으로 학습":"기본값 — '−1 탈락'을 누를수록 정확해져요"})</span>`;
+  const sc=shorterCount(), need=st.players-tg[0].n;
+  const ladder= sc==null?"" : (sc>=need?`<br>🪜 나보다 짧은 사람 ${sc}명 ≥ 버블까지 ${need}명 → 먼저 떨어질 사람이 충분해요. 콜은 더 좁게.`
+                                       :`<br>🪜 나보다 짧은 사람 ${sc}명 < 버블까지 ${need}명 → 내가 떨어질 차례가 가까워요. 먼저 올인이 중요해요.`);
+  el.innerHTML=`지금부터 <b>폴드만</b> 하면: ${parts.join(" · ")}${ladder}<br>${tip}<br><span style="font-size:12px">탈락 속도: 레벨당 약 ${r1(br.learned?br.perLv:br.rate*st.players)}명 (${br.learned?"'−1 탈락' 기록으로 학습":"기본값 — '−1 탈락'을 누를수록 정확해져요"})</span>`;
 }
 function redrawQuick(){ if(lastQA) drawQuickA(lastQA); if(lastQB) drawQuickB(lastQB); }
 const fmtBB=v=>v==null?"도달 불가":(v>=100?Math.round(v):r1(v))+"BB";
@@ -989,6 +1009,9 @@ function drawAdvice(){
     tips.push(`폴드만 하면 ${r1(orbits)}바퀴 버텨요. ${main.label}까지 ${Math.max(0,st.players-main.n)}명이면 기다릴 수 있는지 먼저 판단하세요.`);
     if(openTxt) tips.push(`지금 ${P[st.hero]}: ${openTxt}.`);
   }
+  { const sc=shorterCount(); if(sc!=null && st.mode==="icm"){ const bub=g.bubbles.find(b=>st.players>b.n);
+      if(bub){ const need=st.players-bub.n; tips.unshift(sc>=need?`나보다 짧은 사람이 ${sc}명 — 버블까지 필요한 ${need}명보다 많아요. 먼저 떨어질 사람이 충분하니 콜은 더 좁게.`
+        :`나보다 짧은 사람이 ${sc}명뿐이에요 (버블까지 ${need}명). 내가 떨어질 차례가 가까우니 먼저 올인이 중요해요.`);} } }
   $("advice").innerHTML=`<b class="t">${title}</b><ul>${tips.map(t=>`<li>${t}</li>`).join("")}</ul>`;
 }
 const COL={push:"var(--push)",raise:"var(--raise)",call:"var(--call)",flat:"var(--flat)",fold2:"var(--raise-soft)"};
@@ -1072,6 +1095,7 @@ document.addEventListener("change",e=>{
   if(s.id==="ezStart"){ if(s.value==="auto") delete st.starts[st.game]; else st.starts[st.game]=s.value; st.level=null; st.modeManual=false; schedule(); return; }
   if(s.id==="ezLevel"){ st.level=s.value?+s.value:null; st.modeManual=false; schedule(); return; }
   if(s.id==="ezEntries"){ const v=+s.value; if(v>0){st.entries=v; schedule();} return; }
+  if(s.id==="ezRank"){ st.rank=s.value===""?"":Math.max(1,Math.round(+s.value)); schedule(); return; }
   if(s.id==="ezVilStack"){ st.qvStack=s.value===""?"":+s.value; schedule(); return; }
   if(s.id==="level"){st.level=s.value?+s.value:null;st.modeManual=false;schedule();return;}
 
@@ -1082,10 +1106,11 @@ document.addEventListener("input",e=>{
       const toBB=x=>x>500&&st.bb>0?Math.round(x/st.bb*10)/10:x;
       st.heroStack=toBB(v); clearTimeout(t._t);
       t._t=setTimeout(()=>{ if(+t.value>500) t.value=st.heroStack; schedule(); },700);} return; }
+  if(t.id==="ezRank"){ st.rank=t.value===""?"":Math.max(1,Math.round(v)); clearTimeout(t._t); t._t=setTimeout(schedule,600); return; }
   if(t.id==="ezEntries"){ if(v>0){st.entries=v; clearTimeout(t._t); t._t=setTimeout(schedule,700);} return; }
   if(t.id==="ezVilStack"){ st.qvStack=t.value===""?"":v; clearTimeout(t._t); t._t=setTimeout(schedule,600); return; }
   if(t.id==="qvStack"){st.qvStack=t.value===""?"":v;clearTimeout(t._t);t._t=setTimeout(schedule,700);return;}
-  if(t.id==="shorter"){st.shorter=t.value===""?"":Math.max(0,Math.round(v));clearTimeout(t._t);t._t=setTimeout(schedule,700);return;}
+  if(t.id==="shorter"){st.rank=""; st.shorter=t.value===""?"":Math.max(0,Math.round(v));clearTimeout(t._t);t._t=setTimeout(schedule,700);return;}
   if(t.dataset.behind!=null){ const i=+t.dataset.behind; st.tbl[i]= t.value===""?null:(v>0?v:st.tbl[i]); clearTimeout(t._t);t._t=setTimeout(schedule,700);return;}
   if(!(v>0)) return;
   if(["entries","players","heroStack","vilStack"].includes(t.id)){st[t.id]=v;clearTimeout(t._t);t._t=setTimeout(schedule,700);return;}
