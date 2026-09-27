@@ -70,6 +70,8 @@ label.f{display:block;font-size:12px;color:var(--sub)}label.f input{margin-top:3
   <div class="note" style="margin:0 0 6px">버블·ITM·파이널은 상금이 계산에 들어가요</div>
   <div class="g3"><label class="f">남은 인원<input id="left" inputmode="numeric"></label><label class="f">ITM 인원<input id="itm" inputmode="numeric"></label><label class="f">내 등수<input id="rank" inputmode="numeric"></label></div>
   <div class="g3" style="margin-top:6px"><label class="f">총 엔트리<input id="entries" inputmode="numeric"></label><label class="f">1등 상금<input id="first" placeholder="예: 800만"></label><label class="f">총상금<input id="prize" placeholder="예: 3200만"></label></div>
+  <div class="g3" style="margin-top:6px"><label class="f">평균 스택 (BB)<input id="avg" inputmode="decimal" placeholder="예: 25"></label></div>
+  <div class="note" style="margin:6px 0 0">남은 인원 · ITM 인원은 꼭 넣어주세요 (ICM 계산에 필요). 평균 스택·1등·총상금은 넣으면 더 정확해져요</div>
  </div>
 </div>
 
@@ -126,7 +128,7 @@ const RK="AKQJT98765432", SU=[["s","♠"],["h","♥"],["d","♦"],["c","♣"]];
 const STAGES=["초반","중반","버블 근처","ITM 후","파이널","데이 마감 직전"], ICM_ST=["버블 근처","ITM 후","파이널"];
 const STREETS=["pre","flop","turn","river"], SNAME={pre:"프리플랍",flop:"플랍",turn:"턴",river:"리버"};
 const $=id=>document.getElementById(id);
-const blank=()=>({tname:"",tbuy:"",sb:"",bb:"",ante:"",anteType:"bb",reg:"closed",stage:"중반",left:"",itm:"",rank:"",entries:"",first:"",prize:"",
+const blank=()=>({tname:"",tbuy:"",sb:"",bb:"",ante:"",avg:"",anteType:"bb",reg:"closed",stage:"중반",left:"",itm:"",rank:"",entries:"",first:"",prize:"",
   T:9,hero:5,parts:[5],stacks:{},unit:"chip",vinfo:"",cards:{h0:"",h1:"",f0:"",f1:"",f2:"",t0:"",r0:""},acts:[],sd:{},q:"",pub:true,nick:""});
 let S=blank();
 try{const x=JSON.parse(localStorage.getItem("hr_draft_v1")||"null"); if(x) S=Object.assign(blank(),x);}catch(e){}
@@ -212,7 +214,7 @@ function replay(){
 function chipsHTML(el,items,cur,attr){ $(el).innerHTML=items.map(([v,l])=>`<button class="chip ${v===cur?"on":""}" data-${attr}="${v}">${l}</button>`).join(""); }
 function boardNeed(st){ return st==="flop"?["f0","f1","f2"]:st==="turn"?["t0"]:st==="river"?["r0"]:[]; }
 function render(){
-  ["tname","tbuy","sb","bb","ante","left","itm","rank","entries","first","prize","vinfo","q","nick"].forEach(k=>{const e=$(k); if(document.activeElement!==e) e.value=S[k]||"";});
+  ["tname","tbuy","sb","bb","ante","left","itm","rank","entries","first","prize","avg","vinfo","q","nick"].forEach(k=>{const e=$(k); if(document.activeElement!==e) e.value=S[k]||"";});
   chipsHTML("anteType",[["bb","BB 앤티"],["all","올 앤티"]],S.anteType,"at");
   chipsHTML("reg",[["open","레지 중 (재바인 가능)"],["closed","레지 마감 후"]],S.reg,"rg");
   chipsHTML("stage",STAGES.map(s=>[s,s]),S.stage,"stg");
@@ -296,7 +298,7 @@ function summary(){
   const R=setupOK()?replay():null, L=[];
   L.push(`[✍️ 핸드리뷰] ${S.tname||"(대회명)"}${S.tbuy?` (${S.tbuy})`:""}`);
   L.push(`${fmt(SBv())}/${fmt(BB())} (${S.anteType==="bb"?"BB앤티":"올앤티"} ${fmt(AN())}) · ${S.reg==="open"?"레지 중":"레지 마감 후"} · ${S.stage}`);
-  if(ICM_ST.includes(S.stage)) L.push(`남은 ${S.left||"?"} / ITM ${S.itm||"?"} · 내 등수 ${S.rank||"?"}${S.entries?` · 엔트리 ${S.entries}`:""}${S.first?` · 1등 ${S.first}`:""}${S.prize?` · 총상금 ${S.prize}`:""}`);
+  if(ICM_ST.includes(S.stage)) L.push(`남은 ${S.left||"?"} / ITM ${S.itm||"?"} · 내 등수 ${S.rank||"?"}${S.entries?` · 엔트리 ${S.entries}`:""}${S.first?` · 1등 ${S.first}`:""}${S.prize?` · 총상금 ${S.prize}`:""}${S.avg?` · 평균 ${S.avg}BB`:""}`);
   L.push(`🃏 나 ${pn(S.hero)} ${bbs(num(S.stacks[S.hero]))}  ${cardTxt(S.cards.h0)} ${cardTxt(S.cards.h1)}`);
   L.push(`👥 ${[...S.parts].sort((a,b)=>a-b).filter(i=>i!==S.hero).map(i=>`${pn(i)} ${bbs(num(S.stacks[i]))}`).join(" · ")}`+(S.vinfo?` (${S.vinfo})`:""));
   if(R) R.streets.forEach(s=>{ const bd=boardNeed(s.name).map(k=>cardTxt(S.cards[k])).join(" ");
@@ -420,6 +422,7 @@ function handData(){ if(!setupOK()) return null; const R=replay();
       board:["f0","f1","f2","t0","r0"].slice(0,{pre:0,flop:3,turn:4,river:5}[st.name]).map(k=>S.cards[k]||null),
       log:st.log.map(r=>({seat:r.seat,type:r.type,to:r.to,add:r.add,open:!!r.open,isBet:!!r.isBet}))})),
     sd:Object.fromEntries(Object.entries(S.sd||{}).filter(([k,v])=>v&&v.m==="show").map(([k])=>[k,[S.cards["s"+k+"_0"]||null,S.cards["s"+k+"_1"]||null]])),
+    icm:ICM_ST.includes(S.stage)?{left:S.left||"",itm:S.itm||"",rank:S.rank||"",entries:S.entries||"",first:S.first||"",prize:S.prize||"",avg:S.avg||""}:null,
     done:R.done||null}; }
 function autoAnte(){ const bb=num(S.bb); return S.anteType==="bb"?bb:Math.round(bb*0.1); }
 function alertNote(m){ const w=document.createElement("div"); w.className="warn"; w.textContent=m; $("actbox").appendChild(w); setTimeout(()=>w.remove(),2000); }
