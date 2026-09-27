@@ -159,7 +159,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px;line-
   </div>
   <div id="ezVilBox" style="margin-top:8px">
     <div class="chips" id="ezVil"></div>
-    <label class="f" style="margin-top:6px;max-width:220px">올인한 사람 스택 (BB, 비우면 평균)<input id="ezVilStack" type="number" inputmode="decimal" step="0.1" min="0.1"></label>
+    <label class="f" id="ezVilLbl" style="margin-top:6px;max-width:320px">올인한 사람 스택 (BB, 비우면 평균)<input id="ezVilStack" type="number" inputmode="decimal" step="0.1" min="0.1"></label>
   </div>
   <h3>내 패 <span class="hint">차트에서 누르기 · 색 = 지금 상황의 정답</span></h3>
   <div class="chart ezchart" id="ezChart"></div>
@@ -825,6 +825,37 @@ function rangeText(freq){
 const TEND=[{f:1,name:"보통"},{f:0.6,name:"타이트"},{f:1.6,name:"루즈"}];
 const tendF=i=>(TEND[st.tend[i]||0]||TEND[0]).f, tendN=i=>(TEND[st.tend[i]||0]||TEND[0]).name;
 let E_UI=null; const EUI=()=>E_UI||(E_UI=decodeE(EQB64));
+
+// ===== 딥스택(25BB 초과) 오픈: 올인/폴드 계산이 안 맞는 구간이라 일반 오픈 범위 + 올인 받았을 때 콜은 '유효 스택' 기준으로 =====
+const DEEP_BB=25;
+let PLAY_ORDER=null;
+function playOrder(){ if(PLAY_ORDER) return PLAY_ORDER; const E=EUI(), W=SAT.W, sc=new Float64Array(169);
+  for(let h=0;h<169;h++){ let a=0; for(let k=0;k<169;k++) a+=W[k]*E[h][k];
+    const r=Math.floor(h/13), c=h%13, hi=Math.min(r,c), lo=Math.max(r,c), gap=lo-hi-1, suited=r<c, pair=r===c;
+    if(pair) a+=0.05; else if(suited){ a+=0.035; if(gap===0) a+=0.03; else if(gap===1) a+=0.018; else if(gap===2) a+=0.008; if(hi===0) a+=0.02; }
+    else { if(hi>0 && lo>=6) a-=0.03; if(gap===0 && lo<=8) a+=0.01; }
+    sc[h]=a; }
+  PLAY_ORDER=[...Array(169).keys()].sort((x,y)=>sc[y]-sc[x]); return PLAY_ORDER; }
+function topBy(order,p){ const W=SAT.W,o=new Float64Array(169); let acc=0; for(const h of order){ if(acc>=p-1e-9) break; o[h]=1; acc+=W[h]; } return o; }
+// 자리별 일반 오픈 비율(앤티 있는 토너먼트 기준). SB는 BB 하나만 남아서 넓게
+function openPct(){ const n=st.tsize, i=st.hero, btn=n-3, OPEN=[0.45,0.29,0.23,0.19,0.16,0.14,0.12,0.11];
+  let op = i===n-2 ? 0.40 : OPEN[Math.min(OPEN.length-1, Math.max(0,btn-i))]; if(st.mode==="icm") op*=0.8; return op; }
+function deepOpen(){
+  const n=st.tsize, i=st.hero, btn=n-3, hero=+st.heroStack;
+  if(i>=n-1 || hero<=DEEP_BB) return null;
+  const op=openPct();
+  const open=topBy(playOrder(),op);
+  const qs=quickStacks(); let behind=0; for(let j=i+1;j<n;j++) behind=Math.max(behind, qs[j]-posted(j));
+  const vil = +st.qvStack>0 ? +st.qvStack : behind;
+  const eff=Math.max(2,Math.min(hero,vil)), R=+st.raise||2;
+  const X=Math.min(0.12,Math.max(0.03,2/eff))*Math.pow(op/0.2,0.3);
+  const vr=SAT.topRange(X,EUI()), E=EUI(), W=SAT.W;
+  const need=(eff-R)/(2*eff+1.5+0.1*n) + (st.mode==="icm"?0.07:0);
+  const sh=new Float64Array(169), rc=new Float64Array(169), rf=new Float64Array(169);
+  for(let h=0;h<169;h++){ if(!open[h]) continue; let a=0,w=0; for(let k=0;k<169;k++) if(vr[k]){a+=W[k]*E[h][k]; w+=W[k];}
+    if(a/w>=need) rc[h]=1; else rf[h]=1; }
+  return {sh,rc,rf,op,eff,vil,X,need,R, vilKnown:+st.qvStack>0};
+}
 let lastQB=null;
 function drawQuickA(r){
   if(r) lastQA=r; else r=null;
@@ -838,9 +869,22 @@ function drawQuickA(r){
   else {sh=r.sh; ra=r.ra; rcall=SAT.raiseCallMix(r); callPcts=r.csPct;}
   const W=SAT.W, pct=a=>{let p=0;for(let k=0;k<169;k++)p+=W[k]*a[k];return p;};
   const rc=new Float64Array(169), rf=new Float64Array(169); for(let h=0;h<169;h++){rc[h]=ra[h]*rcall[h]; rf[h]=ra[h]*(1-rcall[h]);}
+  // 계산은 뒤 사람이 '올인 아니면 폴드'만 한다고 봐서 작은 레이즈가 공짜처럼 보여요 → 레이즈는 그 자리 일반 오픈 범위(×1.25)까지만
+  let capNote="";
+  if(r.canRaise){ const W=SAT.W, cap=openPct()*1.25; let used=0; for(let h=0;h<169;h++) used+=W[h]*sh[h];
+    let raw=0; for(let h=0;h<169;h++) raw+=W[h]*(rc[h]+rf[h]);
+    if(used+raw>cap+1e-6){ for(const h of playOrder()){ const w=rc[h]+rf[h]; if(!w) continue;
+        if(used+W[h]*w<=cap+1e-6){ used+=W[h]*w; } else { rc[h]=0; rf[h]=0; } }
+      capNote=`<br><span class="note">레이즈는 이 자리 일반 오픈 범위(상위 ${Math.round(cap*100)}%)까지만 보여줘요 — 계산상 더 넓게 나와도 실제로는 뒤에서 콜·작은 3벳이 들어와서 손해예요.</span>`; } }
+  const D=deepOpen();
+  if(D){ const pp=x=>Math.round(x*100)+"%";
+    $("qaSum").innerHTML=`<b>앞이 다 폴드 → ${P[st.hero]}(나 ${st.heroStack}BB) · 딥스택</b><br>${DEEP_BB}BB가 넘으면 올인/폴드 계산이 안 맞아서 <b>일반 오픈 범위(상위 ${pp(D.op)})</b>로 보여줘요.<br><span class="note">올인 받으면: 유효 스택 ${r1(D.eff)}BB(${D.vilKnown?"입력한 상대 스택":"뒤 자리 중 가장 큰 스택"}) 기준 · 상대 올인 범위 상위 ${pp(D.X)} 가정 · 콜에 필요한 승률 ${pp(D.need)}</span>`+
+      `<div class="concl">👉 <b>오픈 → 올인 받으면 콜</b>: ${rangeText(D.rc)}<br>👉 <b>오픈 → 올인 받으면 폴드</b>: ${rangeText(D.rf)}</div>`;
+    paint("qaChart",[[D.rc,COL.call,"오픈 후 콜"],[D.rf,COL.fold2,"오픈 후 폴드"]]);
+    window.QA={sh:D.sh,rc:D.rc,rf:D.rf,canRaise:true,R:D.R,shPct:0,need:null,deep:D}; drawVerdict(); return; }
   $("qaSum").innerHTML=`<b>앞이 다 폴드 → ${P[st.hero]}(나 ${st.heroStack}BB)</b><br>올인 <b>${f1(pct(sh))}</b>`+
     (r.canRaise?` · 오픈 후 올인 받으면 콜 <b>${f1(pct(rc))}</b> · 오픈 후 폴드 <b>${f1(pct(rf))}</b> <span class="note">[근사]</span>`:` <span class="note">(10BB 미만 → 올인·폴드만)</span>`)+
-    (adj.length?`<br><span class="note">실전 보정: ${adj.join(", ")}</span>`:"")+
+    (adj.length?`<br><span class="note">실전 보정: ${adj.join(", ")}</span>`:"")+capNote+
     (r.info.length?(()=>{const a=Math.round(Math.min(...r.info.map(x=>x.need))*100),b=Math.round(Math.max(...r.info.map(x=>x.need))*100);return `<br><span class="note">내 올인에 뒤 사람이 콜하려면 승률 ${a===b?a:a+"~"+b}% 필요</span>`;})():"");
   const t1=rangeText(sh), t2=rangeText(rc), t3=rangeText(rf);
   $("qaSum").innerHTML+=`<div class="concl">👉 <b>올인</b>: ${t1}`+(r.canRaise&&t2!=="없음"?`<br>👉 <b>오픈 → 올인 받으면 콜</b>: ${t2}`:"")+(r.canRaise&&t3!=="없음"?`<br>👉 <b>오픈 → 올인 받으면 폴드</b>: ${t3}`:"")+`</div>`;
@@ -916,7 +960,9 @@ function drawEasy(){
   $("ezPos").innerHTML=P.map((p,i)=>`<button type="button" class="chip hero ${i===st.hero?"on":""}" data-hp="${i}">${p}</button>`).join("");
   $("ezScen").innerHTML=`<button type="button" class="opt ${st.ezScen==="open"?"on":""}" data-ezs="open"><b>앞 모두 폴드</b><span>내가 먼저 액션</span></button>`+
     `<button type="button" class="opt ${st.ezScen==="vs"?"on":""}" data-ezs="vs"><b>앞에서 올인</b><span>콜할지 말지</span></button>`;
-  $("ezVilBox").style.display=st.ezScen==="vs"?"":"none";
+  { const deep=st.ezScen==="open" && +st.heroStack>DEEP_BB && st.hero<st.tsize-1;
+    $("ezVilBox").style.display=(st.ezScen==="vs"||deep)?"":"none"; $("ezVil").style.display=st.ezScen==="vs"?"":"none";
+    $("ezVilLbl").firstChild.textContent = deep ? "뒤에서 올인할 사람 스택 (BB, 비우면 뒤 자리 중 가장 큰 스택)" : "올인한 사람 스택 (BB, 비우면 평균)"; }
   $("ezVil").innerHTML= st.hero<1?`<span class="hint">UTG 앞에는 사람이 없어요.</span>`:
     `<span class="hint" style="align-self:center">누가?</span>`+P.map((p,i)=>i<st.hero&&i<=n-2?`<button type="button" class="chip vil ${i===st.qvil?"on":""}" data-qv="${i}">${p}</button>`:"").join("");
 
@@ -937,7 +983,8 @@ function drawVerdict(){
     else if(c>=0.5) set("raise",`${q.R||2}BB 레이즈`,`뒤에서 올인하면 <b>폴드</b>`);
     else if(a+b+c>=0.25) set("fold","폴드 (경계)",`가끔 섞는 패예요 (올인 ${pc(a)} · 레이즈 ${pc(b+c)}). 애매하면 폴드`);
     else set("fold","폴드","");
-    if(b>=0.5||c>=0.5) el.innerHTML+=`<div class="why">⚠️ [근사] 레이즈 계산은 작은 3벳·플랍 이후를 빼고 한 거라 방향만 참고하세요.</div>`;
+    if(q.deep) el.innerHTML+=`<div class="why">딥스택(${DEEP_BB}BB 초과)이라 일반 오픈 범위예요. 올인 받았을 때 콜/폴드는 유효 스택 ${r1(q.deep.eff)}BB 기준${q.deep.vilKnown?"":" (올인한 사람 스택을 '상대 스택' 칸에 넣으면 그 기준으로 다시 계산)"}.</div>`;
+    else if(b>=0.5||c>=0.5) el.innerHTML+=`<div class="why">⚠️ [근사] 레이즈 계산은 작은 3벳·플랍 이후를 빼고 한 거라 방향만 참고하세요.</div>`;
     if(a<0.5&&b<0.5&&c<0.5&&a>=0.1&&+st.heroStack<=10) el.innerHTML+=`<div class="why">⚠️ 숏스택 경계 패예요. 계산이 짧은 스택의 생존을 조금 후하게 봐서, 블라인드가 곧 오르면 올인 쪽이 나아요.</div>`;
     if(a>=0.5||b>=0.5||c>=0.5) el.innerHTML+=f2tNote();
     drawResultBtns(a>=0.5?"shove":null);
