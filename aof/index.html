@@ -144,7 +144,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px;line-
     <div class="ez-ctl"><div class="k">전체 인원 (게임마다 한 번)</div><div class="row2"><input id="ezEntries" type="number" inputmode="numeric" min="2"></div></div>
   </div>
   <div class="ez-grid">
-    <div class="ez-ctl"><div class="k">게임 시작 시각</div><select id="ezStart"></select></div>
+    <div class="ez-ctl"><div class="k"><b>게임 시작 시각</b> (꼭 고르기)</div><select id="ezStart"></select></div>
     <div class="ez-ctl"><div class="k">블라인드 레벨</div><select id="ezLevel"></select></div>
   </div>
   <h3>내 포지션</h3>
@@ -575,8 +575,8 @@ const SCEN={
 };
 const $=id=>document.getElementById(id);
 const st={game:"hg",mode:"icm",entries:150,players:40,bb:400,tsize:9,scen:"open",hero:6,vil:8,qvil:5,heroStack:20,vilStack:30,others:{},tbl:[],tend:[],hist:[],ui:"easy",ezScen:"open",pick:{k:null},settled:{},bustLog:[],caller:null,shorter:"",rank:"",tstyle:"normal",raise:"2",qvStack:"",level:null,modeManual:false,starts:{}};
-function load(){try{const s=JSON.parse(localStorage.getItem("sat_v14")||"null");if(s) Object.assign(st,s);}catch(e){}}
-function save(){try{localStorage.setItem("sat_v14",JSON.stringify(st));}catch(e){}}
+function load(){try{const s=JSON.parse(localStorage.getItem("sat_v15")||"null");if(s) Object.assign(st,s);}catch(e){}}
+function save(){try{localStorage.setItem("sat_v15",JSON.stringify(st));}catch(e){}}
 const POSN=()=>SAT.POS[st.tsize];
 const avgBB=()=>Math.max(1,st.entries*START/Math.max(2,st.players)/Math.max(1,st.bb));
 // 시작 시각: 직접 고른 값이 없으면 오늘 일정 중 지금 진행 중일 가능성이 가장 큰(가장 최근에 시작한) 게임
@@ -585,7 +585,23 @@ function autoStart(game){
   const past=times.filter(t=>{const [h,m]=t.split(":").map(Number);return h*60+m<=mins;});
   return past.length?past[past.length-1]:times[times.length-1];
 }
-const startOf=()=>st.starts[st.game]||autoStart(st.game);
+// 게임 시작 시각은 플레이어가 직접 골라야 해요(고른 뒤 14시간 동안 유효). 고르면 블라인드가 시계에 맞춰 자동으로 올라가요
+const pickOf=g=>{const p=(st.startPick||{})[g]; return p&&Date.now()-p.at<14*3600e3?p.t:null;};
+const hasStart=()=>!!pickOf(st.game);
+const startOf=()=>pickOf(st.game)||autoStart(st.game);
+function setStart(t){ st.startPick=st.startPick||{}; if(t) st.startPick[st.game]={t,at:Date.now()}; else delete st.startPick[st.game]; st.level=null; st.modeManual=false; }
+// 다음 레벨까지 남은 시간(초). 휴식(매시 55~00분) 중이면 휴식 끝날 때까지 포함
+function nextLevelIn(){
+  const [h,m]=startOf().split(":").map(Number), now=new Date(), start=new Date(now);
+  start.setHours(h,m,0,0); if(start>now) start.setDate(start.getDate()-1);
+  let played=0, t=start.getTime(); const end=now.getTime();
+  for(;t+60000<=end;t+=60000){ if(new Date(t).getMinutes()<55) played++; }
+  const partial=(end-t)/1000, inBreak=new Date(end).getMinutes()>=55;
+  let need=LEVEL_MIN*60-((played*60+(inBreak?0:partial))%(LEVEL_MIN*60));
+  let sec=0, cur=new Date(end), left=need;
+  while(left>0 && sec<3600){ if(cur.getMinutes()<55) left--; sec++; cur=new Date(cur.getTime()+1000); }
+  return {sec, inBreak};
+}
 // 시작 시각부터 지금까지 레벨 (매시 55분~00분 5분 휴식은 레벨 시간에서 뺌)
 function autoLevel(){
   const [h,m]=startOf().split(":").map(Number), now=new Date(), start=new Date(now);
@@ -599,14 +615,14 @@ function autoLevel(){
 const autoPostReg=()=>Math.max(autoLevel(), REG_LEVEL+1);
 function levelOptions(g,tagReg){
   const al=autoLevel(), d=REG_LEVEL+1;
-  return `<option value="">기본 · ${d}레벨 ${won(g.blinds[d-1]/2)}/${won(g.blinds[d-1])} (레지 마감 직후)</option>`+
-    `<option value="clock">시각 기준 자동 · ${al}레벨 ${won(g.blinds[al-1]/2)}/${won(g.blinds[al-1])}</option>`+
-    g.blinds.map((b,i)=>`<option value="${i+1}">${i+1}레벨 · ${won(b/2)}/${won(b)}${tagReg&&i+1<=REG_LEVEL?" (레지 중)":""}</option>`).join("");
+  const first = hasStart() ? `<option value="">⏱ 자동 (시계) · ${al}레벨 ${won(g.blinds[al-1]/2)}/${won(g.blinds[al-1])}</option>`
+                           : `<option value="">시작 시각을 고르면 자동 · 지금은 ${d}레벨</option>`;
+  return first+g.blinds.map((b,i)=>`<option value="${i+1}">${i+1}레벨 · ${won(b/2)}/${won(b)}${tagReg&&i+1<=REG_LEVEL?" (레지 중)":""}</option>`).join("");
 }
-const levelValue=()=>st.level==="clock"?"clock":(st.level?String(st.level):"");
-const parseLevel=v=>v===""?null:(v==="clock"?"clock":+v);
+const levelValue=()=>(+st.level)?String(st.level):"";
+const parseLevel=v=>v===""?null:+v;
 // 레벨 기본값 = 레지 마감 직후(16레벨). '시각 기준 자동'을 고르면 시계로 계산, 숫자를 고르면 그 레벨
-const curLevel=()=>st.level==="clock"?autoLevel():(+st.level||REG_LEVEL+1);
+const curLevel=()=>(+st.level)||(hasStart()?autoLevel():REG_LEVEL+1);
 function applyLevel(){
   const L=curLevel(), g=GAMES[st.game], nb=g.blinds[Math.min(L,g.blinds.length)-1];
   // 블라인드가 바뀌면 칩은 그대로 두고 BB 수만 다시 계산 (모든 입력 스택)
@@ -658,10 +674,10 @@ function drawStatic(){
   if(+st.rank>0 && document.activeElement!==$("shorter")) $("shorter").value=shorterCount();
   { const g=GAMES[st.game], al=autoPostReg();
     $("level").innerHTML=levelOptions(g,true); $("level").value=levelValue();
-    $("startChips").innerHTML=g.times.map(t=>`<button type="button" class="chip ${startOf()===t?"on":""}" data-st="${t}">${t}${st.game==="pm"&&t==="15:00"?" (5장)":""}</button>`).join("")+
-      (st.starts[st.game]?`<button type="button" class="chip" data-st="auto">자동</button>`:"");
-    $("startHint").textContent=st.starts[st.game]?"(직접 고름)":"(지금 시각 기준 자동)";
-    $("lvHint").textContent=st.level==="clock"?`${startOf()} 시작 기준 · 7분 레벨 · 휴식 반영`:(st.level?"직접 고름":"기본: 레지 마감 직후 16레벨부터"); }
+    $("startChips").innerHTML=g.times.map(t=>`<button type="button" class="chip ${pickOf(st.game)===t?"on":""}" data-st="${t}">${t}${st.game==="pm"&&t==="15:00"?" (5장)":""}</button>`).join("")+
+      (hasStart()?`<button type="button" class="chip" data-st="auto">선택 취소</button>`:"");
+    $("startHint").textContent=hasStart()?"(골랐어요 · 블라인드 자동)":"(골라야 블라인드가 시계에 맞춰 자동으로 올라가요)";
+    $("lvHint").textContent=st.level?"직접 고름 (자동으로 돌리려면 맨 위 항목)":(hasStart()?`${startOf()} 시작 · 시계에 맞춰 자동`:"시작 시각을 고르면 자동"); }
   $("tsize").value=st.tsize; $("raise").value=st.raise;
   const P=POSN(), n=st.tsize, sc=SCEN[st.scen];
   if(!document.activeElement||!document.activeElement.dataset||document.activeElement.dataset.behind==null)
@@ -871,15 +887,18 @@ function drawEasy(){
     `<span class="hint" style="align-self:center">${startOf()} 게임 · <a href="#" data-ui="pro" style="color:var(--accent)">시간·설정 바꾸기</a></span>`;
   const lines=g.bubbles.map(b=>st.players>b.n?`${b.label}까지 <b>${st.players-b.n}명</b>`:`${b.label} ✅`);
   const av=avgBB(), bad=av<3||av>300;
-  $("ezStatus").innerHTML=`${curLevel()}레벨 ${won(st.bb/2)}/${won(st.bb)} · 평균 ${r1(av)}BB · ${st.mode==="icm"?"ICM(마감 후)":"칩EV(마감 전)"}<br>${lines.join(" · ")}`+
+  const clk = st.level ? `(레벨 직접 고름)` : (hasStart() ? (()=>{const x=nextLevelIn(); return `⏱ ${x.inBreak?"휴식 중 · ":""}다음 레벨까지 <b id="ezCount">${Math.floor(x.sec/60)}:${String(x.sec%60).padStart(2,"0")}</b>`;})()
+            : `<b style="color:var(--push)">⏰ 게임 시작 시각을 골라주세요 — 블라인드·BB가 시계에 맞춰 자동으로 바뀌어요</b>`);
+  $("ezStatus").innerHTML=`${curLevel()}레벨 ${won(st.bb/2)}/${won(st.bb)} · 평균 ${r1(av)}BB · ${st.mode==="icm"?"ICM(마감 후)":"칩EV(마감 전)"}<br>${clk}<br>${lines.join(" · ")}`+
     (bad?`<br><b style="color:var(--push)">⚠️ 평균 ${r1(av)}BB는 이상해요. 전체 인원·남은 인원(또는 게임 시작 시각)을 먼저 맞춰주세요.</b>`:"");
   if(document.activeElement!==$("ezPlayersIn")) $("ezPlayersIn").value=st.players;
   document.querySelectorAll("[data-tstyle]").forEach(b=>b.className="chip"+(b.dataset.tstyle===st.tstyle?" on":""));
-  if(document.activeElement!==$("ezHero")) $("ezHero").value=st.heroStack;
+  {const h=$("ezHero"); if(document.activeElement!==h || Date.now()-(h._typed||0)>1500) h.value=st.heroStack;}
   $("ezHeroChips").textContent=`= ${Math.round(st.heroStack*st.bb).toLocaleString()}칩`;
   { const al=autoPostReg();
-    $("ezStart").innerHTML=`<option value="auto">자동 (${autoStart(st.game)})</option>`+g.times.map(t=>`<option value="${t}">${t}${st.game==="pm"&&t==="15:00"?" (5장)":""}</option>`).join("");
-    $("ezStart").value=st.starts[st.game]||"auto";
+    $("ezStart").innerHTML=`<option value="">⏰ 시작 시각 고르기</option>`+g.times.map(t=>`<option value="${t}">${t} 시작</option>`).join("");
+    $("ezStart").value=pickOf(st.game)||"";
+    $("ezStart").parentElement.style.border=hasStart()?"":"2px solid var(--push)";
     $("ezLevel").innerHTML=levelOptions(g,false); $("ezLevel").value=levelValue(); }
   if(document.activeElement!==$("ezEntries")) $("ezEntries").value=st.entries;
   if(+st.rank>st.players) st.rank=st.players;
@@ -1109,7 +1128,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.g){st.game=t.dataset.g;st.level=null;st.modeManual=false;st.bustLog=[];schedule();return;}
   if(t.dataset.m){st.mode=t.dataset.m;st.modeManual=true;schedule();return;}
   if(t.dataset.sc){st.scen=t.dataset.sc;schedule();return;}
-  if(t.dataset.st){ if(t.dataset.st==="auto") delete st.starts[st.game]; else st.starts[st.game]=t.dataset.st; st.level=null;st.modeManual=false;schedule();return;}
+  if(t.dataset.st){ setStart(t.dataset.st==="auto"?null:t.dataset.st); schedule(); return; }
   if(t.dataset.hp){rotateTo(+t.dataset.hp);schedule();return;}
   if(t.dataset.ui){e.preventDefault(); st.ui=t.dataset.ui; if(st.ui==="pro") window.scrollTo(0,0); schedule(); return;}
   if(t.dataset.tstyle){st.tstyle=t.dataset.tstyle; save(); drawEasy(); redrawQuick(); return;}
@@ -1140,7 +1159,7 @@ document.addEventListener("change",e=>{
   if(s.dataset.seatpk&&s.value){st.others[s.dataset.seatpk]=+s.value;s.value="";schedule();return;}
   if(s.id==="tsize"){st.tsize=+s.value;st.others={};st.tbl=[];st.tend=[];st.hist=[];schedule();return;}
   if(s.id==="raise"){st.raise=s.value;schedule();return;}
-  if(s.id==="ezStart"){ if(s.value==="auto") delete st.starts[st.game]; else st.starts[st.game]=s.value; st.level=null; st.modeManual=false; schedule(); return; }
+  if(s.id==="ezStart"){ setStart(s.value||null); schedule(); return; }
   if(s.id==="ezLevel"){ st.level=parseLevel(s.value); st.modeManual=false; schedule(); return; }
   if(s.id==="ezEntries"){ const v=+s.value; if(v>0){st.entries=v; schedule();} return; }
   if(s.id==="ezPlayersIn"){ const v=+s.value; if(v>=2){ st.players=Math.round(v); schedule(); } return; }
@@ -1153,7 +1172,7 @@ document.addEventListener("input",e=>{
   const t=e.target, v=+t.value;
   if(t.id==="ezHero"){ if(v>0){   // 치는 즉시 값을 저장(다른 버튼을 바로 눌러도 안 사라지게). 500 넘으면 칩으로 보고 BB로 바꿔요
       const toBB=x=>x>500&&st.bb>0?Math.round(x/st.bb*10)/10:x;
-      st.heroStack=toBB(v); clearTimeout(t._t);
+      st.heroStack=toBB(v); t._typed=Date.now(); clearTimeout(t._t);
       t._t=setTimeout(()=>{ if(+t.value>500) t.value=st.heroStack; schedule(); },700);} return; }
   if(t.id==="ezPlayersIn"){ if(v>=2){ st.players=Math.round(v); clearTimeout(t._t); t._t=setTimeout(schedule,700);} return; }   // 직접 고치는 건 탈락 기록에 안 남겨요
   if(t.id==="ezRank"){ st.rank=t.value===""?"":Math.max(1,Math.round(v)); clearTimeout(t._t); t._t=setTimeout(schedule,600); return; }
@@ -1168,7 +1187,11 @@ document.addEventListener("input",e=>{
 });
 load(); fillPickers(); schedule();
 $("detail").addEventListener("toggle",()=>{ if($("detail").open) schedule(); });
-setInterval(()=>{ if(st.level==="clock"){const L=autoLevel(); if(GAMES[st.game].blinds[L-1]!==st.bb) schedule();} },60000);
+setInterval(()=>{
+  if(st.level||!hasStart()) return;
+  const L=autoLevel(); if(GAMES[st.game].blinds[L-1]!==st.bb){ schedule(); return; }   // 블라인드 업 → BB 수 자동 조정
+  const el=document.getElementById("ezCount"); if(el){const x=nextLevelIn(); el.textContent=`${Math.floor(x.sec/60)}:${String(x.sec%60).padStart(2,"0")}`;}
+},1000);
 </script>
 </body>
 </html>
