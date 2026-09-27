@@ -178,8 +178,10 @@ function replay(){
     const who=nextActor(); if(who==null){R.error="순서 오류"; break;}
     const p=pl[who], toCall=Math.max(0,curBet-p.bet);
     if(who===S.hero){ const potNow=pot+parts.reduce((s,i)=>s+pl[i].bet,0); const opp=active().filter(i=>i!==who).map(i=>pl[i].stack+pl[i].bet);
-      R.heroSpots=R.heroSpots||[]; R.heroSpots.push({street:STREETS[street],pot:potNow,toCall,stack:p.stack,
-        need:toCall>0?Math.round(toCall/(potNow+toCall)*1000)/10:null, eff:Math.min(p.stack+p.bet, Math.max(0,...opp)), players:active().length, act:a.t}); }
+      // 내가 다 못 받는 올인 초과분은 돌려받으므로 팟·콜 금액에서 뺀다
+      const heroMax=p.bet+p.stack, callAmt=Math.min(toCall,p.stack), over=parts.reduce((s,i)=>s+(i!==who?Math.max(0,pl[i].bet-heroMax):0),0), potEff=potNow-over;
+      R.heroSpots=R.heroSpots||[]; R.heroSpots.push({street:STREETS[street],pot:potEff,toCall:callAmt,stack:p.stack,short:toCall>p.stack,
+        need:callAmt>0?Math.round(callAmt/(potEff+callAmt)*1000)/10:null, eff:Math.min(p.stack+p.bet, Math.max(0,...opp)), players:active().length, act:a.t}); }
     let rec={seat:who,type:a.t,to:0,add:0};
     if(a.t==="fold"){ p.fold=true; need.delete(who); }
     else if(a.t==="check"){ need.delete(who); }
@@ -305,7 +307,7 @@ function summary(){
     if(sd) L.push(`[상대가 보여준 패] ${sd}`); }
   if(R&&R.heroSpots&&R.heroSpots.length){ L.push("[📐 계산 · 내 결정 시점]");
     R.heroSpots.forEach(h=>{ const spr=h.street!=="pre"&&h.pot>0?Math.round(h.eff/h.pot*10)/10:null;
-      L.push(`- ${SNAME[h.street]} (${h.players}명): 팟 ${bbs(h.pot)}${(h.street==="pre"&&h.toCall<=BB())?" · 먼저 액션(오픈/림프/폴드)":h.toCall>0?` · 콜 ${bbs(h.toCall)} · 필요 승률 ${h.need}%`:" · 체크/벳 선택"}${spr!=null?` · SPR ${spr}`:""} → ${({fold:"폴드",check:"체크",call:"콜",raise:"벳/레이즈",allin:"올인"})[h.act]||h.act}`); }); }
+      L.push(`- ${SNAME[h.street]} (${h.players}명): 팟 ${bbs(h.pot)}${(h.street==="pre"&&h.toCall<=BB())?" · 먼저 액션(오픈/림프/폴드)":h.toCall>0?` · 콜 ${bbs(h.toCall)}${h.short?"(내 올인)":""} · 필요 승률 ${h.need}%`:" · 체크/벳 선택"}${spr!=null?` · SPR ${spr}`:""} → ${({fold:"폴드",check:"체크",call:"콜",raise:"벳/레이즈",allin:"올인"})[h.act]||h.act}`); }); }
   L.push(`❓ ${S.q||"(질문)"}`);
   L.push(`— ${S.nick||"(닉네임)"} · ${S.pub?"공개":"나만 보기"}`);
   return L.join("\n");
