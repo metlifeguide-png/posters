@@ -609,6 +609,10 @@ function nextLevelIn(){
   while(left>0 && sec<3600){ if(cur.getMinutes()<55) left--; sec++; cur=new Date(cur.getTime()+1000); }
   return {sec, inBreak};
 }
+// 휴식 중이면 'Break time · 다음 N레벨 (스몰/빅)' 표시용
+const inBreakNow=()=>!st.level && new Date().getMinutes()>=55;
+function lvLabel(){ const L=curLevel(), g=GAMES[st.game], b=g.blinds[Math.min(L,g.blinds.length)-1];
+  return inBreakNow() ? `☕ Break time · 다음 ${L}레벨 ${won(b/2)}/${won(b)}` : `${L}레벨 ${won(b/2)}/${won(b)}`; }
 // 시작 시각부터 지금까지 레벨 (매시 55분~00분 5분 휴식은 레벨 시간에서 뺌)
 function autoLevel(){
   const [h,m]=startOf().split(":").map(Number), now=new Date(), start=new Date(now);
@@ -622,7 +626,7 @@ function autoLevel(){
 const autoPostReg=()=>Math.max(autoLevel(), REG_LEVEL+1);
 function levelOptions(g,tagReg){
   const al=autoLevel(), d=REG_LEVEL+1;
-  const first = hasStart() ? `<option value="">⏱ 자동 (시계) · ${al}레벨 ${won(g.blinds[al-1]/2)}/${won(g.blinds[al-1])}</option>`
+  const first = hasStart() ? `<option value="">⏱ 자동 · ${new Date().getMinutes()>=55?`Break time → 다음 ${al}레벨`:`${al}레벨`} ${won(g.blinds[al-1]/2)}/${won(g.blinds[al-1])}</option>`
                            : `<option value="">시작 시각을 고르면 자동 · 지금은 ${d}레벨</option>`;
   return first+g.blinds.map((b,i)=>`<option value="${i+1}">${i+1}레벨 · ${won(b/2)}/${won(b)}${tagReg&&i+1<=REG_LEVEL?" (레지 중)":""}</option>`).join("");
 }
@@ -632,7 +636,7 @@ const parseLevel=v=>v===""?null:+v;
 const curLevel=()=>(+st.level)||(hasStart()?autoLevel():REG_LEVEL+1);
 // 시간이 흘러 블라인드가 오른 경우에만 칩 그대로·BB 수 재계산. 시작 시각/레벨/게임을 고쳐서 바뀐 건 입력한 BB 그대로
 let rescaleOK=true;
-const clkText=()=>{const x=nextLevelIn(); return `⏱ ${x.inBreak?"휴식 중 (매시 55분~정각) · ":""}다음 레벨까지 <b>${Math.floor(x.sec/60)}:${String(x.sec%60).padStart(2,"0")}</b>`;};
+const clkText=()=>{const x=nextLevelIn(); if(x.inBreak){const n=new Date(), r=(60-n.getMinutes())*60-n.getSeconds(); return `☕ Break time (매시 55분~정각) · 재개까지 <b>${Math.floor(r/60)}:${String(r%60).padStart(2,"0")}</b>`+(x.sec-r>0?` · 재개 후 ${Math.ceil((x.sec-r)/60)}분 뒤 레벨업`:"");} return `⏱ 다음 레벨까지 <b>${Math.floor(x.sec/60)}:${String(x.sec%60).padStart(2,"0")}</b>`;};
 function applyLevel(){
   lockAutoStart();
   const L=curLevel(), g=GAMES[st.game], nb=g.blinds[Math.min(L,g.blinds.length)-1];
@@ -712,7 +716,7 @@ function drawStatic(){
   const g=GAMES[st.game];
   const lines=g.bubbles.map(b=>st.players>b.n?`${b.label}까지 ${st.players-b.n}명`:`${b.label} 확정권`);
   const warn = (avg>400||avg<2) ? `<br>⚠️ 평균 ${r1(avg)}BB — 전체 인원·현재 인원·레벨을 확인해 주세요.` : "";
-  $("info").innerHTML=`${curLevel()}레벨 ${won(st.bb/2)}/${won(st.bb)} · 평균 스택 <b>${r1(avg)}BB</b> <span style="font-weight:500">(${st.entries}명 × 10,000 ÷ ${st.players}명)</span>`+
+  $("info").innerHTML=`${lvLabel()} · 평균 스택 <b>${r1(avg)}BB</b> <span style="font-weight:500">(${st.entries}명 × 10,000 ÷ ${st.players}명)</span>`+
      (curLevel()<=REG_LEVEL?`<br>레지 마감 전 (${REG_LEVEL}레벨까지) → 칩EV`:`<br>레지 마감 후 → ICM`)+(st.modeManual?" · 계산 기준은 직접 고른 값":"")+warn+
      (st.mode==="icm"?`<br>${lines.join(" · ")}`:`<br>레지 마감 전: 칩EV로 계산해요 (인원이 더 늘 수 있음)`);
   $("safePanel").style.display = "";
@@ -984,7 +988,7 @@ function drawEasy(){
   const av=avgBB(), bad=av<3||av>300;
   const clk = st.level ? `(레벨 직접 고름)` : (hasStart() ? `<span id="ezClk">${clkText()}</span>`
             : `<b style="color:var(--push)">⏰ 게임 시작 시각을 골라주세요 — 블라인드·BB가 시계에 맞춰 자동으로 바뀌어요</b>`);
-  $("ezStatus").innerHTML=`${curLevel()}레벨 ${won(st.bb/2)}/${won(st.bb)} · 평균 ${r1(av)}BB <span style="font-weight:500">(바이인 ${st.entries} ÷ 남은 ${st.players}명)</span> · ${st.mode==="icm"?"ICM(마감 후)":"칩EV(마감 전)"}<br>${clk}<br>${lines.join(" · ")}`+
+  $("ezStatus").innerHTML=`${lvLabel()} · 평균 ${r1(av)}BB <span style="font-weight:500">(바이인 ${st.entries} ÷ 남은 ${st.players}명)</span> · ${st.mode==="icm"?"ICM(마감 후)":"칩EV(마감 전)"}<br>${clk}<br>${lines.join(" · ")}`+
     (bad?`<br><b style="color:var(--push)">⚠️ 평균 ${r1(av)}BB는 이상해요. 총 바이인 수·남은 인원을 먼저 맞춰주세요.</b>`:"");
   if(document.activeElement!==$("ezPlayersIn")) $("ezPlayersIn").value=st.players;
   document.querySelectorAll("[data-tstyle]").forEach(b=>b.className="chip"+(b.dataset.tstyle===st.tstyle?" on":""));
@@ -1305,7 +1309,8 @@ load(); fillPickers(); schedule();
 $("detail").addEventListener("toggle",()=>{ if($("detail").open) schedule(); });
 setInterval(()=>{
   if(st.level||!hasStart()) return;
-  const L=autoLevel(); if(GAMES[st.game].blinds[L-1]!==st.bb){ rescaleOK=true; schedule(); return; }   // 블라인드 업 → BB 수 자동 조정
+  const L=autoLevel(); if(GAMES[st.game].blinds[L-1]!==st.bb){ rescaleOK=true; schedule(); return; }
+  const br=inBreakNow(); if(br!==window._wasBreak){ window._wasBreak=br; drawStatic(); drawEasy(); return; }   // 휴식 시작/끝에 표시 바꾸기   // 블라인드 업 → BB 수 자동 조정
   const el=document.getElementById("ezClk"); if(el) el.innerHTML=clkText();
 },1000);
 </script>
