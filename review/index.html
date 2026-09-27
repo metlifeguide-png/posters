@@ -176,6 +176,9 @@ function replay(){
     if(handOver()||street>3){R.error="액션이 너무 많아요"; break;}
     const who=nextActor(); if(who==null){R.error="순서 오류"; break;}
     const p=pl[who], toCall=Math.max(0,curBet-p.bet);
+    if(who===S.hero){ const potNow=pot+parts.reduce((s,i)=>s+pl[i].bet,0); const opp=active().filter(i=>i!==who).map(i=>pl[i].stack+pl[i].bet);
+      R.heroSpots=R.heroSpots||[]; R.heroSpots.push({street:STREETS[street],pot:potNow,toCall,stack:p.stack,
+        need:toCall>0?Math.round(toCall/(potNow+toCall)*1000)/10:null, eff:Math.min(p.stack+p.bet, Math.max(0,...opp)), players:active().length, act:a.t}); }
     let rec={seat:who,type:a.t,to:0,add:0};
     if(a.t==="fold"){ p.fold=true; need.delete(who); }
     else if(a.t==="check"){ need.delete(who); }
@@ -299,6 +302,9 @@ function summary(){
     if(acts||bd) L.push(`[${SNAME[s.name]}]${bd?" "+bd:""} (팟 ${bbs(s.potStart)}) ${acts}`); });
   if(R&&R.done==="showdown"){ const sd=R.active.filter(i=>i!==S.hero).map(i=>{const d=S.sd[i]||{}; return `${pn(i)} ${d.m==="show"?cardTxt(S.cards["s"+i+"_0"])+cardTxt(S.cards["s"+i+"_1"]):d.m==="muck"?"머크":"모름"}`;}).join(" · ");
     L.push(`[쇼다운] ${sd}${S.sd.res&&S.sd.res!=="unk"?` · 나 ${{win:"이김",lose:"짐",split:"스플릿"}[S.sd.res]}`:""}`); }
+  if(R&&R.heroSpots&&R.heroSpots.length){ L.push("[📐 계산 · 내 결정 시점]");
+    R.heroSpots.forEach(h=>{ const spr=h.street!=="pre"&&h.pot>0?Math.round(h.eff/h.pot*10)/10:null;
+      L.push(`- ${SNAME[h.street]} (${h.players}명): 팟 ${bbs(h.pot)}${h.toCall>0?` · 콜 ${bbs(h.toCall)} · 필요 승률 ${h.need}%`:" · 체크/벳 선택"}${spr!=null?` · SPR ${spr}`:""} → ${({fold:"폴드",check:"체크",call:"콜",raise:"벳/레이즈",allin:"올인"})[h.act]||h.act}`); }); }
   L.push(`❓ ${S.q||"(질문)"}`);
   L.push(`— ${S.nick||"(닉네임)"} · ${S.pub?"공개":"나만 보기"}`);
   return L.join("\n");
