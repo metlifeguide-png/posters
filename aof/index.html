@@ -230,12 +230,19 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px;line-
     <div class="summary" id="qaSum"></div>
     <div class="chart" id="qaChart"></div>
   </div>
-  <h3 style="margin-top:18px">앞에서 누가 올인했나요?</h3>
+  <h3 style="margin-top:18px">앞 사람 액션이 있을 때</h3>
+  <div class="seg g2" id="proV"></div>
+  <div class="hint" style="margin-top:8px" id="proVQ">누가?</div>
   <div class="chips" id="qvPos"></div>
-  <label class="f" style="margin-top:8px;max-width:220px">올인한 사람 스택 (BB)<div class="num"><input id="qvStack" type="number" inputmode="decimal" min="0.5" step="0.1" placeholder="비우면 평균"></div></label>
-  <div class="qb" style="margin-top:10px">
+  <div class="chips" id="proOpenSize" style="margin-top:6px"></div>
+  <label class="f" style="margin-top:8px;max-width:320px"><span id="qvLbl">올인한 사람 스택 (BB · 올인한 전체 금액)</span><div class="num"><input id="qvStack" type="number" inputmode="decimal" min="0.5" step="0.1" placeholder="비우면 평균"></div></label>
+  <div class="qb" id="qbBox" style="margin-top:10px">
     <div class="summary" id="qbSum"></div>
     <div class="chart" id="qbChart"></div>
+  </div>
+  <div class="qb" id="qcBox" style="margin-top:10px;display:none">
+    <div class="summary" id="qcSum"></div>
+    <div class="chart" id="qcChart"></div>
   </div>
   <div class="legend"><span><i class="sw" style="background:var(--push)"></i>올인</span><span><i class="sw" style="background:var(--call)"></i>콜 (오픈 후 콜 포함)</span><span><i class="sw" style="background:var(--raise-soft)"></i>오픈 후 폴드</span><span><i class="sw" style="background:var(--cell)"></i>폴드</span><span>칸 높이 = 빈도</span></div>
   <div class="pick" id="qpick">칸을 누르면 그 패의 액션 빈도가 나와요.</div>
@@ -561,7 +568,8 @@ const PM_BB=[50,100,150,200,250,300,400,500,600,800,1000,1200,1600,2000,2000,240
 const LEVEL_MIN=7, REG_LEVEL=15, SEC_PER_HAND=40;
 // 타이트: 내 올인에 콜 적게·올인 좁게 / 보통 / 어그레시브: 콜 많이·올인 넓게
 const TSTYLE={nash:{floor:0,shove:0.65,name:"타이트"},normal:{floor:0.06,shove:0.8,name:"보통"},loose:{floor:0.10,shove:1.0,name:"어그레시브"}};
-const tsty=()=>st.mode==="icm"?(TSTYLE[st.tstyle]||TSTYLE.normal):TSTYLE.nash;
+const TS_CHIP={floor:0,shove:1,name:"계산 그대로"};
+const tsty=()=>st.mode==="icm"?(TSTYLE[st.tstyle]||TSTYLE.normal):TS_CHIP;
 const pmSeats=()=>25;
 const GAMES={
   wpl:{blinds:STD_BB,times:["18:00","19:00","20:00","21:00","22:00","23:00"],name:"WPL",desc:`1~11위 메인(${TV.wpl}만)<br>12~15위 딥스택`,pay:()=>Array(11).fill(TV.wpl),
@@ -689,6 +697,13 @@ function drawStatic(){
   $("scen").innerHTML=Object.entries(SCEN).map(([k,s])=>`<button type="button" class="chip ${st.scen===k?"on":""}" data-sc="${k}">${s.name}</button>`).join("");
   for(const k of ["entries","players","heroStack","vilStack","qvStack"]) if(document.activeElement!==$(k)) $(k).value=st[k];
   if(document.activeElement!==$("proRank")) $("proRank").value=st.rank||"";
+  { const vr=st.proV==="vr";
+    $("proV").innerHTML=`<button type="button" class="opt ${!vr?"on":""}" data-pv="vs"><b>앞에서 올인</b><span>콜할지 말지</span></button><button type="button" class="opt ${vr?"on":""}" data-pv="vr"><b>앞에서 오픈</b><span>올인·콜·폴드</span></button>`;
+    $("proVQ").textContent=vr?"누가 오픈했나요?":"누가 올인했나요?";
+    $("qvLbl").textContent=vr?"오픈한 사람 남은 스택 (BB · 오픈 금액 걸고 화면에 남은 숫자)":"올인한 사람 스택 (BB · 올인한 전체 금액)";
+    $("proOpenSize").style.display=vr?"":"none";
+    $("proOpenSize").innerHTML=`<span class="hint" style="align-self:center">오픈 크기</span>`+[2,2.2,2.5,3,3.5,4].map(x=>`<button type="button" class="chip ${(+st.vraise||2)===x?"on":""}" data-vr="${x}">${x}BB</button>`).join("");
+    $("qbBox").style.display=vr?"none":""; $("qcBox").style.display=vr?"":"none"; }
   $("proRankHint").textContent= +st.rank>0 ? `${st.players}명 중 ${st.rank}등 · 나보다 적은 사람 ${shorterCount()}명` : "";
   { const g=GAMES[st.game], al=autoPostReg();
     $("level").innerHTML=levelOptions(g,true); $("level").value=levelValue();
@@ -786,7 +801,7 @@ function schedule(){applyLevel();rescaleOK=false;fix();drawStatic();drawEasy();s
     if(st.hero<=n-2) job("qa",{stacks:quickStacks(),opener:st.hero,raise:+st.raise}); else {want.qa=null; lastQA=null; drawQuickA(null);}
     if(st.hero>=1 && !(st.qvil<st.hero && st.qvil<=n-2)) st.qvil=Math.min(st.hero-1,n-2);
     if(st.hero>=1){const qs=quickStacks(); if(+st.qvStack>0) qs[st.qvil]=+st.qvStack+ANTE; job("qb",{stacks:qs,opener:st.qvil,raise:0});
-      if(st.ezScen==="vr"){ const vr=+st.vraise||2, q2=qs.slice(); if(+st.qvStack>0) q2[st.qvil]=+st.qvStack+vr+ANTE; job("qc",{stacks:q2,opener:st.qvil,raise:vr}); } else {want.qc=null; window.QC=null;}} else {want.qb=null; lastQB=null; drawQuickB(null);}
+      if(st.ezScen==="vr" || (st.ui==="pro" && st.proV==="vr")){ const vr=+st.vraise||2, q2=qs.slice(); if(+st.qvStack>0) q2[st.qvil]=+st.qvStack+vr+ANTE; job("qc",{stacks:q2,opener:st.qvil,raise:vr}); } else {want.qc=null; window.QC=null;}} else {want.qb=null; lastQB=null; drawQuickB(null);}
     if(st.ui==="pro" && $("detail").open && detailValid()){const opener=(sc==="open"||sc==="rc")?st.hero:st.vil; job("detail",{stacks:stacks(),opener,raise:(sc==="vs"?0:+st.raise)});}
     else {want.detail=null; $("summary").innerHTML=""; $("chart").innerHTML=""; $("legend").innerHTML=""; $("result").classList.remove("busy");}
     const qs=quickStacks(), field=qs.filter((x,i)=>i!==st.hero).concat(fieldOff(qs));
@@ -881,7 +896,7 @@ function drawQuickC(r){
   if(!r){window.QC=null; drawVerdict(); return;}
   const c=r.callers.indexOf(st.hero); if(c<0){window.QC=null; drawVerdict(); return;}
   const I=r.info[c], E=EUI(), W=SAT.W, n=st.tsize;
-  if(!r.canRaise){ window.QC={noRaise:true}; drawVerdict(); return; }
+  if(!r.canRaise){ window.QC={noRaise:true}; drawVerdict(); drawProC(); return; }
   const op=Math.min(0.9,openPct(st.qvil)*tendF(st.qvil)*(tsty().shove>=1?1.15:tsty().shove<0.7?0.85:1));
   const Ra=topBy(playOrder(),op);
   const eqv=(h,rng)=>{let a=0,w=0;for(let k=0;k<169;k++) if(rng[k]){a+=W[k]*E[h][k]*rng[k];w+=W[k]*rng[k];} return w>0?a/w:0.5;};
@@ -894,7 +909,7 @@ function drawQuickC(r){
     const tb=SAT.topRange(v,E), cl=topBy(playOrder(),Math.min(0.5,op*(isBB?1.1:0.7)*icm));
     const rs=new Float64Array(169), fl=new Float64Array(169); for(let h=0;h<169;h++){ if(tb[h]) rs[h]=1; else if(cl[h]) fl[h]=1; }
     let pct=a=>{let p=0;for(let k=0;k<169;k++)p+=W[k]*a[k];return p;};
-    window.QC={rs,fl,op,eff:I.eff,R:r.R,rsPct:pct(rs),flPct:pct(fl),vcPct:0,deep:true}; drawVerdict(); return;
+    window.QC={rs,fl,op,eff:I.eff,R:r.R,rsPct:pct(rs),flPct:pct(fl),vcPct:0,deep:true}; drawVerdict(); drawProC(); return;
   }
   let rs=SAT.topRange(0.05,E), vc=new Float64Array(169), fl=new Float64Array(169);
   for(let it=0;it<25;it++){
@@ -909,7 +924,18 @@ function drawQuickC(r){
   }
   let pct=a=>{let p=0;for(let k=0;k<169;k++)p+=W[k]*a[k];return p;};
   window.QC={rs,fl,op,eff:I.eff,need:I.need,oNeed:I.oNeed,R:r.R,rsPct:pct(rs),flPct:pct(fl),vcPct:pct(vc)/Math.max(1e-9,pct(Ra)),deep:I.eff>DEEP_BB};
-  drawVerdict();
+  drawVerdict(); drawProC();
+}
+function drawProC(){
+  const q=window.QC, P=POSN(), el=$("qcSum"); if(!el) return; const pp=x=>(x*100).toFixed(1)+"%";
+  if(!q){el.innerHTML="계산 중…"; $("qcChart").innerHTML=""; return;}
+  if(q.noRaise){el.innerHTML="오픈한 사람 스택이 10BB 미만이면 보통 오픈 대신 올인이라 '앞에서 올인'으로 봐요."; $("qcChart").innerHTML=""; return;}
+  const vs=+st.qvStack>0?st.qvStack+"BB":"평균";
+  el.innerHTML=`<b>${P[st.qvil]} ${q.R}BB 오픈 (남은 ${vs}) → ${P[st.hero]}(나 ${st.heroStack}BB)</b><br>`+
+    `${q.deep?"3벳 (크게)":"올인 (3벳 셔브)"} <b>${pp(q.rsPct)}</b> · 콜 (플랍 보기) <b>${pp(q.flPct)}</b> <span class="note">[근사] · 상대 오픈 범위 상위 ${Math.round(q.op*100)}%로 봄 · 유효 스택 ${r1(q.eff)}BB</span>`+
+    `<div class="concl">👉 <b>${q.deep?"3벳":"올인"}</b>: ${rangeText(q.rs)}<br>👉 <b>콜</b>: ${rangeText(q.fl)}<br>👉 나머지는 폴드</div>`+
+    (q.deep?`<span class="note">유효 스택이 ${DEEP_BB}BB를 넘어 올인 대신 크게 3벳하는 범위예요.</span>`:`<span class="note">20BB 이하에선 BB만 콜이 나와요 (짧으면 플랍에서 결국 다 들어가서 올인 아니면 폴드가 나아요).</span>`);
+  paint("qcChart",[[q.rs,COL.push,q.deep?"3벳":"올인"],[q.fl,COL.flat,"콜"]]);
 }
 let lastQB=null;
 function drawQuickA(r){
@@ -1316,6 +1342,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.st){ setStart(t.dataset.st==="auto"?null:t.dataset.st); schedule(); return; }
   if(t.dataset.hp){rotateTo(+t.dataset.hp);schedule();return;}
   if(t.dataset.ui){e.preventDefault(); st.ui=t.dataset.ui; if(st.ui==="pro") window.scrollTo(0,0); schedule(); return;}
+  if(t.dataset.pv){st.proV=t.dataset.pv; schedule(); return;}
   if(t.dataset.vr){st.vraise=+t.dataset.vr; schedule(); return;}
   if(t.dataset.ts){st.tsize=+t.dataset.ts;st.others={};st.tbl=[];st.tend=[];st.hist=[];schedule();return;}
   if(t.dataset.tstyle){st.tstyle=t.dataset.tstyle; save(); drawEasy(); redrawQuick(); return;}
