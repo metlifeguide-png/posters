@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>핸드리뷰 작성</title>
+<style>
+:root{--bg:#f4f1ea;--card:#fff;--text:#1b1b1b;--sub:#6b6b6b;--line:#e2ddd2;--cell:#ece8df;--accent:#0f7a4f;--push:#d9482b;--vil:#6c4fd1;--turn:#f5b400;--hl:#fff3c4;--hlt:#6b5500;--red:#c0392b}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--card:#212121;--text:#eee;--sub:#9a9a9a;--line:#343434;--cell:#2b2b2b;--hl:#4a3f10;--hlt:#ffe08a;--red:#ff6b5b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+.wrap{max-width:560px;margin:0 auto;padding:16px 16px 120px}h1{font-size:20px;margin:4px 0 2px}.lead{color:var(--sub);font-size:13px;margin:0 0 14px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+.panel h2{font-size:15px;margin:0 0 8px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}.panel h2 small{color:var(--sub);font-weight:500;font-size:12px}
+.req{color:var(--push);font-size:11px;border:1px solid var(--push);border-radius:6px;padding:0 5px;font-weight:600}
+.k{font-size:12px;color:var(--sub);margin:10px 0 4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+button{font:inherit;color:inherit;cursor:pointer}
+.chip{border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;background:var(--card)}
+.chip.on{background:var(--text);color:var(--card);border-color:var(--text)}.chip.me{background:var(--accent);color:#fff;border-color:var(--accent)}
+.chip.vil{background:var(--vil);color:#fff;border-color:var(--vil)}.chip.dis{opacity:.35}
+input,textarea,select{font:inherit;color:var(--text);background:var(--cell);border:1px solid transparent;border-radius:10px;padding:9px 11px;width:100%}
+input:focus,textarea:focus{outline:2px solid var(--accent)}
+.bad{border-color:var(--push)!important}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:6px}.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+label.f{display:block;font-size:12px;color:var(--sub)}label.f input{margin-top:3px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:12px;vertical-align:middle}.seg button{border:0;background:none;padding:3px 10px}.seg .on{background:var(--text);color:var(--card)}
+.box{border:1.5px dashed var(--turn);border-radius:12px;padding:10px;margin-top:10px}
+.cards{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.cd{width:40px;height:54px;border-radius:8px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;background:var(--card)}
+.cd.e{color:var(--sub);border-style:dashed;font-weight:400}.cd.tg{outline:3px solid var(--turn)}.cd.r{color:var(--red)}
+.stk{display:grid;grid-template-columns:78px 1fr 70px;gap:6px;align-items:center;margin-top:6px}.stk b{font-size:13px}.stk small{color:var(--sub);font-size:12px;text-align:right}
+.sthead{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-top:14px;padding:7px 10px;border-radius:10px;background:var(--cell);font-size:13px}
+.sthead b{font-size:14px}.pot{font-weight:800;color:var(--accent)}
+.log{font-size:13px;padding:4px 10px;line-height:1.9}.log .me{color:var(--accent);font-weight:700}.log .v{color:var(--vil);font-weight:700}.log small{color:var(--sub)}
+.actbox{border:2px solid var(--turn);border-radius:12px;padding:10px;margin-top:10px}
+.now{font-size:14px;margin-bottom:6px}.now b.who{background:var(--turn);color:#1b1b1b;border-radius:6px;padding:1px 8px}
+.info{font-size:12px;color:var(--sub)}.info b{color:var(--text)}
+.act{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:center}
+.b{border:1px solid var(--line);border-radius:9px;padding:8px 12px;font-size:14px;background:var(--card)}
+.b.push{border-color:var(--push);color:var(--push)}.b.q{background:var(--cell);border-color:transparent;padding:6px 10px;font-size:13px}.b.go{background:var(--accent);color:#fff;border-color:var(--accent);font-weight:700}
+.sizeRow{display:flex;gap:6px;align-items:center;margin-top:8px}.sizeRow input{flex:1}
+.note{font-size:11px;color:var(--sub);margin-top:6px}.warn{font-size:12px;color:var(--push);margin-top:6px}
+.done{font-size:13px;background:var(--hl);color:var(--hlt);border-radius:10px;padding:8px 10px;margin-top:10px}
+.sd{display:grid;grid-template-columns:64px 1fr;gap:6px;align-items:center;margin-top:8px;font-size:13px}
+.prev{font-family:ui-monospace,Menlo,monospace;font-size:12px;background:var(--cell);border-radius:10px;padding:10px;white-space:pre-wrap;line-height:1.55;word-break:break-all}
+.big{display:block;width:100%;border:0;border-radius:12px;padding:14px;font-size:16px;font-weight:800;background:var(--accent);color:#fff;margin-top:10px}
+.big.gray{background:var(--cell);color:var(--sub)}
+/* 카드 고르기 시트 */
+#tres{position:absolute;left:0;right:0;top:100%;z-index:5;background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 20px rgba(0,0,0,.12);max-height:280px;overflow:auto;display:none}
+#tres button{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);background:none;padding:9px 11px;font-size:13px}#tres small{color:var(--sub)}
+.sheet{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(0,0,0,.15);padding:12px 16px 18px;display:none;z-index:9}
+.sheet.show{display:block}.sheet .in{max-width:560px;margin:0 auto}
+.sheet .top{display:flex;justify-content:space-between;align-items:center;font-size:13px;margin-bottom:8px}
+.ranks{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-bottom:6px}.ranks button{border:1px solid var(--line);border-radius:9px;padding:10px 0;font-size:16px;font-weight:800;background:var(--card)}
+.ranks .on{background:var(--text);color:var(--card)}
+.suits{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}.suits button{border:1px solid var(--line);border-radius:9px;padding:10px 0;font-size:22px;background:var(--card)}
+.suits .r{color:var(--red)}button:disabled{opacity:.25;cursor:default}
+</style></head><body><div class="wrap">
+<h1>✍️ 핸드리뷰 작성</h1>
+<p class="lead">빨간 <span class="req">필수</span>만 채우면 돼요 · 쓰던 내용은 이 기기에 자동 저장돼요</p>
+
+<div class="panel"><h2>① 대회</h2>
+ <div style="position:relative"><input id="tsearch" placeholder="🔍 대회 검색 (예: 피망, 뉴스톤, WPL)" autocomplete="off"><div id="tres"></div></div>
+ <div class="note" style="margin-bottom:6px">검색에 없으면 아래에 직접 입력하세요</div>
+ <div class="g2"><label class="f">대회명 <span class="req">필수</span><input id="tname" placeholder="예: WPL 부산 메인"></label><label class="f">바이인<input id="tbuy" placeholder="예: 20만"></label></div>
+ <div class="k">블라인드 (칩) <span class="req">필수</span></div>
+ <div class="g3"><label class="f">SB<input id="sb" inputmode="numeric" placeholder="1000"></label><label class="f">BB<input id="bb" inputmode="numeric" placeholder="2000"></label><label class="f">앤티<input id="ante" inputmode="numeric" placeholder="2000"></label></div>
+ <div class="chips" style="margin-top:6px" id="anteType"></div>
+ <div class="k">레지</div><div class="chips" id="reg"></div>
+ <div class="k">단계</div><div class="chips" id="stage"></div>
+ <div class="box" id="icmBox" style="display:none">
+  <div class="note" style="margin:0 0 6px">버블·ITM·파이널은 상금이 계산에 들어가요</div>
+  <div class="g3"><label class="f">남은 인원<input id="left" inputmode="numeric"></label><label class="f">ITM 인원<input id="itm" inputmode="numeric"></label><label class="f">내 등수<input id="rank" inputmode="numeric"></label></div>
+  <div class="g3" style="margin-top:6px"><label class="f">총 엔트리<input id="entries" inputmode="numeric"></label><label class="f">1등 상금<input id="first" placeholder="예: 800만"></label><label class="f">총상금<input id="prize" placeholder="예: 3200만"></label></div>
+ </div>
+</div>
+
+<div class="panel"><h2>② 테이블 · 참여자 <span class="req">필수</span></h2>
+ <div class="k">테이블 인원</div><div class="chips" id="tsize"></div>
+ <div class="k">내 포지션</div><div class="chips" id="heroPos"></div>
+ <div class="k">이 판에 참여한 사람 (여러 명) · 안 고른 자리는 프리플랍 폴드</div><div class="chips" id="parts"></div>
+ <div class="k">시작 스택 (블라인드·앤티 내기 전) <span class="seg" id="unitSeg"></span></div>
+ <div id="stacks"></div>
+ <div class="k" id="effLine"></div>
+ <label class="f" style="margin-top:8px">상대 정보 한 줄 (선택)<input id="vinfo" placeholder="예: BTN 타이트 레귤러 / BB 초보, 콜 많음"></label>
+</div>
+
+<div class="panel"><h2>③ 내 핸드 <span class="req">필수</span> <small>칸을 누르고 숫자 → 무늬</small></h2>
+ <div class="cards" id="heroCards"></div>
+</div>
+
+<div class="panel"><h2>④ 액션 <span class="req">필수</span> <small>차례인 사람이 자동으로 정해져요</small></h2>
+ <div id="streets"></div>
+ <div id="actbox"></div>
+ <div class="act"><button class="b" id="undo">↶ 되돌리기</button><button class="b" id="resetAct">액션 전체 지우기</button></div>
+</div>
+
+<div class="panel" id="sdPanel" style="display:none"><h2>⑤ 쇼다운 & 결과 <small>선택</small></h2>
+ <div id="sd"></div>
+</div>
+
+<div class="panel"><h2>⑥ 질문 <span class="req">필수</span></h2>
+ <textarea id="q" rows="3" placeholder="예: 리버 BB 올인에 콜했어야 하나요?"></textarea>
+ <div class="k">공개 여부</div><div class="chips" id="pub"></div>
+ <label class="f" style="margin-top:10px">뚝섬방 닉네임 <span class="req">필수</span> <small>답변이 달리면 방에서 @닉네임으로 알려드려요</small><input id="nick" placeholder="예: 구우"></label>
+</div>
+
+<div class="panel"><h2>⑦ 미리보기 & 제출</h2>
+ <div class="prev" id="prev"></div>
+ <div class="warn" id="missing"></div>
+ <button class="big" id="submit">제출하기</button><div id="submitMsg"></div>
+ <button class="b" id="copy" style="margin-top:8px;width:100%">📋 요약 텍스트 복사</button>
+ <button class="b" id="clearAll" style="margin-top:8px;width:100%;color:var(--sub)">처음부터 다시 쓰기</button>
+</div>
+</div>
+
+<div class="sheet" id="sheet"><div class="in">
+ <div class="top"><b id="sheetTitle">카드 고르기</b><button class="b q" id="sheetClose">닫기</button></div>
+ <div class="ranks" id="r1"></div><div class="ranks" id="r2"></div>
+ <div class="suits" id="suits"></div>
+ <div class="act"><button class="b q" id="cardClear">이 칸 비우기</button></div>
+</div></div>
+
+<script>
+const API="https://majority-rebuild-take.ngrok-free.dev";
+const POS={6:["LJ","HJ","CO","BTN","SB","BB"],7:["UTG","LJ","HJ","CO","BTN","SB","BB"],8:["UTG","UTG+1","LJ","HJ","CO","BTN","SB","BB"],9:["UTG","UTG+1","UTG+2","LJ","HJ","CO","BTN","SB","BB"]};
+const RK="AKQJT98765432", SU=[["s","♠"],["h","♥"],["d","♦"],["c","♣"]];
+const STAGES=["초반","중반","버블 근처","ITM 후","파이널","데이 마감 직전"], ICM_ST=["버블 근처","ITM 후","파이널"];
+const STREETS=["pre","flop","turn","river"], SNAME={pre:"프리플랍",flop:"플랍",turn:"턴",river:"리버"};
+const $=id=>document.getElementById(id);
+const blank=()=>({tname:"",tbuy:"",sb:"",bb:"",ante:"",anteType:"bb",reg:"closed",stage:"중반",left:"",itm:"",rank:"",entries:"",first:"",prize:"",
+  T:9,hero:5,parts:[5],stacks:{},unit:"chip",vinfo:"",cards:{h0:"",h1:"",f0:"",f1:"",f2:"",t0:"",r0:""},acts:[],sd:{},q:"",pub:true,nick:""});
+let S=blank();
+try{const x=JSON.parse(localStorage.getItem("hr_draft_v1")||"null"); if(x) S=Object.assign(blank(),x);}catch(e){}
+const save=()=>{try{localStorage.setItem("hr_draft_v1",JSON.stringify(S));}catch(e){}};
+
+// ---------- 숫자 ----------
+const num=v=>{if(v==null)return 0; let s=String(v).replace(/[,\s]/g,""); let m=1; if(/만$/.test(s)){m=10000;s=s.slice(0,-1);} else if(/k$/i.test(s)){m=1000;s=s.slice(0,-1);} const n=parseFloat(s); return isFinite(n)?n*m:0;};
+const BB=()=>num(S.bb), SBv=()=>num(S.sb), AN=()=>num(S.ante);
+const fmt=c=>Math.round(c).toLocaleString();
+const bbs=c=>BB()>0?(Math.round(c/BB()*10)/10)+"BB":"";
+const both=c=>BB()>0?`${fmt(c)} (${bbs(c)})`:fmt(c);
+const P=()=>POS[S.T], pn=i=>P()[i];
+const cardHTML=c=>c?`<span class="${"hd".includes(c[1])?"r":""}">${c[0]}${SU.find(x=>x[0]===c[1])[1]}</span>`:"";
+const cardTxt=c=>c?c[0]+SU.find(x=>x[0]===c[1])[1]:"?";
+
+// ---------- 액션 재생 (저장된 액션으로 판 상태를 매번 다시 계산) ----------
+function replay(){
+  const T=S.T, bb=BB(), sb=SBv(), an=AN(), parts=[...S.parts].sort((a,b)=>a-b);
+  const pl={}; let dead=0;
+  for(const i of parts) pl[i]={i,stack:num(S.stacks[i]),bet:0,inv:0,fold:false,allin:false};
+  const put=(i,amt)=>{const p=pl[i]; if(!p){dead+=amt;return;} const a=Math.min(amt,p.stack); p.stack-=a; p.inv+=a; return a;};
+  // 앤티
+  if(an>0){ if(S.anteType==="bb"){ if(pl[T-1]){put(T-1,an); pl[T-1].anteDone=an;} else dead+=an; }
+            else for(let i=0;i<T;i++){ if(pl[i]) put(i,an); else dead+=an; } }
+  // 블라인드 (스트리트 벳으로)
+  const postB=(i,amt)=>{ if(pl[i]){const a=Math.min(amt,pl[i].stack); pl[i].stack-=a; pl[i].bet+=a; pl[i].inv+=a; if(pl[i].stack<=0) pl[i].allin=true;} else dead+=amt; };
+  postB(T-2,sb); postB(T-1,bb);
+  // 앤티로 올인된 경우
+  for(const i of parts) if(pl[i].stack<=0) pl[i].allin=true;
+  let pot=dead+Object.values(pl).reduce((a,p)=>a+(p.inv-p.bet),0); // 앤티+죽은 돈 (블라인드는 bet에)
+  const R={streets:[],cur:null,done:false,pot,pl,error:null};
+  let street=0, curBet=bb, lastRaise=bb, need=new Set(parts.filter(i=>!pl[i].allin)), lastActor=-1;
+  const order=st=> st===0 ? [...Array(T).keys()] : [T-2,T-1,...Array(T-2).keys()];
+  let sInfo={name:STREETS[0],potStart:pot+parts.reduce((x,i)=>x+pl[i].bet,0)+(pl[T-2]?0:0),players:parts.filter(i=>!pl[i].fold).length,log:[]};
+  const active=()=>parts.filter(i=>!pl[i].fold);
+  const endStreet=()=>{ for(const i of parts){pot+=pl[i].bet; pl[i].bet=0;} R.streets.push(sInfo); street++; curBet=0; lastRaise=bb; lastActor=-1;
+    need=new Set(active().filter(i=>!pl[i].allin));
+    sInfo={name:STREETS[street],potStart:pot,players:active().length,log:[]}; };
+  const nextActor=()=>{ const ord=order(street); let start=0;
+    if(lastActor>=0){ start=(ord.indexOf(lastActor)+1)%ord.length; } else if(street===0){ start=0; }
+    for(let k=0;k<ord.length;k++){ const i=ord[(start+k)%ord.length]; if(need.has(i)) return i; } return null; };
+  const roundOver=()=>{ const act=active(); if(act.length<=1) return true; if(need.size===0) return true; return false; };
+  const handOver=()=>active().length<=1;
+  const noMoreBetting=()=>{ const act=active(); return act.filter(i=>!pl[i].allin).length<=1 && act.every(i=>pl[i].allin||pl[i].bet>=curBet); };
+  for(const a of S.acts){
+    if(handOver()||street>3){R.error="액션이 너무 많아요"; break;}
+    const who=nextActor(); if(who==null){R.error="순서 오류"; break;}
+    const p=pl[who], toCall=Math.max(0,curBet-p.bet);
+    let rec={seat:who,type:a.t,to:0,add:0};
+    if(a.t==="fold"){ p.fold=true; need.delete(who); }
+    else if(a.t==="check"){ need.delete(who); }
+    else if(a.t==="call"){ const add=Math.min(toCall,p.stack); p.stack-=add; p.bet+=add; p.inv+=add; rec.add=add; rec.to=p.bet; if(p.stack<=0)p.allin=true; need.delete(who); }
+    else { // bet / raise / allin : a.to = 이번 스트리트 총 벳
+      let to=a.t==="allin"?p.bet+p.stack:Math.min(a.to,p.bet+p.stack);
+      const add=to-p.bet; p.stack-=add; p.bet=to; p.inv+=add; rec.add=add; rec.to=to; if(p.stack<=0)p.allin=true;
+      if(to>curBet){ lastRaise=Math.max(lastRaise,to-curBet); rec.open=street===0&&curBet<=bb; rec.isBet=street>0&&curBet===0; curBet=to; need=new Set(active().filter(i=>i!==who&&!pl[i].allin)); }
+      else need.delete(who);
+      if(a.t==="allin") rec.type="allin";
+    }
+    rec.potAfter=pot+parts.reduce((s,i)=>s+pl[i].bet,0);
+    sInfo.log.push(rec); lastActor=who;
+    if(roundOver()){ if(handOver()){ R.done="fold"; break; } endStreet(); if(street>3){ R.done="showdown"; break; } }
+  }
+  if(!R.done && handOver()) R.done="fold";
+  if(!R.done && street>0 && street<=3 && sInfo.log.length===0 && noMoreBetting()){ // 올인 뒤 보드만 남음
+    while(street<=3){ R.streets.push(sInfo); street++; if(street<=3) sInfo={name:STREETS[street],potStart:pot,players:active().length,log:[]}; }
+    R.done="showdown"; }
+  if(street<=3 && R.streets[R.streets.length-1]!==sInfo) R.streets.push(sInfo);
+  if(!R.done){ const who=nextActor();
+    if(who!=null){ const p=pl[who]; R.cur={seat:who,street:STREETS[street],toCall:Math.max(0,curBet-p.bet),curBet,lastRaise,stack:p.stack,bet:p.bet,
+      pot:pot+parts.reduce((s,i)=>s+pl[i].bet,0)}; } }
+  R.pot=pot+parts.reduce((s,i)=>s+pl[i].bet,0); R.active=active(); R.streetIdx=street;
+  return R;
+}
+
+// ---------- 화면 ----------
+function chipsHTML(el,items,cur,attr){ $(el).innerHTML=items.map(([v,l])=>`<button class="chip ${v===cur?"on":""}" data-${attr}="${v}">${l}</button>`).join(""); }
+function boardNeed(st){ return st==="flop"?["f0","f1","f2"]:st==="turn"?["t0"]:st==="river"?["r0"]:[]; }
+function render(){
+  ["tname","tbuy","sb","bb","ante","left","itm","rank","entries","first","prize","vinfo","q","nick"].forEach(k=>{const e=$(k); if(document.activeElement!==e) e.value=S[k]||"";});
+  chipsHTML("anteType",[["bb","BB 앤티"],["all","올 앤티"]],S.anteType,"at");
+  chipsHTML("reg",[["open","레지 중 (재바인 가능)"],["closed","레지 마감 후"]],S.reg,"rg");
+  chipsHTML("stage",STAGES.map(s=>[s,s]),S.stage,"stg");
+  $("icmBox").style.display=ICM_ST.includes(S.stage)?"":"none";
+  chipsHTML("tsize",[6,7,8,9].map(n=>[n,n+"명"]),S.T,"ts");
+  $("heroPos").innerHTML=P().map((p,i)=>`<button class="chip ${i===S.hero?"me":""}" data-hp="${i}">${p}</button>`).join("");
+  $("parts").innerHTML=P().map((p,i)=>`<button class="chip ${i===S.hero?"me":S.parts.includes(i)?"vil":""}" data-pt="${i}">${p}${i===S.hero?" · 나":""}</button>`).join("");
+  $("unitSeg").innerHTML=`<button class="${S.unit==="chip"?"on":""}" data-un="chip">칩</button><button class="${S.unit==="bb"?"on":""}" data-un="bb">BB</button>`;
+  const ps=[...S.parts].sort((a,b)=>a-b);
+  $("stacks").innerHTML=ps.map(i=>{const c=num(S.stacks[i]); const v=S.unit==="bb"&&BB()>0?(c?Math.round(c/BB()*10)/10:""):(c||"");
+    return `<div class="stk"><b style="color:${i===S.hero?"var(--accent)":"var(--vil)"}">${pn(i)}${i===S.hero?" · 나":""}</b><input data-st="${i}" inputmode="decimal" value="${v}" placeholder="${S.unit==="bb"?"BB":"칩"}"><small>${c?(S.unit==="bb"?fmt(c):bbs(c)):""}</small></div>`;}).join("");
+  const h=num(S.stacks[S.hero]); $("effLine").innerHTML=h&&BB()?"유효 스택: "+ps.filter(i=>i!==S.hero).map(i=>`vs ${pn(i)} <b>${bbs(Math.min(h,num(S.stacks[i])))}</b>`).join(" · "):"";
+  $("heroCards").innerHTML=["h0","h1"].map(k=>slot(k)).join("");
+  chipsHTML("pub",[["1","공개"],["0","나만 보기"]],S.pub?"1":"0","pb");
+  drawActions(); drawPreview(); save();
+}
+function slot(k){ const c=S.cards[k]; return `<button class="cd ${c?"":"e"} ${pick.target===k&&sheetOpen?"tg":""}" data-slot="${k}">${c?cardHTML(c):"+"}</button>`; }
+function setupOK(){ return BB()>0 && S.parts.length>=2 && S.parts.every(i=>num(S.stacks[i])>0); }
+function drawActions(){
+  if(!setupOK()){ $("streets").innerHTML=`<div class="note">블라인드, 참여자(나 포함 2명 이상), 모든 참여자 스택을 넣으면 액션을 쓸 수 있어요.</div>`; $("actbox").innerHTML=""; $("sdPanel").style.display="none"; return; }
+  const R=replay(); window.R=R; let html="";
+  R.streets.forEach((s,idx)=>{
+    const bd=boardNeed(s.name);
+    const cardsLine=bd.length?`<span class="cards" style="gap:4px">${bd.map(k=>`<button class="cd ${S.cards[k]?"":"e"} ${pick.target===k&&sheetOpen?"tg":""}" style="width:30px;height:40px;font-size:13px" data-slot="${k}">${S.cards[k]?cardHTML(S.cards[k]):"+"}</button>`).join("")}</span>`:"";
+    html+=`<div class="sthead"><b>${SNAME[s.name]}</b>${cardsLine}<span>${s.players}명 · <span class="pot">팟 ${bbs(s.potStart)||fmt(s.potStart)}</span></span></div>`;
+    html+=`<div class="log">${s.log.map(r=>logTxt(r,s.name)).join("<br>")||"<small>—</small>"}</div>`;
+  });
+  $("streets").innerHTML=html;
+  let ab="";
+  if(R.error) ab=`<div class="warn">${R.error} — ↶ 되돌리기로 고쳐주세요</div>`;
+  else if(R.done){ ab=`<div class="done">${R.done==="fold"?`판 끝: ${pn(R.active[0])} 가 팟 ${both(R.pot)}을 가져가요`:`쇼다운 · 최종 팟 ${both(R.pot)}`} ${missingBoard(R)?"<br>⚠️ 남은 보드 카드를 골라주세요 (위 + 칸)":""}</div>`; }
+  else if(R.cur){
+    const c=R.cur, bd=boardNeed(c.street), miss=bd.filter(k=>!S.cards[k]);
+    if(miss.length){ ab=`<div class="actbox"><div class="now">${SNAME[c.street]} 카드를 먼저 골라주세요</div><div class="cards">${bd.map(k=>slot(k)).join("")}</div></div>`; }
+    else{
+      const me=c.seat===S.hero, tc=c.toCall, canCheck=tc===0, pre=c.street==="pre";
+      const needPct=tc>0?Math.round(tc/(c.pot+tc)*1000)/10:null;
+      const opened=pre && c.curBet>BB();
+      ab=`<div class="actbox"><div class="now">지금 차례: <b class="who">${pn(c.seat)}${me?" · 나":""}</b></div>
+      <div class="info">남은 스택 <b>${both(c.stack)}</b> · 팟 <b>${both(c.pot)}</b>${tc>0?` · 콜 <b>${both(tc)}</b> · 필요 승률 <b>${needPct}%</b>`:""}</div>
+      <div class="act">
+        <button class="b" data-a="fold">폴드</button>
+        ${canCheck?`<button class="b" data-a="check">체크</button>`:`<button class="b" data-a="call">콜 ${bbs(Math.min(tc,c.stack))}</button>`}
+        <button class="b push" data-a="allin">올인 ${bbs(c.stack+c.bet)}</button>
+      </div>
+      ${c.stack>tc?`<div class="note">${pre?(opened?"레이즈 (총액으로)":"오픈 크기"):(c.curBet>0?"레이즈 (총액으로)":"벳 크기")}</div>
+      <div class="act">${sizeBtns(c).map(([l,to])=>`<button class="b q" data-to="${to}">${l}</button>`).join("")}</div>
+      <div class="sizeRow"><input id="sizeIn" inputmode="decimal" placeholder="직접 입력 (${S.unit==="bb"?"BB":"칩"}, 총액)"><button class="b go" data-a="size">${pre?(opened?"레이즈":"오픈"):(c.curBet>0?"레이즈":"벳")}</button></div>`:""}
+      </div>`;
+    }
+  }
+  $("actbox").innerHTML=ab;
+  drawSD(R);
+}
+function missingBoard(R){ if(R.done!=="showdown") return false; return ["f0","f1","f2","t0","r0"].some(k=>!S.cards[k]); }
+function sizeBtns(c){
+  const out=[], bb=BB(), max=c.stack+c.bet;
+  if(c.street==="pre"){ if(c.curBet<=bb){ for(const x of [2,2.2,2.5,3]) out.push([x+"BB",x*bb]); } else { for(const m of [2.5,3,4]) out.push([m+"배 ("+bbs(c.curBet*m)+")",c.curBet*m]); } }
+  else if(c.curBet===0){ for(const [l,f] of [["⅓",1/3],["½",.5],["⅔",2/3],["¾",.75],["팟",1]]) out.push([l,Math.round(c.pot*f)]); }
+  else { for(const m of [2.5,3]) out.push([m+"배",c.curBet*m]); const potR=c.curBet+ (c.pot+ (c.curBet-c.bet)); out.push(["팟 레이즈",Math.round(potR)]); }
+  return out.filter(([,to])=>to<max && to>c.curBet);
+}
+function logTxt(r,st){
+  const who=`<span class="${r.seat===S.hero?"me":"v"}">${pn(r.seat)}${r.seat===S.hero?"(나)":""}</span>`;
+  const L={fold:"폴드",check:"체크",call:"콜"}[r.type];
+  if(L) return `${who} ${L}${r.type==="call"?` <small>${bbs(r.add)}</small>`:""}`;
+  const word=r.type==="allin"?"올인":(st==="pre"?(r.open?"오픈":"레이즈"):(r.isBet?"벳":"레이즈"));
+  return `${who} ${word} <small>${bbs(r.to)} (${fmt(r.to)})</small>`;
+}
+function drawSD(R){
+  if(!R.done || R.done==="fold" && !R.active.length){ $("sdPanel").style.display="none"; return; }
+  const others=R.active.filter(i=>i!==S.hero);
+  if(R.done==="fold"||!others.length){ $("sdPanel").style.display="none"; return; }
+  $("sdPanel").style.display="";
+  $("sd").innerHTML=others.map(i=>{ const d=S.sd[i]||{m:"unk"};
+    return `<div class="sd"><b style="color:var(--vil)">${pn(i)}</b><div><div class="chips">${[["show","카드 공개"],["muck","머크"],["unk","모름"]].map(([v,l])=>`<button class="chip ${d.m===v?"on":""}" data-sdm="${i}:${v}">${l}</button>`).join("")}</div>
+      ${d.m==="show"?`<div class="cards" style="margin-top:6px">${[0,1].map(j=>slot("s"+i+"_"+j)).join("")}</div>`:""}</div></div>`; }).join("")+
+    `<div class="k">결과 (나)</div><div class="chips">${[["win","이김"],["lose","짐"],["split","스플릿"],["unk","모름"]].map(([v,l])=>`<button class="chip ${(S.sd.res||"unk")===v?"on":""}" data-res="${v}">${l}</button>`).join("")}</div>`;
+}
+function summary(){
+  const R=setupOK()?replay():null, L=[];
+  L.push(`[✍️ 핸드리뷰] ${S.tname||"(대회명)"}${S.tbuy?` (${S.tbuy})`:""}`);
+  L.push(`${fmt(SBv())}/${fmt(BB())} (${S.anteType==="bb"?"BB앤티":"올앤티"} ${fmt(AN())}) · ${S.reg==="open"?"레지 중":"레지 마감 후"} · ${S.stage}`);
+  if(ICM_ST.includes(S.stage)) L.push(`남은 ${S.left||"?"} / ITM ${S.itm||"?"} · 내 등수 ${S.rank||"?"}${S.entries?` · 엔트리 ${S.entries}`:""}${S.first?` · 1등 ${S.first}`:""}${S.prize?` · 총상금 ${S.prize}`:""}`);
+  L.push(`🃏 나 ${pn(S.hero)} ${bbs(num(S.stacks[S.hero]))}  ${cardTxt(S.cards.h0)} ${cardTxt(S.cards.h1)}`);
+  L.push(`👥 ${[...S.parts].sort((a,b)=>a-b).filter(i=>i!==S.hero).map(i=>`${pn(i)} ${bbs(num(S.stacks[i]))}`).join(" · ")}`+(S.vinfo?` (${S.vinfo})`:""));
+  if(R) R.streets.forEach(s=>{ const bd=boardNeed(s.name).map(k=>cardTxt(S.cards[k])).join(" ");
+    const acts=s.log.map(r=>logTxt(r,s.name).replace(/<[^>]+>/g,"")).join(" → ");
+    if(acts||bd) L.push(`[${SNAME[s.name]}]${bd?" "+bd:""} (팟 ${bbs(s.potStart)}) ${acts}`); });
+  if(R&&R.done==="showdown"){ const sd=R.active.filter(i=>i!==S.hero).map(i=>{const d=S.sd[i]||{}; return `${pn(i)} ${d.m==="show"?cardTxt(S.cards["s"+i+"_0"])+cardTxt(S.cards["s"+i+"_1"]):d.m==="muck"?"머크":"모름"}`;}).join(" · ");
+    L.push(`[쇼다운] ${sd}${S.sd.res&&S.sd.res!=="unk"?` · 나 ${{win:"이김",lose:"짐",split:"스플릿"}[S.sd.res]}`:""}`); }
+  L.push(`❓ ${S.q||"(질문)"}`);
+  L.push(`— ${S.nick||"(닉네임)"} · ${S.pub?"공개":"나만 보기"}`);
+  return L.join("\n");
+}
+function drawPreview(){
+  $("prev").textContent=summary();
+  const miss=[]; if(!S.tname.trim())miss.push("대회명"); if(!BB())miss.push("블라인드"); if(S.parts.length<2)miss.push("참여자");
+  if(!S.parts.every(i=>num(S.stacks[i])>0))miss.push("스택"); if(!S.cards.h0||!S.cards.h1)miss.push("내 핸드");
+  if(!S.acts.length)miss.push("액션"); if(!S.q.trim())miss.push("질문"); if(!S.nick.trim())miss.push("닉네임");
+  $("missing").textContent=miss.length?"아직 필요한 것: "+miss.join(", "):"✅ 필수 항목이 다 채워졌어요";
+}
+
+// ---------- 카드 고르기 ----------
+const pick={target:null,rank:null}; let sheetOpen=false;
+const used=()=>Object.entries(S.cards).filter(([k,v])=>v&&k!==pick.target).map(([,v])=>v);
+function openSheet(k){ pick.target=k; pick.rank=null; sheetOpen=true; $("sheet").classList.add("show"); drawSheet(); render(); }
+function closeSheet(){ sheetOpen=false; pick.target=null; $("sheet").classList.remove("show"); render(); }
+function drawSheet(){
+  const u=used(); const nm={h0:"내 핸드 1",h1:"내 핸드 2",f0:"플랍 1",f1:"플랍 2",f2:"플랍 3",t0:"턴",r0:"리버"}[pick.target]||"상대 카드";
+  $("sheetTitle").textContent=nm+" 고르기";
+  const rb=r=>{ const all=SU.every(([s])=>u.includes(r+s)); return `<button class="${pick.rank===r?"on":""}" data-rk="${r}" ${all?"disabled":""}>${r}</button>`; };
+  $("r1").innerHTML=[..."AKQJT98"].map(rb).join(""); $("r2").innerHTML=[..."765432"].map(rb).join("")+"<span></span>";
+  $("suits").innerHTML=SU.map(([s,g])=>`<button class="${"hd".includes(s)?"r":""}" data-su="${s}" ${!pick.rank||u.includes(pick.rank+s)?"disabled":""}>${g}</button>`).join("");
+}
+const SLOT_ORDER=["h0","h1","f0","f1","f2","t0","r0"];
+function nextSlot(k){ if(k[0]==="s"){ const [a,b]=k.slice(1).split("_"); return b==="0"?`s${a}_1`:null; }
+  const grp=k[0]==="h"?["h0","h1"]:k[0]==="f"?["f0","f1","f2"]:[]; const i=grp.indexOf(k); return i>=0&&i<grp.length-1?grp[i+1]:null; }
+
+// ---------- 입력 이벤트 ----------
+document.addEventListener("input",e=>{ const t=e.target;
+  if(t.id&&t.id in S&&t.tagName!=="BUTTON"){ S[t.id]=t.value; if(["sb","bb","ante"].includes(t.id)) {render();} else {drawPreview(); save();} return; }
+  if(t.dataset.st!=null){ const i=+t.dataset.st, v=num(t.value); S.stacks[i]=S.unit==="bb"?v*BB():v; clearTimeout(t._t); t._t=setTimeout(()=>{ const f=document.activeElement===t; drawActions(); drawPreview(); save(); const s=t.parentElement.querySelector("small"); if(s){const c=num(S.stacks[i]); s.textContent=c?(S.unit==="bb"?fmt(c):bbs(c)):"";} const h=num(S.stacks[S.hero]); },300); }
+});
+document.addEventListener("click",e=>{ const t=e.target.closest("button"); if(!t) return; const d=t.dataset;
+  if(d.at){S.anteType=d.at;} else if(d.rg){S.reg=d.rg;} else if(d.stg){S.stage=d.stg;}
+  else if(d.ts){ S.T=+d.ts; S.hero=Math.min(S.hero,S.T-1); S.parts=[S.hero]; S.stacks={}; S.acts=[]; S.sd={}; }
+  else if(d.hp){ const i=+d.hp; if(i!==S.hero){ const hs=S.stacks[S.hero]; delete S.stacks[S.hero]; S.parts=S.parts.filter(x=>x!==S.hero&&x!==i); S.hero=i; S.parts.push(i); if(hs) S.stacks[i]=hs; S.acts=[]; } }
+  else if(d.pt){ const i=+d.pt; if(i===S.hero) return; S.parts=S.parts.includes(i)?S.parts.filter(x=>x!==i):[...S.parts,i]; S.acts=[]; S.sd={}; }
+  else if(d.un){ S.unit=d.un; }
+  else if(d.pb){ S.pub=d.pb==="1"; }
+  else if(d.slot){ openSheet(d.slot); return; }
+  else if(d.rk){ pick.rank=d.rk; drawSheet(); return; }
+  else if(d.su){ S.cards[pick.target]=pick.rank+d.su; const nx=nextSlot(pick.target); if(nx&&!S.cards[nx]){ pick.target=nx; pick.rank=null; drawSheet(); render(); } else closeSheet(); return; }
+  else if(t.id==="cardClear"){ delete S.cards[pick.target]; S.cards[pick.target]=""; closeSheet(); return; }
+  else if(t.id==="sheetClose"){ closeSheet(); return; }
+  else if(d.a){ const c=window.R&&window.R.cur; if(!c) return;
+    if(d.a==="size"){ const v=num($("sizeIn").value); if(!v) return; const to=S.unit==="bb"?v*BB():v; if(to<=c.curBet){ alertNote("현재 벳보다 커야 해요"); return; } S.acts.push({t:"raise",to}); }
+    else S.acts.push({t:d.a}); }
+  else if(d.to){ S.acts.push({t:"raise",to:+d.to}); }
+  else if(t.id==="undo"){ S.acts.pop(); }
+  else if(t.id==="resetAct"){ S.acts=[]; S.sd={}; }
+  else if(d.sdm){ const [i,m]=d.sdm.split(":"); S.sd[i]={m}; if(m!=="show"){ S.cards["s"+i+"_0"]=""; S.cards["s"+i+"_1"]=""; } }
+  else if(d.res){ S.sd.res=d.res; }
+  else if(t.id==="copy"){ const txt=summary(); (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>{t.textContent="✅ 복사됐어요";setTimeout(()=>t.textContent="📋 요약 텍스트 복사",1500);}).catch(()=>{}); return; }
+  else if(t.id==="clearAll"){ if(!confirm("쓴 내용을 모두 지울까요?")) return; S=blank(); $("submit").disabled=false; $("submit").textContent="제출하기"; $("submitMsg").innerHTML=""; }
+  else return;
+  render();
+});
+// ---------- 대회 검색 ----------
+let _stT=null;
+$("tsearch").addEventListener("input",e=>{ clearTimeout(_stT); const q=e.target.value.trim(); if(!q){$("tres").style.display="none";return;}
+  _stT=setTimeout(async()=>{ try{ const r=await fetch(API+"/api/review/events?q="+encodeURIComponent(q),{headers:{"ngrok-skip-browser-warning":"true"}}); const j=await r.json();
+    window._ev=j.events||[]; $("tres").innerHTML=window._ev.length?window._ev.map((x,i)=>`<button data-ev="${i}">${x.label}${x.buyin?` <small>· 바이인 ${x.buyin}</small>`:""}${x.blind?` <small>· ${x.blind}</small>`:""}</button>`).join(""):`<div class="note" style="padding:9px 11px">검색 결과가 없어요 · 아래에 직접 입력하세요</div>`;
+    $("tres").style.display="block"; }catch(err){ $("tres").innerHTML=`<div class="note" style="padding:9px 11px">서버에 연결할 수 없어요 (PC 서버가 꺼져 있을 수 있어요) · 직접 입력하세요</div>`; $("tres").style.display="block"; } },300); });
+document.addEventListener("click",e=>{ const b=e.target.closest("[data-ev]"); if(b){ const x=window._ev[+b.dataset.ev]; S.tname=x.online?x.label:`${x.date||""} ${x.venue||""} ${x.name||""}`.trim(); if(x.buyin) S.tbuy=x.buyin; S.tevent=x;
+    if(x.online){ S.anteType="all"; } $("tres").style.display="none"; $("tsearch").value=""; render(); return; }
+  if(!e.target.closest("#tres")&&e.target.id!=="tsearch") $("tres").style.display="none"; });
+// ---------- 제출 ----------
+$("submit").addEventListener("click",async()=>{
+  const miss=$("missing").textContent; if(!miss.startsWith("✅")){ $("submitMsg").innerHTML=`<div class="warn">${miss}</div>`; return; }
+  const btn=$("submit"); btn.disabled=true; btn.textContent="보내는 중…";
+  try{ const r=await fetch(API+"/api/review",{method:"POST",headers:{"Content-Type":"application/json","ngrok-skip-browser-warning":"true"},
+      body:JSON.stringify({nick:S.nick.trim(),public:S.pub,tournament:S.tname,summary:summary(),data:S})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.detail||("HTTP "+r.status));
+    $("submitMsg").innerHTML=`<div class="done">✅ 리뷰 <b>#${j.id}</b> 접수됐어요. 답변이 달리면 뚝섬방에서 <b>@${S.nick}</b> 로 알려드려요.</div>`;
+    btn.textContent="제출 완료"; S.submitted=j.id; save();
+  }catch(err){ btn.disabled=false; btn.textContent="다시 제출하기";
+    $("submitMsg").innerHTML=`<div class="warn">제출 실패: ${String(err.message||err).includes("fetch")?"서버에 연결할 수 없어요. PC 서버가 꺼져 있을 수 있어요 (쓴 내용은 저장돼 있어요)":err.message}</div>`; }
+});
+function alertNote(m){ const w=document.createElement("div"); w.className="warn"; w.textContent=m; $("actbox").appendChild(w); setTimeout(()=>w.remove(),2000); }
+render();
+</script>
+</body></html>
