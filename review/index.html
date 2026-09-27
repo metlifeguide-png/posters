@@ -93,7 +93,7 @@ label.f{display:block;font-size:12px;color:var(--sub)}label.f input{margin-top:3
  <div class="act"><button class="b" id="undo">↶ 되돌리기</button><button class="b" id="resetAct">액션 전체 지우기</button></div>
 </div>
 
-<div class="panel" id="sdPanel" style="display:none"><h2>⑤ 쇼다운 & 결과 <small>선택</small></h2>
+<div class="panel" id="sdPanel" style="display:none"><h2>⑤ 상대가 보여준 패 <small>선택</small></h2>
  <div id="sd"></div>
 </div>
 
@@ -193,13 +193,12 @@ function replay(){
     }
     rec.potAfter=pot+parts.reduce((s,i)=>s+pl[i].bet,0);
     sInfo.log.push(rec); lastActor=who;
-    if(roundOver()){ if(handOver()){ R.done="fold"; break; } endStreet(); if(street>3){ R.done="showdown"; break; } }
+    if(roundOver()){ if(handOver()){ R.done="fold"; break; } endStreet(); if(street>3){ R.done="showdown"; break; }
+      if(noMoreBetting()){ R.done="allin"; break; } }   // 올인으로 더 결정할 게 없으면 끝 (이후 보드는 안 받음)
   }
   if(!R.done && handOver()) R.done="fold";
-  if(!R.done && street>0 && street<=3 && sInfo.log.length===0 && noMoreBetting()){ // 올인 뒤 보드만 남음
-    while(street<=3){ R.streets.push(sInfo); street++; if(street<=3) sInfo={name:STREETS[street],potStart:pot,players:active().length,stk:snap(),log:[]}; }
-    R.done="showdown"; }
-  if(street<=3 && R.streets[R.streets.length-1]!==sInfo) R.streets.push(sInfo);
+  if(!R.done && street>0 && street<=3 && sInfo.log.length===0 && noMoreBetting()) R.done="allin";
+  if(R.done!=="allin" && street<=3 && R.streets[R.streets.length-1]!==sInfo) R.streets.push(sInfo);
   if(!R.done){ const who=nextActor();
     if(who!=null){ const p=pl[who]; R.cur={seat:who,street:STREETS[street],toCall:Math.max(0,curBet-p.bet),curBet,lastRaise,stack:p.stack,bet:p.bet,
       pot:pot+parts.reduce((s,i)=>s+pl[i].bet,0)}; } }
@@ -242,7 +241,7 @@ function drawActions(){
   $("streets").innerHTML=html;
   let ab="";
   if(R.error) ab=`<div class="warn">${R.error} — ↶ 되돌리기로 고쳐주세요</div>`;
-  else if(R.done){ ab=`<div class="done">${R.done==="fold"?`판 끝: ${pn(R.active[0])} 가 팟 ${both(R.pot)}을 가져가요`:`쇼다운 · 최종 팟 ${both(R.pot)}`} ${missingBoard(R)?"<br>⚠️ 남은 보드 카드를 골라주세요 (위 + 칸)":""}</div>`; }
+  else if(R.done){ ab=`<div class="done">${R.done==="fold"?`판 끝: ${pn(R.active[0])} 가 팟 ${both(R.pot)}을 가져가요`:R.done==="allin"?`올인으로 액션 끝 · 최종 팟 ${both(R.pot)}<br><small>이후 보드는 결정과 상관없어서 넣지 않아도 돼요</small>`:`쇼다운 · 최종 팟 ${both(R.pot)}`}</div>`; }
   else if(R.cur){
     const c=R.cur, bd=boardNeed(c.street), miss=bd.filter(k=>!S.cards[k]);
     if(miss.length){ ab=`<div class="actbox"><div class="now">${SNAME[c.street]} 카드를 먼저 골라주세요</div><div class="cards">${bd.map(k=>slot(k)).join("")}</div></div>`; }
@@ -284,12 +283,12 @@ function logTxt(r,st){
 function drawSD(R){
   if(!R.done || R.done==="fold" && !R.active.length){ $("sdPanel").style.display="none"; return; }
   const others=R.active.filter(i=>i!==S.hero);
-  if(R.done==="fold"||!others.length){ $("sdPanel").style.display="none"; return; }
+  if(R.done==="fold"||!others.length){ $("sdPanel").style.display="none"; return; }   // 폴드로 끝나면 공개된 패 없음
   $("sdPanel").style.display="";
   $("sd").innerHTML=others.map(i=>{ const d=S.sd[i]||{m:"unk"};
     return `<div class="sd"><b style="color:var(--vil)">${pn(i)}</b><div><div class="chips">${[["show","카드 공개"],["muck","머크"],["unk","모름"]].map(([v,l])=>`<button class="chip ${d.m===v?"on":""}" data-sdm="${i}:${v}">${l}</button>`).join("")}</div>
       ${d.m==="show"?`<div class="cards" style="margin-top:6px">${[0,1].map(j=>slot("s"+i+"_"+j)).join("")}</div>`:""}</div></div>`; }).join("")+
-    `<div class="k">결과 (나)</div><div class="chips">${[["win","이김"],["lose","짐"],["split","스플릿"],["unk","모름"]].map(([v,l])=>`<button class="chip ${(S.sd.res||"unk")===v?"on":""}" data-res="${v}">${l}</button>`).join("")}</div>`;
+    `<div class="note">상대가 보여준 패는 범위를 읽는 데 참고돼요. 이기고 진 결과는 리뷰에 필요 없어요.</div>`;
 }
 function summary(){
   const R=setupOK()?replay():null, L=[];
@@ -300,9 +299,10 @@ function summary(){
   L.push(`👥 ${[...S.parts].sort((a,b)=>a-b).filter(i=>i!==S.hero).map(i=>`${pn(i)} ${bbs(num(S.stacks[i]))}`).join(" · ")}`+(S.vinfo?` (${S.vinfo})`:""));
   if(R) R.streets.forEach(s=>{ const bd=boardNeed(s.name).map(k=>cardTxt(S.cards[k])).join(" ");
     const acts=s.log.map(r=>logTxt(r,s.name).replace(/<[^>]+>/g,"")).join(" → ");
-    if(acts||bd) L.push(`[${SNAME[s.name]}]${bd?" "+bd:""} (팟 ${bbs(s.potStart)}) ${acts}`); });
-  if(R&&R.done==="showdown"){ const sd=R.active.filter(i=>i!==S.hero).map(i=>{const d=S.sd[i]||{}; return `${pn(i)} ${d.m==="show"?cardTxt(S.cards["s"+i+"_0"])+cardTxt(S.cards["s"+i+"_1"]):d.m==="muck"?"머크":"모름"}`;}).join(" · ");
-    L.push(`[쇼다운] ${sd}${S.sd.res&&S.sd.res!=="unk"?` · 나 ${{win:"이김",lose:"짐",split:"스플릿"}[S.sd.res]}`:""}`); }
+    if(acts) L.push(`[${SNAME[s.name]}]${bd?" "+bd:""} (팟 ${bbs(s.potStart)}) ${acts}`); });
+  if(R&&(R.done==="showdown"||R.done==="allin")){ const sd=R.active.filter(i=>i!==S.hero&&S.sd[i]&&S.sd[i].m==="show").map(i=>`${pn(i)} ${cardTxt(S.cards["s"+i+"_0"])}${cardTxt(S.cards["s"+i+"_1"])}`).join(" · ");
+    if(R.done==="allin") L.push("[올인으로 액션 끝 · 이후 보드 생략]");
+    if(sd) L.push(`[상대가 보여준 패] ${sd}`); }
   if(R&&R.heroSpots&&R.heroSpots.length){ L.push("[📐 계산 · 내 결정 시점]");
     R.heroSpots.forEach(h=>{ const spr=h.street!=="pre"&&h.pot>0?Math.round(h.eff/h.pot*10)/10:null;
       L.push(`- ${SNAME[h.street]} (${h.players}명): 팟 ${bbs(h.pot)}${h.toCall>0?` · 콜 ${bbs(h.toCall)} · 필요 승률 ${h.need}%`:" · 체크/벳 선택"}${spr!=null?` · SPR ${spr}`:""} → ${({fold:"폴드",check:"체크",call:"콜",raise:"벳/레이즈",allin:"올인"})[h.act]||h.act}`); }); }
