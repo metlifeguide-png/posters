@@ -417,6 +417,7 @@ function handData(){ if(!setupOK()) return null; const R=replay();
     streets:R.streets.map(st=>({name:st.name, potStart:st.potStart, players:st.players, stk:st.stk,
       board:["f0","f1","f2","t0","r0"].slice(0,{pre:0,flop:3,turn:4,river:5}[st.name]).map(k=>S.cards[k]||null),
       log:st.log.map(r=>({seat:r.seat,type:r.type,to:r.to,add:r.add,open:!!r.open,isBet:!!r.isBet}))})),
+    sd:Object.fromEntries(Object.entries(S.sd||{}).filter(([k,v])=>v&&v.m==="show").map(([k])=>[k,[S.cards["s"+k+"_0"]||null,S.cards["s"+k+"_1"]||null]])),
     done:R.done||null}; }
 function autoAnte(){ const bb=num(S.bb); return S.anteType==="bb"?bb:Math.round(bb*0.1); }
 function alertNote(m){ const w=document.createElement("div"); w.className="warn"; w.textContent=m; $("actbox").appendChild(w); setTimeout(()=>w.remove(),2000); }
