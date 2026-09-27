@@ -143,14 +143,14 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px;line-
     <div class="ez-ctl"><div class="k">내 스택 <b>BB</b> (칩으로 쳐도 자동 변환)</div><div class="row2"><input id="ezHero" type="number" inputmode="decimal" step="0.1" min="0.1"></div><div class="k" id="ezHeroChips" style="margin:4px 0 0"></div></div>
     <div class="ez-ctl"><div class="k"><b>총 바이인 수</b> (로비 엔트리 · 게임마다 한 번)</div><div class="row2"><input id="ezEntries" type="number" inputmode="numeric" min="2" style="font-size:20px;font-weight:800;text-align:center"></div></div>
   </div>
-  <div class="ez-ctl" id="ezFinBox" style="margin-bottom:8px"><div class="k"><b>레지 마감 때 예상 총 바이인</b> (레지 마감 전만 · 비우면 게임별 평소 값)</div><div class="row2"><input id="ezFin" type="number" inputmode="numeric" min="2" style="font-size:18px;font-weight:800;text-align:center"></div><div class="k" id="ezFinHint" style="margin:4px 0 0"></div></div>
+  <div class="ez-ctl" id="ezFinBox" style="margin-bottom:8px"><div class="k"><b>레지 마감 때 예상 총 바이인</b> (레지 마감 전만 · 비우면 자동 예상)</div><div class="row2"><input id="ezFin" type="number" inputmode="numeric" min="2" style="font-size:18px;font-weight:800;text-align:center"></div><div class="k" id="ezFinHint" style="margin:4px 0 0"></div></div>
   <div class="ez-grid">
     <div class="ez-ctl"><div class="k"><b>게임 시작 시각</b> (자동 · 레잇레지면 직접)</div><select id="ezStart"></select></div>
     <div class="ez-ctl"><div class="k">블라인드 레벨</div><select id="ezLevel"></select></div>
   </div>
   <h3>테이블 인원 <span class="hint">내 테이블에 앉은 사람 수 (나 포함)</span></h3>
   <div class="chips" id="ezTsize"></div>
-  <h3>내 포지션</h3>
+  <h3>내 포지션 <button type="button" class="chip" data-ez="next" style="margin-left:6px;background:var(--accent);color:#fff;border-color:var(--accent)">▶ 다음 핸드</button> <span class="hint">누르면 포지션 한 칸 이동 + 앤티 0.1·SB 0.5·BB 1BB 자동 차감</span></h3>
   <div class="chips" id="ezPos"></div>
   <h3>상황</h3>
   <div class="seg g3" id="ezScen"></div>
@@ -208,7 +208,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px;line-
   <div class="grid2" style="margin-top:12px">
     <label class="f">총 바이인 수(엔트리)<div class="num"><input id="entries" type="number" inputmode="numeric" min="2" step="1"></div></label>
     <label class="f">현재 인원(라이브)<div class="num"><input id="players" type="number" inputmode="numeric" min="2" step="1"></div></label>
-    <label class="f">나보다 칩 적은 사람 (전체, 모르면 비움)<div class="num"><input id="shorter" type="number" inputmode="numeric" min="0" step="1" placeholder="예: 2"></div></label>
+    <label class="f">내 칩 등수 (로비 순위, 모르면 비움)<div class="num"><input id="proRank" type="number" inputmode="numeric" min="1" step="1" placeholder="예: 20"></div><span class="hint" id="proRankHint"></span></label>
     <label class="f">테이블 인원<select id="tsize"><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></label>
   </div>
   <div class="info" id="info"></div>
@@ -640,7 +640,7 @@ const curLevel=()=>(+st.level)||(hasStart()?autoLevel():REG_LEVEL+1);
 let rescaleOK=true;
 const clkText=()=>{const x=nextLevelIn(); if(x.inBreak){const n=new Date(), r=(60-n.getMinutes())*60-n.getSeconds(); return `☕ Break time (매시 55분~정각) · 재개까지 <b>${Math.floor(r/60)}:${String(r%60).padStart(2,"0")}</b>`+(x.sec-r>0?` · 재개 후 ${Math.ceil((x.sec-r)/60)}분 뒤 레벨업`:"");} return `⏱ 다음 레벨까지 <b>${Math.floor(x.sec/60)}:${String(x.sec%60).padStart(2,"0")}</b>`;};
 function applyLevel(){
-  lockAutoStart();
+  lockAutoStart(); logEntries();
   const L=curLevel(), g=GAMES[st.game], nb=g.blinds[Math.min(L,g.blinds.length)-1];
   // 블라인드가 바뀌면 칩은 그대로 두고 BB 수만 다시 계산 (모든 입력 스택)
   if(rescaleOK && st.bbPrev && st.bbPrev!==nb){
@@ -687,8 +687,9 @@ function drawStatic(){
   $("games").innerHTML=Object.entries(GAMES).map(([k,g])=>`<button type="button" class="opt ${st.game===k?"on":""}" data-g="${k}"><b>${g.name}</b><span>${g.desc}</span></button>`).join("");
   $("modes").innerHTML=Object.entries(MODES).map(([k,m])=>`<button type="button" class="opt ${st.mode===k?"on":""}" data-m="${k}"><b>${m.name}</b><span>${m.desc}</span></button>`).join("");
   $("scen").innerHTML=Object.entries(SCEN).map(([k,s])=>`<button type="button" class="chip ${st.scen===k?"on":""}" data-sc="${k}">${s.name}</button>`).join("");
-  for(const k of ["entries","players","heroStack","vilStack","shorter","qvStack"]) if(document.activeElement!==$(k)) $(k).value=st[k];
-  if(+st.rank>0 && document.activeElement!==$("shorter")) $("shorter").value=shorterCount();
+  for(const k of ["entries","players","heroStack","vilStack","qvStack"]) if(document.activeElement!==$(k)) $(k).value=st[k];
+  if(document.activeElement!==$("proRank")) $("proRank").value=st.rank||"";
+  $("proRankHint").textContent= +st.rank>0 ? `${st.players}명 중 ${st.rank}등 · 나보다 적은 사람 ${shorterCount()}명` : "";
   { const g=GAMES[st.game], al=autoPostReg();
     $("level").innerHTML=levelOptions(g,true); $("level").value=levelValue();
     $("startChips").innerHTML=g.times.map(t=>`<button type="button" class="chip ${startOf()===t?"on":""}" data-st="${t}">${t}${st.game==="pm"&&t==="15:00"?" (5장)":""}</button>`).join("")+
@@ -783,6 +784,7 @@ function schedule(){applyLevel();rescaleOK=false;fix();drawStatic();drawEasy();s
                 pressure: st.mode==="icm" ? (1.5+ANTE*st.tsize)/4 : 0};   // 블라인드 압박: 다음 기회까지 내는 블라인드(한 바퀴의 1/4)
     const job=(kind,cfg)=>{const id=++seq;pending[id]=kind;want[kind]=id;cfg.off=fieldOff(cfg.stacks);send({type:"solve",id,cfg:Object.assign({},base,cfg)});};
     if(st.hero<=n-2) job("qa",{stacks:quickStacks(),opener:st.hero,raise:+st.raise}); else {want.qa=null; lastQA=null; drawQuickA(null);}
+    if(st.hero>=1 && !(st.qvil<st.hero && st.qvil<=n-2)) st.qvil=Math.min(st.hero-1,n-2);
     if(st.hero>=1){const qs=quickStacks(); if(+st.qvStack>0) qs[st.qvil]=+st.qvStack+ANTE; job("qb",{stacks:qs,opener:st.qvil,raise:0});
       if(st.ezScen==="vr"){ const vr=+st.vraise||2, q2=qs.slice(); if(+st.qvStack>0) q2[st.qvil]=+st.qvStack+vr+ANTE; job("qc",{stacks:q2,opener:st.qvil,raise:vr}); } else {want.qc=null; window.QC=null;}} else {want.qb=null; lastQB=null; drawQuickB(null);}
     if(st.ui==="pro" && $("detail").open && detailValid()){const opener=(sc==="open"||sc==="rc")?st.hero:st.vil; job("detail",{stacks:stacks(),opener,raise:(sc==="vs"?0:+st.raise)});}
@@ -948,7 +950,8 @@ function drawQuickB(r){
   if(r) lastQB=r;
   const P=POSN(), f1=x=>(x*100).toFixed(1)+"%";
   if(!r){window.QB=null; drawVerdict(); $("qbSum").innerHTML="";$("qbChart").innerHTML="";return;}
-  const c=r.callers.indexOf(st.hero), x=r.info[c], f=tendF(st.qvil)*tsty().shove;
+  const c=r.callers.indexOf(st.hero); if(c<0){window.QB=null; drawVerdict(); return;}
+  const x=r.info[c], f=tendF(st.qvil)*tsty().shove;
   let call=r.cs[c], callPct=r.csPct[c], shPct=r.shPct;
   if(f!==1){const y=SAT.exploitCaller(r,EUI(),c,f); call=y.call; callPct=y.callPct; shPct=y.shPct;}
   const vs=+st.qvStack>0?+st.qvStack:r1(avgBB());
@@ -1013,7 +1016,7 @@ function drawEasy(){
   $("ezFinBox").style.display=isPreReg()?"":"none";
   if(document.activeElement!==$("ezFin")) $("ezFin").value=((st.finEnt||{})[st.game])||"";
   $("ezFin").placeholder=`평소 ${TYPICAL_FIN[st.game]||"-"}`;
-  $("ezFinHint").textContent=`지금 ${st.entries}바이인 → 마감 때 ${finOf()}바이인으로 계산`;
+  { const fe=finEstimate(); $("ezFinHint").textContent=`지금 ${st.entries}바이인 → 마감 때 약 ${fe.v}바이인 (${fe.how})`; }
   if(+st.rank>st.players) st.rank=st.players;
   if(document.activeElement!==$("ezRank")) $("ezRank").value=st.rank||"";
   { const sc=shorterCount(); $("ezRankHint").innerHTML = +st.rank>0 ? `${st.players}명 중 ${st.rank}등 · 나보다 적은 사람 <b>${sc}명</b>` : "넣으면 폴드로 버틸지·먼저 올인할지가 정확해져요"; }
@@ -1132,7 +1135,23 @@ function logBust(){ st.bustLog=(st.bustLog||[]).concat([{t:Date.now(),p:st.playe
 // ===== 레지 마감 전: 마감 시점을 예상해서 '그때부터 폴드만 하면' 티켓 확률 =====
 const TYPICAL_FIN={pm:109,hg:196,wpl:137};   // 최종 바이인 평소 값(예시 게임 기준). 칸에 넣으면 그 값
 const isPreReg=()=>curLevel()<=REG_LEVEL;
-const finOf=()=>Math.max(+st.entries||0, +((st.finEnt||{})[st.game])||TYPICAL_FIN[st.game]||st.entries);
+// 바이인 수를 고칠 때마다 시각과 함께 기록 → 최근 들어오는 속도로 마감 때 바이인 예상 (마감 5분 전부터는 몰려서 1.5배)
+function logEntries(){ st.entLog=st.entLog||{}; const L=st.entLog[st.game]||[], now=Date.now(), last=L[L.length-1];
+  if(last && (now-last.t>3*3600e3 || +st.entries<last.e)) L.length=0;
+  if(!L.length || L[L.length-1].e!==+st.entries){ L.push({t:now,e:+st.entries}); if(L.length>30) L.shift(); }
+  st.entLog[st.game]=L; }
+function minsToClose(){ const L=curLevel(); if(L>REG_LEVEL) return 0;
+  const frac=(!st.level)?Math.min(1,nextLevelIn().sec/(LEVEL_MIN*60)):1; let m=((REG_LEVEL-L)+frac)*LEVEL_MIN;
+  const now=new Date(); let breaks=0; for(let i=0;i<m+breaks;i++){ const t=new Date(now.getTime()+i*60000); if(t.getMinutes()>=55) breaks++; }
+  return m+breaks; }
+function entryRate(){ const L=((st.entLog||{})[st.game]||[]), now=Date.now(); const R=L.filter(x=>now-x.t<=12*60000);
+  if(R.length<2) return null; const a=R[0], b=R[R.length-1], min=(b.t-a.t)/60000; if(min<1) return null; return Math.max(0,(b.e-a.e)/min); }
+function finEstimate(){ const manual=+((st.finEnt||{})[st.game]); if(manual) return {v:Math.max(manual,+st.entries),how:"직접 넣은 값"};
+  const r=entryRate(), m=minsToClose(), cur=+st.entries;
+  if(r==null) return {v:Math.max(cur,TYPICAL_FIN[st.game]||cur),how:"게임별 평소 값 · 바이인 수를 몇 분 간격으로 고치면 들어오는 속도로 예상해요"};
+  const extra = m<=5 ? r*m*1.5 : r*(m-5) + r*5*1.5;
+  return {v:Math.round(cur+extra),how:`최근 분당 ${r1(r)}명 들어옴 × 남은 ${Math.round(m)}분 (마감 5분 전부터 1.5배)`}; }
+const finOf=()=>finEstimate().v;
 function projectClose(){
   const g=GAMES[st.game], L=curLevel(); if(L>REG_LEVEL) return null;
   const hpl=LEVEL_MIN*60/SEC_PER_HAND, T=st.tsize, fin=finOf();
@@ -1159,7 +1178,7 @@ function drawF2T(){
             :p0>=0.6?"👉 꽤 높지만 안심은 일러요. 마감 전까지 칩을 조금 더 모아두면 마감 뒤가 편해져요."
             :(p0>=0.35?"👉 반반이에요. 마감 전(칩EV)에 칩을 더 모아야 마감 뒤에 버틸 수 있어요."
             :"👉 이대로면 마감 뒤 폴드로 버티긴 어려워요. 마감 전(칩EV)에 칩을 모으는 게 우선이에요.");
-    el.innerHTML=head+`<br>그때부터 계속 폴드만 하면: ${parts.join(" · ")||"모두 티켓권"}<br>${tip}<br><span style="font-size:12px">예상 바이인은 '레지 마감 때 예상 총 바이인' 칸 값(비우면 게임별 평소 값) · 마감까지 탈락은 레벨당 남은 인원의 4%로 가정 · 다른 사람 칩은 큰 스택 몇 명 + 짧은 스택 여럿으로 가정</span>`;
+    el.innerHTML=head+`<br>그때부터 계속 폴드만 하면: ${parts.join(" · ")||"모두 티켓권"}<br>${tip}<br><span style="font-size:12px">예상 바이인: ${finEstimate().how} · 마감까지 탈락은 레벨당 남은 인원의 4%로 가정 · 다른 사람 칩은 큰 스택 몇 명 + 짧은 스택 여럿으로 가정</span>`;
     return;
   }
   if(st.mode!=="icm"){el.innerHTML=`레지 마감 전(칩EV) 구간이에요. 칩을 모으는 게 우선이라 '폴드로 버티기'는 마감 후부터 봐요.`;return;}
@@ -1348,7 +1367,7 @@ document.addEventListener("input",e=>{
   if(t.id==="ezEntries"){ if(v>0){st.entries=v; clearTimeout(t._t); t._t=setTimeout(schedule,700);} return; }
   if(t.id==="ezVilStack"){ st.qvStack=t.value===""?"":v; clearTimeout(t._t); t._t=setTimeout(schedule,600); return; }
   if(t.id==="qvStack"){st.qvStack=t.value===""?"":v;clearTimeout(t._t);t._t=setTimeout(schedule,700);return;}
-  if(t.id==="shorter"){st.rank=""; st.shorter=t.value===""?"":Math.max(0,Math.round(v));clearTimeout(t._t);t._t=setTimeout(schedule,700);return;}
+  if(t.id==="proRank"){st.shorter=""; st.rank=t.value===""?"":Math.max(1,Math.round(v));clearTimeout(t._t);t._t=setTimeout(schedule,700);return;}
   if(t.dataset.behind!=null){ const i=+t.dataset.behind; st.tbl[i]= t.value===""?null:(v>0?v:st.tbl[i]); clearTimeout(t._t);t._t=setTimeout(schedule,700);return;}
   if(!(v>0)) return;
   if(["entries","players","heroStack","vilStack"].includes(t.id)){st[t.id]=v;clearTimeout(t._t);t._t=setTimeout(schedule,700);return;}
