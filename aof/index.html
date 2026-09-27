@@ -152,7 +152,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px;line-
   <h3>내 포지션</h3>
   <div class="chips" id="ezPos"></div>
   <h3>상황</h3>
-  <div class="seg g2" id="ezScen"></div>
+  <div class="seg g3" id="ezScen"></div>
   <div class="row" style="display:flex;gap:6px;margin-top:8px;align-items:center;flex-wrap:wrap">
     <span class="hint">테이블 성향</span>
     <button type="button" class="chip" data-tstyle="nash">타이트</button>
@@ -777,7 +777,8 @@ function schedule(){applyLevel();rescaleOK=false;fix();drawStatic();drawEasy();s
                 pressure: st.mode==="icm" ? (1.5+ANTE*st.tsize)/4 : 0};   // 블라인드 압박: 다음 기회까지 내는 블라인드(한 바퀴의 1/4)
     const job=(kind,cfg)=>{const id=++seq;pending[id]=kind;want[kind]=id;cfg.off=fieldOff(cfg.stacks);send({type:"solve",id,cfg:Object.assign({},base,cfg)});};
     if(st.hero<=n-2) job("qa",{stacks:quickStacks(),opener:st.hero,raise:+st.raise}); else {want.qa=null; lastQA=null; drawQuickA(null);}
-    if(st.hero>=1){const qs=quickStacks(); if(+st.qvStack>0) qs[st.qvil]=+st.qvStack+posted(st.qvil); job("qb",{stacks:qs,opener:st.qvil,raise:0});} else {want.qb=null; lastQB=null; drawQuickB(null);}
+    if(st.hero>=1){const qs=quickStacks(); if(+st.qvStack>0) qs[st.qvil]=+st.qvStack+posted(st.qvil); job("qb",{stacks:qs,opener:st.qvil,raise:0});
+      if(st.ezScen==="vr") job("qc",{stacks:qs,opener:st.qvil,raise:+st.raise}); else {want.qc=null; window.QC=null;}} else {want.qb=null; lastQB=null; drawQuickB(null);}
     if(st.ui==="pro" && $("detail").open && detailValid()){const opener=(sc==="open"||sc==="rc")?st.hero:st.vil; job("detail",{stacks:stacks(),opener,raise:(sc==="vs"?0:+st.raise)});}
     else {want.detail=null; $("summary").innerHTML=""; $("chart").innerHTML=""; $("legend").innerHTML=""; $("result").classList.remove("busy");}
     const qs=quickStacks(), field=qs.filter((x,i)=>i!==st.hero).concat(fieldOff(qs));
@@ -791,6 +792,7 @@ function onResult(m){
     if(kind==="detail"){last=m.r;drawResult();$("result").classList.remove("busy");}
     if(kind==="qa"){lastQA=m.r;drawQuickA(m.r);drawAdvice();}
     if(kind==="qb"){drawQuickB(m.r);}
+    if(kind==="qc"){drawQuickC(m.r);}
     if(!Object.values(want).some(id=>id&&pending[id])) $("quick").classList.remove("busy");}
   if(m.type==="safe"&&m.id===safeId){lastSafe=m.out;drawSafe();drawAdvice();}
   if(m.type==="f2t"&&m.id===f2tId){lastF2T=m.out;drawF2T();drawVerdict();}
@@ -841,7 +843,7 @@ function playOrder(){ if(PLAY_ORDER) return PLAY_ORDER; const E=EUI(), W=SAT.W, 
   PLAY_ORDER=[...Array(169).keys()].sort((x,y)=>sc[y]-sc[x]); return PLAY_ORDER; }
 function topBy(order,p){ const W=SAT.W,o=new Float64Array(169); let acc=0; for(const h of order){ if(acc>=p-1e-9) break; o[h]=1; acc+=W[h]; } return o; }
 // 자리별 일반 오픈 비율(앤티 있는 토너먼트 기준). SB는 BB 하나만 남아서 넓게
-function openPct(){ const n=st.tsize, i=st.hero, btn=n-3, OPEN=[0.45,0.29,0.23,0.19,0.16,0.14,0.12,0.11];
+function openPct(at){ const n=st.tsize, i=at==null?st.hero:at, btn=n-3, OPEN=[0.45,0.29,0.23,0.19,0.16,0.14,0.12,0.11];
   let op = i===n-2 ? 0.40 : OPEN[Math.min(OPEN.length-1, Math.max(0,btn-i))]; if(st.mode==="icm") op*=0.8; return op; }
 function deepOpen(){
   const n=st.tsize, i=st.hero, btn=n-3, hero=+st.heroStack;
@@ -858,6 +860,43 @@ function deepOpen(){
   for(let h=0;h<169;h++){ if(!open[h]) continue; let a=0,w=0; for(let k=0;k<169;k++) if(vr[k]){a+=W[k]*E[h][k]; w+=W[k];}
     if(a/w>=need) rc[h]=1; else rf[h]=1; }
   return {sh,rc,rf,op,eff,vil,X,need,R, vilKnown:+st.qvStack>0};
+}
+
+// ===== 앞에서 오픈(레이즈) → 나: 3벳 올인 / 콜(플랍) / 폴드 =====
+// 오픈한 사람 범위 = 그 자리 일반 오픈 범위(성향 반영). 내 올인에 오픈한 사람이 콜하는 범위와 내 올인 범위를 번갈아 맞춰요
+function drawQuickC(r){
+  if(!r){window.QC=null; drawVerdict(); return;}
+  const c=r.callers.indexOf(st.hero); if(c<0){window.QC=null; drawVerdict(); return;}
+  const I=r.info[c], E=EUI(), W=SAT.W, n=st.tsize;
+  if(!r.canRaise){ window.QC={noRaise:true}; drawVerdict(); return; }
+  const op=Math.min(0.9,openPct(st.qvil)*tendF(st.qvil)*(tsty().shove>=1?1.15:tsty().shove<0.7?0.85:1));
+  const Ra=topBy(playOrder(),op);
+  const eqv=(h,rng)=>{let a=0,w=0;for(let k=0;k<169;k++) if(rng[k]){a+=W[k]*E[h][k]*rng[k];w+=W[k]*rng[k];} return w>0?a/w:0.5;};
+  // 실전 보정: ICM 계산은 오픈한 사람이 콜을 너무 안 한다고 봐서, 테이블 성향만큼(보통 상위 6%)은 무조건 콜한다고 봐요
+  const FLOOR=SAT.topRange(Math.max(tsty().floor, st.mode==="icm"?0.04:0),E);
+  // 20BB 이하에서 콜(플랍 보기)은 BB만: 짧으면 플랍에서 결국 다 들어가서 '오픈 금액만 걸고 본다'는 계산이 너무 후해져요
+  const isBB=st.hero===n-1, flatOK=isBB||I.eff>20;
+  if(I.eff>DEEP_BB){   // 딥스택: 올인 계산 대신 일반 3벳/콜 범위
+    const icm=st.mode==="icm"?0.75:1, v=Math.max(0.025,Math.min(0.05,op*0.22))*icm;
+    const tb=SAT.topRange(v,E), cl=topBy(playOrder(),Math.min(0.5,op*(isBB?1.1:0.7)*icm));
+    const rs=new Float64Array(169), fl=new Float64Array(169); for(let h=0;h<169;h++){ if(tb[h]) rs[h]=1; else if(cl[h]) fl[h]=1; }
+    let pct=a=>{let p=0;for(let k=0;k<169;k++)p+=W[k]*a[k];return p;};
+    window.QC={rs,fl,op,eff:I.eff,R:r.R,rsPct:pct(rs),flPct:pct(fl),vcPct:0,deep:true}; drawVerdict(); return;
+  }
+  let rs=SAT.topRange(0.05,E), vc=new Float64Array(169), fl=new Float64Array(169);
+  for(let it=0;it<25;it++){
+    // 오픈한 사람: 내 올인 범위 상대로 승률이 필요 승률(oNeed)보다 높으면 콜
+    const nvc=new Float64Array(169); for(let h=0;h<169;h++) if(Ra[h]) nvc[h]=(eqv(h,rs)>=I.oNeed||FLOOR[h])?1:0;
+    vc=nvc; let pr=0,pc=0; for(let h=0;h<169;h++){pr+=W[h]*Ra[h]; pc+=W[h]*vc[h];} const pf=pr>0?1-pc/pr:1;
+    const nrs=new Float64Array(169), nfl=new Float64Array(169);
+    for(let h=0;h<169;h++){ const e=eqv(h,vc), evRs=pf*I.RSw+(1-pf)*(e*I.CW+(1-e)*I.CL);
+      const ei=eqv(h,Ra)*I.real, evFc=flatOK?ei*I.FWi+(1-ei)*I.FLi:-1e18, best=Math.max(evRs,evFc,I.CF);
+      if(best>I.CF+1e-12){ if(evRs>=evFc) nrs[h]=1; else nfl[h]=1; } }
+    rs=nrs; fl=nfl;
+  }
+  let pct=a=>{let p=0;for(let k=0;k<169;k++)p+=W[k]*a[k];return p;};
+  window.QC={rs,fl,op,eff:I.eff,need:I.need,oNeed:I.oNeed,R:r.R,rsPct:pct(rs),flPct:pct(fl),vcPct:pct(vc)/Math.max(1e-9,pct(Ra)),deep:I.eff>DEEP_BB};
+  drawVerdict();
 }
 let lastQB=null;
 function drawQuickA(r){
@@ -924,6 +963,7 @@ function paintEz(){
   if(st.ezScen==="open"){ const q=window.QA;
     if(st.hero===st.tsize-1){ el.innerHTML=""; $("ezLegend").innerHTML=`<span>BB는 앞이 다 폴드하면 이긴 판이에요. '앞에서 올인'을 눌러 콜 차트를 보세요.</span>`; return; }
     if(q){ layers=[[q.sh,COL.push],[q.rc,COL.call],[q.rf,COL.fold2]]; leg=[["올인",COL.push],["레이즈→올인 받으면 콜",COL.call],["레이즈→폴드",COL.fold2]]; } }
+  else if(st.ezScen==="vr"){ const q=window.QC; if(q&&!q.noRaise){ layers=[[q.rs,COL.push],[q.fl,COL.flat]]; leg=[[q.deep?"3벳 (크게)":"올인 (3벳 셔브)",COL.push],["콜 (플랍 보기)",COL.flat]]; } }
   else { const q=window.QB; if(q){ layers=[[q.call,COL.call]]; leg=[["콜",COL.call]]; } }
   let html=""; const sel=handIdx();
   const mf = layers.length && moneyFirst(110);   // 티켓 우선 구간이면 최상위 패만 색칠
@@ -963,10 +1003,12 @@ function drawEasy(){
   $("ezTsize").innerHTML=[2,3,4,5,6,7,8,9].map(k=>`<button type="button" class="chip ${st.tsize===k?"on":""}" data-ts="${k}">${k}명</button>`).join("");
   $("ezPos").innerHTML=P.map((p,i)=>`<button type="button" class="chip hero ${i===st.hero?"on":""}" data-hp="${i}">${p}</button>`).join("");
   $("ezScen").innerHTML=`<button type="button" class="opt ${st.ezScen==="open"?"on":""}" data-ezs="open"><b>앞 모두 폴드</b><span>내가 먼저 액션</span></button>`+
+    `<button type="button" class="opt ${st.ezScen==="vr"?"on":""}" data-ezs="vr"><b>앞에서 오픈</b><span>올인·콜·폴드</span></button>`+
     `<button type="button" class="opt ${st.ezScen==="vs"?"on":""}" data-ezs="vs"><b>앞에서 올인</b><span>콜할지 말지</span></button>`;
   { const deep=st.ezScen==="open" && +st.heroStack>DEEP_BB && st.hero<st.tsize-1;
-    $("ezVilBox").style.display=(st.ezScen==="vs"||deep)?"":"none"; $("ezVil").style.display=st.ezScen==="vs"?"":"none";
-    $("ezVilLbl").firstChild.textContent = deep ? "뒤에서 올인할 사람 스택 (BB, 비우면 뒤 자리 중 가장 큰 스택)" : "올인한 사람 스택 (BB, 비우면 평균)"; }
+    const vsx=st.ezScen==="vs"||st.ezScen==="vr";
+    $("ezVilBox").style.display=(vsx||deep)?"":"none"; $("ezVil").style.display=vsx?"":"none";
+    $("ezVilLbl").firstChild.textContent = deep ? "뒤에서 올인할 사람 스택 (BB, 비우면 뒤 자리 중 가장 큰 스택)" : st.ezScen==="vr" ? "오픈한 사람 스택 (BB, 비우면 평균)" : "올인한 사람 스택 (BB, 비우면 평균)"; }
   $("ezVil").innerHTML= st.hero<1?`<span class="hint">UTG 앞에는 사람이 없어요.</span>`:
     `<span class="hint" style="align-self:center">누가?</span>`+P.map((p,i)=>i<st.hero&&i<=n-2?`<button type="button" class="chip vil ${i===st.qvil?"on":""}" data-qv="${i}">${p}</button>`:"").join("");
 
@@ -991,6 +1033,20 @@ function drawVerdict(){
     else if(b>=0.5||c>=0.5) el.innerHTML+=`<div class="why">⚠️ [근사] 레이즈 계산은 작은 3벳·플랍 이후를 빼고 한 거라 방향만 참고하세요.</div>`;
     if(a<0.5&&b<0.5&&c<0.5&&a>=0.1&&+st.heroStack<=10) el.innerHTML+=`<div class="why">⚠️ 숏스택 경계 패예요. 계산이 짧은 스택의 생존을 조금 후하게 봐서, 블라인드가 곧 오르면 올인 쪽이 나아요.</div>`;
     if(a>=0.5||b>=0.5||c>=0.5) el.innerHTML+=f2tNote();
+    drawResultBtns(a>=0.5?"shove":null);
+  }else if(st.ezScen==="vr"){
+    if(st.hero<1){set("","—","UTG 앞에는 사람이 없어요.");return;}
+    const q=window.QC; if(!q){set("","계산 중…","");return;}
+    if(q.noRaise){set("","'앞에서 올인'을 보세요","오픈한 사람 스택이 10BB 미만이면 보통 오픈 대신 올인이라, 이 계산은 '앞에서 올인'으로 봐요.");drawResultBtns(null);return;}
+    const vs=+st.qvStack>0?st.qvStack+"BB":"평균 스택", a=q.rs[k], b=q.fl[k], pp=x=>Math.round(x*100)+"%";
+    const who=`${P[st.qvil]}(${vs}) ${q.R}BB 오픈 · 오픈 범위 상위 ${pp(q.op)}로 봄`;
+    if(a>=0.5 && moneyFirst(k)){ set("fold","폴드 (티켓 우선)",moneyFirst(k)+`<br>차트상으로는 ${q.deep?"3벳":"올인"}`); drawResultBtns(null); return; }
+    if(a>=0.5) set("push",q.deep?"3벳 (크게)":"올인 (3벳 셔브)",`${who}<br>`+(q.deep?`유효 스택 ${r1(q.eff)}BB · 3벳 범위 상위 ${pp(q.rsPct)} (밸류 위주)`:`내 올인에 오픈한 사람이 콜하는 비율 약 ${pp(q.vcPct)} · 유효 스택 ${r1(q.eff)}BB`));
+    else if(b>=0.5) set("call","콜 (플랍 보기)",`${who}<br>올인하기엔 약하고 폴드하기엔 아까운 패예요`);
+    else set("fold","폴드",`${who}<br>올인 범위 ${rangeText(q.rs)}${q.flPct>0.001?` · 콜 범위 ${rangeText(q.fl)}`:""}`);
+    if(a<0.5&&b<0.5&&st.mode==="icm"&&!q.deep&&(window.PREM||(window.PREM=SAT.topRange(0.04,EUI())))[k]) el.innerHTML+=`<div class="why">티켓 싸움 구간이라 큰 패도 폴드가 나올 수 있어요. 올인했다 지면 탈락인데, 오픈한 사람은 강한 패로 자주 콜하기 때문이에요.</div>`;
+    el.innerHTML+=`<div class="why">⚠️ [근사] 콜 이후 플랍 플레이는 '승률 × 실현율'로 단순화했어요. 상대 오픈 범위를 모르면 성향(타이트/어그레시브)으로 조절하세요.${q.deep?` 유효 스택이 ${DEEP_BB}BB를 넘으면 올인 대신 크게 3벳하는 쪽이에요.`:""}</div>`;
+    if(a>=0.5) el.innerHTML+=f2tNote();
     drawResultBtns(a>=0.5?"shove":null);
   }else{
     if(st.hero<1){set("","—","UTG 앞에는 사람이 없어요.");return;}
@@ -1192,7 +1248,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.ui){e.preventDefault(); st.ui=t.dataset.ui; if(st.ui==="pro") window.scrollTo(0,0); schedule(); return;}
   if(t.dataset.ts){st.tsize=+t.dataset.ts;st.others={};st.tbl=[];st.tend=[];st.hist=[];schedule();return;}
   if(t.dataset.tstyle){st.tstyle=t.dataset.tstyle; save(); drawEasy(); redrawQuick(); return;}
-  if(t.dataset.ezs){st.ezScen=t.dataset.ezs; drawEasy(); save(); return;}
+  if(t.dataset.ezs){st.ezScen=t.dataset.ezs; if(st.ezScen!=="open"&&!(st.qvil<st.hero)) st.qvil=Math.max(0,st.hero-1); schedule(); return;}
 
   if(t.dataset.caller){st.caller=+t.dataset.caller; drawVerdict(); return;}
   if(t.dataset.res){applyResult(t.dataset.res); return;}
