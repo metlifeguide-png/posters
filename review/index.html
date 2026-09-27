@@ -161,11 +161,12 @@ function replay(){
   const R={streets:[],cur:null,done:false,pot,pl,error:null};
   let street=0, curBet=bb, lastRaise=bb, need=new Set(parts.filter(i=>!pl[i].allin)), lastActor=-1;
   const order=st=> st===0 ? [...Array(T).keys()] : [T-2,T-1,...Array(T-2).keys()];
-  let sInfo={name:STREETS[0],potStart:pot+parts.reduce((x,i)=>x+pl[i].bet,0)+(pl[T-2]?0:0),players:parts.filter(i=>!pl[i].fold).length,log:[]};
+  const snap=()=>{ const o={}; for(const i of parts) if(!pl[i].fold) o[i]=pl[i].stack+pl[i].bet; return o; };
+  let sInfo={name:STREETS[0],potStart:pot+parts.reduce((x,i)=>x+pl[i].bet,0),players:parts.filter(i=>!pl[i].fold).length,stk:snap(),log:[]};
   const active=()=>parts.filter(i=>!pl[i].fold);
   const endStreet=()=>{ for(const i of parts){pot+=pl[i].bet; pl[i].bet=0;} R.streets.push(sInfo); street++; curBet=0; lastRaise=bb; lastActor=-1;
     need=new Set(active().filter(i=>!pl[i].allin));
-    sInfo={name:STREETS[street],potStart:pot,players:active().length,log:[]}; };
+    sInfo={name:STREETS[street],potStart:pot,players:active().length,stk:snap(),log:[]}; };
   const nextActor=()=>{ const ord=order(street); let start=0;
     if(lastActor>=0){ start=(ord.indexOf(lastActor)+1)%ord.length; } else if(street===0){ start=0; }
     for(let k=0;k<ord.length;k++){ const i=ord[(start+k)%ord.length]; if(need.has(i)) return i; } return null; };
@@ -196,7 +197,7 @@ function replay(){
   }
   if(!R.done && handOver()) R.done="fold";
   if(!R.done && street>0 && street<=3 && sInfo.log.length===0 && noMoreBetting()){ // 올인 뒤 보드만 남음
-    while(street<=3){ R.streets.push(sInfo); street++; if(street<=3) sInfo={name:STREETS[street],potStart:pot,players:active().length,log:[]}; }
+    while(street<=3){ R.streets.push(sInfo); street++; if(street<=3) sInfo={name:STREETS[street],potStart:pot,players:active().length,stk:snap(),log:[]}; }
     R.done="showdown"; }
   if(street<=3 && R.streets[R.streets.length-1]!==sInfo) R.streets.push(sInfo);
   if(!R.done){ const who=nextActor();
@@ -394,7 +395,7 @@ $("submit").addEventListener("click",async()=>{
   const miss=$("missing").textContent; if(!miss.startsWith("✅")){ $("submitMsg").innerHTML=`<div class="warn">${miss}</div>`; return; }
   const btn=$("submit"); btn.disabled=true; btn.textContent="보내는 중…";
   try{ const r=await fetch(API+"/api/review",{method:"POST",headers:{"Content-Type":"application/json","ngrok-skip-browser-warning":"true"},
-      body:JSON.stringify({nick:S.nick.trim(),public:S.pub,tournament:S.tname,summary:summary(),data:S})});
+      body:JSON.stringify({nick:S.nick.trim(),public:S.pub,tournament:S.tname,summary:summary(),data:S,hand:handData()})});
     const j=await r.json().catch(()=>({}));
     if(!r.ok) throw new Error(j.detail||("HTTP "+r.status));
     $("submitMsg").innerHTML=`<div class="done">✅ 리뷰 <b>#${j.id}</b> 접수됐어요. 답변이 달리면 뚝섬방에서 <b>@${S.nick}</b> 로 알려드려요.</div>`;
@@ -409,6 +410,14 @@ function newReview(ask){ if(ask && !confirm("지금 쓴 내용을 지우고 새�
   const nick=S.nick; S=blank(); S.nick=nick; $("submit").disabled=false; $("submit").textContent="제출하기"; $("submitMsg").innerHTML="";
   if($("structSel")){ $("structSel").value=""; $("lvSel").value=""; $("lvSel").disabled=true; } render(); window.scrollTo(0,0); }
 $("newReview").addEventListener("click",()=>newReview(true));
+// 솔버용 핸드 구조 (서버가 헤즈업 구간을 찾아 범위를 추정하고 풀어요)
+function handData(){ if(!setupOK()) return null; const R=replay();
+  return {T:S.T, hero:S.hero, pos:P(), bb:BB(), sb:SBv(), ante:AN(), anteType:S.anteType, stage:S.stage, reg:S.reg,
+    heroCards:[S.cards.h0,S.cards.h1], stacks0:Object.fromEntries(S.parts.map(i=>[i,num(S.stacks[i])])),
+    streets:R.streets.map(st=>({name:st.name, potStart:st.potStart, players:st.players, stk:st.stk,
+      board:["f0","f1","f2","t0","r0"].slice(0,{pre:0,flop:3,turn:4,river:5}[st.name]).map(k=>S.cards[k]||null),
+      log:st.log.map(r=>({seat:r.seat,type:r.type,to:r.to,add:r.add,open:!!r.open,isBet:!!r.isBet}))})),
+    done:R.done||null}; }
 function autoAnte(){ const bb=num(S.bb); return S.anteType==="bb"?bb:Math.round(bb*0.1); }
 function alertNote(m){ const w=document.createElement("div"); w.className="warn"; w.textContent=m; $("actbox").appendChild(w); setTimeout(()=>w.remove(),2000); }
 render();
