@@ -220,7 +220,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px;line-
     <button type="button" class="chip" id="clearTbl">스택·성향 모두 지우기</button>
   </div>
   <div class="hint" style="margin-top:6px">자리마다 <b>보통/타이트/루즈</b>를 누르면 그 사람 성향에 맞춰 내 액션을 다시 계산해요. <b>타이트</b> = 먼저 올인하는 범위가 계산값의 60% (콜 범위는 그대로), <b>루즈</b> = 올인·콜 범위 모두 1.6배.</div>
-  <div class="hint" id="nextHint" style="margin-top:6px">다음 핸드: 방금 판의 SB −0.6BB, BB −1.1BB, 나머지 −0.1BB(앤티)를 빼고 모두 한 칸씩 이동해요. 판을 이긴 사람은 스택을 고쳐주세요.</div>
+  <div class="hint" id="nextHint" style="margin-top:6px">다음 핸드: 모두 한 칸씩 이동하고, 새 판 앤티 0.1BB·새 SB 0.5BB·새 BB 1BB를 빼요 (게임 화면에 보이는 스택과 같게). 판을 이긴 사람은 스택을 고쳐주세요.</div>
   <div style="height:12px"></div>
   <div class="qa">
     <div class="summary" id="qaSum"></div>
@@ -575,8 +575,8 @@ const SCEN={
 };
 const $=id=>document.getElementById(id);
 const st={game:"hg",mode:"icm",entries:150,players:40,bb:400,tsize:9,scen:"open",hero:6,vil:8,qvil:5,heroStack:20,vilStack:30,others:{},tbl:[],tend:[],hist:[],ui:"easy",ezScen:"open",pick:{k:null},settled:{},bustLog:[],caller:null,shorter:"",rank:"",tstyle:"normal",raise:"2",qvStack:"",level:null,modeManual:false,starts:{}};
-function load(){try{const s=JSON.parse(localStorage.getItem("sat_v13")||"null");if(s) Object.assign(st,s);}catch(e){}}
-function save(){try{localStorage.setItem("sat_v13",JSON.stringify(st));}catch(e){}}
+function load(){try{const s=JSON.parse(localStorage.getItem("sat_v14")||"null");if(s) Object.assign(st,s);}catch(e){}}
+function save(){try{localStorage.setItem("sat_v14",JSON.stringify(st));}catch(e){}}
 const POSN=()=>SAT.POS[st.tsize];
 const avgBB=()=>Math.max(1,st.entries*START/Math.max(2,st.players)/Math.max(1,st.bb));
 // 시작 시각: 직접 고른 값이 없으면 오늘 일정 중 지금 진행 중일 가능성이 가장 큰(가장 최근에 시작한) 게임
@@ -608,8 +608,15 @@ const parseLevel=v=>v===""?null:(v==="clock"?"clock":+v);
 // 레벨 기본값 = 레지 마감 직후(16레벨). '시각 기준 자동'을 고르면 시계로 계산, 숫자를 고르면 그 레벨
 const curLevel=()=>st.level==="clock"?autoLevel():(+st.level||REG_LEVEL+1);
 function applyLevel(){
-  const L=curLevel(), g=GAMES[st.game];
-  st.bb=g.blinds[Math.min(L,g.blinds.length)-1];
+  const L=curLevel(), g=GAMES[st.game], nb=g.blinds[Math.min(L,g.blinds.length)-1];
+  // 블라인드가 바뀌면 칩은 그대로 두고 BB 수만 다시 계산 (모든 입력 스택)
+  if(st.bbPrev && st.bbPrev!==nb){
+    const f=st.bbPrev/nb, sc=x=>(x===""||x==null||!(+x>0))?x:r1(+x*f);
+    st.heroStack=Math.max(0.1,sc(st.heroStack)); st.vilStack=sc(st.vilStack); st.qvStack=sc(st.qvStack);
+    st.tbl=(st.tbl||[]).map(sc); for(const k in st.others) st.others[k]=sc(st.others[k]);
+    for(const h of st.hist||[]){ h.heroStack=sc(h.heroStack); h.tbl=(h.tbl||[]).map(sc); }
+  }
+  st.bbPrev=nb; st.bb=nb;
   if(!st.modeManual) st.mode = L<=REG_LEVEL ? "chip" : "icm";
 }
 const won=v=>v>=10000?(v%10000?Math.floor(v/10000)+"만"+(v%10000):v/10000+"만"):String(v);
@@ -683,9 +690,11 @@ function drawStatic(){
      (st.mode==="icm"?`<br>${lines.join(" · ")}`:`<br>레지 마감 전: 칩EV로 계산해요 (인원이 더 늘 수 있음)`);
   $("safePanel").style.display = "";
 }
+// 입력하는 스택 = 게임 화면에 보이는 스택(이번 판 앤티·블라인드를 이미 낸 뒤). 계산에는 낸 칩을 다시 더해서 넣어요
+const posted=i=>ANTE+(i===st.tsize-1?1:(i===st.tsize-2?0.5:0));
 function stacks(){
   const n=st.tsize, avg=r1(avgBB()), arr=[];
-  for(let i=0;i<n;i++) arr.push(i===st.hero?+st.heroStack:(i===st.vil?+st.vilStack:(+st.others[i]||avg)));
+  for(let i=0;i<n;i++){ const shown=i===st.hero?+st.heroStack:(i===st.vil?+st.vilStack:(+st.others[i]||null)); arr.push(shown!=null&&shown>0?shown+posted(i):avg); }
   return arr;
 }
 let seq=0,pending={},safeId=0,f2tId=0,lastF2T=null,last=null,lastSafe=null,lastQA=null;
@@ -701,18 +710,16 @@ function rotateTo(pos){ // 내 포지션을 직접 바꾸면 같은 자리 배�
 }
 function nextHand(){
   const n=st.tsize; st.hist.push({tbl:st.tbl.slice(),tend:st.tend.slice(),hero:st.hero,heroStack:st.heroStack,players:st.players,settled:Object.assign({},st.settled)}); if(st.hist.length>30) st.hist.shift();
-  const avg=r1(avgBB()), cost=i=>i===n-1?1+ANTE:(i===n-2?0.5+ANTE:ANTE);
-  const done=st.settled||{};
+  shiftTbl(-1);   // 버튼 이동
+  // 새 판 시작: 모두 앤티 0.1BB, 새 SB 0.5BB·새 BB 1BB를 내요 (화면 스택과 똑같이)
   for(let i=0;i<n;i++){
-    if(done[i]) continue;   // 이번 판 결과를 이미 넣은 사람은 블라인드·앤티까지 계산돼 있음
-    if(i===st.hero){ st.heroStack=Math.max(0.1,r1(+st.heroStack-cost(i))); continue; }
-    if(st.tbl[i]!=null) st.tbl[i]=Math.max(0.1,r1(+st.tbl[i]-cost(i)));
+    if(i===st.hero){ st.heroStack=Math.max(0.1,r1(+st.heroStack-posted(i))); continue; }
+    if(st.tbl[i]!=null) st.tbl[i]=Math.max(0.1,r1(+st.tbl[i]-posted(i)));
   }
   st.settled={}; st.pick={k:null};
-  shiftTbl(-1);
 }
-function quickStacks(){const n=st.tsize,avg=r1(avgBB()),arr=new Array(n).fill(avg);arr[st.hero]=+st.heroStack;
-  for(let i=0;i<n;i++) if(i!==st.hero && +st.tbl[i]>0) arr[i]=+st.tbl[i];
+function quickStacks(){const n=st.tsize,avg=r1(avgBB()),arr=new Array(n).fill(avg);arr[st.hero]=+st.heroStack+posted(st.hero);
+  for(let i=0;i<n;i++) if(i!==st.hero && +st.tbl[i]>0) arr[i]=+st.tbl[i]+posted(i);
   return arr;}
 // 다른 테이블 사람들: 총칩에서 우리 테이블 칩을 뺀 나머지. '나보다 칩 적은 사람 수'를 넣으면 그만큼은 짧은 스택으로 둔다
 function fieldOff(table){
@@ -743,7 +750,7 @@ function schedule(){applyLevel();fix();drawStatic();drawEasy();save();clearTimeo
                 pressure: st.mode==="icm" ? (1.5+ANTE*st.tsize)/4 : 0};   // 블라인드 압박: 다음 기회까지 내는 블라인드(한 바퀴의 1/4)
     const job=(kind,cfg)=>{const id=++seq;pending[id]=kind;want[kind]=id;cfg.off=fieldOff(cfg.stacks);send({type:"solve",id,cfg:Object.assign({},base,cfg)});};
     if(st.hero<=n-2) job("qa",{stacks:quickStacks(),opener:st.hero,raise:+st.raise}); else {want.qa=null; lastQA=null; drawQuickA(null);}
-    if(st.hero>=1){const qs=quickStacks(); if(+st.qvStack>0) qs[st.qvil]=+st.qvStack; job("qb",{stacks:qs,opener:st.qvil,raise:0});} else {want.qb=null; lastQB=null; drawQuickB(null);}
+    if(st.hero>=1){const qs=quickStacks(); if(+st.qvStack>0) qs[st.qvil]=+st.qvStack+posted(st.qvil); job("qb",{stacks:qs,opener:st.qvil,raise:0});} else {want.qb=null; lastQB=null; drawQuickB(null);}
     if(st.ui==="pro" && $("detail").open && detailValid()){const opener=(sc==="open"||sc==="rc")?st.hero:st.vil; job("detail",{stacks:stacks(),opener,raise:(sc==="vs"?0:+st.raise)});}
     else {want.detail=null; $("summary").innerHTML=""; $("chart").innerHTML=""; $("legend").innerHTML=""; $("result").classList.remove("busy");}
     const qs=quickStacks(), field=qs.filter((x,i)=>i!==st.hero).concat(fieldOff(qs));
@@ -947,7 +954,7 @@ function drawResultBtns(kind){
       `<button type="button" class="bt blue" data-res="cwin">콜해서 이김</button><button type="button" class="bt red" data-res="close">콜해서 짐</button></div>`;
   }
 }
-function stackOf(i){return i===st.hero?+st.heroStack:(+st.tbl[i]>0?+st.tbl[i]:r1(avgBB()));}
+function stackOf(i){return i===st.hero?+st.heroStack+posted(i):(+st.tbl[i]>0?+st.tbl[i]+posted(i):r1(avgBB()));}   // 판 시작 전 스택(낸 칩 포함)
 function applyResult(res){
   const n=st.tsize, h=st.hero, a=ANTE, blind=i=>i===n-1?1:(i===n-2?0.5:0);
   st.hist.push({tbl:st.tbl.slice(),tend:st.tend.slice(),hero:st.hero,heroStack:st.heroStack,players:st.players,settled:Object.assign({},st.settled)});
