@@ -143,6 +143,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px;line-
     <div class="ez-ctl"><div class="k">내 스택 <b>BB</b> (칩으로 쳐도 자동 변환)</div><div class="row2"><input id="ezHero" type="number" inputmode="decimal" step="0.1" min="0.1"></div><div class="k" id="ezHeroChips" style="margin:4px 0 0"></div></div>
     <div class="ez-ctl"><div class="k"><b>총 바이인 수</b> (로비 엔트리 · 게임마다 한 번)</div><div class="row2"><input id="ezEntries" type="number" inputmode="numeric" min="2" style="font-size:20px;font-weight:800;text-align:center"></div></div>
   </div>
+  <div class="ez-ctl" id="ezFinBox" style="margin-bottom:8px"><div class="k"><b>레지 마감 때 예상 총 바이인</b> (레지 마감 전만 · 비우면 게임별 평소 값)</div><div class="row2"><input id="ezFin" type="number" inputmode="numeric" min="2" style="font-size:18px;font-weight:800;text-align:center"></div><div class="k" id="ezFinHint" style="margin:4px 0 0"></div></div>
   <div class="ez-grid">
     <div class="ez-ctl"><div class="k"><b>게임 시작 시각</b> (자동 · 레잇레지면 직접)</div><select id="ezStart"></select></div>
     <div class="ez-ctl"><div class="k">블라인드 레벨</div><select id="ezLevel"></select></div>
@@ -161,6 +162,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px;line-
   </div>
   <div id="ezVilBox" style="margin-top:8px">
     <div class="chips" id="ezVil"></div>
+    <div class="chips" id="ezOpenSize" style="margin-top:6px"></div>
     <label class="f" id="ezVilLbl" style="margin-top:6px;max-width:320px">올인한 사람 스택 (BB, 비우면 평균)<input id="ezVilStack" type="number" inputmode="decimal" step="0.1" min="0.1"></label>
   </div>
   <h3>내 패 <span class="hint">차트에서 누르기 · 색 = 지금 상황의 정답</span></h3>
@@ -781,12 +783,17 @@ function schedule(){applyLevel();rescaleOK=false;fix();drawStatic();drawEasy();s
                 pressure: st.mode==="icm" ? (1.5+ANTE*st.tsize)/4 : 0};   // 블라인드 압박: 다음 기회까지 내는 블라인드(한 바퀴의 1/4)
     const job=(kind,cfg)=>{const id=++seq;pending[id]=kind;want[kind]=id;cfg.off=fieldOff(cfg.stacks);send({type:"solve",id,cfg:Object.assign({},base,cfg)});};
     if(st.hero<=n-2) job("qa",{stacks:quickStacks(),opener:st.hero,raise:+st.raise}); else {want.qa=null; lastQA=null; drawQuickA(null);}
-    if(st.hero>=1){const qs=quickStacks(); if(+st.qvStack>0) qs[st.qvil]=+st.qvStack+posted(st.qvil); job("qb",{stacks:qs,opener:st.qvil,raise:0});
-      if(st.ezScen==="vr") job("qc",{stacks:qs,opener:st.qvil,raise:+st.raise}); else {want.qc=null; window.QC=null;}} else {want.qb=null; lastQB=null; drawQuickB(null);}
+    if(st.hero>=1){const qs=quickStacks(); if(+st.qvStack>0) qs[st.qvil]=+st.qvStack+ANTE; job("qb",{stacks:qs,opener:st.qvil,raise:0});
+      if(st.ezScen==="vr"){ const vr=+st.vraise||2, q2=qs.slice(); if(+st.qvStack>0) q2[st.qvil]=+st.qvStack+vr+ANTE; job("qc",{stacks:q2,opener:st.qvil,raise:vr}); } else {want.qc=null; window.QC=null;}} else {want.qb=null; lastQB=null; drawQuickB(null);}
     if(st.ui==="pro" && $("detail").open && detailValid()){const opener=(sc==="open"||sc==="rc")?st.hero:st.vil; job("detail",{stacks:stacks(),opener,raise:(sc==="vs"?0:+st.raise)});}
     else {want.detail=null; $("summary").innerHTML=""; $("chart").innerHTML=""; $("legend").innerHTML=""; $("result").classList.remove("busy");}
     const qs=quickStacks(), field=qs.filter((x,i)=>i!==st.hero).concat(fieldOff(qs));
     send({type:"safe",id:++safeId,q:{total:st.entries*START/Math.max(1,st.bb),players:+st.players,targets:g.bubbles.map(b=>({key:b.key,n:b.n})),hero:+st.heroStack,field,payWon:g.pay()}});
+    const PJ=projectClose(); window.PJ=PJ;
+    if(PJ){ const tg2=g.bubbles.filter(b=>PJ.live>b.n).map(b=>({key:b.key,n:b.n}));
+      if(PJ.chips>0) send({type:"f2t",id:++f2tId,q:{targets:tg2,hero:PJ.chips,pos:st.hero,T:n,level:REG_LEVEL+1,blinds:g.blinds,
+        others:PJ.others,perLv:null,base:0.10,handsPerLevel:LEVEL_MIN*60/SEC_PER_HAND,sims:1200}});
+      else lastF2T={}; return; }
     const tg=g.bubbles.filter(b=>st.players>b.n).map(b=>({key:b.key,n:b.n}));
     send({type:"f2t",id:++f2tId,q:{targets:tg,hero:+st.heroStack*st.bb,pos:st.hero,T:n,level:curLevel(),blinds:g.blinds,
       others:field.map(x=>x*st.bb),perLv:bustRate().perLv,base:0.10,handsPerLevel:LEVEL_MIN*60/SEC_PER_HAND,sims:1200}});
@@ -984,7 +991,10 @@ function drawEasy(){
   $("mEasy").classList.toggle("on",st.ui==="easy"); $("mPro").classList.toggle("on",st.ui==="pro");
   $("ezGames").innerHTML=Object.entries(GAMES).map(([k,x])=>`<button type="button" class="chip ${st.game===k?"on":""}" data-g="${k}">${x.name}</button>`).join("")+
     `<span class="hint" style="align-self:center">${startOf()} 게임 · <a href="#" data-ui="pro" style="color:var(--accent)">시간·설정 바꾸기</a></span>`;
-  const lines=g.bubbles.map(b=>st.players>b.n?`${b.label}까지 <b>${st.players-b.n}명</b>`:`${b.label} ✅`);
+  const pj=isPreReg()?projectClose():null;
+  const lines=pj
+    ? [`레지 마감 전이라 인원이 계속 늘어요 · 마감 예상 ${pj.fin}바이인 / ${pj.live}명 → ${g.bubbles.map(b=>`${b.label}까지 약 ${Math.max(0,pj.live-b.n)}명`).join(" · ")}`]
+    : g.bubbles.map(b=>st.players>b.n?`${b.label}까지 <b>${st.players-b.n}명</b>`:`${b.label} ✅`);
   const av=avgBB(), bad=av<3||av>300;
   const clk = st.level ? `(레벨 직접 고름)` : (hasStart() ? `<span id="ezClk">${clkText()}</span>`
             : `<b style="color:var(--push)">⏰ 게임 시작 시각을 골라주세요 — 블라인드·BB가 시계에 맞춰 자동으로 바뀌어요</b>`);
@@ -1000,6 +1010,10 @@ function drawEasy(){
     $("ezStart").parentElement.style.border="";
     $("ezLevel").innerHTML=levelOptions(g,false); $("ezLevel").value=levelValue(); }
   if(document.activeElement!==$("ezEntries")) $("ezEntries").value=st.entries;
+  $("ezFinBox").style.display=isPreReg()?"":"none";
+  if(document.activeElement!==$("ezFin")) $("ezFin").value=((st.finEnt||{})[st.game])||"";
+  $("ezFin").placeholder=`평소 ${TYPICAL_FIN[st.game]||"-"}`;
+  $("ezFinHint").textContent=`지금 ${st.entries}바이인 → 마감 때 ${finOf()}바이인으로 계산`;
   if(+st.rank>st.players) st.rank=st.players;
   if(document.activeElement!==$("ezRank")) $("ezRank").value=st.rank||"";
   { const sc=shorterCount(); $("ezRankHint").innerHTML = +st.rank>0 ? `${st.players}명 중 ${st.rank}등 · 나보다 적은 사람 <b>${sc}명</b>` : "넣으면 폴드로 버틸지·먼저 올인할지가 정확해져요"; }
@@ -1012,7 +1026,9 @@ function drawEasy(){
   { const deep=st.ezScen==="open" && +st.heroStack>DEEP_BB && st.hero<st.tsize-1;
     const vsx=st.ezScen==="vs"||st.ezScen==="vr";
     $("ezVilBox").style.display=(vsx||deep)?"":"none"; $("ezVil").style.display=vsx?"":"none";
-    $("ezVilLbl").firstChild.textContent = deep ? "뒤에서 올인할 사람 스택 (BB, 비우면 뒤 자리 중 가장 큰 스택)" : st.ezScen==="vr" ? "오픈한 사람 스택 (BB, 비우면 평균)" : "올인한 사람 스택 (BB, 비우면 평균)"; }
+    $("ezVilLbl").firstChild.textContent = deep ? "뒤에서 올인할 사람 스택 (BB, 비우면 뒤 자리 중 가장 큰 스택)" : st.ezScen==="vr" ? "오픈한 사람 남은 스택 (BB · 오픈 금액 걸고 화면에 남은 숫자, 비우면 평균)" : "올인한 사람 스택 (BB · 올인한 전체 금액, 비우면 평균)";
+    $("ezOpenSize").style.display=st.ezScen==="vr"?"":"none";
+    $("ezOpenSize").innerHTML=`<span class="hint" style="align-self:center">오픈 크기</span>`+[2,2.2,2.5,3,3.5,4].map(x=>`<button type="button" class="chip ${(+st.vraise||2)===x?"on":""}" data-vr="${x}">${x}BB</button>`).join(""); }
   $("ezVil").innerHTML= st.hero<1?`<span class="hint">UTG 앞에는 사람이 없어요.</span>`:
     `<span class="hint" style="align-self:center">누가?</span>`+P.map((p,i)=>i<st.hero&&i<=n-2?`<button type="button" class="chip vil ${i===st.qvil?"on":""}" data-qv="${i}">${p}</button>`:"").join("");
 
@@ -1043,7 +1059,7 @@ function drawVerdict(){
     const q=window.QC; if(!q){set("","계산 중…","");return;}
     if(q.noRaise){set("","'앞에서 올인'을 보세요","오픈한 사람 스택이 10BB 미만이면 보통 오픈 대신 올인이라, 이 계산은 '앞에서 올인'으로 봐요.");drawResultBtns(null);return;}
     const vs=+st.qvStack>0?st.qvStack+"BB":"평균 스택", a=q.rs[k], b=q.fl[k], pp=x=>Math.round(x*100)+"%";
-    const who=`${P[st.qvil]}(${vs}) ${q.R}BB 오픈 · 오픈 범위 상위 ${pp(q.op)}로 봄`;
+    const who=`${P[st.qvil]} ${q.R}BB 오픈 (남은 ${vs}) · 오픈 범위 상위 ${pp(q.op)}로 봄`;
     if(a>=0.5 && moneyFirst(k)){ set("fold","폴드 (티켓 우선)",moneyFirst(k)+`<br>차트상으로는 ${q.deep?"3벳":"올인"}`); drawResultBtns(null); return; }
     if(a>=0.5) set("push",q.deep?"3벳 (크게)":"올인 (3벳 셔브)",`${who}<br>`+(q.deep?`유효 스택 ${r1(q.eff)}BB · 3벳 범위 상위 ${pp(q.rsPct)} (밸류 위주)`:`내 올인에 오픈한 사람이 콜하는 비율 약 ${pp(q.vcPct)} · 유효 스택 ${r1(q.eff)}BB`));
     else if(b>=0.5) set("call","콜 (플랍 보기)",`${who}<br>올인하기엔 약하고 폴드하기엔 아까운 패예요`);
@@ -1113,8 +1129,39 @@ function applyResult(res){
   schedule();
 }
 function logBust(){ st.bustLog=(st.bustLog||[]).concat([{t:Date.now(),p:st.players}]).slice(-40); }
+// ===== 레지 마감 전: 마감 시점을 예상해서 '그때부터 폴드만 하면' 티켓 확률 =====
+const TYPICAL_FIN={pm:109,hg:196,wpl:137};   // 최종 바이인 평소 값(예시 게임 기준). 칸에 넣으면 그 값
+const isPreReg=()=>curLevel()<=REG_LEVEL;
+const finOf=()=>Math.max(+st.entries||0, +((st.finEnt||{})[st.game])||TYPICAL_FIN[st.game]||st.entries);
+function projectClose(){
+  const g=GAMES[st.game], L=curLevel(); if(L>REG_LEVEL) return null;
+  const hpl=LEVEL_MIN*60/SEC_PER_HAND, T=st.tsize, fin=finOf();
+  const frac=(!st.level)?Math.min(1,nextLevelIn().sec/(LEVEL_MIN*60)):1;
+  const lvLeft=(REG_LEVEL-L)+frac;
+  let chips=+st.heroStack*st.bb;
+  for(let l=L;l<=REG_LEVEL;l++){ const f=l===L?frac:1, bb=g.blinds[l-1]; chips-=f*hpl*(bb*ANTE+1.5*bb/T); }
+  const live=Math.max(g.bubbles[0].n+1, Math.round(+st.players+(fin-st.entries)-st.players*0.04*lvLeft));
+  const bbC=g.blinds[REG_LEVEL], total=fin*START, n=live-1, rem=Math.max(n*bbC,total-Math.max(0,chips));
+  const others=[]; for(let i=0;i<n;i++) others.push(rem/n*(-Math.log(1-(i+0.5)/n)));   // 칩 분포: 큰 스택 몇 명 + 짧은 스택 여럿
+  return {fin,live,chips,bbC,lvLeft,others,mins:Math.round(lvLeft*LEVEL_MIN)};
+}
 function drawF2T(){
   const el=$("ezF2T"); if(!el) return; const g=GAMES[st.game], o=lastF2T, br=bustRate();
+  const PJ=window.PJ;
+  if(PJ && isPreReg()){
+    const tg2=g.bubbles.filter(b=>PJ.live>b.n);
+    const head=`📅 <b>레지 마감 때 예상</b> (약 ${PJ.mins}분 뒤, ${REG_LEVEL+1}레벨 ${won(PJ.bbC/2)}/${won(PJ.bbC)}): 총 바이인 <b>${PJ.fin}</b> · 남은 <b>${PJ.live}명</b> · 지금부터 폴드만 하면 내 스택 <b>${PJ.chips>0?r1(PJ.chips/PJ.bbC)+"BB":"0 (마감 전에 바닥)"}</b>`;
+    if(PJ.chips<=0){el.innerHTML=head+`<br>👉 폴드만 하면 마감 전에 칩이 바닥나요. 칩을 모아야 해요.`;return;}
+    if(!o){el.innerHTML=head+"<br>계산 중…";return;}
+    const parts=tg2.map(b=>{const x=o[b.key]; return x?`${b.label} <b>${Math.round(x.p*100)}%</b>`:"";}).filter(Boolean);
+    const p0=tg2.length&&o[tg2[0].key]?o[tg2[0].key].p:1;
+    const tip=p0>=0.85?"👉 마감 뒤 폴드로도 버틸 만한 스택이에요. 지금은 무리하지 말고 좋은 자리만 치세요."
+            :p0>=0.6?"👉 꽤 높지만 안심은 일러요. 마감 전까지 칩을 조금 더 모아두면 마감 뒤가 편해져요."
+            :(p0>=0.35?"👉 반반이에요. 마감 전(칩EV)에 칩을 더 모아야 마감 뒤에 버틸 수 있어요."
+            :"👉 이대로면 마감 뒤 폴드로 버티긴 어려워요. 마감 전(칩EV)에 칩을 모으는 게 우선이에요.");
+    el.innerHTML=head+`<br>그때부터 계속 폴드만 하면: ${parts.join(" · ")||"모두 티켓권"}<br>${tip}<br><span style="font-size:12px">예상 바이인은 '레지 마감 때 예상 총 바이인' 칸 값(비우면 게임별 평소 값) · 마감까지 탈락은 레벨당 남은 인원의 4%로 가정 · 다른 사람 칩은 큰 스택 몇 명 + 짧은 스택 여럿으로 가정</span>`;
+    return;
+  }
   if(st.mode!=="icm"){el.innerHTML=`레지 마감 전(칩EV) 구간이에요. 칩을 모으는 게 우선이라 '폴드로 버티기'는 마감 후부터 봐요.`;return;}
   const tg=g.bubbles.filter(b=>st.players>b.n);
   if(!tg.length){el.innerHTML=`🎉 남은 인원이 모두 티켓권이에요.`;return;}
@@ -1250,6 +1297,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.st){ setStart(t.dataset.st==="auto"?null:t.dataset.st); schedule(); return; }
   if(t.dataset.hp){rotateTo(+t.dataset.hp);schedule();return;}
   if(t.dataset.ui){e.preventDefault(); st.ui=t.dataset.ui; if(st.ui==="pro") window.scrollTo(0,0); schedule(); return;}
+  if(t.dataset.vr){st.vraise=+t.dataset.vr; schedule(); return;}
   if(t.dataset.ts){st.tsize=+t.dataset.ts;st.others={};st.tbl=[];st.tend=[];st.hist=[];schedule();return;}
   if(t.dataset.tstyle){st.tstyle=t.dataset.tstyle; save(); drawEasy(); redrawQuick(); return;}
   if(t.dataset.ezs){st.ezScen=t.dataset.ezs; if(st.ezScen!=="open"&&!(st.qvil<st.hero)) st.qvil=Math.max(0,st.hero-1); schedule(); return;}
@@ -1296,6 +1344,7 @@ document.addEventListener("input",e=>{
       t._t=setTimeout(()=>{ if(+t.value>500) t.value=st.heroStack; schedule(); },700);} return; }
   if(t.id==="ezPlayersIn"){ if(v>=2){ st.players=Math.round(v); clearTimeout(t._t); t._t=setTimeout(schedule,700);} return; }   // 직접 고치는 건 탈락 기록에 안 남겨요
   if(t.id==="ezRank"){ st.rank=t.value===""?"":Math.max(1,Math.round(v)); clearTimeout(t._t); t._t=setTimeout(schedule,600); return; }
+  if(t.id==="ezFin"){ st.finEnt=st.finEnt||{}; if(t.value==="") delete st.finEnt[st.game]; else if(v>0) st.finEnt[st.game]=Math.round(v); clearTimeout(t._t); t._t=setTimeout(schedule,700); return; }
   if(t.id==="ezEntries"){ if(v>0){st.entries=v; clearTimeout(t._t); t._t=setTimeout(schedule,700);} return; }
   if(t.id==="ezVilStack"){ st.qvStack=t.value===""?"":v; clearTimeout(t._t); t._t=setTimeout(schedule,600); return; }
   if(t.id==="qvStack"){st.qvStack=t.value===""?"":v;clearTimeout(t._t);t._t=setTimeout(schedule,700);return;}
