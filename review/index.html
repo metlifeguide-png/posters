@@ -305,7 +305,7 @@ function summary(){
     if(sd) L.push(`[상대가 보여준 패] ${sd}`); }
   if(R&&R.heroSpots&&R.heroSpots.length){ L.push("[📐 계산 · 내 결정 시점]");
     R.heroSpots.forEach(h=>{ const spr=h.street!=="pre"&&h.pot>0?Math.round(h.eff/h.pot*10)/10:null;
-      L.push(`- ${SNAME[h.street]} (${h.players}명): 팟 ${bbs(h.pot)}${h.toCall>0?` · 콜 ${bbs(h.toCall)} · 필요 승률 ${h.need}%`:" · 체크/벳 선택"}${spr!=null?` · SPR ${spr}`:""} → ${({fold:"폴드",check:"체크",call:"콜",raise:"벳/레이즈",allin:"올인"})[h.act]||h.act}`); }); }
+      L.push(`- ${SNAME[h.street]} (${h.players}명): 팟 ${bbs(h.pot)}${(h.street==="pre"&&h.toCall<=BB())?" · 먼저 액션(오픈/림프/폴드)":h.toCall>0?` · 콜 ${bbs(h.toCall)} · 필요 승률 ${h.need}%`:" · 체크/벳 선택"}${spr!=null?` · SPR ${spr}`:""} → ${({fold:"폴드",check:"체크",call:"콜",raise:"벳/레이즈",allin:"올인"})[h.act]||h.act}`); }); }
   L.push(`❓ ${S.q||"(질문)"}`);
   L.push(`— ${S.nick||"(닉네임)"} · ${S.pub?"공개":"나만 보기"}`);
   return L.join("\n");
