@@ -141,7 +141,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px;line-
   </div>
   <div class="ez-grid">
     <div class="ez-ctl"><div class="k">내 스택 <b>BB</b> (칩으로 쳐도 자동 변환)</div><div class="row2"><input id="ezHero" type="number" inputmode="decimal" step="0.1" min="0.1"></div><div class="k" id="ezHeroChips" style="margin:4px 0 0"></div></div>
-    <div class="ez-ctl"><div class="k">전체 인원 (게임마다 한 번)</div><div class="row2"><input id="ezEntries" type="number" inputmode="numeric" min="2"></div></div>
+    <div class="ez-ctl"><div class="k"><b>총 바이인 수</b> (로비 엔트리 · 게임마다 한 번)</div><div class="row2"><input id="ezEntries" type="number" inputmode="numeric" min="2" style="font-size:20px;font-weight:800;text-align:center"></div></div>
   </div>
   <div class="ez-grid">
     <div class="ez-ctl"><div class="k"><b>게임 시작 시각</b> (자동 · 레잇레지면 직접)</div><select id="ezStart"></select></div>
@@ -202,7 +202,7 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px;line-
   <h3>내 포지션</h3>
   <div class="chips" id="heroPos"></div>
   <div class="grid2" style="margin-top:12px">
-    <label class="f">전체 인원(총 엔트리)<div class="num"><input id="entries" type="number" inputmode="numeric" min="2" step="1"></div></label>
+    <label class="f">총 바이인 수(엔트리)<div class="num"><input id="entries" type="number" inputmode="numeric" min="2" step="1"></div></label>
     <label class="f">현재 인원(라이브)<div class="num"><input id="players" type="number" inputmode="numeric" min="2" step="1"></div></label>
     <label class="f">나보다 칩 적은 사람 (전체, 모르면 비움)<div class="num"><input id="shorter" type="number" inputmode="numeric" min="0" step="1" placeholder="예: 2"></div></label>
     <label class="f">테이블 인원<select id="tsize"><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></label>
@@ -897,8 +897,8 @@ function drawEasy(){
   const av=avgBB(), bad=av<3||av>300;
   const clk = st.level ? `(레벨 직접 고름)` : (hasStart() ? `<span id="ezClk">${clkText()}</span>`
             : `<b style="color:var(--push)">⏰ 게임 시작 시각을 골라주세요 — 블라인드·BB가 시계에 맞춰 자동으로 바뀌어요</b>`);
-  $("ezStatus").innerHTML=`${curLevel()}레벨 ${won(st.bb/2)}/${won(st.bb)} · 평균 ${r1(av)}BB · ${st.mode==="icm"?"ICM(마감 후)":"칩EV(마감 전)"}<br>${clk}<br>${lines.join(" · ")}`+
-    (bad?`<br><b style="color:var(--push)">⚠️ 평균 ${r1(av)}BB는 이상해요. 전체 인원·남은 인원(또는 게임 시작 시각)을 먼저 맞춰주세요.</b>`:"");
+  $("ezStatus").innerHTML=`${curLevel()}레벨 ${won(st.bb/2)}/${won(st.bb)} · 평균 ${r1(av)}BB <span style="font-weight:500">(바이인 ${st.entries} ÷ 남은 ${st.players}명)</span> · ${st.mode==="icm"?"ICM(마감 후)":"칩EV(마감 전)"}<br>${clk}<br>${lines.join(" · ")}`+
+    (bad?`<br><b style="color:var(--push)">⚠️ 평균 ${r1(av)}BB는 이상해요. 총 바이인 수·남은 인원을 먼저 맞춰주세요.</b>`:"");
   if(document.activeElement!==$("ezPlayersIn")) $("ezPlayersIn").value=st.players;
   document.querySelectorAll("[data-tstyle]").forEach(b=>b.className="chip"+(b.dataset.tstyle===st.tstyle?" on":""));
   {const h=$("ezHero"); if(document.activeElement!==h || Date.now()-(h._typed||0)>1500) h.value=st.heroStack;}
