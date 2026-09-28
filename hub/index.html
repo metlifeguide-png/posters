@@ -1,0 +1,44 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>뚝섬 현황판</title><style>
+:root{--bg:#f3f1ec;--card:#fff;--line:#e3ded3;--ink:#1b1b1b;--sub:#6b6b6b;--acc:#0f766e;--tab:#e9e4d9}
+@media (prefers-color-scheme:dark){:root{--bg:#141414;--card:#1f1f1f;--line:#333;--ink:#eee;--sub:#9a9a9a;--acc:#2dd4bf;--tab:#262626}}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+.w{max-width:760px;margin:0 auto;padding:14px 14px 40px}h1{font-size:20px}.sub{color:var(--sub);font-size:12.5px;margin:2px 0 10px}
+.links{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.links a{font-size:12.5px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;color:var(--ink);text-decoration:none;background:var(--card)}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;position:sticky;top:0;background:var(--bg);padding:6px 0;z-index:3}
+.tabs button{border:1px solid var(--line);background:var(--tab);color:var(--ink);border-radius:10px;padding:7px 2px;font-size:13px;font-weight:600;white-space:nowrap}
+.tabs button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+input{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font-size:14px;margin:8px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:8px}
+.t{font-weight:700}.m{color:var(--sub);font-size:12.5px}.ppl{margin-top:4px;font-size:14px}.tag{display:inline-block;font-size:11px;padding:0 6px;border-radius:6px;background:var(--tab);color:var(--sub);margin-left:4px}
+.row{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);font-size:14px}.row:last-child{border:none}
+a.card{display:block;color:inherit;text-decoration:none}.e{color:var(--sub);text-align:center;padding:24px 0}.h2{font-size:15px;font-weight:700;margin:12px 0 6px}
+.lc{white-space:pre-wrap;font-size:13.5px;margin-top:3px}
+</style></head><body><div class="w">
+<h1>♠ 뚝섬 현황판</h1><div class="sub">누구나 볼 수 있어요 · 관리는 방장만 · 업데이트 <span id="up"></span></div>
+<div class="links"><a href="https://metlifeguide-png.github.io/posters/c/">📅 캘린더</a><a href="https://metlifeguide-png.github.io/posters/aof/">♠ 올인차트</a><a href="https://metlifeguide-png.github.io/posters/review/">✍️ 핸드리뷰 쓰기</a><a href="https://metlifeguide-png.github.io/posters/guide/commands.html">📖 명령어</a><a href="https://metlifeguide-png.github.io/posters/?type=contest">🏆 포스터</a></div>
+<div class="tabs" id="tabs"></div><input id="q" placeholder="닉네임 · 대회 · 매장으로 찾기"><div id="out"></div></div>
+<script>
+const D={"updated": "09/29 04:15", "month": "2026-09", "parts": [{"label": "피망 데이1-B 10/5(월) 12:00 · 경기 시흥 KIMS", "date": "2026-10-05", "time": "12:00", "people": [{"n": "구우", "m": ""}, {"n": "방장봊", "m": ""}, {"n": "내꿈은너야차무식", "m": ""}, {"n": "타이슨", "m": ""}, {"n": "구우형 우승못한지 9년", "m": ""}], "event": false}, {"label": "10/10 15:00 정모 @강남 뉴스톤 아레나", "date": "2026-10-10", "time": "15:00", "people": [{"n": "구우", "m": ""}, {"n": "해솔", "m": ""}], "event": true}], "tours": [], "board_month": [], "board_all": [], "reviews": [{"id": 11, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "CO 25BB  A♦ J♦", "q": "리버 콜 맞나요?", "own": false}, {"id": 10, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "BB 14BB  A♣ 9♦", "q": "A9o 콜 맞나요?", "own": false}, {"id": 9, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "CO 25BB  A♦ J♦", "q": "리버 콜 맞나요?", "own": false}, {"id": 8, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "BTN 30BB  K♠ Q♠", "q": "리버 콜 맞나요? 턴 체크는 괜찮았나요?", "own": false}], "learned": [{"k": "wpl, 건자수, 야자수서울센터, 주차", "c": "인근주차장이용"}, {"k": "강남뉴스톤아레나, 주소, 주차", "c": "강남구 도곡로1길 14 삼일프라자 지하1층 (건물주차)"}, {"k": "구우", "c": "피망 새틀 1렙 바이인 안하면 입안에 가시가 돋기로 유명함"}, {"k": "녹맨", "c": "행의 남자 친구 이자 비혼주의자이며 페미니스트이자 대한민국을 살리기위해 급직적이며 이슬람식 일부다처제를 주장하는 기독교인이자 부처님 오신날을 제일 좋아하는 대한민국의 사상가"}, {"k": "도비", "c": "헤비스테이커"}, {"k": "뚝섬정모, 정모, 칠갑산정모, 정모일시, 정모시간, 정모위치", "c": "10월10일(토) 오후3시 바인0.5 (교촌제공) 장소:강남뉴스톤"}, {"k": "민트퍼지", "c": "사기꾼"}, {"k": "에릭", "c": "사채꾼"}, {"k": "오메추, 점메추, 저메추 라고물어보면", "c": "오늘메뉴추천, 점심메뉴추천, 저녁메뉴추천으로 인식하고 해당질문에 답해줘"}, {"k": "크라잉", "c": "전 JP모건 임원"}, {"k": "피망, kims, 거북섬, 주차, 위치, 주소", "c": "경기장: 시흥 거북섬로116 10층 주차: 거북섬로 111 (무료)"}, {"k": "한게임, hpt, 로열홀덤, 장소, 위치, 주소", "c": "성동구 연무장 15길11 (성수에스팩토리 D동)"}, {"k": "한게임, hpt, 주차", "c": "인근 유료주차장 이용"}, {"k": "해솔", "c": "천안의 홀덤 대장이자 영등포 K스타홀덤펍 2회차 페이아웃대회 파테 출신. 잘생긴 외모와 뛰어난 패션감각의 소유자."}, {"k": "해솔쌤", "c": "84나성 올림픽때 태어난 대표 여미새"}]};document.getElementById('up').textContent=D.updated;
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const md=d=>d&&d.length>=10?(+d.slice(5,7))+'/'+(+d.slice(8,10)):'';
+const TABS={
+ part:['🙋 참가',q=>{const g=D.parts.filter(x=>!q||(x.label+x.people.map(p=>p.n+p.m).join(' ')).toLowerCase().includes(q));
+   return g.length?g.map(x=>`<div class="card"><div class="t">${esc(x.label)}${x.event?'<span class="tag">행사</span>':''}</div><div class="m">${x.people.length}명</div><div class="ppl">${x.people.map(p=>esc(p.n)+(p.m?` <span class="m">(${esc(p.m)})</span>`:'')).join(', ')}</div></div>`).join('')
+   :'<div class="e">예정된 참가 신청이 없어요<br>카톡: !@참가 피망 1b</div>';}],
+ itm:['🏆 입상·순위',q=>{const b=(arr,t)=>`<div class="h2">${t}</div><div class="card">${arr.length?arr.map((x,i)=>`<div class="row"><span>${['🥇','🥈','🥉'][i]||(i+1)+'위'} ${esc(x.n)}</span><span class="m">${x.pt}pt · 우승 ${x.win} · 입상 ${x.itm}</span></div>`).join(''):'<div class="e">기록 없음</div>'}</div>`;
+   const t=D.tours.filter(x=>!q||(x.label+x.rows.map(r=>r.n).join(' ')).toLowerCase().includes(q));
+   return (q?'':b(D.board_month,'이번 달 뚝포 TOP 10')+b(D.board_all,'누적 뚝포 TOP 10'))+'<div class="h2">대회별 입상</div>'+(t.length?t.map(x=>`<div class="card"><div class="t">${esc(x.label)}</div><div class="m">${md(x.date)} · ${x.rows.length}명</div><div class="ppl">${x.rows.map(r=>esc(r.n)+' '+esc(r.r)+(r.p?` <span class="m">(${esc(r.p)})</span>`:'')).join(', ')}</div></div>`).join(''):'<div class="e">입상 기록이 없어요<br>카톡: !@입상 피망 1b 3등 25만</div>');}],
+ rev:['✍️ 핸드리뷰',q=>{const r=D.reviews.filter(x=>!q||(x.id+' '+x.nick+x.head+x.hero+x.q).toLowerCase().includes(q));
+   return r.length?r.map(x=>`<a class="card" href="https://metlifeguide-png.github.io/posters/r/${x.id}.html"><div class="t">#${x.id} ${esc(x.head)}${x.own?'<span class="tag">✅ 방장 답변</span>':''}</div><div class="m">${esc(x.hero)}</div><div>❓ ${esc(x.q||'(질문 없음)')}</div><div class="m">${esc(x.nick)} · ${md(x.date)}</div></a>`).join('')
+   :'<div class="e">공개된 리뷰가 없어요</div>';}],
+ learn:['📚 학습',q=>{const l=D.learned.filter(x=>!q||(x.k+' '+x.c).toLowerCase().includes(q));
+   return l.length?l.map(x=>`<div class="card"><div class="t">${esc(x.k)}</div><div class="lc">${esc(x.c)}</div></div>`).join(''):'<div class="e">학습된 정보가 없어요</div>';}],
+};
+let cur=(location.hash||'#part').slice(1);if(!TABS[cur])cur='part';
+function draw(){document.getElementById('tabs').innerHTML=Object.entries(TABS).map(([k,v])=>`<button class="${k===cur?'on':''}" data-k="${k}">${v[0]}</button>`).join('');
+ document.getElementById('out').innerHTML=TABS[cur][1](document.getElementById('q').value.trim().toLowerCase());}
+document.getElementById('tabs').onclick=e=>{const k=e.target.dataset.k;if(k){cur=k;history.replaceState(null,'','#'+k);draw();}};
+document.getElementById('q').oninput=draw;draw();
+addEventListener('hashchange',()=>{const k=location.hash.slice(1);if(TABS[k]){cur=k;draw();}});
+</script></body></html>
