@@ -1,284 +1,92 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>서버 명령어 가이드</title>
-    <style>
-        @page {
-            size: A4 portrait;
-            margin: 8mm;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
-            background-color: #ffffff;
-            color: #222;
-            width: 210mm;
-            height: 281mm; /* 297mm - 16mm margins */
-            margin: 0 auto;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        .header {
-            background: linear-gradient(135deg, #1e3a8a, #0284c7);
-            color: white;
-            text-align: center;
-            padding: 8px 10px;
-            border-radius: 6px;
-            margin-bottom: 6px;
-        }
-        .header h2 {
-            font-size: 15px;
-            margin-bottom: 2px;
-            font-weight: 700;
-        }
-        .header p {
-            font-size: 11px;
-            opacity: 0.95;
-        }
-        .grid-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-            flex-grow: 1;
-        }
-        .section {
-            border: 1px solid #cbd5e1;
-            border-radius: 5px;
-            background: #fff;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .section.full-width {
-            grid-column: 1 / -1;
-        }
-        .section-title {
-            background: #f1f5f9;
-            padding: 5px 8px;
-            font-weight: bold;
-            font-size: 11.5px;
-            border-bottom: 1px solid #cbd5e1;
-            color: #1e293b;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 11px;
-        }
-        th, td {
-            padding: 5px 7px;
-            border-bottom: 1px solid #f1f5f9;
-            text-align: left;
-            vertical-align: middle;
-        }
-        tr:last-child td {
-            border-bottom: none;
-        }
-        th {
-            width: 33%;
-            color: #334155;
-            font-weight: 600;
-        }
-        td {
-            width: 67%;
-            color: #0f172a;
-        }
-        .cmd {
-            display: inline-block;
-            background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            padding: 1px 4px;
-            border-radius: 3px;
-            font-family: monospace;
-            font-size: 10.5px;
-            color: #e11d48;
-            margin-bottom: 1px;
-            font-weight: 600;
-        }
-        .desc {
-            font-size: 10.5px;
-            color: #475569;
-            line-height: 1.25;
-        }
-        .highlight {
-            color: #d63384;
-            font-weight: bold;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>뚝섬 홀덤봇 명령어</title>
+<style>
+  :root{--bg:#f3f5f9;--card:#fff;--line:#dbe2ea;--ink:#0f172a;--sub:#475569;--pill:#f8fafc;--pillink:#e11d48;--head1:#1e3a8a;--head2:#0284c7;--tag:#eef2ff}
+  @media (prefers-color-scheme:dark){:root{--bg:#0f1115;--card:#181b21;--line:#2a2f38;--ink:#e8ecf2;--sub:#9aa4b2;--pill:#20242c;--pillink:#fb7185;--tag:#1f2433}}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+  .w{max-width:760px;margin:0 auto;padding:14px 14px 40px}
+  .head{background:linear-gradient(135deg,var(--head1),var(--head2));color:#fff;border-radius:14px;padding:16px;margin-bottom:12px}
+  .head h1{font-size:19px}.head p{font-size:13px;opacity:.92;margin-top:4px}
+  .head .px{display:inline-block;background:rgba(255,255,255,.22);border-radius:10px;padding:1px 8px;font-size:12px;margin-left:6px;vertical-align:2px}
+  .grid{display:grid;grid-template-columns:1fr;gap:10px}
+  @media (min-width:700px){.grid{grid-template-columns:1fr 1fr}.full{grid-column:1/-1}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .card h2{font-size:14px;padding:9px 12px;border-bottom:1px solid var(--line);background:var(--tag)}
+  .row{padding:9px 12px;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:none}
+  .cmd{display:inline-block;background:var(--pill);border:1px solid var(--line);border-radius:6px;padding:1px 6px;margin:1px 3px 1px 0;
+       font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;color:var(--pillink);font-weight:700;word-break:keep-all}
+  .d{font-size:13px;color:var(--sub);margin-top:3px}
+  .ex{font-size:12.5px;color:var(--sub);margin-top:3px}
+  .ex b{color:var(--ink)}
+  .note{font-size:12px;color:var(--sub);text-align:center;margin-top:14px}
+</style>
 </head>
 <body>
+<div class="w">
+  <div class="head">
+    <h1>🤖 뚝섬 홀덤봇 명령어<span class="px">앞에 !@</span></h1>
+    <p>명령어가 아닌 문장은 일반 질문으로 답해요 · 예) !@강남뉴스톤 오늘 뭐해</p>
+  </div>
 
-<div class="container">
-    <div class="header">
-        <h2>🤖 서버 명령어 가이드 <span style="font-size: 11px; background: rgba(255,255,255,0.25); padding: 1px 6px; border-radius: 8px;">접두사 : !@</span></h2>
-        <p>명령어가 아닌 문장은 전부 일반 질문으로 자동 처리됩니다.</p>
+  <div class="grid">
+    <div class="card">
+      <h2>🎟️ 참가 (같이 가는 사람)</h2>
+      <div class="row"><span class="cmd">참가 대회 회차</span><div class="d">참가 등록 · 함께 가는 사람 명단이 같이 나와요</div>
+        <div class="ex">예) <b>!@참가 피망 1b</b> · <b>!@참가 10/10 성남모란</b> · <b>!@참가 쇼다운 10월5일 | 카풀가능</b></div></div>
+      <div class="row"><span class="cmd">참가리스트</span><span class="cmd">참가리스트 피망</span><div class="d">대회별 참가자 보기</div></div>
+      <div class="row"><span class="cmd">내참가</span><span class="cmd">참가취소</span><div class="d">내 등록 보기 · 내 참가 전부 취소</div></div>
+      <div class="row"><div class="d">⏰ 대회 당일 오전 9시에 참가자를 태그해서 시작 시각·주소·주차를 알려드려요 (정모 등 행사는 제외)</div></div>
     </div>
 
-    <div class="grid-container">
-        <!-- 1. 학습 -->
-        <div class="section">
-            <div class="section-title">📖 학습</div>
-            <table>
-                <tr>
-                    <th>명령어</th>
-                    <td>
-                        <div class="cmd">학습 키워드=내용</div>
-                        <div class="desc">학습 등록 (!@학습 kims, 거북섬=시흥)</div>
-                    </td>
-                </tr>
-                <tr>
-                    <th><div class="cmd">학습목록</div> / <div class="cmd">학습리스트</div></th>
-                    <td><div class="desc">등록된 학습 목록 보기</div></td>
-                </tr>
-                <tr>
-                    <th><div class="cmd">학습삭제 검색어</div></th>
-                    <td><div class="desc">학습 키워드 삭제</div></td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- 2. 계산 / 전략 -->
-        <div class="section">
-            <div class="section-title">🧮 계산 / 전략</div>
-            <table>
-                <tr>
-                    <th><div class="cmd">라티오 스택 SB BB 앤티 인원</div></th>
-                    <td><div class="desc">M-ratio 및 구간 계산</div></td>
-                </tr>
-                <tr>
-                    <th><div class="cmd">올인차트</div></th>
-                    <td><div class="desc">한게임, 피망, WPL 새틀 전략 조회</div></td>
-                </tr>
-                <tr>
-                    <th><div class="cmd">핸드리뷰</div></th>
-                    <td><div class="desc">핸드리뷰 작성 및 AI 상세 해설 분석</div></td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- 3. 참가 -->
-        <div class="section">
-            <div class="section-title">🎟️ 참가</div>
-            <table>
-                <tr>
-                    <th><div class="cmd">참가 대회 회차</div></th>
-                    <td><div class="desc">참가 등록 (!@참가 피망 1b | 메모)</div></td>
-                </tr>
-                <tr>
-                    <th><div class="cmd">참가 날짜 / 매장</div></th>
-                    <td><div class="desc">날짜 또는 매장명으로 회차 찾아 등록</div></td>
-                </tr>
-                <tr>
-                    <th><div class="cmd">참가취소 [전체]</div></th>
-                    <td><div class="desc">등록 1개 또는 전체 취소</div></td>
-                </tr>
-                <tr>
-                    <th><div class="cmd">참가리스트</div> / <div class="cmd">내참가</div></th>
-                    <td><div class="desc">전체 리스트 및 내 등록 목록 조회</div></td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- 4. 입상 / 뚝포(POY) -->
-        <div class="section">
-            <div class="section-title">🏆 입상 / 뚝포(POY)</div>
-            <table>
-                <tr>
-                    <th><div class="cmd">입상등록 닉|대회|순위|상금</div></th>
-                    <td><div class="desc">입상 등록 (상금 만원단위)</div></td>
-                </tr>
-                <tr>
-                    <th><div class="cmd">입상목록</div></th>
-                    <td><div class="desc">입상 기록 목록 조회</div></td>
-                </tr>
-                <tr>
-                    <th><div class="cmd">내전적</div> / <div class="cmd">이번달내전적</div></th>
-                    <td><div class="desc">최근 전적 및 POY 포인트 조회</div></td>
-                </tr>
-                <tr>
-                    <th><div class="cmd">뚝성리더보드</div></th>
-                    <td><div class="desc">이번 달 TOP 5 조회</div></td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- 5. 새틀라이트 정보 확인 -->
-        <div class="section full-width">
-            <div class="section-title">🛰️ 새틀라이트 정보 확인 (실시간 진행 상황 안내)</div>
-            <table>
-                <tr>
-                    <th style="width: 25%;">명령어</th>
-                    <th style="width: 75%;">안내 내용 및 예시</th>
-                </tr>
-                <tr>
-                    <td><div class="cmd">피망새틀</div> <div class="cmd">한게임새틀</div> <div class="cmd">wpl새틀</div></td>
-                    <td><div class="desc">각 플랫폼별 새틀라이트 실시간 진행 상황 및 일정(바이인, 남은시간, 티켓수 등) 피드백 안내</div></td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- 6. 이벤트 / 선물 -->
-        <div class="section full-width">
-            <div class="section-title">🎁 이벤트 / 선물 (재미 요소)</div>
-            <table>
-                <tr>
-                    <th style="width: 32%;">명령어 및 별칭</th>
-                    <th style="width: 68%;">기능 / 설명</th>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="cmd">!@선착순 인원 품목</div>
-                        <div class="desc">별칭: <span class="highlight">!@저, 나, 띱, 줍, 1</span></div>
-                    </td>
-                    <td><div class="desc"><strong>선착순 선물 이벤트 진행</strong> (지정한 인원만큼 빠른 참여자에게 선물 지급)</div></td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="cmd">!@추첨 인원 품목 [시간]</div>
-                        <div class="desc">별칭: <span class="highlight">!@응모</span></div>
-                    </td>
-                    <td><div class="desc"><strong>추첨을 통한 선물 이벤트 진행</strong> (일정 시간 동안 응모받아 랜덤 추첨)</div></td>
-                </tr>
-            </table>
-        </div>
-
-        <!-- 7. 일반 질문 -->
-        <div class="section full-width">
-            <div class="section-title">💬 일반 질문 (명령어 없이 자연어로 질문)</div>
-            <table>
-                <tr>
-                    <th style="width: 45%;">질문 예시</th>
-                    <th style="width: 55%;">서버 동작 방식</th>
-                </tr>
-                <tr>
-                    <td>피망데이 일정 / 썹피 데이1 가까운 일정</td>
-                    <td>데이1 회차표 직접 응답 (피망 / 한게임 / WPL)</td>
-                </tr>
-                <tr>
-                    <td>강남 뉴스톤 오늘 뭐해 / 하남근처펍 추천해줘</td>
-                    <td>포스터 DB 기반 근처 매장 검색 및 안내</td>
-                </tr>
-                <tr>
-                    <td>피망주차 / kims 주소 / 오후 5시 알림 뭐야</td>
-                    <td>등록된 학습 메모 및 새틀라이트 알림 정보 즉시 답변</td>
-                </tr>
-            </table>
-        </div>
+    <div class="card">
+      <h2>🏆 입상 / 뚝포(POY)</h2>
+      <div class="row"><span class="cmd">입상 대회명 플라이트 순위 상금</span><div class="d">순서대로 입력 · 빠지면 봇이 다시 알려줘요</div>
+        <div class="ex">예) <b>!@입상 피망 1b 3등 25만</b><br><b>!@입상 한게임 데이1c 12등 티켓1장</b><br><b>!@입상 WPL 파이널 2등 1200만</b><br><b>!@입상 강남아띠 1등 300만</b> (하루짜리 매장 대회는 플라이트 없이)</div></div>
+      <div class="row"><span class="cmd">입상목록</span><span class="cmd">입상자 피망</span><div class="d">대회별 입상자 보기</div></div>
+      <div class="row"><span class="cmd">내전적</span><span class="cmd">이번달내전적</span><span class="cmd">뚝섬리더보드</span><div class="d">내 기록 · 이번 달 TOP 5</div></div>
     </div>
+
+    <div class="card">
+      <h2>🎁 선착순 · 추첨</h2>
+      <div class="row"><span class="cmd">선착순 인원 품목</span><div class="d">방장이 열면 → <b>!@저 · !@나 · !@띱 · !@줍 · !@1</b> 중 아무거나로 참여 · 서버 도착 순서로 번호</div>
+        <div class="ex">예) <b>!@선착순 3명 스타벅스</b> (띄어쓰기 없어도 OK)</div></div>
+      <div class="row"><span class="cmd">추첨 인원 품목 시간</span><div class="d">방장이 열면 → <b>!@응모</b> · 시간이 지나면 자동 추첨·발표</div>
+        <div class="ex">예) <b>!@추첨 2명 치킨 5분</b></div></div>
+      <div class="row"><span class="cmd">이벤트</span><div class="d">진행 상황·참여자 보기</div></div>
+    </div>
+
+    <div class="card">
+      <h2>🧮 계산 · 전략</h2>
+      <div class="row"><span class="cmd">올인차트</span><div class="d">새틀(WPL·한게임·피망·APL 프리롤) 올인·콜·폴드 계산 페이지</div></div>
+      <div class="row"><span class="cmd">라티오 스택 SB BB 앤티 인원</span><div class="d">M-ratio와 구간 계산</div></div>
+      <div class="row"><span class="cmd">핸드리뷰</span><div class="d">핸드 입력 페이지 → 솔버·계산·AI 해설 답변이 달리면 태그로 알려드려요</div></div>
+      <div class="row"><span class="cmd">리뷰 번호</span><span class="cmd">내리뷰</span><span class="cmd">리뷰목록</span><div class="d">리뷰 보기 · 공개 리뷰 모음</div></div>
+      <div class="row"><span class="cmd">리뷰문의 번호 내용</span><div class="d">답변이 이상하면 방장에게 재검토 요청</div></div>
+    </div>
+
+    <div class="card full">
+      <h2>📅 정보 · 일정</h2>
+      <div class="row"><span class="cmd">캘린더</span><div class="d">날짜별 매장 대회·메인 일정·온라인 새틀 한눈에</div></div>
+      <div class="row"><span class="cmd">오늘요약</span><div class="d">오늘 방 대화 흐름을 주제별로 요약 (대화 기록은 48시간 뒤 자동 삭제)</div></div>
+      <div class="row"><span class="cmd">새틀목록</span><div class="d">온라인 새틀·프리롤 알림 시간표</div></div>
+      <div class="row"><div class="d">💬 이렇게 물어도 돼요</div>
+        <div class="ex"><b>!@피망데이1 일정</b> · <b>!@WPL 데이2 언제</b> · <b>!@강남뉴스톤 오늘 뭐해</b> · <b>!@강남뉴스톤 바인 얼마야</b> · <b>!@피망 주차</b> · <b>!@kims 주소</b> · <b>!@오늘 대회추천</b></div></div>
+    </div>
+
+    <div class="card full">
+      <h2>🛠️ 방장 전용</h2>
+      <div class="row"><span class="cmd">학습 키워드=내용</span><span class="cmd">학습목록</span><span class="cmd">학습삭제 검색어</span><div class="d">봇에게 매장 주소·주차 같은 정보 가르치기 (예: !@학습 kims, 거북섬=시흥 거북섬로116)</div></div>
+      <div class="row"><span class="cmd">새틀추가 시작|종료|시각들|문구</span><span class="cmd">새틀삭제 검색어</span><div class="d">새틀·프리롤 자동 알림 (관리 페이지 🎯 탭에서도 가능)</div></div>
+      <div class="row"><span class="cmd">티켓가치 이름 금액</span><span class="cmd">이벤트마감</span><span class="cmd">이벤트취소</span><div class="d">티켓 1장 가치 수정 · 이벤트 바로 마감/취소</div></div>
+    </div>
+  </div>
+  <p class="note">뚝섬 홀덤 · 명령어는 모두 앞에 <b>!@</b> 를 붙여요</p>
 </div>
-
 </body>
 </html>
