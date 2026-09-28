@@ -4,7 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>뚝섬유원지 통합정보</title>
+<title>뚝섬유원지 홈 · 홀덤 정보 한곳에</title>
+<meta name="description" content="대회 캘린더 · 포스터 · 참가 현황 · 입상 순위 · 핸드리뷰 · 올인차트를 한곳에서">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="뚝섬유원지">
+<meta property="og:title" content="🏝 뚝섬유원지 홈 · 홀덤 정보 한곳에">
+<meta property="og:description" content="대회 캘린더 · 포스터 · 참가 현황 · 입상 순위 · 핸드리뷰 · 올인차트를 한곳에서">
+<meta property="og:image" content="https://metlifeguide-png.github.io/posters/hub/banner.jpg">
+<meta property="og:url" content="https://metlifeguide-png.github.io/posters/hub/">
 <style>
 :root{
   --paper:#f3efe4; --paper2:#fbf9f3; --line:#e2dccb; --ink:#26303d; --sub:#6b6f76;
@@ -50,6 +57,11 @@ a.card{display:block;text-decoration:none}
 .btn.g{background:var(--green)}.btn.b{background:var(--brown)}
 .cmd{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .cmd code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:var(--blue);font-weight:700;background:var(--blue2);border-radius:7px;padding:2px 7px;word-break:keep-all}
+.exs{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.exs code{font-size:11.5px;font-weight:600;padding:1px 6px;cursor:pointer}
+.cmd code{cursor:pointer}
+.card.cmd{padding:9px 11px;margin-bottom:6px}
+.exs .m{font-size:11.5px;align-self:center}
 .cp{border:1.5px solid var(--line);background:#fff;border-radius:9px;font-size:12px;padding:4px 9px;cursor:pointer;flex:none}
 .thumbs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
 @media(min-width:760px){.thumbs{grid-template-columns:repeat(3,1fr)}}
@@ -80,7 +92,7 @@ body.lock{overflow:hidden}
 <div class="ov" id="ov"><div class="ovb"><button type="button" id="ovx">← 뒤로</button><span class="tt" id="ovt"></span><a id="ovn" target="_blank" rel="noopener">새 창 ↗</a></div></div>
 <div class="toast" id="toast"></div>
 <script>
-const D={"updated": "09/29 05:02", "month": "2026-09", "parts": [{"label": "피망 데이1-B 10/5(월) 12:00 · 경기 시흥 KIMS", "date": "2026-10-05", "time": "12:00", "people": [{"n": "구우", "m": ""}, {"n": "방장봊", "m": ""}, {"n": "내꿈은너야차무식", "m": ""}, {"n": "타이슨", "m": ""}, {"n": "구우형 우승못한지 9년", "m": ""}], "event": false}, {"label": "10/10 15:00 정모 @강남 뉴스톤 아레나", "date": "2026-10-10", "time": "15:00", "people": [{"n": "구우", "m": ""}, {"n": "해솔", "m": ""}], "event": true}], "tours": [], "board_month": [], "board_all": [], "reviews": [{"id": 11, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "CO 25BB  A♦ J♦", "q": "리버 콜 맞나요?", "own": false}, {"id": 10, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "BB 14BB  A♣ 9♦", "q": "A9o 콜 맞나요?", "own": false}, {"id": 9, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "CO 25BB  A♦ J♦", "q": "리버 콜 맞나요?", "own": false}, {"id": 8, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "BTN 30BB  K♠ Q♠", "q": "리버 콜 맞나요? 턴 체크는 괜찮았나요?", "own": false}], "learned": [{"k": "wpl, 건자수, 야자수서울센터, 주차", "c": "인근주차장이용"}, {"k": "강남뉴스톤아레나, 주소, 주차", "c": "강남구 도곡로1길 14 삼일프라자 지하1층 (건물주차)"}, {"k": "구우", "c": "피망 새틀 1렙 바이인 안하면 입안에 가시가 돋기로 유명함"}, {"k": "녹맨", "c": "행의 남자 친구 이자 비혼주의자이며 페미니스트이자 대한민국을 살리기위해 급직적이며 이슬람식 일부다처제를 주장하는 기독교인이자 부처님 오신날을 제일 좋아하는 대한민국의 사상가"}, {"k": "도비", "c": "헤비스테이커"}, {"k": "뚝섬정모, 정모, 칠갑산정모, 정모일시, 정모시간, 정모위치", "c": "10월10일(토) 오후3시 바인0.5 (교촌제공) 장소:강남뉴스톤"}, {"k": "민트퍼지", "c": "사기꾼"}, {"k": "에릭", "c": "사채꾼"}, {"k": "오메추, 점메추, 저메추 라고물어보면", "c": "오늘메뉴추천, 점심메뉴추천, 저녁메뉴추천으로 인식하고 해당질문에 답해줘"}, {"k": "크라잉", "c": "전 JP모건 임원"}, {"k": "피망, kims, 거북섬, 주차, 위치, 주소", "c": "경기장: 시흥 거북섬로116 10층 주차: 거북섬로 111 (무료)"}, {"k": "한게임, hpt, 로열홀덤, 장소, 위치, 주소", "c": "성동구 연무장 15길11 (성수에스팩토리 D동)"}, {"k": "한게임, hpt, 주차", "c": "인근 유료주차장 이용"}, {"k": "해솔", "c": "천안의 홀덤 대장이자 영등포 K스타홀덤펍 2회차 페이아웃대회 파테 출신. 잘생긴 외모와 뛰어난 패션감각의 소유자."}, {"k": "해솔쌤", "c": "84나성 올림픽때 태어난 대표 여미새"}]}, B="https://metlifeguide-png.github.io/posters";
+const D={"updated": "09/29 05:14", "month": "2026-09", "parts": [{"label": "피망 데이1-B 10/5(월) 12:00 · 경기 시흥 KIMS", "date": "2026-10-05", "time": "12:00", "people": [{"n": "구우", "m": ""}, {"n": "방장봊", "m": ""}, {"n": "내꿈은너야차무식", "m": ""}, {"n": "타이슨", "m": ""}, {"n": "구우형 우승못한지 9년", "m": ""}], "event": false}, {"label": "10/10 15:00 정모 @강남 뉴스톤 아레나", "date": "2026-10-10", "time": "15:00", "people": [{"n": "구우", "m": ""}, {"n": "해솔", "m": ""}], "event": true}], "tours": [], "board_month": [], "board_all": [], "reviews": [{"id": 11, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "CO 25BB  A♦ J♦", "q": "리버 콜 맞나요?", "own": false}, {"id": 10, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "BB 14BB  A♣ 9♦", "q": "A9o 콜 맞나요?", "own": false}, {"id": 9, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "CO 25BB  A♦ J♦", "q": "리버 콜 맞나요?", "own": false}, {"id": 8, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "BTN 30BB  K♠ Q♠", "q": "리버 콜 맞나요? 턴 체크는 괜찮았나요?", "own": false}], "learned": [{"k": "wpl, 건자수, 야자수서울센터, 주차", "c": "인근주차장이용"}, {"k": "강남뉴스톤아레나, 주소, 주차", "c": "강남구 도곡로1길 14 삼일프라자 지하1층 (건물주차)"}, {"k": "구우", "c": "피망 새틀 1렙 바이인 안하면 입안에 가시가 돋기로 유명함"}, {"k": "녹맨", "c": "행의 남자 친구 이자 비혼주의자이며 페미니스트이자 대한민국을 살리기위해 급직적이며 이슬람식 일부다처제를 주장하는 기독교인이자 부처님 오신날을 제일 좋아하는 대한민국의 사상가"}, {"k": "도비", "c": "헤비스테이커"}, {"k": "뚝섬정모, 정모, 칠갑산정모, 정모일시, 정모시간, 정모위치", "c": "10월10일(토) 오후3시 바인0.5 (교촌제공) 장소:강남뉴스톤"}, {"k": "민트퍼지", "c": "사기꾼"}, {"k": "에릭", "c": "사채꾼"}, {"k": "오메추, 점메추, 저메추 라고물어보면", "c": "오늘메뉴추천, 점심메뉴추천, 저녁메뉴추천으로 인식하고 해당질문에 답해줘"}, {"k": "크라잉", "c": "전 JP모건 임원"}, {"k": "피망, kims, 거북섬, 주차, 위치, 주소", "c": "경기장: 시흥 거북섬로116 10층 주차: 거북섬로 111 (무료)"}, {"k": "한게임, hpt, 로열홀덤, 장소, 위치, 주소", "c": "성동구 연무장 15길11 (성수에스팩토리 D동)"}, {"k": "한게임, hpt, 주차", "c": "인근 유료주차장 이용"}, {"k": "해솔", "c": "천안의 홀덤 대장이자 영등포 K스타홀덤펍 2회차 페이아웃대회 파테 출신. 잘생긴 외모와 뛰어난 패션감각의 소유자."}, {"k": "해솔쌤", "c": "84나성 올림픽때 태어난 대표 여미새"}]}, B="https://metlifeguide-png.github.io/posters";
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const md=d=>d&&d.length>=10?(+d.slice(5,7))+'/'+(+d.slice(8,10)):'';
 const POSTERS={contest:["00","01","02","03","03-1","04","apl-1","apl-2","apl-3","05"],
@@ -92,14 +104,44 @@ function search(ph){return `<input class="q" id="q" placeholder="${ph}" value="$
 function openCard(desc,href,label,cls){return `<div class="card"><div class="lc">${desc}</div><div style="margin-top:10px"><a class="btn ${cls||''}" href="${href}">${label}</a></div></div>`;}
 function thumbs(type){return `<div class="thumbs">${POSTERS[type].map(n=>`<a href="${B}/?type=${type}"><img loading="lazy" src="${B}/m/${n}.jpg" alt="" onerror="this.onerror=null;this.src='${B}/${n}.jpg'"></a>`).join('')}</div>
   <div style="margin-top:10px"><a class="btn" href="${B}/?type=${type}">크게 넘겨보기 (좌우 슬라이드)</a></div>`;}
-const CMDS=[["!@참가 피망 1b","참가 등록 (!@참석 · !@참여도 OK) · 함께 가는 사람이 보여요"],["!@참가리스트","대회별 참가자"],["!@참가취소","내 참가 전부 취소"],
-  ["!@입상 피망 1b 3등 25만","입상 기록 (대회명 플라이트 순위 상금)"],["!@입상목록","대회별 입상자"],["!@뚝섬리더보드","이번 달 뚝포 TOP 5"],
-  ["!@캘린더","대회 캘린더"],["!@올인차트","새틀 올인·콜 계산"],["!@핸드리뷰","핸드리뷰 쓰기"],["!@리뷰목록","공개 리뷰 모음"],
-  ["!@오늘요약","오늘 방 대화 요약"],["!@뚝섬통합","이 페이지 주소"],["!@강남뉴스톤 오늘 뭐해","매장·대회 질문은 그냥 물어보면 돼요"]];
+// [섹션, [[복사할 명령어, 설명, 예시(선택)], ...]]  · 예시도 눌러서 복사
+const CMDS=[
+ ["🙋 참가 (같이 가는 사람)",[
+  ["!@참가 피망 1b","참가 등록 · 함께 가는 사람 명단이 같이 나와요 · !@참석 · !@참여 · !@출전도 OK",["!@참가 10/10 성남모란","!@참가 쇼다운 10월5일 | 카풀가능"]],
+  ["!@참가리스트","대회별 참가자 보기 (!@참가리스트 피망)"],["!@내참가","내 등록 보기"],["!@참가취소","내 참가 전부 취소"]],
+  "⏰ 대회 당일 오전 9시에 참가자를 태그해서 시작 시각·주소·주차를 알려드려요 (정모 등 행사 제외)"],
+ ["🏆 입상 · 뚝포",[
+  ["!@입상 피망 1b 3등 25만","입상 기록 · 대회명 플라이트 순위 상금 순서 · 빠지면 봇이 다시 알려줘요",["!@입상 한게임 데이1c 12등 티켓1장","!@입상 WPL 파이널 2등 1200만","!@입상 강남아띠 1등 300만"]],
+  ["!@입상목록","대회별 입상자 (!@입상자 피망)"],["!@내전적","내 기록"],["!@뚝섬리더보드","이번 달 뚝포 TOP 5"]],
+  "💰 상금 100만 원 이상 입상은 모두 등록할 수 있어요 · 하루짜리 매장 대회는 플라이트 없이"],
+ ["🎁 선착순 · 추첨",[
+  ["!@응모","추첨 참여 (방장이 !@추첨 을 열었을 때)"],["!@이벤트","진행 상황 · 참여자 보기"]],
+  "선착순은 !@저 · !@나 · !@1 같은 짧은 말 아무거나로 참여 · 서버 도착 순서로 번호가 매겨져요"],
+ ["🧮 계산 · 전략",[
+  ["!@올인차트","새틀(WPL·한게임·피망·APL 프리롤) 올인·콜·폴드 계산"],
+  ["!@라티오 20000 200 400 400 8","M-ratio 계산 · 스택 SB BB 앤티 인원"],
+  ["!@핸드리뷰","핸드 입력 페이지 → 솔버·계산·AI 해설이 달리면 태그로 알려드려요"],
+  ["!@내리뷰","내 리뷰 보기 (!@리뷰 번호)"],["!@리뷰목록","공개 리뷰 모음"],
+  ["!@리뷰문의 12 내용","답변이 이상하면 방장에게 재검토 요청"]]],
+ ["📅 정보 · 일정",[
+  ["!@캘린더","날짜별 매장 대회 · 메인 일정 · 온라인 새틀"],["!@오늘요약","오늘 방 대화를 주제별로 요약 (기록은 48시간 뒤 자동 삭제)"],
+  ["!@새틀목록","온라인 새틀·프리롤 알림 시간표"],["!@뚝섬홈","이 페이지 주소 (!@뚝섬통합도 OK)"]],
+  "💬 그냥 물어봐도 돼요"],
+ ["💬 이렇게 물어봐요",[
+  ["!@피망데이1 일정",""],["!@WPL 데이2 언제",""],["!@강남뉴스톤 오늘 뭐해",""],["!@강남뉴스톤 바인 얼마야",""],["!@피망 주차",""],["!@kims 주소",""],["!@오늘 대회추천",""]]],
+ ["🛠️ 방장 전용",[
+  ["!@학습 키워드=내용","봇에게 매장 주소·주차 같은 정보 가르치기 (!@학습목록 · !@학습삭제 검색어)"],
+  ["!@선착순 3명 스타벅스","선착순 열기 (띄어쓰기 없어도 OK)"],["!@추첨 2명 치킨 5분","추첨 열기 · 시간이 지나면 자동 추첨·발표"],
+  ["!@새틀추가 시작|종료|시각들|문구","새틀·프리롤 자동 알림 (관리 페이지에서도 가능)"],
+  ["!@티켓가치 이름 금액","티켓 1장 가치 수정 · !@이벤트마감 · !@이벤트취소"]]],
+];
+const cq=c=>esc(c).replace(/'/g,"&#39;");
+function cmdCard([c,x,ex]){return `<div class="card cmd"><div style="min-width:0"><code onclick="copy(this.textContent)">${esc(c)}</code>${x?`<div class="m" style="margin-top:3px">${esc(x)}</div>`:''}${ex?`<div class="exs"><span class="m">예)</span>${ex.map(e=>`<code onclick="copy(this.textContent)">${esc(e)}</code>`).join('')}</div>`:''}</div></div>`;}
+function cmdPage(){return head('📖 명령어','파란 글씨를 누르면 복사돼요')+'<div class="card m">명령어는 모두 앞에 <b>!@</b> · 명령어가 아닌 문장은 일반 질문으로 답해요</div>'
+  +CMDS.map(([h,items,note])=>`<div class="sec">${h}</div>`+(h.includes('물어봐요')?`<div class="card"><div class="exs">${items.map(([c])=>`<code onclick="copy(this.textContent)">${esc(c)}</code>`).join('')}</div></div>`:items.map(cmdCard).join('')+(note&&!note.startsWith('💬')?`<div class="m" style="margin:2px 4px 6px">${esc(note)}</div>`:''))).join('');}
 const MENU=[
  {g:"안내"},
- {k:"cmd",n:"명령어",d:"뚝섬봇 사용법",f:()=>head('📖 명령어','눌러서 복사 → 카톡에 붙여넣기')+CMDS.map(([c,x])=>`<div class="card cmd"><div><code>${esc(c)}</code><div class="m" style="margin-top:3px">${esc(x)}</div></div><button class="cp" onclick="copy('${c.replace(/'/g,"\\'")}')">복사</button></div>`).join('')
-   +`<div style="margin-top:4px"><a class="btn b" href="${B}/guide/commands.html">전체 명령어 보기</a></div>`},
+ {k:"cmd",n:"명령어",d:"뚝섬봇 사용법",f:cmdPage},
  {k:"cal",n:"캘린더",d:"날짜별 대회",u:"/c/",t:"📅 캘린더"},
  {g:"포스터"},
  {k:"pc",n:"제작 포스터",d:"뚝섬 제작 대회",f:()=>head('🏆 뚝섬 제작 포스터','누르면 크게')+thumbs('contest')},
