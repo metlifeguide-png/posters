@@ -1,133 +1,104 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>대회 안내 포스터 뷰어</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { 
-      background: #121212; 
-      color: #fff; 
-      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif; 
-      display: flex; 
-      flex-direction: column; 
-      height: 100vh; 
-      overflow: hidden; 
-    }
-    .header { 
-      padding: 14px 10px; 
-      text-align: center; 
-      font-size: 15px; 
-      font-weight: 700; 
-      background: #1f1f1f; 
-      border-bottom: 1px solid #333; 
-      letter-spacing: -0.5px; 
-    }
-    .swiper { 
-      width: 100%; 
-      flex: 1; 
-    }
-    .swiper-slide { 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-      background: #121212; 
-    }
-    .swiper-zoom-container { 
-      width: 100%; 
-      height: 100%; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-    }
-    .swiper-zoom-container img { 
-      max-width: 100%; 
-      max-height: 100%; 
-      object-fit: contain; 
-    }
-    .swiper-pagination-fraction { 
-      color: #fff; 
-      font-size: 14px; 
-      bottom: 15px !important; 
-      font-weight: 600; 
-      text-shadow: 0 1px 4px rgba(0,0,0,0.8); 
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<title>대회 안내 포스터 뷰어</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body { background: #121212; color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+         display: flex; flex-direction: column; height: 100vh; height: 100dvh; overflow: hidden; }
+  .header { padding: 10px 44px; text-align: center; font-size: 14px; font-weight: 700; background: #1f1f1f; border-bottom: 1px solid #333;
+            letter-spacing: -0.5px; position: relative; flex: none; }
+  .rotbtn { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); background: #333; color: #fff; border: 1px solid #555;
+            border-radius: 8px; font-size: 13px; padding: 4px 8px; cursor: pointer; }
+  .swiper { width: 100%; flex: 1; min-height: 0; }
+  .swiper-slide { display: flex; align-items: center; justify-content: center; background: #121212; overflow: hidden; }
+  .swiper-zoom-container { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+  .swiper-zoom-target { display: flex; align-items: center; justify-content: center; }
+  .swiper-zoom-target img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; }
+  .swiper-zoom-target img.rot { transform: rotate(90deg); }
+  .swiper-pagination-fraction { color: #fff; font-size: 14px; bottom: 12px !important; font-weight: 600; text-shadow: 0 1px 4px rgba(0,0,0,.8); }
+  .hint { position: absolute; left: 0; right: 0; bottom: 36px; text-align: center; font-size: 12px; color: #bbb; pointer-events: none; z-index: 5;
+          text-shadow: 0 1px 3px #000; }
+</style>
 </head>
 <body>
-  <div class="header" id="page-title">포스터 뷰어 (좌우로 넘겨보세요)</div>
+  <div class="header"><span id="page-title">포스터</span><button class="rotbtn" id="rotbtn" type="button">↻ 회전</button></div>
   <div class="swiper">
     <div class="swiper-wrapper" id="slide-container"></div>
     <div class="swiper-pagination"></div>
   </div>
+  <div class="hint" id="hint"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const type = params.get('type') || 'contest';
-    const container = document.getElementById('slide-container');
-    const title = document.getElementById('page-title');
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script>
+// 💡 뷰어 목록 (서버가 이 목록을 보고 휴대폰용 가벼운 사본 m/이름.jpg 를 만들어 올려요)
+const LISTS = {
+  "contest": {"title": "🏆 뚝섬 제작 대회 포스터", "names": ["00", "01", "02", "03", "03-1", "04", "apl-1", "apl-2", "apl-3", "05"]},
+  "official": {"title": "📋 대회사 공식 포스터", "names": ["06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "pmang01", "pmang02"]},
+  "apl": {"title": "🤝 APL 제휴사 안내", "names": ["apl01", "apl02", "apl03", "apl04", "apl05"]}
+};
+const VER = "09290402";
 
-    let baseNames = [];
-    if (type === 'contest') {
-      title.innerText = "🏆 뚝섬 제작 대회 포스터 (좌우 슬라이드 / 확대 가능)";
-      // 00, 01, 02, 03, 03-1, 04, apl-1, apl-2, apl-3, 05 순서로 배치
-      baseNames = ['00', '01', '02', '03', '03-1', '04', 'apl-1', 'apl-2', 'apl-3', '05'];
-    } else if (type === 'official') {
-      title.innerText = "📋 대회사 공식 포스터 (좌우 슬라이드 / 확대 가능)";
-      for (let i = 6; i <= 15; i++) baseNames.push(i < 10 ? '0' + i : '' + i);
-      baseNames.push('pmang01', 'pmang02');
-    } else if (type === 'apl') {
-      title.innerText = "🤝 APL 제휴사 안내 (좌우 슬라이드 / 확대 가능)";
-      baseNames = ['apl01', 'apl02', 'apl03', 'apl04', 'apl05'];
-    }
+const params = new URLSearchParams(location.search);
+const type = LISTS[params.get('type')] ? params.get('type') : 'contest';
+document.getElementById('page-title').textContent = LISTS[type].title;
+document.title = LISTS[type].title;
+const container = document.getElementById('slide-container');
 
-    baseNames.forEach(name => {
-      const slide = document.createElement('div');
-      slide.className = 'swiper-slide';
+// 가로 포스터 자동 회전 (세로로 든 휴대폰에서만) · 버튼으로 켜고 끄기
+let autoRot = true;
+try { autoRot = localStorage.getItem('rot') !== 'off'; } catch (e) {}
+const portrait = () => innerHeight > innerWidth;
+const btn = document.getElementById('rotbtn');
+const imgs = [];
+let sw = null;
 
-      // 두 손가락 줌 및 더블탭 확대를 위한 전용 컨테이너
-      const zoomContainer = document.createElement('div');
-      zoomContainer.className = 'swiper-zoom-container';
-      
-      const img = document.createElement('img');
-      img.alt = '포스터';
+function fit(img) {
+  const wide = img.naturalWidth > img.naturalHeight * 1.1;
+  const box = img.closest('.swiper-slide');
+  const W = box.clientWidth, H = box.clientHeight - 30;     // 아래 번호 표시 자리
+  const rot = autoRot && wide && portrait();
+  img.classList.toggle('rot', rot);
+  if (rot) { img.style.maxWidth = H + 'px'; img.style.maxHeight = W + 'px'; }
+  else { img.style.maxWidth = W + 'px'; img.style.maxHeight = H + 'px'; }
+}
+function fitAll() { imgs.forEach(i => i.complete && i.naturalWidth && fit(i)); updateHint(); }
+function updateHint() {
+  btn.textContent = autoRot ? '↻ 회전 끄기' : '↻ 회전 켜기';
+  const any = imgs.some(i => i.classList.contains('rot'));
+  document.getElementById('hint').textContent = any && sw && imgs[sw.activeIndex] && imgs[sw.activeIndex].classList.contains('rot')
+    ? '가로 포스터예요 · 폰을 옆으로 눕혀서 보세요' : '';
+}
+btn.onclick = () => { autoRot = !autoRot; try { localStorage.setItem('rot', autoRot ? 'on' : 'off'); } catch (e) {} fitAll(); };
 
-      // 포스터 기본 확장자인 .jpg로 우선 요청
-      img.src = name + '.jpg';
-      
-      // 대소문자나 png 확장자 차이로 로딩 실패 시 순서대로 교체 시도
-      let step = 0;
-      const extensions = ['.JPG', '.png', '.PNG', '.jpeg'];
-      img.onerror = function() {
-        if (step < extensions.length) {
-          this.src = name + extensions[step];
-          step++;
-        } else {
-          this.onerror = null; // 무한 반복 에러 방지
-        }
-      };
+LISTS[type].names.forEach((name, idx) => {
+  const slide = document.createElement('div'); slide.className = 'swiper-slide';
+  const zc = document.createElement('div'); zc.className = 'swiper-zoom-container';
+  const tg = document.createElement('div'); tg.className = 'swiper-zoom-target';
+  const img = document.createElement('img'); img.alt = '포스터 ' + (idx + 1);
+  if (idx > 1) img.loading = 'lazy';
+  // 1순위: 휴대폰용 사본(m/) → 없으면 원본(.jpg/.JPG/.png/.PNG/.jpeg)
+  const tries = ['m/' + name + '.jpg?v=' + VER, name + '.jpg', name + '.JPG', name + '.png', name + '.PNG', name + '.jpeg'];
+  let step = 0;
+  img.src = tries[0];
+  img.onerror = function () { step++; if (step < tries.length) this.src = tries[step]; else this.onerror = null; };
+  img.onload = function () { fit(this); updateHint(); };
+  imgs.push(img);
+  tg.appendChild(img); zc.appendChild(tg); slide.appendChild(zc); container.appendChild(slide);
+});
 
-      zoomContainer.appendChild(img);
-      slide.appendChild(zoomContainer);
-      container.appendChild(slide);
-    });
-
-    // 슬라이더 및 확대 기능 초기화
-    new Swiper('.swiper', {
-      loop: false,
-      zoom: {
-        maxRatio: 3,      // 최대 3배까지 확대
-        minRatio: 1,
-        toggle: true      // 화면 더블탭 시 확대/원래대로 토글
-      },
-      pagination: { 
-        el: '.swiper-pagination', 
-        type: 'fraction' 
-      }
-    });
-  </script>
+sw = new Swiper('.swiper', {
+  loop: false,
+  zoom: { maxRatio: 4, minRatio: 1, toggle: true },
+  pagination: { el: '.swiper-pagination', type: 'fraction' },
+  on: { slideChange: updateHint }
+});
+addEventListener('resize', () => setTimeout(fitAll, 150));
+addEventListener('orientationchange', () => setTimeout(fitAll, 300));
+</script>
 </body>
 </html>
