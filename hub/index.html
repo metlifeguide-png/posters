@@ -1,215 +1,45 @@
-<!doctype html>
-<html lang="ko">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="color-scheme" content="light">
-<title>뚝섬유원지 홈 · 홀덤 정보 한곳에</title>
-<meta name="description" content="대회 캘린더 · 포스터 · 참가 현황 · 입상 순위 · 핸드리뷰 · 올인차트를 한곳에서">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="뚝섬유원지">
-<meta property="og:title" content="🏝 뚝섬유원지 홈 · 홀덤 정보 한곳에">
-<meta property="og:description" content="대회 캘린더 · 포스터 · 참가 현황 · 입상 순위 · 핸드리뷰 · 올인차트를 한곳에서">
-<meta property="og:image" content="https://metlifeguide-png.github.io/posters/hub/banner.jpg">
-<meta property="og:url" content="https://metlifeguide-png.github.io/posters/hub/">
-<style>
-:root{
-  --paper:#f3efe4; --paper2:#fbf9f3; --line:#e2dccb; --ink:#26303d; --sub:#6b6f76;
-  --blue:#1f5fae; --blue2:#e4edf8; --green:#3a9d3f; --green2:#e6f3e2; --brown:#9a5a2a; --brown2:#f3e7da; --gold:#c98a10;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--paper);color:var(--ink);font:15px/1.5 system-ui,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;-webkit-text-size-adjust:100%}
-body{background-image:radial-gradient(rgba(120,100,70,.05) 1px,transparent 1px);background-size:6px 6px}
-a{color:inherit}
-.banner{position:relative;max-width:1100px;margin:0 auto}
-.banner img{display:block;width:100%;height:auto;max-height:130px;object-fit:cover;object-position:center 38%}
-.banner .cap{position:absolute;left:0;right:0;bottom:6px;text-align:center;font-size:12px;color:var(--sub)}
-.wrap{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:118px 1fr;gap:0;min-height:calc(100vh - 160px)}
-@media(min-width:760px){.wrap{grid-template-columns:250px 1fr}}
-/* 왼쪽 메뉴 */
-.side{position:sticky;top:0;align-self:start;max-height:100vh;overflow-y:auto;padding:8px 6px 20px;border-right:2px dashed var(--line)}
-.side button{display:block;width:100%;text-align:left;border:0;background:none;border-radius:12px;padding:7px 8px;margin-bottom:3px;cursor:pointer;color:var(--ink)}
-.side .nm{display:block;font-size:13.5px;font-weight:700;line-height:1.25}
-.side .ds{display:block;font-size:11px;color:var(--sub);line-height:1.25;margin-top:1px}
-.side button.on{background:var(--blue);color:#fff;box-shadow:0 2px 0 rgba(0,0,0,.12)}
-.side .ar{font-size:11px;color:var(--brown)}
-.side button.on .ds{color:#dbe7f7}
-.side .grp{font-size:10.5px;color:var(--brown);font-weight:700;margin:10px 8px 4px;letter-spacing:.5px}
-@media(min-width:760px){.banner img{max-height:230px}.side .nm{font-size:15px}.side .ds{font-size:12px}}
-/* 오른쪽 본문 */
-.main{padding:10px 10px 40px;min-width:0}
-.h{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 8px;margin:2px 2px 10px}
-.h h2{white-space:nowrap;font-size:18px;color:var(--blue);line-height:1.2}
-.h .m{font-size:11.5px;color:var(--sub);text-align:right}
-.card{background:var(--paper2);border:1.5px solid var(--line);border-radius:14px;padding:11px 12px;margin-bottom:9px}
-.t{font-weight:700;font-size:14.5px;line-height:1.35}
-.m{color:var(--sub);font-size:12.5px}
-.ppl{margin-top:4px;font-size:14px}
-.tag{display:inline-block;font-size:11px;padding:0 7px;border-radius:8px;background:var(--brown2);color:var(--brown);margin-left:4px;vertical-align:1px}
-.row{display:flex;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px dashed var(--line);font-size:14px}
-.row:last-child{border:none}
-.sec{font-size:14px;font-weight:800;color:var(--brown);margin:14px 2px 6px}
-input.q{width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:12px;background:#fff;font-size:14px;margin-bottom:9px}
-.e{color:var(--sub);text-align:center;padding:26px 6px;font-size:13.5px}
-a.card{display:block;text-decoration:none}
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>뚝섬 통합정보</title><style>
+:root{--bg:#f3f1ec;--card:#fff;--line:#e3ded3;--ink:#1b1b1b;--sub:#6b6b6b;--acc:#0f766e;--tab:#e9e4d9}
+@media (prefers-color-scheme:dark){:root{--bg:#141414;--card:#1f1f1f;--line:#333;--ink:#eee;--sub:#9a9a9a;--acc:#2dd4bf;--tab:#262626}}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
+.w{max-width:760px;margin:0 auto;padding:14px 14px 40px}h1{font-size:20px}.sub{color:var(--sub);font-size:12.5px;margin:2px 0 10px}
+.links{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.links a{font-size:12.5px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;color:var(--ink);text-decoration:none;background:var(--card)}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;position:sticky;top:0;background:var(--bg);padding:6px 0;z-index:3}
+.tabs button{border:1px solid var(--line);background:var(--tab);color:var(--ink);border-radius:10px;padding:7px 2px;font-size:13px;font-weight:600;white-space:nowrap}
+.tabs button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
+input{width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font-size:14px;margin:8px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:8px}
+.t{font-weight:700}.m{color:var(--sub);font-size:12.5px}.ppl{margin-top:4px;font-size:14px}.tag{display:inline-block;font-size:11px;padding:0 6px;border-radius:6px;background:var(--tab);color:var(--sub);margin-left:4px}
+.row{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);font-size:14px}.row:last-child{border:none}
+a.card{display:block;color:inherit;text-decoration:none}.e{color:var(--sub);text-align:center;padding:24px 0}.h2{font-size:15px;font-weight:700;margin:12px 0 6px}
 .lc{white-space:pre-wrap;font-size:13.5px;margin-top:3px}
-.btn{display:inline-block;background:var(--blue);color:#fff;text-decoration:none;border-radius:12px;padding:10px 16px;font-weight:700;font-size:14px;border:0;cursor:pointer}
-.btn.g{background:var(--green)}.btn.b{background:var(--brown)}
-.cmd{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.cmd code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:var(--blue);font-weight:700;background:var(--blue2);border-radius:7px;padding:2px 7px;word-break:keep-all}
-.exs{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
-.exs code{font-size:11.5px;font-weight:600;padding:1px 6px;cursor:pointer}
-.cmd code{cursor:pointer}
-.card.cmd{padding:9px 11px;margin-bottom:6px}
-.exs .m{font-size:11.5px;align-self:center}
-.cp{border:1.5px solid var(--line);background:#fff;border-radius:9px;font-size:12px;padding:4px 9px;cursor:pointer;flex:none}
-.thumbs{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
-@media(min-width:760px){.thumbs{grid-template-columns:repeat(3,1fr)}}
-.thumbs a{display:block;background:#fff;border:1.5px solid var(--line);border-radius:12px;overflow:hidden;aspect-ratio:3/4}
-.thumbs img{width:100%;height:100%;object-fit:cover;display:block}
-.podium{display:grid;grid-template-columns:1fr 1.1fr 1fr;gap:6px;align-items:end;margin-bottom:9px}
-.pd{background:var(--paper2);border:1.5px solid var(--line);border-radius:12px;text-align:center;padding:8px 4px}
-.pd .md{font-size:22px}.pd .nk{font-weight:800;font-size:13.5px;word-break:break-all}.pd .pt{font-size:11.5px;color:var(--sub)}
-.pd.p1{border-color:var(--gold);padding-top:14px}
-.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 14px;border-radius:10px;font-size:13px;opacity:0;transition:.2s;pointer-events:none}
-.toast.on{opacity:.95}
-.ov{position:fixed;inset:0;z-index:50;background:var(--paper);display:none;flex-direction:column}
-.ov.on{display:flex}
-.ovb{flex:none;display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--blue);color:#fff}
-.ovb button,.ovb a{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:9px;padding:6px 10px;font-size:13px;font-weight:700;text-decoration:none;cursor:pointer;white-space:nowrap}
-.ovb .tt{flex:1;text-align:center;font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ov iframe{flex:1;width:100%;border:0;background:#fff}
-body.lock{overflow:hidden}
-.foot{font-size:11.5px;color:var(--sub);text-align:center;margin-top:18px}
-</style>
-</head>
-<body>
-<div class="banner"><img src="banner.jpg" alt="뚝섬유원지"></div>
-<div class="wrap">
-  <nav class="side" id="side"></nav>
-  <main class="main" id="main"></main>
-</div>
-<div class="ov" id="ov"><div class="ovb"><button type="button" id="ovx">← 뒤로</button><span class="tt" id="ovt"></span><a id="ovn" target="_blank" rel="noopener">새 창 ↗</a></div></div>
-<div class="toast" id="toast"></div>
+</style></head><body><div class="w">
+<h1>♠ 뚝섬 통합정보</h1><div class="sub">누구나 볼 수 있어요 · 관리는 방장만 · 업데이트 <span id="up"></span></div>
+<div class="links"><a href="https://metlifeguide-png.github.io/posters/c/">📅 캘린더</a><a href="https://metlifeguide-png.github.io/posters/aof/">♠ 올인차트</a><a href="https://metlifeguide-png.github.io/posters/review/">✍️ 핸드리뷰 쓰기</a><a href="https://metlifeguide-png.github.io/posters/guide/commands.html">📖 명령어</a></div>
+<div class="links"><a href="https://metlifeguide-png.github.io/posters/?type=contest">🏆 뚝섬 제작 포스터</a><a href="https://metlifeguide-png.github.io/posters/?type=official">📋 대회사 공식 포스터</a><a href="https://metlifeguide-png.github.io/posters/?type=apl">🤝 APL 제휴업체</a></div>
+<div class="tabs" id="tabs"></div><input id="q" placeholder="닉네임 · 대회 · 매장으로 찾기"><div id="out"></div></div>
 <script>
-const D={"updated": "09/29 14:42", "month": "2026-09", "parts": [{"label": "피망 데이1-B 10/5(월) 12:00 · 경기 시흥 KIMS", "date": "2026-10-05", "time": "12:00", "people": [{"n": "구우", "m": ""}, {"n": "방장봊", "m": ""}, {"n": "내꿈은너야차무식", "m": ""}, {"n": "타이슨", "m": ""}, {"n": "구우형 우승못한지 9년", "m": ""}], "event": false}, {"label": "10/10 15:00 정모 @강남 뉴스톤 아레나", "date": "2026-10-10", "time": "15:00", "people": [{"n": "구우", "m": ""}, {"n": "해솔", "m": ""}], "event": true, "cmd": "정모"}], "tours": [], "board_month": [], "board_all": [], "reviews": [{"id": 11, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "CO 25BB  A♦ J♦", "q": "리버 콜 맞나요?", "own": false}, {"id": 10, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "BB 14BB  A♣ 9♦", "q": "A9o 콜 맞나요?", "own": false}, {"id": 9, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "CO 25BB  A♦ J♦", "q": "리버 콜 맞나요?", "own": false}, {"id": 8, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "BTN 30BB  K♠ Q♠", "q": "리버 콜 맞나요? 턴 체크는 괜찮았나요?", "own": false}], "learned": [{"k": "wpl, 건자수, 야자수서울센터, 주차", "c": "인근주차장이용"}, {"k": "강남뉴스톤아레나, 주소, 주차", "c": "강남구 도곡로1길 14 삼일프라자 지하1층 (건물주차)"}, {"k": "구우", "c": "피망 새틀 1렙 바이인 안하면 입안에 가시가 돋기로 유명함"}, {"k": "녹맨", "c": "행의 남자 친구 이자 비혼주의자이며 페미니스트이자 대한민국을 살리기위해 급직적이며 이슬람식 일부다처제를 주장하는 기독교인이자 부처님 오신날을 제일 좋아하는 대한민국의 사상가"}, {"k": "도비", "c": "헤비스테이커"}, {"k": "뚝섬정모, 정모, 칠갑산정모, 정모일시, 정모시간, 정모위치", "c": "10월10일(토) 오후3시 바인0.5 (교촌제공) 장소:강남뉴스톤"}, {"k": "민트퍼지", "c": "사기꾼"}, {"k": "에릭", "c": "사채꾼"}, {"k": "오메추, 점메추, 저메추 라고물어보면", "c": "오늘메뉴추천, 점심메뉴추천, 저녁메뉴추천으로 인식하고 해당질문에 답해줘"}, {"k": "크라잉", "c": "전 JP모건 임원"}, {"k": "피망, kims, 거북섬, 주차, 위치, 주소", "c": "경기장: 시흥 거북섬로116 10층 주차: 거북섬로 111 (무료)"}, {"k": "한게임, hpt, 로열홀덤, 장소, 위치, 주소", "c": "성동구 연무장 15길11 (성수에스팩토리 D동)"}, {"k": "한게임, hpt, 주차", "c": "인근 유료주차장 이용"}, {"k": "해솔", "c": "천안의 홀덤 대장이자 영등포 K스타홀덤펍 2회차 페이아웃대회 파테 출신. 잘생긴 외모와 뛰어난 패션감각의 소유자."}, {"k": "해솔쌤", "c": "84나성 올림픽때 태어난 대표 여미새"}]}, B="https://metlifeguide-png.github.io/posters";
+const D={"updated": "09/29 15:11", "month": "2026-09", "parts": [{"label": "피망 데이1-B 10/5(월) 12:00 · 경기 시흥 KIMS", "date": "2026-10-05", "time": "12:00", "people": [{"n": "구우", "m": ""}, {"n": "방장봊", "m": ""}, {"n": "내꿈은너야차무식", "m": ""}, {"n": "타이슨", "m": ""}, {"n": "구우형 우승못한지 9년", "m": ""}], "event": false}, {"label": "10/10 15:00 정모 @강남 뉴스톤 아레나", "date": "2026-10-10", "time": "15:00", "people": [{"n": "구우", "m": ""}, {"n": "해솔", "m": ""}], "event": true}], "tours": [], "board_month": [], "board_all": [], "reviews": [{"id": 11, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "CO 25BB  A♦ J♦", "q": "리버 콜 맞나요?", "own": false}, {"id": 10, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "BB 14BB  A♣ 9♦", "q": "A9o 콜 맞나요?", "own": false}, {"id": 9, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "CO 25BB  A♦ J♦", "q": "리버 콜 맞나요?", "own": false}, {"id": 8, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "BTN 30BB  K♠ Q♠", "q": "리버 콜 맞나요? 턴 체크는 괜찮았나요?", "own": false}], "learned": [{"k": "wpl, 건자수, 야자수서울센터, 주차", "c": "인근주차장이용"}, {"k": "강남뉴스톤아레나, 주소, 주차", "c": "강남구 도곡로1길 14 삼일프라자 지하1층 (건물주차)"}, {"k": "구우", "c": "피망 새틀 1렙 바이인 안하면 입안에 가시가 돋기로 유명함"}, {"k": "녹맨", "c": "행의 남자 친구 이자 비혼주의자이며 페미니스트이자 대한민국을 살리기위해 급직적이며 이슬람식 일부다처제를 주장하는 기독교인이자 부처님 오신날을 제일 좋아하는 대한민국의 사상가"}, {"k": "도비", "c": "헤비스테이커"}, {"k": "뚝섬정모, 정모, 칠갑산정모, 정모일시, 정모시간, 정모위치", "c": "10월10일(토) 오후3시 바인0.5 (교촌제공) 장소:강남뉴스톤"}, {"k": "민트퍼지", "c": "사기꾼"}, {"k": "에릭", "c": "사채꾼"}, {"k": "오메추, 점메추, 저메추 라고물어보면", "c": "오늘메뉴추천, 점심메뉴추천, 저녁메뉴추천으로 인식하고 해당질문에 답해줘"}, {"k": "크라잉", "c": "전 JP모건 임원"}, {"k": "피망, kims, 거북섬, 주차, 위치, 주소", "c": "경기장: 시흥 거북섬로116 10층 주차: 거북섬로 111 (무료)"}, {"k": "한게임, hpt, 로열홀덤, 장소, 위치, 주소", "c": "성동구 연무장 15길11 (성수에스팩토리 D동)"}, {"k": "한게임, hpt, 주차", "c": "인근 유료주차장 이용"}, {"k": "해솔", "c": "천안의 홀덤 대장이자 영등포 K스타홀덤펍 2회차 페이아웃대회 파테 출신. 잘생긴 외모와 뛰어난 패션감각의 소유자."}, {"k": "해솔쌤", "c": "84나성 올림픽때 태어난 대표 여미새"}]};document.getElementById('up').textContent=D.updated;
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const md=d=>d&&d.length>=10?(+d.slice(5,7))+'/'+(+d.slice(8,10)):'';
-const POSTERS={contest:["00","01","02","03","03-1","04","apl-1","apl-2","apl-3","05"],
-  official:["06","07","08","09","10","11","12","13","14","15","pmang01","pmang02"],apl:["apl01","apl02","apl03","apl04","apl05"]};
-function toast(t){const e=document.getElementById('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1500);}
-function copy(t){(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('복사했어요: '+t)).catch(()=>{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');toast('복사했어요: '+t);}catch(e){}a.remove();});}
-function head(t,m){return `<div class="h"><h2>${t}</h2><div class="m">${m||''}</div></div>`;}
-function search(ph){return `<input class="q" id="q" placeholder="${ph}" value="${esc(Q)}">`;}
-function openCard(desc,href,label,cls){return `<div class="card"><div class="lc">${desc}</div><div style="margin-top:10px"><a class="btn ${cls||''}" href="${href}">${label}</a></div></div>`;}
-function thumbs(type){return `<div class="thumbs">${POSTERS[type].map(n=>`<a href="${B}/?type=${type}"><img loading="lazy" src="${B}/m/${n}.jpg" alt="" onerror="this.onerror=null;this.src='${B}/${n}.jpg'"></a>`).join('')}</div>
-  <div style="margin-top:10px"><a class="btn" href="${B}/?type=${type}">크게 넘겨보기 (좌우 슬라이드)</a></div>`;}
-// [섹션, [[복사할 명령어, 설명, 예시(선택)], ...]]  · 예시도 눌러서 복사
-const CMDS=[
- ["🙋 참가 (같이 가는 사람)",[
-  ["!@참가 피망 1b","참가 등록 · 함께 가는 사람 명단이 같이 나와요 · !@참석 · !@참여 · !@출전도 OK",["!@참가 10/10 성남모란","!@참가 쇼다운 10월5일 | 카풀가능","!@참가 정모"]],
-  ["!@참가리스트","대회별 참가자 보기 (!@참가리스트 피망)"],["!@내참가","내 등록 보기"],["!@참가취소","내 참가 전부 취소"]],
-  "⏰ 대회 당일 오전 9시에 참가자를 태그해서 시작 시각·주소·주차를 알려드려요 (정모 등 행사 제외)"],
- ["🏆 입상 · 뚝섬리더보드",[
-  ["!@입상 피망 1b 3등 25만","입상 기록 · 대회명 플라이트 순위 상금 순서 · 빠지면 봇이 다시 알려줘요",["!@입상 한게임 데이1c 12등 티켓1장","!@입상 WPL 파이널 2등 1200만","!@입상 강남아띠 1등 300만"]],
-  ["!@입상목록","대회별 입상자 (!@입상자 피망)"],["!@내전적","내 기록"],["!@뚝섬리더보드","이번 달 뚝섬리더보드 TOP 5"]],
-  "💰 상금 100만 원 이상 입상은 모두 등록할 수 있어요 · 하루짜리 매장 대회는 플라이트 없이"],
- ["🎁 선착순 · 추첨",[
-  ["!@선착순 3명 스타벅스","선착순 열기 · 누구나 · 순서·띄어쓰기 상관없음"],
-  ["!@띱","선착순 참여 · 먼저 친 순서대로 번호, 인원이 차면 자동 마감"],
-  ["!@추첨 2명 치킨 5분","추첨 열기 · 누구나 · 시간을 안 쓰면 10분"],
-  ["!@응모","추첨 참여 · 시간이 끝나면 자동 추첨·발표"],
-  ["!@이벤트","진행 상황 · 참여자 보기"],
-  ["!@마감","지금 바로 마감·발표 (연 사람·방장)"],
-  ["!@이벤트취소","당첨 없이 취소 (연 사람·방장)"]]],
- ["🧮 계산 · 전략",[
-  ["!@올인차트","새틀(WPL·한게임·피망·APL 프리롤) 올인·콜·폴드 계산"],
-  ["!@라티오 20000 200 400 400 8","M-ratio 계산 · 스택 SB BB 앤티 인원"],
-  ["!@핸드리뷰","핸드 입력 페이지 → 솔버·계산·AI 해설이 달리면 태그로 알려드려요"],
-  ["!@내리뷰","내 리뷰 보기 (!@리뷰 번호)"],["!@리뷰목록","공개 리뷰 모음"],
-  ["!@리뷰문의 12 내용","답변이 이상하면 방장에게 재검토 요청"]]],
- ["📅 정보 · 일정",[
-  ["!@캘린더","날짜별 매장 대회 · 메인 일정 · 온라인 새틀"],["!@오늘요약","오늘 방 대화를 주제별로 요약 (기록은 48시간 뒤 자동 삭제)"],
-  ["!@새틀목록","온라인 새틀·프리롤 알림 시간표"],["!@뚝섬홈","이 페이지 주소 (!@뚝섬통합도 OK)"]],
-  "💬 그냥 물어봐도 돼요"],
- ["💬 이렇게 물어봐요",[
-  ["!@피망데이1 일정",""],["!@WPL 데이2 언제",""],["!@강남뉴스톤 오늘 뭐해",""],["!@강남뉴스톤 바인 얼마야",""],["!@피망 주차",""],["!@kims 주소",""],["!@오늘 대회추천",""]]],
- ["🛠️ 방장 전용",[
-  ["!@학습 키워드=내용","봇에게 매장 주소·주차 같은 정보 가르치기 (!@학습목록 · !@학습삭제 검색어)"],
-  ["!@새틀추가 시작|종료|시각들|문구","새틀·프리롤 자동 알림 (관리 페이지에서도 가능)"],
-  ["!@티켓가치 이름 금액","티켓 1장 가치 수정"]]],
-];
-const cq=c=>esc(c).replace(/'/g,"&#39;");
-function cmdCard([c,x,ex]){return `<div class="card cmd"><div style="min-width:0"><code onclick="copy(this.textContent)">${esc(c)}</code>${x?`<div class="m" style="margin-top:3px">${esc(x)}</div>`:''}${ex?`<div class="exs"><span class="m">예)</span>${ex.map(e=>`<code onclick="copy(this.textContent)">${esc(e)}</code>`).join('')}</div>`:''}</div></div>`;}
-function cmdPage(){return head('📖 명령어','파란 글씨를 누르면 복사돼요')+'<div class="card m">명령어는 모두 앞에 <b>!@</b> · 명령어가 아닌 문장은 일반 질문으로 답해요</div>'
-  +CMDS.map(([h,items,note])=>`<div class="sec">${h}</div>`+(h.includes('물어봐요')?`<div class="card"><div class="exs">${items.map(([c])=>`<code onclick="copy(this.textContent)">${esc(c)}</code>`).join('')}</div></div>`:items.map(cmdCard).join('')+(note&&!note.startsWith('💬')?`<div class="m" style="margin:2px 4px 6px">${esc(note)}</div>`:''))).join('');}
-function meetPage(){
-  return head('🏝 뚝섬유원지 정모','다음 모임 안내')
-   +`<div class="card" style="padding:0;overflow:hidden"><img src="meet.jpg" alt="뚝섬 300명예 GTD 토너먼트 정모 안내 포스터" style="display:block;width:100%;height:auto"></div>`
-   +`<div class="card"><div class="t">뚝섬 300명예 GTD 토너먼트</div><div class="m">*60엔트리 기준 프라이즈업 · 듀레이션 15분에 느껴보는 빅재미</div>
-   <div class="row"><span>일시</span><span class="m">26년 10월10일(토) 오후 3시</span></div>
-   <div class="row"><span>BUY IN</span><span class="m">0.5T (함바치맥제공)</span></div>
-   <div class="row"><span>장소</span><span class="m">서울 강남 뉴스톤 아레나</span></div></div>`
-   +`<div class="card cmd"><div style="min-width:0"><code onclick="copy(this.textContent)">!@참가 정모</code><div class="m" style="margin-top:3px">참석하시려면 채팅창에 이 명령어를 입력해주세요(클릭시 자동복사)</div></div></div>`;
-}
-const MENU=[
- {g:"정모"},
- {k:"meet",n:"뚝섬유원지 정모",d:"다음 모임 안내",f:meetPage},
- {g:"안내"},
- {k:"cmd",n:"명령어",d:"뚝섬봇 사용법",f:cmdPage},
- {k:"cal",n:"캘린더",d:"날짜별 대회",u:"/c/",t:"📅 캘린더"},
- {g:"포스터"},
- {k:"pc",n:"제작 포스터",d:"뚝섬 제작 대회",f:()=>head('🏆 뚝섬 제작 포스터','누르면 크게')+thumbs('contest')},
- {k:"po",n:"공식 포스터",d:"피망·WPL 등",f:()=>head('📋 대회사 공식 포스터','누르면 크게')+thumbs('official')},
- {k:"pa",n:"APL 제휴",d:"제휴 매장 혜택",f:()=>head('🤝 APL 제휴업체','누르면 크게')+thumbs('apl')},
- {g:"우리 방"},
- {k:"learn",n:"학습",d:"봇이 아는 정보",f:()=>{const l=D.learned.filter(x=>!Q||(x.k+' '+x.c).toLowerCase().includes(Q));
-   return head('📚 학습',`${D.learned.length}개`)+search('키워드로 찾기')+(l.length?l.map(x=>`<div class="card"><div class="t">${esc(x.k)}</div><div class="lc">${esc(x.c)}</div></div>`).join(''):'<div class="e">학습된 정보가 없어요</div>');}},
- {k:"part",n:"참가",d:"누가 어디 가나",f:()=>{const g=D.parts.filter(x=>!Q||(x.label+x.people.map(p=>p.n+p.m).join(' ')).toLowerCase().includes(Q));
-   const suggestCmd=x=>{const c=x.cmd||(x.event&&x.label.match(/정모/)?'정모':'');if(c)return`!@참가 ${c}`;
-     const mmdd=x.date&&x.date.length>=10?`${+x.date.slice(5,7)}/${+x.date.slice(8,10)}`:'';
-     const core=x.label.split('·')[0].replace(/\d{1,2}\/\d{1,2}(\([가-힣]\))?/g,'').replace(/\d{1,2}:\d{2}/g,'').replace(/\s+/g,' ').trim();
-     return `!@참가 ${(mmdd?mmdd+' ':'')}${core}`.trim();};
-   const joinCmd=x=>`<div class="m" style="margin-top:6px">🙋 나도 참석? <code onclick="copy(this.textContent)">${esc(suggestCmd(x))}</code> (누르면 복사 · 대회명·날짜 일부만 써도 인식돼요)</div>`;
-   return head('🙋 참가 현황',`${D.parts.length}개 대회`)+search('닉네임 · 대회로 찾기')+(g.length?g.map(x=>`<div class="card"><div class="t">${esc(x.label)}${x.event?'<span class="tag">행사</span>':''}</div><div class="m">${x.people.length}명</div><div class="ppl">${x.people.map(p=>esc(p.n)+(p.m?` <span class="m">(${esc(p.m)})</span>`:'')).join(', ')}</div>${joinCmd(x)}</div>`).join('')
-   :'<div class="e">예정된 참가 신청이 없어요<br>카톡에서 !@참가 피망 1b</div>')+'<div class="m" style="margin-top:4px">⏰ 대회 당일 오전 9시에 참가자를 태그해서 시작 시각·주소·주차를 알려드려요 · 🎉 정모 등 행사는 위 카드에 나온 명령어로 참석 등록하세요</div>';}},
- {k:"rank",n:"입상·순위",d:"뚝섬리더보드",f:()=>{const pod=a=>{const o=[a[1],a[0],a[2]];return `<div class="podium">${o.map((x,i)=>x?`<div class="pd ${i===1?'p1':''}"><div class="md">${['🥈','🥇','🥉'][i]}</div><div class="nk">${esc(x.n)}</div><div class="pt">${x.pt}pt</div></div>`:'<div></div>').join('')}</div>`;};
-   const list=(a,from)=>a.slice(from).map((x,i)=>`<div class="row"><span>${i+from+1}. ${esc(x.n)}</span><span class="m">${x.pt}pt · 우승 ${x.win} · 입상 ${x.itm}</span></div>`).join('');
-   const t=D.tours.filter(x=>!Q||(x.label+x.rows.map(r=>r.n).join(' ')).toLowerCase().includes(Q));
-   return head('🏆 입상·순위',D.month.replace('-','년 ')+'월')
-   +'<div class="card m">💰 상금 100만 원 이상 입상은 모두 등록할 수 있어요 · 카톡: !@입상 대회명 플라이트 순위 상금</div>'
-   +(Q?'':'<div class="sec">🏆 이번 달 뚝섬리더보드</div>'+(D.board_month.length?pod(D.board_month)+(D.board_month.length>3?`<div class="card">${list(D.board_month,3)}</div>`:''):'<div class="card e">이번 달 기록이 아직 없어요</div>')
-     +'<div class="sec">누적 뚝섬리더보드 TOP 10</div>'+(D.board_all.length?`<div class="card">${list(D.board_all,0)}</div>`:'<div class="card e">기록 없음</div>'))
-   +'<div class="sec">대회별 입상</div>'+search('닉네임 · 대회로 찾기')
-   +(t.length?t.map(x=>`<div class="card"><div class="t">${esc(x.label)}</div><div class="m">${md(x.date)} · ${x.rows.length}명</div><div class="ppl">${x.rows.map(r=>esc(r.n)+' '+esc(r.r)+(r.p?` <span class="m">(${esc(r.p)})</span>`:'')).join(', ')}</div></div>`).join(''):'<div class="e">입상 기록이 없어요</div>');}},
- {g:"도구"},
- {k:"rev",n:"핸드리뷰",d:"리뷰 보기·쓰기",f:()=>{const r=D.reviews.filter(x=>!Q||(x.id+' '+x.nick+x.head+x.hero+x.q).toLowerCase().includes(Q));
-   return head('✍️ 핸드리뷰',`공개 ${D.reviews.length}개`)+`<div style="margin-bottom:10px"><a class="btn g" data-nav="1" href="${B}/review/">✍️ 내 핸드 질문하기</a></div>`+search('닉네임 · 패 · 질문으로 찾기')+(r.length?r.map(x=>`<a class="card" href="${B}/r/${x.id}.html"><div class="t">#${x.id} ${esc(x.head)}${x.own?'<span class="tag">✅ 방장 답변</span>':''}</div><div class="m">${esc(x.hero)}</div><div>❓ ${esc(x.q||'(질문 없음)')}</div><div class="m">${esc(x.nick)} · ${md(x.date)}</div></a>`).join('')
-   :'<div class="e">공개된 리뷰가 없어요</div>');}},
- {k:"aof",n:"올인차트",d:"새틀 계산기",u:"/aof/",t:"♠ 올인차트"},
-];
-// 처음 들어오면 항상 뚝섬유원지 정모부터 (주소 뒤 #탭 은 무시)
-let cur='meet', Q='';
-if(location.hash)history.replaceState(null,'',location.pathname+location.search);
-function draw(){
-  document.getElementById('side').innerHTML=MENU.map(m=>m.g?`<div class="grp">${m.g}</div>`:`<button class="${m.k===cur?'on':''}" data-k="${m.k}"><span class="nm">${m.n}</span><span class="ds">${m.d}</span></button>`).join('');
-  const m=MENU.find(x=>x.k===cur);
-  document.getElementById('main').innerHTML=m.f()+`<div class="foot">업데이트 ${D.updated} · 누구나 볼 수 있어요 · 관리는 방장만</div>`;
-  const q=document.getElementById('q'); if(q){q.oninput=()=>{Q=q.value.trim().toLowerCase();const p=q.selectionStart;draw();const n=document.getElementById('q');n.focus();n.setSelectionRange(p,p);};}
-}
-// 캘린더·올인차트·리뷰쓰기·포스터 등은 페이지를 떠나지 않고 이 안에서 전체화면으로 열기
-const ov=document.getElementById('ov');let ovf=null;
-function openOv(url,title,push){if(ovf)ovf.remove();ovf=document.createElement('iframe');ovf.title='내용';ovf.setAttribute('allow','clipboard-write');ovf.src=url;ov.appendChild(ovf);document.getElementById('ovt').textContent=title||'';document.getElementById('ovn').href=url;
-  ov.classList.add('on');document.body.classList.add('lock');if(push!==false)history.pushState({ov:1},'');}
-function closeOv(){ov.classList.remove('on');document.body.classList.remove('lock');if(ovf){ovf.remove();ovf=null;}}
-document.getElementById('ovx').onclick=()=>{closeOv();if(history.state&&history.state.ov)history.back();};
-addEventListener('popstate',()=>{if(ov.classList.contains('on'))closeOv();});
-document.getElementById('main').addEventListener('click',e=>{const a=e.target.closest('a[href]');if(!a||a.dataset.nav||!a.href.startsWith(B+'/'))return;
-  e.preventDefault();const c=a.closest('.card');openOv(a.href,a.dataset.t||(c&&c.querySelector('.t')?c.querySelector('.t').textContent:'')||document.querySelector('.h h2')?.textContent||'');});
-document.getElementById('side').onclick=e=>{const b=e.target.closest('button');if(!b)return;const it=MENU.find(m=>m.k===b.dataset.k);
-  if(it&&it.u){openOv(B+it.u,it.t);return;}cur=b.dataset.k;Q='';history.replaceState(null,'','#'+cur);draw();window.scrollTo({top:document.querySelector('.wrap').offsetTop,behavior:'smooth'});};
-addEventListener('hashchange',()=>{const k=location.hash.slice(1),it=MENU.find(m=>m.k===k);if(!it)return;if(it.u){openOv(B+it.u,it.t,false);return;}cur=k;draw();});
-draw();
-</script>
-</body>
-</html>
+const TABS={
+ part:['🙋 참가',q=>{const g=D.parts.filter(x=>!q||(x.label+x.people.map(p=>p.n+p.m).join(' ')).toLowerCase().includes(q));
+   return g.length?g.map(x=>`<div class="card"><div class="t">${esc(x.label)}${x.event?'<span class="tag">행사</span>':''}</div><div class="m">${x.people.length}명</div><div class="ppl">${x.people.map(p=>esc(p.n)+(p.m?` <span class="m">(${esc(p.m)})</span>`:'')).join(', ')}</div></div>`).join('')
+   :'<div class="e">예정된 참가 신청이 없어요<br>카톡: !@참가 피망 1b</div>';}],
+ itm:['🏆 입상·순위',q=>{const b=(arr,t)=>`<div class="h2">${t}</div><div class="card">${arr.length?arr.map((x,i)=>`<div class="row"><span>${['🥇','🥈','🥉'][i]||(i+1)+'위'} ${esc(x.n)}</span><span class="m">${x.pt}pt · 우승 ${x.win} · 입상 ${x.itm}</span></div>`).join(''):'<div class="e">기록 없음</div>'}</div>`;
+   const t=D.tours.filter(x=>!q||(x.label+x.rows.map(r=>r.n).join(' ')).toLowerCase().includes(q));
+   return (q?'':'<div class="card m">💰 상금 100만 원 이상 입상은 모두 등록할 수 있어요 · 카톡: !@입상 대회명 플라이트 순위 상금</div>'+b(D.board_month,'이번 달 뚝포 TOP 10')+b(D.board_all,'누적 뚝포 TOP 10'))+'<div class="h2">대회별 입상</div>'+(t.length?t.map(x=>`<div class="card"><div class="t">${esc(x.label)}</div><div class="m">${md(x.date)} · ${x.rows.length}명</div><div class="ppl">${x.rows.map(r=>esc(r.n)+' '+esc(r.r)+(r.p?` <span class="m">(${esc(r.p)})</span>`:'')).join(', ')}</div></div>`).join(''):'<div class="e">입상 기록이 없어요<br>카톡: !@입상 피망 1b 3등 25만</div>');}],
+ rev:['✍️ 핸드리뷰',q=>{const r=D.reviews.filter(x=>!q||(x.id+' '+x.nick+x.head+x.hero+x.q).toLowerCase().includes(q));
+   return r.length?r.map(x=>`<a class="card" href="https://metlifeguide-png.github.io/posters/r/${x.id}.html"><div class="t">#${x.id} ${esc(x.head)}${x.own?'<span class="tag">✅ 방장 답변</span>':''}</div><div class="m">${esc(x.hero)}</div><div>❓ ${esc(x.q||'(질문 없음)')}</div><div class="m">${esc(x.nick)} · ${md(x.date)}</div></a>`).join('')
+   :'<div class="e">공개된 리뷰가 없어요</div>';}],
+ learn:['📚 학습',q=>{const l=D.learned.filter(x=>!q||(x.k+' '+x.c).toLowerCase().includes(q));
+   return l.length?l.map(x=>`<div class="card"><div class="t">${esc(x.k)}</div><div class="lc">${esc(x.c)}</div></div>`).join(''):'<div class="e">학습된 정보가 없어요</div>';}],
+};
+let cur=(location.hash||'#part').slice(1);if(!TABS[cur])cur='part';
+function draw(){document.getElementById('tabs').innerHTML=Object.entries(TABS).map(([k,v])=>`<button class="${k===cur?'on':''}" data-k="${k}">${v[0]}</button>`).join('');
+ document.getElementById('out').innerHTML=TABS[cur][1](document.getElementById('q').value.trim().toLowerCase());}
+document.getElementById('tabs').onclick=e=>{const k=e.target.dataset.k;if(k){cur=k;history.replaceState(null,'','#'+k);draw();}};
+document.getElementById('q').oninput=draw;draw();
+addEventListener('hashchange',()=>{const k=location.hash.slice(1);if(TABS[k]){cur=k;draw();}});
+</script></body></html>
