@@ -133,11 +133,14 @@ body.lock{overflow:hidden}
 .bgmw{position:fixed;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:40;display:none;flex-direction:column;align-items:center;gap:8px}
 .bgmw.on{display:flex}
 .bgm{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--paper2);color:var(--ink);font-size:20px;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center}
-.bgv{display:none;position:relative;width:44px;height:136px;border-radius:22px;border:1px solid var(--line);background:var(--paper2);box-shadow:0 2px 8px rgba(0,0,0,.18);touch-action:none;cursor:pointer;outline:none}
+.bgv{display:none;position:relative;width:44px;height:196px;border-radius:22px;border:1px solid var(--line);background:var(--paper2);box-shadow:0 2px 8px rgba(0,0,0,.18);touch-action:none;cursor:pointer;outline:none}
 .bgmw.open .bgv{display:block}
 .bgv:focus-visible{box-shadow:0 0 0 3px var(--blue2),0 2px 8px rgba(0,0,0,.18)}
-.bgv:before{content:"";position:absolute;left:50%;top:14px;bottom:14px;width:6px;margin-left:-3px;border-radius:3px;background:var(--line)}
+.bgv:before{content:"";position:absolute;left:50%;top:36px;bottom:14px;width:6px;margin-left:-3px;border-radius:3px;background:var(--line)}
 .bgf{position:absolute;left:50%;bottom:14px;width:6px;margin-left:-3px;border-radius:3px;background:var(--blue);height:0}
+.bgn{position:absolute;top:9px;left:0;right:0;text-align:center;font-size:12px;font-weight:800;line-height:1;color:var(--ink);pointer-events:none;white-space:nowrap}
+.bgmw.mute .bgn{font-size:10px;color:var(--sub)}
+.bgmw.mute .bgf,.bgmw.mute .bgk{background:var(--sub)}
 .bgk{position:absolute;left:50%;bottom:14px;width:18px;height:18px;margin-left:-9px;border-radius:50%;background:var(--blue);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.3)}
 </style>
 </head>
@@ -151,11 +154,11 @@ body.lock{overflow:hidden}
 <div class="pv" id="pv"><div class="pvb"><button type="button" id="pvx">✕ 닫기</button><span class="tt" id="pvt"></span><a id="pvo" target="_blank" rel="noopener">원본 ↗</a></div><div class="pvw"><button type="button" class="pva l" id="pvl" aria-label="이전">‹</button><div class="pvs" id="pvs"></div><button type="button" class="pva r" id="pvr" aria-label="다음">›</button></div></div>
 <div class="toast" id="toast"></div>
 <div class="bgmw" id="bgmw">
-  <div class="bgv" id="bgv" role="slider" tabindex="0" aria-label="배경음악 볼륨" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="100" aria-valuenow="25"><i class="bgf" id="bgf"></i><b class="bgk" id="bgk"></b></div>
+  <div class="bgv" id="bgv" role="slider" tabindex="0" aria-label="배경음악 볼륨" aria-orientation="vertical" aria-valuemin="3" aria-valuemax="100" aria-valuenow="25"><span class="bgn" id="bgn">25</span><i class="bgf" id="bgf"></i><b class="bgk" id="bgk"></b></div>
   <button type="button" class="bgm" id="bgm" aria-label="배경음악 켜기/끄기" aria-pressed="false">🔇</button>
 </div>
 <script>
-const D={"updated": "10/02 04:49", "month": "2026-10", "parts": [{"label": "WPL 데이1-B14 10/2(금) 10:00 · 야자수 서울센터", "date": "2026-10-02", "time": "10:00", "people": [{"n": "호야", "m": ""}, {"n": "크라잉", "m": ""}], "event": false}, {"label": "WPL 딥스택 #3 10/3(토) 18:00 · 야자수 서울센터", "date": "2026-10-03", "time": "18:00", "people": [{"n": "구우", "m": ""}, {"n": "욱스", "m": ""}], "event": false}, {"label": "피망 데이1-B 10/5(월) 12:00 · 경기 시흥 KIMS", "date": "2026-10-05", "time": "12:00", "people": [{"n": "구우", "m": ""}, {"n": "방장봊", "m": ""}, {"n": "내꿈은너야차무식", "m": ""}, {"n": "타이슨", "m": ""}, {"n": "구우형 우승못한지 9년", "m": ""}, {"n": "호야", "m": ""}, {"n": "해솔", "m": ""}], "event": false}, {"label": "10/10 15:00 정모 @강남 뉴스톤 아레나", "date": "2026-10-10", "time": "15:00", "people": [{"n": "구우", "m": ""}, {"n": "해솔", "m": ""}, {"n": "호야", "m": ""}, {"n": "LawYS", "m": ""}, {"n": "KJ", "m": ""}, {"n": "방장봊", "m": ""}], "event": true}], "tours": [], "board_month": [], "board_all": [], "reviews": [{"id": 8, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "BTN 30BB  K♠ Q♠", "q": "리버 콜 맞나요? 턴 체크는 괜찮았나요?", "own": false}], "learned": [{"k": "wpl, 건자수, 야자수서울센터, 주차", "c": "인근주차장이용"}, {"k": "강남뉴스톤아레나, 주소, 주차", "c": "강남구 도곡로1길 14 삼일프라자 지하1층 (건물주차)"}, {"k": "노무링, 우재", "c": "걍 무지성 욕만함 무지함의 극치"}, {"k": "녹맨", "c": "행의 남자 친구 이자 비혼주의자이며 페미니스트이자 대한민국을 살리기위해 급직적이며 이슬람식 일부다처제를 주장하는 기독교인이자 부처님 오신날을 제일 좋아하는 대한민국의 사상가"}, {"k": "뚝섬정모, 정모, 칠갑산정모, 정모일시, 정모시간, 정모위치", "c": "10월10일(토) 오후3시 바인0.5 (교촌제공) 장소:강남뉴스톤"}, {"k": "민트퍼지", "c": "사기꾼"}, {"k": "야자수 서울센터, 주소", "c": "서울 광진구 능동로19길 35 B1 201호"}, {"k": "오메추, 점메추, 저메추 라고물어보면", "c": "오늘메뉴추천, 점심메뉴추천, 저녁메뉴추천으로 인식하고 해당질문에 답해줘"}, {"k": "정모참가", "c": "10월10일(토) 오후3시 강남뉴스톤에서 바인 5만으로 진행됩니다 참여하실 분들은 미리 신청해 주세요.교촌치킨말고 함바치킨 줌"}, {"k": "피망, kims, 거북섬, 주차, 위치, 주소", "c": "경기장: 시흥 거북섬로116 10층 주차: 거북섬로 111 (무료)"}, {"k": "한게임, hpt, 로열홀덤, 장소, 위치, 주소", "c": "성동구 연무장 15길11 (성수에스팩토리 D동)"}, {"k": "한게임, hpt, 주차", "c": "인근 유료주차장 이용"}, {"k": "해솔", "c": "천안의 홀덤 대장이자 영등포 K스타홀덤펍 2회차 페이아웃대회 파테 출신. 잘생긴 외모와 뛰어난 패션감각의 소유자."}, {"k": "해솔쌤", "c": "84나성 올림픽때 태어난 대표 여미새"}]}, B="https://metlifeguide-png.github.io/posters";
+const D={"updated": "10/02 04:52", "month": "2026-10", "parts": [{"label": "WPL 데이1-B14 10/2(금) 10:00 · 야자수 서울센터", "date": "2026-10-02", "time": "10:00", "people": [{"n": "호야", "m": ""}, {"n": "크라잉", "m": ""}], "event": false}, {"label": "WPL 딥스택 #3 10/3(토) 18:00 · 야자수 서울센터", "date": "2026-10-03", "time": "18:00", "people": [{"n": "구우", "m": ""}, {"n": "욱스", "m": ""}], "event": false}, {"label": "피망 데이1-B 10/5(월) 12:00 · 경기 시흥 KIMS", "date": "2026-10-05", "time": "12:00", "people": [{"n": "구우", "m": ""}, {"n": "방장봊", "m": ""}, {"n": "내꿈은너야차무식", "m": ""}, {"n": "타이슨", "m": ""}, {"n": "구우형 우승못한지 9년", "m": ""}, {"n": "호야", "m": ""}, {"n": "해솔", "m": ""}], "event": false}, {"label": "10/10 15:00 정모 @강남 뉴스톤 아레나", "date": "2026-10-10", "time": "15:00", "people": [{"n": "구우", "m": ""}, {"n": "해솔", "m": ""}, {"n": "호야", "m": ""}, {"n": "LawYS", "m": ""}, {"n": "KJ", "m": ""}, {"n": "방장봊", "m": ""}], "event": true}], "tours": [], "board_month": [], "board_all": [], "reviews": [{"id": 8, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "BTN 30BB  K♠ Q♠", "q": "리버 콜 맞나요? 턴 체크는 괜찮았나요?", "own": false}], "learned": [{"k": "wpl, 건자수, 야자수서울센터, 주차", "c": "인근주차장이용"}, {"k": "강남뉴스톤아레나, 주소, 주차", "c": "강남구 도곡로1길 14 삼일프라자 지하1층 (건물주차)"}, {"k": "노무링, 우재", "c": "걍 무지성 욕만함 무지함의 극치"}, {"k": "녹맨", "c": "행의 남자 친구 이자 비혼주의자이며 페미니스트이자 대한민국을 살리기위해 급직적이며 이슬람식 일부다처제를 주장하는 기독교인이자 부처님 오신날을 제일 좋아하는 대한민국의 사상가"}, {"k": "뚝섬정모, 정모, 칠갑산정모, 정모일시, 정모시간, 정모위치", "c": "10월10일(토) 오후3시 바인0.5 (교촌제공) 장소:강남뉴스톤"}, {"k": "민트퍼지", "c": "사기꾼"}, {"k": "야자수 서울센터, 주소", "c": "서울 광진구 능동로19길 35 B1 201호"}, {"k": "오메추, 점메추, 저메추 라고물어보면", "c": "오늘메뉴추천, 점심메뉴추천, 저녁메뉴추천으로 인식하고 해당질문에 답해줘"}, {"k": "정모참가", "c": "10월10일(토) 오후3시 강남뉴스톤에서 바인 5만으로 진행됩니다 참여하실 분들은 미리 신청해 주세요.교촌치킨말고 함바치킨 줌"}, {"k": "피망, kims, 거북섬, 주차, 위치, 주소", "c": "경기장: 시흥 거북섬로116 10층 주차: 거북섬로 111 (무료)"}, {"k": "한게임, hpt, 로열홀덤, 장소, 위치, 주소", "c": "성동구 연무장 15길11 (성수에스팩토리 D동)"}, {"k": "한게임, hpt, 주차", "c": "인근 유료주차장 이용"}, {"k": "해솔", "c": "천안의 홀덤 대장이자 영등포 K스타홀덤펍 2회차 페이아웃대회 파테 출신. 잘생긴 외모와 뛰어난 패션감각의 소유자."}, {"k": "해솔쌤", "c": "84나성 올림픽때 태어난 대표 여미새"}]}, B="https://metlifeguide-png.github.io/posters";
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const md=d=>d&&d.length>=10?(+d.slice(5,7))+'/'+(+d.slice(8,10)):'';
 const POSTERS={"sched": [], "contest": ["3사비교", "6TH HPT00", "6TH HPT01", "8THWPL", "9th wpl", "APL01", "APL02", "apl프라이즈율", "피망", "하"], "official": ["260803-261005 8th wpl (1)", "260803-261005 8th wpl (2)", "260803-261005 8th wpl (3)", "260803-261005 8th wpl (4)", "260803-261005 8th wpl (5)", "260803-261005 8th wpl (6)", "260803-261005 8th wpl (7)", "260803-261005 8th wpl (8)", "260902-261223 showdown (1)", "260902-261223 showdown (2)", "261002-261213 9th wpl (1)", "261002-261213 9th wpl (2)", "261002-261213 9th wpl (3)", "261002-261213 9th wpl (4)", "261002-261213 9th wpl (5)", "261002-261213 9th wpl (6)", "261002-261213 9th wpl (7)", "261002-261213 9th wpl (8)", "261002-261213 9th wpl (9)", "261023-261025 apl circuit1 (1)", "261023-261025 apl circuit1 (2)"], "apl": ["apl01", "apl02", "apl03", "apl04", "apl05"]};
@@ -360,61 +363,71 @@ addEventListener('hashchange',()=>{const k=location.hash.slice(1),it=MENU.find(m
 mq.addEventListener('change',()=>{document.querySelectorAll('#main img[data-pic]').forEach(im=>picLoad(im,im.dataset.pic,thumbDead));
   if(pv.classList.contains('on'))[...pvs.children].forEach((d,i)=>{if(d.firstChild.src)picLoad(d.firstChild,pvList[i]);});});
 // 🎵 배경음악: 이 페이지와 같은 폴더(hub/)에 bgm.mp3 를 올리면 자동으로 켜져요 (파일이 없으면 버튼도 안 보여요)
-// 브라우저는 소리 자동재생을 막는 경우가 많아서, 막히면 화면을 처음 터치하는 순간 시작해요. 끄면 다음 방문에도 꺼진 상태로 기억해요.
-// 🔊 버튼을 누르면 위로 볼륨 막대가 나와요 (위로 올리면 커지고 맨 아래로 내리면 꺼져요 · 고른 볼륨은 기억해요). 아이폰은 기기 볼륨 버튼으로 조절해요.
+// 홈에 들어오면 항상 음악이 시작돼요. 브라우저가 소리 자동재생을 막으면 화면을 처음 터치하는 순간 시작해요.
+// 🔊 버튼: 한 번 누르면 볼륨 막대가 열리고, 막대가 열려 있을 때 한 번 더 누르면 음소거/해제예요 (PC는 마우스를 올리면 막대가 열려요).
+// 볼륨은 3~100 (1씩 조절) · 고른 볼륨은 기억해요 · 아이폰은 코드로 볼륨을 못 바꿔서 막대 없이 기기 볼륨 버튼으로 조절해요.
 (function(){
-  const SRC='bgm.mp3', VOL=0.25, LOOP=true, FADE_MS=2500;   // 기본 볼륨(0~1) · 반복 여부(false면 한 번만) · 시작할 때 서서히 커지는 시간(0이면 바로)
-  const H=136, PAD=14, SPAN=H-2*PAD;                        // 볼륨 막대 높이·여백 (CSS .bgv 와 같아야 해요)
+  const SRC='bgm.mp3', DEF_VOL=25, MIN_VOL=3, LOOP=true, FADE_MS=2500;   // 기본 볼륨(3~100) · 최소 볼륨 · 반복 여부 · 시작할 때 서서히 커지는 시간(0이면 바로)
+  const H=196, PADB=14, PADT=36, SPAN=H-PADB-PADT;           // 볼륨 막대 높이·여백 (CSS .bgv 와 같아야 해요)
   const wrap=document.getElementById('bgmw'), btn=document.getElementById('bgm'), bgv=document.getElementById('bgv'),
-        bgf=document.getElementById('bgf'), bgk=document.getElementById('bgk');
+        bgf=document.getElementById('bgf'), bgk=document.getElementById('bgk'), bgn=document.getElementById('bgn');
   if(!wrap||!btn) return;
   const a=new Audio(SRC); a.loop=LOOP; a.preload='auto';
   a.volume=0.5; const canVol=Math.abs(a.volume-0.5)<0.01;   // 아이폰은 코드로 볼륨을 못 바꿔서 막대를 숨겨요
-  let vol=VOL; try{const s=parseFloat(localStorage.getItem('bgmv')); if(s>0.03&&s<=1) vol=s;}catch(e){}
-  let want=true, armed=false, fadeT=null, hideT=null, lastRaw=1; try{want=localStorage.getItem('bgm')!=='off';}catch(e){}
-  a.volume=vol;
-  const save=()=>{try{localStorage.setItem('bgm',want?'on':'off');}catch(e){}};
-  const saveVol=()=>{try{localStorage.setItem('bgmv',String(vol));}catch(e){}};
-  const sync=()=>{const on=!a.paused;btn.textContent=on?'🔊':'🔇';btn.title=on?'배경음악 끄기':'배경음악 켜기';btn.setAttribute('aria-pressed',on?'true':'false');};
-  function drawVol(){ const v=Math.max(0,Math.min(1,vol)); bgf.style.height=(v*SPAN)+'px'; bgk.style.bottom=(PAD+v*SPAN-9)+'px'; bgv.setAttribute('aria-valuenow',String(Math.round(v*100))); }
-  function openPanel(){ if(!canVol) return; wrap.classList.add('open'); clearTimeout(hideT); hideT=setTimeout(()=>wrap.classList.remove('open'),3500); }
-  function fadeIn(){ clearInterval(fadeT); if(!canVol||FADE_MS<=0){a.volume=vol;return;} a.volume=0; const t0=Date.now();
-    fadeT=setInterval(()=>{const k=Math.min(1,(Date.now()-t0)/FADE_MS); a.volume=vol*k; if(k>=1) clearInterval(fadeT);},100); }
+  const clampV=n=>Math.max(MIN_VOL,Math.min(100,Math.round(n)));
+  let vol=DEF_VOL;
+  try{ let s=parseInt(localStorage.getItem('bgmv2'),10);
+       if(isNaN(s)){ const o=parseFloat(localStorage.getItem('bgmv')); if(o>0&&o<=1) s=Math.round(o*100); }   // 예전에 저장한 볼륨(0~1)도 이어받아요
+       if(!isNaN(s)) vol=clampV(s); }catch(e){}
+  let muted=false, armed=false, drag=false, fadeT=null, hideT=null;
+  a.volume=vol/100;
+  const saveVol=()=>{try{localStorage.setItem('bgmv2',String(vol));}catch(e){}};
+  function sync(){ const on=!a.paused&&!muted;
+    btn.textContent=on?'🔊':'🔇'; btn.title=on?'배경음악 음소거':'배경음악 소리 켜기'; btn.setAttribute('aria-pressed',on?'true':'false');
+    wrap.classList.toggle('mute',muted); bgn.textContent=muted?'음소거':String(vol); }
+  function drawVol(){ const f=(vol-MIN_VOL)/(100-MIN_VOL);
+    bgf.style.height=(f*SPAN)+'px'; bgk.style.bottom=(PADB+f*SPAN-9)+'px'; bgv.setAttribute('aria-valuenow',String(vol)); sync(); }
+  function openPanel(){ if(!canVol) return; wrap.classList.add('open'); clearTimeout(hideT); hideT=setTimeout(()=>{ if(!drag) wrap.classList.remove('open'); },4000); }
+  function fadeIn(){ clearInterval(fadeT); if(!canVol||FADE_MS<=0){a.volume=vol/100;return;} a.volume=0; const t0=Date.now();
+    fadeT=setInterval(()=>{const k=Math.min(1,(Date.now()-t0)/FADE_MS); a.volume=vol/100*k; if(k>=1) clearInterval(fadeT);},100); }
   const play=fade=>a.play().then(()=>{ if(fade!==false) fadeIn(); sync(); },()=>{arm();sync();});
   const EV=['pointerup','touchend','keydown','click'];
   function arm(){ if(armed) return; armed=true;
     const go=e=>{ if(e&&e.target&&wrap.contains(e.target)) return;
       EV.forEach(t=>removeEventListener(t,go,true)); armed=false;
-      if(want&&a.paused) play(); };
+      if(a.paused) play(); };
     EV.forEach(t=>addEventListener(t,go,true)); }
-  a.addEventListener('canplay',()=>{wrap.classList.add('on'); drawVol(); sync(); if(want&&a.paused) play();},{once:true});
+  function setMuted(m){ muted=m; a.muted=m; if(!m){ clearInterval(fadeT); a.volume=vol/100; } sync(); }
+  function setVol(v){ vol=clampV(v); clearInterval(fadeT); a.volume=vol/100; if(muted){muted=false;a.muted=false;} drawVol(); if(a.paused) play(false); }
+  a.addEventListener('canplay',()=>{wrap.classList.add('on'); drawVol(); if(a.paused) play();},{once:true});
   a.addEventListener('error',()=>wrap.classList.remove('on'));
-  a.addEventListener('play',sync); a.addEventListener('pause',sync); a.addEventListener('ended',sync);
+  a.addEventListener('play',sync); a.addEventListener('pause',sync);
+  // 🔊 버튼: 소리가 아직 안 나면 시작 → 막대가 닫혀 있으면 열기 → 막대가 열려 있으면 음소거/해제
   btn.onclick=()=>{
-    if(a.paused){ want=true; save(); if(vol<0.03){vol=VOL;saveVol();drawVol();} a.volume=vol; play(); }
-    else { want=false; save(); clearInterval(fadeT); a.pause(); sync(); }
-    openPanel(); };
-  // 볼륨 막대: 누르거나 위아래로 끌면 바로 적용 (맨 아래로 내리면 꺼짐)
-  function setFromY(y){ const r=bgv.getBoundingClientRect(); lastRaw=Math.max(0,Math.min(1,(r.bottom-PAD-y)/(r.height-2*PAD))); clearInterval(fadeT);
-    if(lastRaw>=0.03){ vol=Math.round(lastRaw*100)/100; a.volume=vol; drawVol(); if(a.paused){want=true;save();play(false);} }
-    else { a.volume=0; bgf.style.height='0px'; bgk.style.bottom=(PAD-9)+'px'; }
-    openPanel(); }
-  let preVol=vol;   // 드래그를 시작하기 전 볼륨 (맨 아래로 내려 끄면 다음에 이 볼륨으로 켜져요)
-  function endDrag(){ if(lastRaw<0.03){ vol=preVol; want=false; save(); a.pause(); a.volume=vol; drawVol(); sync(); } else saveVol(); }
-  let drag=false;
-  bgv.addEventListener('pointerdown',e=>{ drag=true; preVol=vol; try{bgv.setPointerCapture(e.pointerId);}catch(x){} setFromY(e.clientY); e.preventDefault(); });
+    if(a.paused){ muted=false; a.muted=false; a.volume=vol/100; play(); openPanel(); return; }
+    if(!canVol){ setMuted(!muted); return; }
+    if(!wrap.classList.contains('open')){ openPanel(); return; }
+    setMuted(!muted); openPanel(); };
+  // 볼륨 막대: 누르거나 위아래로 끌면 3~100 사이에서 바로 적용 (음소거 중이면 자동으로 해제)
+  function setFromY(y){ const r=bgv.getBoundingClientRect(); const f=Math.max(0,Math.min(1,(r.bottom-PADB-y)/SPAN));
+    setVol(MIN_VOL+f*(100-MIN_VOL)); openPanel(); }
+  bgv.addEventListener('pointerdown',e=>{ drag=true; try{bgv.setPointerCapture(e.pointerId);}catch(x){} setFromY(e.clientY); e.preventDefault(); });
   bgv.addEventListener('pointermove',e=>{ if(drag) setFromY(e.clientY); });
-  const up=()=>{ if(!drag) return; drag=false; endDrag(); };
+  const up=()=>{ if(!drag) return; drag=false; saveVol(); openPanel(); };
   bgv.addEventListener('pointerup',up); bgv.addEventListener('pointercancel',up);
-  bgv.addEventListener('keydown',e=>{ const d=(e.key==='ArrowUp'||e.key==='ArrowRight')?0.05:(e.key==='ArrowDown'||e.key==='ArrowLeft')?-0.05:0; if(!d) return; e.preventDefault();
-    vol=Math.max(0.05,Math.min(1,Math.round((vol+d)*100)/100)); a.volume=vol; drawVol(); saveVol(); if(a.paused){want=true;save();play(false);} openPanel(); });
+  bgv.addEventListener('wheel',e=>{ e.preventDefault(); setVol(vol+(e.deltaY<0?2:-2)); saveVol(); openPanel(); },{passive:false});
+  bgv.addEventListener('keydown',e=>{ const k=e.key;
+    const d=(k==='ArrowUp'||k==='ArrowRight')?1:(k==='ArrowDown'||k==='ArrowLeft')?-1:k==='PageUp'?10:k==='PageDown'?-10:0;
+    if(k==='Home'){ e.preventDefault(); setVol(MIN_VOL); saveVol(); openPanel(); return; }
+    if(k==='End'){ e.preventDefault(); setVol(100); saveVol(); openPanel(); return; }
+    if(!d) return; e.preventDefault(); setVol(vol+d); saveVol(); openPanel(); });
   wrap.addEventListener('pointerenter',e=>{ if(e.pointerType==='mouse') openPanel(); });
   document.addEventListener('pointerdown',e=>{ if(!wrap.contains(e.target)) wrap.classList.remove('open'); },true);
   if(!canVol) bgv.style.display='none';
   drawVol();
   document.addEventListener('visibilitychange',()=>{
     if(document.hidden){ if(!a.paused) a.pause(); }
-    else if(want&&wrap.classList.contains('on')&&a.paused&&!a.ended) play(); });
+    else if(wrap.classList.contains('on')&&a.paused&&!a.ended) play(); });
 })();
 draw();
 </script>
