@@ -42,12 +42,19 @@ const LISTS = {
   "apl": {"title": "🤝 APL 제휴사 안내", "names": ["apl01", "apl02", "apl03", "apl04", "apl05"]}
 };
 const VER = "09290402";
+// 💡 폴더 = 탭 (서버가 이 폴더에 새로 올라온 이미지를 날짜순으로 탭 맨 뒤에 자동 추가해요)
+const TAB_FOLDER = { contest: "제작포스터", official: "대회사", apl: "APL제휴" };
+const EXTS = ['.jpg', '.JPG', '.png', '.PNG', '.jpeg', '.webp'];
 
 const params = new URLSearchParams(location.search);
 const type = LISTS[params.get('type')] ? params.get('type') : 'contest';
 document.getElementById('page-title').textContent = LISTS[type].title;
 document.title = LISTS[type].title;
 const container = document.getElementById('slide-container');
+// 파일명이 YYMMDD_ 또는 YYMMDD- 로 시작하면(예: 261010_피망데이1) 그 날짜가 지난 다음 날부터 자동으로 숨김
+function expired(n) { const m = /^(\d{2})(\d{2})(\d{2})[_-]/.exec(n); if (!m) return false; return Date.now() >= new Date(2000 + +m[1], +m[2] - 1, +m[3] + 1).getTime(); }
+// 파일이 없어진 포스터(깃허브에서 삭제)는 슬라이드에서 자동으로 뺌
+function dropSlide(img) { const s = img.closest('.swiper-slide'); if (s) s.remove(); const i = imgs.indexOf(img); if (i >= 0) imgs.splice(i, 1); if (sw) sw.update(); updateHint(); }
 
 // 가로 포스터 자동 회전 (세로로 든 휴대폰에서만) · 버튼으로 켜고 끄기
 let autoRot = true;
@@ -75,17 +82,21 @@ function updateHint() {
 }
 btn.onclick = () => { autoRot = !autoRot; try { localStorage.setItem('rot', autoRot ? 'on' : 'off'); } catch (e) {} fitAll(); };
 
-LISTS[type].names.forEach((name, idx) => {
+LISTS[type].names.filter(n => !expired(n)).forEach((name, idx) => {
   const slide = document.createElement('div'); slide.className = 'swiper-slide';
   const zc = document.createElement('div'); zc.className = 'swiper-zoom-container';
   const tg = document.createElement('div'); tg.className = 'swiper-zoom-target';
   const img = document.createElement('img'); img.alt = '포스터 ' + (idx + 1);
   if (idx > 1) img.loading = 'lazy';
-  // 1순위: 휴대폰용 사본(m/) → 없으면 원본(.jpg/.JPG/.png/.PNG/.jpeg)
-  const tries = ['m/' + name + '.jpg?v=' + VER, name + '.jpg', name + '.JPG', name + '.png', name + '.PNG', name + '.jpeg'];
+  // 1순위: 휴대폰용 사본(m/) → 없으면 원본 (루트 → 이 탭의 폴더 → 다른 폴더 순으로 찾음)
+  const enc = encodeURIComponent(name);
+  const tries = ['m/' + enc + '.jpg?v=' + VER];
+  ['', TAB_FOLDER[type] || '', ...Object.values(TAB_FOLDER)].filter((f, i, a) => a.indexOf(f) === i).forEach(f => {
+    EXTS.forEach(e => tries.push((f ? encodeURIComponent(f) + '/' : '') + enc + e));
+  });
   let step = 0;
   img.src = tries[0];
-  img.onerror = function () { step++; if (step < tries.length) this.src = tries[step]; else this.onerror = null; };
+  img.onerror = function () { step++; if (step < tries.length) this.src = tries[step]; else { this.onerror = null; dropSlide(this); } };
   img.onload = function () { fit(this); updateHint(); };
   imgs.push(img);
   tg.appendChild(img); zc.appendChild(tg); slide.appendChild(zc); container.appendChild(slide);
