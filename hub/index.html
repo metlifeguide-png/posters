@@ -103,6 +103,33 @@ body.lock{overflow:hidden}
 .mr .out .s{font-size:12px;margin-top:6px;opacity:.85}
 .mr .zones{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:12.5px;align-items:center}
 .mr .zones i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+
+/* 대회일정 (인라인 일정표) */
+.sch-hint{font-size:11.5px;color:#0284c7;background:#e0f2fe;text-align:center;padding:5px 6px;border-radius:8px;margin-bottom:8px;font-weight:700}
+@media(min-width:760px){.sch-hint{display:none}}
+.sch-box{--lw:92px;background:#fff;border:1.5px solid var(--line);border-radius:14px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media(min-width:760px){.sch-box{--lw:128px}}
+.sch-in{min-width:700px;position:relative;padding-bottom:6px}
+.sch-r{display:grid;grid-template-columns:var(--lw) 1fr;height:36px;border-bottom:1px solid #eef0f3}
+.sch-l{position:sticky;left:0;z-index:5;background:#f8fafc;border-right:1px solid #cbd5e1;display:flex;align-items:center;padding:0 8px;font-size:11.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sch-t{position:relative;height:100%}
+.sch-t .bg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr);pointer-events:none}
+.sch-t .bg div{border-right:1px dashed #e5e7eb}
+.sch-r.hd{height:32px;background:#334155;border-bottom:0}
+.sch-r.hd .sch-l{background:#334155;color:#fff;justify-content:center}
+.sch-r.hd .sch-t{display:grid;grid-template-columns:repeat(6,1fr);align-items:center;text-align:center;color:#fff;font-size:11.5px;font-weight:800}
+.sch-r.hd .sch-t div{border-right:1px solid #64748b}
+.sch-sec{position:sticky;left:0;width:max-content;font-size:12px;font-weight:800;padding:3px 9px;border-radius:5px;margin:10px 6px 6px;background:#eff6ff;color:#1e40af}
+.sch-sec.main{background:#fefce8;color:#854d0e}
+.sch-b{position:absolute;top:50%;transform:translateY(-50%);height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:10.5px;font-weight:800;white-space:nowrap;padding:0 4px;overflow:hidden;z-index:2;box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.sch-today{position:absolute;top:32px;bottom:0;width:0;border-left:2px solid #f43f5e;z-index:3;pointer-events:none}
+.sch-today i{position:absolute;top:-2px;left:-14px;font-style:normal;font-size:9.5px;font-weight:800;color:#fff;background:#f43f5e;border-radius:4px;padding:0 4px;white-space:nowrap}
+.sch-c{border-left:5px solid var(--cc);padding:9px 12px}
+.sch-c .t{display:flex;justify-content:space-between;gap:8px;color:var(--cc)}
+.sch-c .t span{font-size:11px;background:#fff;border-radius:6px;padding:0 6px;border:1px solid var(--line)}
+.sch-c ul{list-style:none;margin-top:4px;font-size:12.5px;line-height:1.5}
+.sch-c li{padding-left:9px;position:relative}
+.sch-c li:before{content:"•";position:absolute;left:0;color:var(--sub)}
 </style>
 </head>
 <body>
@@ -115,7 +142,7 @@ body.lock{overflow:hidden}
 <div class="pv" id="pv"><div class="pvb"><button type="button" id="pvx">✕ 닫기</button><span class="tt" id="pvt"></span><a id="pvo" target="_blank" rel="noopener">원본 ↗</a></div><div class="pvw"><button type="button" class="pva l" id="pvl" aria-label="이전">‹</button><div class="pvs" id="pvs"></div><button type="button" class="pva r" id="pvr" aria-label="다음">›</button></div></div>
 <div class="toast" id="toast"></div>
 <script>
-const D={"updated": "10/01 13:14", "month": "2026-10", "parts": [{"label": "WPL 딥스택 #1 10/1(목) 18:00 · 야자수 서울센터", "date": "2026-10-01", "time": "18:00", "people": [{"n": "방장봊", "m": ""}], "event": false}, {"label": "WPL 데이1-B14 10/2(금) 10:00 · 야자수 서울센터", "date": "2026-10-02", "time": "10:00", "people": [{"n": "호야", "m": ""}, {"n": "크라잉", "m": ""}], "event": false}, {"label": "WPL 딥스택 #3 10/3(토) 18:00 · 야자수 서울센터", "date": "2026-10-03", "time": "18:00", "people": [{"n": "구우", "m": ""}, {"n": "욱스", "m": ""}], "event": false}, {"label": "피망 데이1-B 10/5(월) 12:00 · 경기 시흥 KIMS", "date": "2026-10-05", "time": "12:00", "people": [{"n": "구우", "m": ""}, {"n": "방장봊", "m": ""}, {"n": "내꿈은너야차무식", "m": ""}, {"n": "타이슨", "m": ""}, {"n": "구우형 우승못한지 9년", "m": ""}, {"n": "호야", "m": ""}, {"n": "해솔", "m": ""}], "event": false}, {"label": "10/10 15:00 정모 @강남 뉴스톤 아레나", "date": "2026-10-10", "time": "15:00", "people": [{"n": "구우", "m": ""}, {"n": "해솔", "m": ""}, {"n": "호야", "m": ""}, {"n": "LawYS", "m": ""}, {"n": "KJ", "m": ""}, {"n": "방장봊", "m": ""}], "event": true}], "tours": [], "board_month": [], "board_all": [], "reviews": [{"id": 8, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "BTN 30BB  K♠ Q♠", "q": "리버 콜 맞나요? 턴 체크는 괜찮았나요?", "own": false}], "learned": [{"k": "wpl, 건자수, 야자수서울센터, 주차", "c": "인근주차장이용"}, {"k": "강남뉴스톤아레나, 주소, 주차", "c": "강남구 도곡로1길 14 삼일프라자 지하1층 (건물주차)"}, {"k": "구우", "c": "피망 새틀 1렙 바이인 안하면 입안에 가시가 돋기로 유명함"}, {"k": "노무링, 우재", "c": "걍 무지성 욕만함 무지함의 극치"}, {"k": "녹맨", "c": "행의 남자 친구 이자 비혼주의자이며 페미니스트이자 대한민국을 살리기위해 급직적이며 이슬람식 일부다처제를 주장하는 기독교인이자 부처님 오신날을 제일 좋아하는 대한민국의 사상가"}, {"k": "도비", "c": "헤비스테이커"}, {"k": "뚝섬정모, 정모, 칠갑산정모, 정모일시, 정모시간, 정모위치", "c": "10월10일(토) 오후3시 바인0.5 (교촌제공) 장소:강남뉴스톤"}, {"k": "민트퍼지", "c": "사기꾼"}, {"k": "에릭", "c": "사채꾼"}, {"k": "오메추, 점메추, 저메추 라고물어보면", "c": "오늘메뉴추천, 점심메뉴추천, 저녁메뉴추천으로 인식하고 해당질문에 답해줘"}, {"k": "크라잉", "c": "전 JP모건 임원"}, {"k": "피망, kims, 거북섬, 주차, 위치, 주소", "c": "경기장: 시흥 거북섬로116 10층 주차: 거북섬로 111 (무료)"}, {"k": "한게임, hpt, 로열홀덤, 장소, 위치, 주소", "c": "성동구 연무장 15길11 (성수에스팩토리 D동)"}, {"k": "한게임, hpt, 주차", "c": "인근 유료주차장 이용"}, {"k": "해솔", "c": "천안의 홀덤 대장이자 영등포 K스타홀덤펍 2회차 페이아웃대회 파테 출신. 잘생긴 외모와 뛰어난 패션감각의 소유자."}, {"k": "해솔쌤", "c": "84나성 올림픽때 태어난 대표 여미새"}]}, B="https://metlifeguide-png.github.io/posters";
+const D={"updated": "10/01 13:17", "month": "2026-10", "parts": [{"label": "WPL 딥스택 #1 10/1(목) 18:00 · 야자수 서울센터", "date": "2026-10-01", "time": "18:00", "people": [{"n": "방장봊", "m": ""}], "event": false}, {"label": "WPL 데이1-B14 10/2(금) 10:00 · 야자수 서울센터", "date": "2026-10-02", "time": "10:00", "people": [{"n": "호야", "m": ""}, {"n": "크라잉", "m": ""}], "event": false}, {"label": "WPL 딥스택 #3 10/3(토) 18:00 · 야자수 서울센터", "date": "2026-10-03", "time": "18:00", "people": [{"n": "구우", "m": ""}, {"n": "욱스", "m": ""}], "event": false}, {"label": "피망 데이1-B 10/5(월) 12:00 · 경기 시흥 KIMS", "date": "2026-10-05", "time": "12:00", "people": [{"n": "구우", "m": ""}, {"n": "방장봊", "m": ""}, {"n": "내꿈은너야차무식", "m": ""}, {"n": "타이슨", "m": ""}, {"n": "구우형 우승못한지 9년", "m": ""}, {"n": "호야", "m": ""}, {"n": "해솔", "m": ""}], "event": false}, {"label": "10/10 15:00 정모 @강남 뉴스톤 아레나", "date": "2026-10-10", "time": "15:00", "people": [{"n": "구우", "m": ""}, {"n": "해솔", "m": ""}, {"n": "호야", "m": ""}, {"n": "LawYS", "m": ""}, {"n": "KJ", "m": ""}, {"n": "방장봊", "m": ""}], "event": true}], "tours": [], "board_month": [], "board_all": [], "reviews": [{"id": 8, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "BTN 30BB  K♠ Q♠", "q": "리버 콜 맞나요? 턴 체크는 괜찮았나요?", "own": false}], "learned": [{"k": "wpl, 건자수, 야자수서울센터, 주차", "c": "인근주차장이용"}, {"k": "강남뉴스톤아레나, 주소, 주차", "c": "강남구 도곡로1길 14 삼일프라자 지하1층 (건물주차)"}, {"k": "구우", "c": "피망 새틀 1렙 바이인 안하면 입안에 가시가 돋기로 유명함"}, {"k": "노무링, 우재", "c": "걍 무지성 욕만함 무지함의 극치"}, {"k": "녹맨", "c": "행의 남자 친구 이자 비혼주의자이며 페미니스트이자 대한민국을 살리기위해 급직적이며 이슬람식 일부다처제를 주장하는 기독교인이자 부처님 오신날을 제일 좋아하는 대한민국의 사상가"}, {"k": "도비", "c": "헤비스테이커"}, {"k": "뚝섬정모, 정모, 칠갑산정모, 정모일시, 정모시간, 정모위치", "c": "10월10일(토) 오후3시 바인0.5 (교촌제공) 장소:강남뉴스톤"}, {"k": "민트퍼지", "c": "사기꾼"}, {"k": "에릭", "c": "사채꾼"}, {"k": "오메추, 점메추, 저메추 라고물어보면", "c": "오늘메뉴추천, 점심메뉴추천, 저녁메뉴추천으로 인식하고 해당질문에 답해줘"}, {"k": "크라잉", "c": "전 JP모건 임원"}, {"k": "피망, kims, 거북섬, 주차, 위치, 주소", "c": "경기장: 시흥 거북섬로116 10층 주차: 거북섬로 111 (무료)"}, {"k": "한게임, hpt, 로열홀덤, 장소, 위치, 주소", "c": "성동구 연무장 15길11 (성수에스팩토리 D동)"}, {"k": "한게임, hpt, 주차", "c": "인근 유료주차장 이용"}, {"k": "해솔", "c": "천안의 홀덤 대장이자 영등포 K스타홀덤펍 2회차 페이아웃대회 파테 출신. 잘생긴 외모와 뛰어난 패션감각의 소유자."}, {"k": "해솔쌤", "c": "84나성 올림픽때 태어난 대표 여미새"}]}, B="https://metlifeguide-png.github.io/posters";
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const md=d=>d&&d.length>=10?(+d.slice(5,7))+'/'+(+d.slice(8,10)):'';
 const POSTERS={"sched": ["포커일정-1"], "contest": ["3사비교", "6TH HPT00", "6TH HPT01", "8THWPL", "APL01", "APL02", "apl프라이즈율", "피망", "하"], "official": ["260803-261005 8th wpl (1)", "260803-261005 8th wpl (2)", "260803-261005 8th wpl (3)", "260803-261005 8th wpl (4)", "260803-261005 8th wpl (5)", "260803-261005 8th wpl (6)", "260803-261005 8th wpl (7)", "260803-261005 8th wpl (8)", "260902-261223 showdown (1)", "260902-261223 showdown (2)", "261002-261213 9th wpl (1)", "261002-261213 9th wpl (2)", "261002-261213 9th wpl (3)", "261002-261213 9th wpl (4)", "261002-261213 9th wpl (5)", "261002-261213 9th wpl (6)", "261002-261213 9th wpl (7)", "261002-261213 9th wpl (8)", "261002-261213 9th wpl (9)", "261023-261025 apl circuit1 (1)", "261023-261025 apl circuit1 (2)"], "apl": ["apl01", "apl02", "apl03", "apl04", "apl05"]};
@@ -206,13 +233,47 @@ function mrPage(){
    <div class="card"><div class="t" style="margin-bottom:6px">존 기준 (M 값)</div><div class="zones">
    ${MZ.map((x,i)=>`<span><i style="background:${x[3]}"></i>${x[4]}</span><span class="m">${i===0?'20 이상':i===4?'1 미만':`${x[0]} ~ ${MZ[i-1][0]} 미만`} · ${x[5]}</span>`).join('')}</div></div>
    <div class="card m">M-ratio는 토너먼트 경험칙 지수예요. 상금 구조(ICM)·포지션별 푸시/폴드 범위는 반영하지 않으니 참고용으로 쓰세요.<br>카톡에서는 <code style="cursor:pointer;color:var(--blue);font-weight:700" onclick="copy(this.textContent)">!@라티오 20000 200 400 400 8</code></div></div>`;}
+
+// 대회일정: 이미지 대신 일정표를 바로 그려요 (일정이 바뀌면 아래 SCH 값만 고치면 돼요)
+// l/w = 막대 시작·너비(%). 7/1~12/31 기준 (하루 ≈ 0.54%)
+const SCH=[
+ {sec:"🎯 새틀라이트 예선 일정",rows:[
+  ["제8회 WPL","#7c3aed",[[17.8,32.5,"8/3 ~ 10/1"]]],
+  ["제9회 WPL","#4f46e5",[[50.5,37.0,"10/2 ~ 12/8"]]],
+  ["APL Series","#00a8e8",[[42.0,55.0,"9월 중순 ~ 12월 말"]]],
+  ["PFGT X PMANG","#dc2626",[[34.4,52.8,"9/2 ~ 12/23"]]]]},
+ {sec:"🏆 메인 본선 대회 일정",main:1,rows:[
+  ["제8회 WPL","#7c3aed",[[27.5,20.0,"Day1 (8/21~9/26)"],[50.0,33.0,"10/3 Day2 · 10/5 Final"]]],
+  ["제9회 WPL","#4f46e5",[[50.0,40.0,"10/1 ~ 12/13 Final"]]],
+  ["APL Prelims","#00a8e8",[[61.5,13.0,"10/23~25"]]],
+  ["PFGT X PMANG","#dc2626",[[44.0,52.0,"9/20 ~ 12/27 Final"]]]]}
+];
+const SCH_CARDS=[
+ ["제8회 WPL 대회","10월 파이널","#7c3aed",["Day 1 예선: 8/21 ~ 9/26 (새틀: 8/3 ~ 10/1)","메인 결선: Day 2-A(10/3) · 2-B(10/4) · Final(10/5)","사이드: 10/1~5 NLH 딥스택 #1~#5"]],
+ ["제9회 WPL 대회","12월 파이널","#4f46e5",["새틀라이트: 10/2(금) ~ 12/8(화)","메인: Day 1(10/11~12/9) ➔ Day 2(12/12) ➔ Day 3 & Final(12/13)","미니 메인: Day 1-1~7(10/1~12/10) ➔ Day 2 & Final(12/11)"]],
+ ["APL Series","10월 신규","#00a8e8",["새틀라이트: APL Seoul Series (9월 중순 ~ 12월 말)","Prelims Circuit 1: 10/23(금) ~ 10/25(일)"]],
+ ["PFGT X PMANG","12월 결선","#dc2626",["새틀라이트: 9/2 ~ 12/23","메인 본선: 9/20(1A) · 10/5(1B) · 10/18(1C) · 11/1(1D) ➔ 12/26~27 Final","※ 11/1 이후 Day 1 추후 공지"]]
+];
+function schedPage(){
+  const s=new Date(2026,6,1),e=new Date(2027,0,1),p=(Date.now()-s)/(e-s);
+  const bg='<div class="bg">'+'<div></div>'.repeat(6)+'</div>';
+  const today=p>0&&p<1?`<div class="sch-today" style="left:calc(var(--lw) + (100% - var(--lw)) * ${p.toFixed(4)})"><i>오늘</i></div>`:'';
+  const body=SCH.map(g=>`<div class="sch-sec ${g.main?'main':''}">${g.sec}</div>`+g.rows.map(([n,c,bars])=>
+    `<div class="sch-r"><div class="sch-l" style="color:${c}">${esc(n)}</div><div class="sch-t">${bg}${bars.map(([l,w,t])=>`<div class="sch-b" style="left:${l}%;width:${w}%;background:${c}">${esc(t)}</div>`).join('')}</div></div>`).join('')).join('');
+  return head('📅 대회일정','7월 ~ 12월 · 새틀 & 메인 통합')
+   +'<div class="sch-hint">👈 표를 좌우로 밀어서 전체 일정을 확인하세요 👉</div>'
+   +`<div class="sch-box"><div class="sch-in"><div class="sch-r hd"><div class="sch-l">대회명</div><div class="sch-t"><div>7월</div><div>8월</div><div>9월</div><div>10월</div><div>11월</div><div>12월</div></div></div>${today}${body}</div></div>`
+   +'<div style="height:12px"></div>'
+   +SCH_CARDS.map(([t,b,c,l])=>`<div class="card sch-c" style="--cc:${c}"><div class="t">${esc(t)}<span>${esc(b)}</span></div><ul>${l.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`).join('')
+   +'<div class="m" style="text-align:center;margin-top:6px">📌 자료 출처 : 카카오톡 오픈채팅방 뚝섬유원지</div>';
+}
 const MENU=[
  {g:"정모"},
  {k:"meet",n:"뚝섬유원지 정모",d:"다음 모임 안내",f:meetPage},
  {g:"안내"},
  {k:"cmd",n:"명령어",d:"뚝섬봇 사용법",f:cmdPage},
  {k:"cal",n:"캘린더",d:"날짜별 대회",u:"/c/",t:"📅 캘린더"},
- {k:"ps",n:"대회일정",d:"월간·주간 일정표",f:()=>head('📅 대회일정','누르면 크게')+thumbs('sched')},
+ {k:"ps",n:"대회일정",d:"새틀·메인 한눈에",f:schedPage},
  {g:"포스터"},
  {k:"pc",n:"제작 포스터",d:"뚝섬 제작 대회",f:()=>head('🏆 뚝섬 제작 포스터','누르면 크게')+thumbs('contest')},
  {k:"po",n:"공식 포스터",d:"피망·WPL 등",f:()=>head('📋 대회사 공식 포스터','누르면 크게')+thumbs('official')},
