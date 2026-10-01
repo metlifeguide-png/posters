@@ -36,13 +36,8 @@
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
 // 💡 뷰어 목록 — 서버가 깃허브 폴더(대회일정·뚝섬제작·대회사·APL제휴)를 보고 자동으로 맞춰요. 파일명 끝 _PC / _MOBILE 로 기기별 이미지를 나눠요 (이 목록은 기본값)
-const LISTS = {
-  "sched": {"title": "📅 대회일정", "names": []},
-  "contest": {"title": "🏆 뚝섬 제작 대회 포스터", "names": ["00", "01", "02", "03", "03-1", "04", "apl-1", "apl-2", "apl-3", "05"]},
-  "official": {"title": "📋 대회사 공식 포스터", "names": ["06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "pmang01", "pmang02"]},
-  "apl": {"title": "🤝 APL 제휴사 안내", "names": ["apl01", "apl02", "apl03", "apl04", "apl05"]}
-};
-const VER = "10011448";
+const LISTS = {"sched": {"title": "📅 대회일정", "names": []}, "contest": {"title": "🏆 뚝섬 제작 대회 포스터", "names": ["contest-3사비교", "contest-6TH HPT00", "contest-6TH HPT01", "contest-8THWPL", "contest-9th wpl", "contest-APL01", "contest-APL02", "contest-apl프라이즈율", "contest-피망", "contest-하"]}, "official": {"title": "📋 대회사 공식 포스터", "names": ["official-260803-261005 8th wpl (1)", "official-260803-261005 8th wpl (2)", "official-260803-261005 8th wpl (3)", "official-260803-261005 8th wpl (4)", "official-260803-261005 8th wpl (5)", "official-260803-261005 8th wpl (6)", "official-260803-261005 8th wpl (7)", "official-260803-261005 8th wpl (8)", "official-260902-261223 showdown (1)", "official-260902-261223 showdown (2)", "official-261002-261213 9th wpl (1)", "official-261002-261213 9th wpl (2)", "official-261002-261213 9th wpl (3)", "official-261002-261213 9th wpl (4)", "official-261002-261213 9th wpl (5)", "official-261002-261213 9th wpl (6)", "official-261002-261213 9th wpl (7)", "official-261002-261213 9th wpl (8)", "official-261002-261213 9th wpl (9)", "official-261023-261025 apl circuit1 (1)", "official-261023-261025 apl circuit1 (2)"]}, "apl": {"title": "🤝 APL 제휴사 안내", "names": ["apl-apl01", "apl-apl02", "apl-apl03", "apl-apl04", "apl-apl05"]}};
+const VER = "10020532";
 const FOLDERS = ["대회일정", "뚝섬제작", "대회사", "APL제휴"];     // 사본이 없을 때 원본을 찾아볼 폴더
 const EXTS = ['.jpg', '.JPG', '.png', '.PNG', '.jpeg', '.webp'];
 const isPC = () => matchMedia('(min-width:760px)').matches;
