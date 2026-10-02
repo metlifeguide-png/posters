@@ -57,6 +57,8 @@ a.card{display:block;text-decoration:none}
 .btn.g{background:var(--green)}.btn.b{background:var(--brown)}
 .cmd{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .cmd code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:var(--blue);font-weight:700;background:var(--blue2);border-radius:7px;padding:2px 7px;word-break:keep-all}
+.jc{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin-top:7px;padding-top:7px;border-top:1px dashed var(--line)}
+.jc code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--blue);font-weight:700;background:var(--blue2);border-radius:7px;padding:2px 7px;cursor:pointer}
 .exs{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
 .exs code{font-size:11.5px;font-weight:600;padding:1px 6px;cursor:pointer}
 .cmd code{cursor:pointer}
@@ -158,7 +160,7 @@ body.lock{overflow:hidden}
   <button type="button" class="bgm" id="bgm" aria-label="배경음악 켜기/끄기" aria-pressed="false">🔇</button>
 </div>
 <script>
-const D={"updated": "10/02 22:01", "month": "2026-10", "parts": [{"label": "WPL 데이1-B14 10/2(금) 10:00 · 야자수 서울센터", "date": "2026-10-02", "time": "10:00", "people": [{"n": "호야", "m": ""}, {"n": "크라잉", "m": ""}], "event": false}, {"label": "10/2 23:00 프리롤 @수간이의량진프리롤(장소:노량진)", "date": "2026-10-02", "time": "23:00", "people": [{"n": "구우", "m": ""}], "event": true}, {"label": "WPL 딥스택 #3 10/3(토) 18:00 · 야자수 서울센터", "date": "2026-10-03", "time": "18:00", "people": [{"n": "구우", "m": ""}, {"n": "욱스", "m": ""}], "event": false}, {"label": "피망 데이1-B 10/5(월) 12:00 · 경기 시흥 KIMS", "date": "2026-10-05", "time": "12:00", "people": [{"n": "구우", "m": ""}, {"n": "방장봊", "m": ""}, {"n": "내꿈은너야차무식", "m": ""}, {"n": "타이슨", "m": ""}, {"n": "구우형 우승못한지 9년", "m": ""}, {"n": "호야", "m": ""}, {"n": "해솔", "m": ""}], "event": false}, {"label": "10/10 15:00 정모 @강남 뉴스톤 아레나", "date": "2026-10-10", "time": "15:00", "people": [{"n": "구우", "m": ""}, {"n": "해솔", "m": ""}, {"n": "호야", "m": ""}, {"n": "LawYS", "m": ""}, {"n": "KJ", "m": ""}, {"n": "방장봊", "m": ""}, {"n": "김탱", "m": ""}, {"n": "크라잉", "m": ""}, {"n": "녹애옹", "m": ""}], "event": true}], "tours": [{"label": "로티아레나", "date": "2026-10-02", "rows": [{"n": "방장봊", "r": "1등", "p": "400만", "k": 1}]}], "board_month": [{"n": "방장봊", "pt": 100, "itm": 1, "win": 1}], "board_all": [{"n": "방장봊", "pt": 100, "itm": 1, "win": 1}], "reviews": [{"id": 14, "nick": "구우", "date": "2026-10-02", "head": "2026-10-02 강남 뉴스톤 AWS SERIES (AWS 2 TICKET or GOLD 0.2M)", "hero": "UTG 250BB  A♥ K♥", "q": "❓ 리버벳에 폴드했어야했나?", "own": false}, {"id": 8, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "BTN 30BB  K♠ Q♠", "q": "리버 콜 맞나요? 턴 체크는 괜찮았나요?", "own": false}], "learned": [{"k": "wpl, 건자수, 야자수서울센터, 주차", "c": "인근주차장이용"}, {"k": "강남뉴스톤아레나, 주소, 주차", "c": "강남구 도곡로1길 14 삼일프라자 지하1층 (건물주차)"}, {"k": "노무링, 우재", "c": "걍 무지성 욕만함 무지함의 극치"}, {"k": "녹맨", "c": "행의 남자 친구 이자 비혼주의자이며 페미니스트이자 대한민국을 살리기위해 급직적이며 이슬람식 일부다처제를 주장하는 기독교인이자 부처님 오신날을 제일 좋아하는 대한민국의 사상가"}, {"k": "뚝섬정모, 정모, 칠갑산정모, 정모일시, 정모시간, 정모위치", "c": "10월10일(토) 오후3시 바인0.5 (교촌제공) 장소:강남뉴스톤"}, {"k": "민트퍼지", "c": "매일 매일 구라만 치는 하우스장, 대표 구라는 오늘 하우스 존예 많아요"}, {"k": "야자수 서울센터, 주소", "c": "서울 광진구 능동로19길 35 B1 201호"}, {"k": "오메추, 점메추, 저메추 라고물어보면", "c": "오늘메뉴추천, 점심메뉴추천, 저녁메뉴추천으로 인식하고 해당질문에 답해줘"}, {"k": "정모", "c": "교촌안줌 함바중 진짜 함바치킨 줌"}, {"k": "정모참가", "c": "10월10일(토) 오후3시 강남뉴스톤에서 바인 5만으로 진행됩니다 참여하실 분들은 미리 신청해 주세요.교촌치킨말고 함바치킨 줌"}, {"k": "피망, kims, 거북섬, 주차, 위치, 주소", "c": "경기장: 시흥 거북섬로116 10층 주차: 거북섬로 111 (무료)"}, {"k": "한게임, hpt, 로열홀덤, 장소, 위치, 주소", "c": "성동구 연무장 15길11 (성수에스팩토리 D동)"}, {"k": "한게임, hpt, 주차", "c": "인근 유료주차장 이용"}, {"k": "해솔", "c": "제미나이가 픽한 이상형이 이정희닮은 여성나옴 ㅋㅋㅋㅋㅋㅋㅋㅋ"}, {"k": "해솔쌤", "c": "84나성 올림픽때 태어난 대표 여미새"}], "posters": {"sched": [], "contest": ["contest-3사비교", "contest-6TH HPT00", "contest-6TH HPT01", "contest-8THWPL", "contest-9th wpl", "contest-APL01", "contest-APL02", "contest-apl프라이즈율", "contest-피망", "contest-하"], "official": ["official-260803-261005 8th wpl (1)", "official-260803-261005 8th wpl (2)", "official-260803-261005 8th wpl (3)", "official-260803-261005 8th wpl (4)", "official-260803-261005 8th wpl (5)", "official-260803-261005 8th wpl (6)", "official-260803-261005 8th wpl (7)", "official-260803-261005 8th wpl (8)", "official-260902-261223 showdown (1)", "official-260902-261223 showdown (2)", "official-261002-261213 9th wpl (1)", "official-261002-261213 9th wpl (2)", "official-261002-261213 9th wpl (3)", "official-261002-261213 9th wpl (4)", "official-261002-261213 9th wpl (5)", "official-261002-261213 9th wpl (6)", "official-261002-261213 9th wpl (7)", "official-261002-261213 9th wpl (8)", "official-261002-261213 9th wpl (9)", "official-261023-261025 apl circuit1 (1)", "official-261023-261025 apl circuit1 (2)"], "apl": ["apl-apl01", "apl-apl02", "apl-apl03", "apl-apl04", "apl-apl05"]}}, B="https://metlifeguide-png.github.io/posters";
+const D={"updated": "10/02 22:11", "month": "2026-10", "parts": [{"label": "WPL 데이1-B14 10/2(금) 10:00 · 야자수 서울센터", "date": "2026-10-02", "time": "10:00", "people": [{"n": "호야", "m": ""}, {"n": "크라잉", "m": ""}], "event": false}, {"label": "10/2 23:00 프리롤 @수간이의량진프리롤(장소:노량진)", "date": "2026-10-02", "time": "23:00", "people": [{"n": "구우", "m": ""}], "event": true}, {"label": "WPL 딥스택 #3 10/3(토) 18:00 · 야자수 서울센터", "date": "2026-10-03", "time": "18:00", "people": [{"n": "구우", "m": ""}, {"n": "욱스", "m": ""}], "event": false}, {"label": "피망 데이1-B 10/5(월) 12:00 · 경기 시흥 KIMS", "date": "2026-10-05", "time": "12:00", "people": [{"n": "구우", "m": ""}, {"n": "방장봊", "m": ""}, {"n": "내꿈은너야차무식", "m": ""}, {"n": "타이슨", "m": ""}, {"n": "구우형 우승못한지 9년", "m": ""}, {"n": "호야", "m": ""}, {"n": "해솔", "m": ""}], "event": false}, {"label": "10/10 15:00 정모 @강남 뉴스톤 아레나", "date": "2026-10-10", "time": "15:00", "people": [{"n": "구우", "m": ""}, {"n": "해솔", "m": ""}, {"n": "호야", "m": ""}, {"n": "LawYS", "m": ""}, {"n": "KJ", "m": ""}, {"n": "방장봊", "m": ""}, {"n": "김탱", "m": ""}, {"n": "크라잉", "m": ""}, {"n": "녹애옹", "m": ""}], "event": true}], "tours": [{"label": "로티아레나", "date": "2026-10-02", "rows": [{"n": "방장봊", "r": "1등", "p": "400만", "k": 1}]}], "board_month": [{"n": "방장봊", "pt": 100, "itm": 1, "win": 1}], "board_all": [{"n": "방장봊", "pt": 100, "itm": 1, "win": 1}], "reviews": [{"id": 14, "nick": "구우", "date": "2026-10-02", "head": "2026-10-02 강남 뉴스톤 AWS SERIES (AWS 2 TICKET or GOLD 0.2M)", "hero": "UTG 250BB  A♥ K♥", "q": "❓ 리버벳에 폴드했어야했나?", "own": false}, {"id": 8, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "BTN 30BB  K♠ Q♠", "q": "리버 콜 맞나요? 턴 체크는 괜찮았나요?", "own": false}], "learned": [{"k": "wpl, 건자수, 야자수서울센터, 주차", "c": "인근주차장이용"}, {"k": "강남뉴스톤아레나, 주소, 주차", "c": "강남구 도곡로1길 14 삼일프라자 지하1층 (건물주차)"}, {"k": "노무링, 우재", "c": "걍 무지성 욕만함 무지함의 극치"}, {"k": "녹맨", "c": "행의 남자 친구 이자 비혼주의자이며 페미니스트이자 대한민국을 살리기위해 급직적이며 이슬람식 일부다처제를 주장하는 기독교인이자 부처님 오신날을 제일 좋아하는 대한민국의 사상가"}, {"k": "뚝섬정모, 정모, 칠갑산정모, 정모일시, 정모시간, 정모위치", "c": "10월10일(토) 오후3시 바인0.5 (교촌제공) 장소:강남뉴스톤"}, {"k": "민트퍼지", "c": "매일 매일 구라만 치는 하우스장, 대표 구라는 오늘 하우스 존예 많아요"}, {"k": "야자수 서울센터, 주소", "c": "서울 광진구 능동로19길 35 B1 201호"}, {"k": "오메추, 점메추, 저메추 라고물어보면", "c": "오늘메뉴추천, 점심메뉴추천, 저녁메뉴추천으로 인식하고 해당질문에 답해줘"}, {"k": "정모", "c": "교촌안줌 함바중 진짜 함바치킨 줌"}, {"k": "정모참가", "c": "10월10일(토) 오후3시 강남뉴스톤에서 바인 5만으로 진행됩니다 참여하실 분들은 미리 신청해 주세요.교촌치킨말고 함바치킨 줌"}, {"k": "피망, kims, 거북섬, 주차, 위치, 주소", "c": "경기장: 시흥 거북섬로116 10층 주차: 거북섬로 111 (무료)"}, {"k": "한게임, hpt, 로열홀덤, 장소, 위치, 주소", "c": "성동구 연무장 15길11 (성수에스팩토리 D동)"}, {"k": "한게임, hpt, 주차", "c": "인근 유료주차장 이용"}, {"k": "해솔", "c": "제미나이가 픽한 이상형이 이정희닮은 여성나옴 ㅋㅋㅋㅋㅋㅋㅋㅋ"}, {"k": "해솔쌤", "c": "84나성 올림픽때 태어난 대표 여미새"}], "posters": {"sched": [], "contest": ["contest-3사비교", "contest-6TH HPT00", "contest-6TH HPT01", "contest-8THWPL", "contest-9th wpl", "contest-APL01", "contest-APL02", "contest-apl프라이즈율", "contest-피망", "contest-하"], "official": ["official-260803-261005 8th wpl (1)", "official-260803-261005 8th wpl (2)", "official-260803-261005 8th wpl (3)", "official-260803-261005 8th wpl (4)", "official-260803-261005 8th wpl (5)", "official-260803-261005 8th wpl (6)", "official-260803-261005 8th wpl (7)", "official-260803-261005 8th wpl (8)", "official-260902-261223 showdown (1)", "official-260902-261223 showdown (2)", "official-261002-261213 9th wpl (1)", "official-261002-261213 9th wpl (2)", "official-261002-261213 9th wpl (3)", "official-261002-261213 9th wpl (4)", "official-261002-261213 9th wpl (5)", "official-261002-261213 9th wpl (6)", "official-261002-261213 9th wpl (7)", "official-261002-261213 9th wpl (8)", "official-261002-261213 9th wpl (9)", "official-261023-261025 apl circuit1 (1)", "official-261023-261025 apl circuit1 (2)"], "apl": ["apl-apl01", "apl-apl02", "apl-apl03", "apl-apl04", "apl-apl05"]}}, B="https://metlifeguide-png.github.io/posters";
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const md=d=>d&&d.length>=10?(+d.slice(5,7))+'/'+(+d.slice(8,10)):'';
 const POSTERS_DEFAULT={sched:[],contest:["00","01","02","03","03-1","04","apl-1","apl-2","apl-3","05"],
@@ -190,6 +192,13 @@ const CMDS=[
   ["!@참가 피망 1b","참가 등록 · 함께 가는 사람 명단이 같이 나와요 · !@참석 · !@참여 · !@출전도 OK",["!@참가 10/10 성남모란","!@참가 쇼다운 10월5일 | 카풀가능","!@참가 정모"]],
   ["!@참가리스트","대회별 참가자 보기 (!@참가리스트 피망)"],["!@내참가","내 등록 보기"],["!@참가취소","내 참가 전부 취소"]],
   "⏰ 대회 당일 오전 9시에 참가자를 태그해서 시작 시각·주소·주차를 알려드려요 (정모 등 행사 제외)"],
+ ["⚡ 벙개 (누구나 모임 만들기 · !@벙개 · !@번개 · !@벙 · !@모임 다 돼요)",[
+  ["!@벙개 강남번개 내일 7시 뉴스톤 토너먼트","만들기 · 제목 언제 어디서 무엇을 순서 · 만든 사람은 자동 참가",["!@벙개 점심홀덤 오늘 12시반 kims 캐시게임","!@벙개 정모 10/10 15시 뉴스톤아레나"]],
+  ["!@참가 강남번개","참가 (다른 대회와 같아요)"],
+  ["!@벙개 강남번개 마감","마감 · 최종 명단 발표 (만든 사람·방장)"],
+  ["!@벙개 강남번개 취소","벙개 취소 (만든 사람·방장)"],
+  ["!@벙개목록","예정된 벙개·행사 보기"]],
+  "언제: 오늘 · 내일 · 모레 · 토요일 · 10/10 · 10월 10일 + 7시 · 19:30 · 오후 3시 ('7시'처럼 오전/오후가 없으면 저녁 7시로 봐요)"],
  ["🏆 입상 · 뚝섬리더보드",[
   ["!@입상 피망 3등 25만","입상 기록 · 대회명 등수 상금 순서 · 빠지면 봇이 다시 알려줘요",["!@입상 한게임 12등 티켓1장","!@입상 WPL 2등 1200만","!@입상 강남아띠 1등 300만"]],
   ["!@입상목록","대회별 입상자 (!@입상자 피망)"],["!@내전적","내 기록"],["!@뚝섬리더보드","이번 달 뚝섬리더보드 TOP 5"]],
@@ -215,7 +224,7 @@ const CMDS=[
  ["💬 이렇게 물어봐요",[
   ["!@피망데이1 일정",""],["!@WPL 데이2 언제",""],["!@강남뉴스톤 오늘 뭐해",""],["!@강남뉴스톤 바인 얼마야",""],["!@피망 주차",""],["!@kims 주소",""],["!@오늘 대회추천",""]]],
  ["🛠️ 방장 전용",[
-  ["!@학습 키워드=내용","봇에게 매장 주소·주차 같은 정보 가르치기 (!@학습목록 · !@학습삭제 검색어)"],
+  ["!@학습 키워드=내용","봇에게 정보 가르치기 · 같은 단어를 또 가르치면 덮어쓰지 않고 뜻이 추가돼서 질문 상황에 맞게 골라 답해요",["!@학습목록","!@학습삭제 도비","!@학습삭제 도비=해리"]],
   ["!@새틀추가 시작|종료|시각들|문구","새틀·프리롤 자동 알림 (관리 페이지에서도 가능)"],
   ["!@티켓가치 이름 금액","티켓 1장 가치 수정"]]],
 ];
@@ -230,8 +239,13 @@ function meetPage(){
    <div class="row"><span>일시</span><span class="m">26년 10월10일(토) 오후 3시</span></div>
    <div class="row"><span>BUY IN</span><span class="m">0.5T (함바치킨제공)</span></div>
    <div class="row"><span>장소</span><span class="m">서울 강남 뉴스톤 아레나</span></div></div>`
-   +`<div class="card cmd"><div style="min-width:0"><code onclick="copy(this.textContent)">!@참가 정모</code><div class="m" style="margin-top:3px">참석하시려면 채팅창에 이 명령어를 입력해주세요</div></div></div>`;
+   +`<div class="card cmd"><div style="min-width:0"><code onclick="copy(this.textContent)">!@참가 정모</code><div class="m" style="margin-top:3px">참석하시려면 채팅창에 이 명령어를 입력해주세요 (누르면 복사)</div></div></div>`
+   +meetPeople();
 }
+// 정모 참석자: 참가 현황에서 '정모' 행사만 골라 보여줘요
+function meetPeople(){const g=D.parts.filter(x=>x.event&&/정모/.test(x.label));
+  if(!g.length)return '<div class="card e">아직 참석 신청이 없어요 · 첫 번째로 !@참가 정모</div>';
+  return g.map(x=>`<div class="card"><div class="t">🙋 참석 ${x.people.length}명</div><div class="m">${esc(x.label)}</div><div class="ppl">${x.people.map(p=>esc(p.n)+(p.m?` <span class="m">(${esc(p.m)})</span>`:'')).join(', ')}</div></div>`).join('');}
 // M-ratio 계산기 (Harrington 기준 · 입력하면 바로 계산)
 const MR={stack:'',sb:'',bb:'',ante:'0',n:'9'};
 const MZ=[[20,'#e6f3e2','#2d7a31','#3a9d3f','그린 존','여유로운 플레이 가능'],
@@ -298,15 +312,13 @@ const MENU=[
  {k:"po",n:"공식 포스터",d:"피망·WPL 등",f:()=>head('📋 대회사 공식 포스터','누르면 크게')+thumbs('official')},
  {k:"pa",n:"APL 제휴",d:"제휴 매장 혜택",f:()=>head('🤝 APL 제휴업체','누르면 크게')+thumbs('apl')},
  {g:"우리 방"},
- {k:"learn",n:"학습",d:"봇이 아는 정보",f:()=>{const l=D.learned.filter(x=>!Q||(x.k+' '+x.c).toLowerCase().includes(Q));
-   return head('📚 학습',`${D.learned.length}개`)+search('키워드로 찾기')+(l.length?l.map(x=>`<div class="card"><div class="t">${esc(x.k)}</div><div class="lc">${esc(x.c)}</div></div>`).join(''):'<div class="e">학습된 정보가 없어요</div>');}},
  {k:"part",n:"참가",d:"누가 어디 가나",f:()=>{const g=D.parts.filter(x=>!Q||(x.label+x.people.map(p=>p.n+p.m).join(' ')).toLowerCase().includes(Q));
    const suggestCmd=x=>{const c=x.cmd||(x.event&&x.label.match(/정모/)?'정모':'');if(c)return`!@참가 ${c}`;
      const mmdd=x.date&&x.date.length>=10?`${+x.date.slice(5,7)}/${+x.date.slice(8,10)}`:'';
      const core=x.label.split('·')[0].replace(/\d{1,2}\/\d{1,2}(\([가-힣]\))?/g,'').replace(/\d{1,2}:\d{2}/g,'').replace(/\s+/g,' ').trim();
      return `!@참가 ${(mmdd?mmdd+' ':'')}${core}`.trim();};
-   const joinCmd=x=>`<div class="m" style="margin-top:6px">🙋 나도 참석? <code onclick="copy(this.textContent)">${esc(suggestCmd(x))}</code> (누르면 복사 · 대회명·날짜 일부만 써도 인식돼요)</div>`;
-   return head('🙋 참가 현황',`${D.parts.length}개 대회`)+search('닉네임 · 대회로 찾기')+(g.length?g.map(x=>`<div class="card"><div class="t">${esc(x.label)}${x.event?'<span class="tag">행사</span>':''}</div><div class="m">${x.people.length}명</div><div class="ppl">${x.people.map(p=>esc(p.n)+(p.m?` <span class="m">(${esc(p.m)})</span>`:'')).join(', ')}</div>${joinCmd(x)}</div>`).join('')
+   const joinCmd=x=>x.closed?`<div class="jc"><span class="m">🔒 마감된 모임이에요</span></div>`:`<div class="jc"><span class="m">🙋 참석 등록</span><code onclick="copy(this.textContent)">${esc(suggestCmd(x))}</code></div>`;
+   return head('🙋 참가 현황',`${D.parts.length}개 대회`)+search('닉네임 · 대회로 찾기')+(g.length?g.map(x=>`<div class="card"><div class="t">${esc(x.label)}${x.event?`<span class="tag">${x.host?'⚡ 벙개':'행사'}</span>`:''}${x.closed?'<span class="tag">🔒 마감</span>':''}</div><div class="m">${x.people.length}명</div><div class="ppl">${x.people.map(p=>esc(p.n)+(p.m?` <span class="m">(${esc(p.m)})</span>`:'')).join(', ')}</div>${joinCmd(x)}</div>`).join('')
    :'<div class="e">예정된 참가 신청이 없어요<br>카톡에서 !@참가 피망 1b</div>')+'<div class="m" style="margin-top:4px">⏰ 대회 당일 오전 9시에 참가자를 태그해서 시작 시각·주소·주차를 알려드려요 · 🎉 정모 등 행사는 위 카드에 나온 명령어로 참석 등록하세요</div>';}},
  {k:"rank",n:"입상·순위",d:"뚝섬리더보드",f:()=>{const pod=a=>{const o=[a[1],a[0],a[2]];return `<div class="podium">${o.map((x,i)=>x?`<div class="pd ${i===1?'p1':''}"><div class="md">${['🥈','🥇','🥉'][i]}</div><div class="nk">${esc(x.n)}</div><div class="pt">${x.pt}pt</div></div>`:'<div></div>').join('')}</div>`;};
    const list=(a,from)=>a.slice(from).map((x,i)=>`<div class="row"><span>${i+from+1}. ${esc(x.n)}</span><span class="m">${x.pt}pt · 우승 ${x.win} · 입상 ${x.itm}</span></div>`).join('');
