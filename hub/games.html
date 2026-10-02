@@ -856,6 +856,13 @@ function huClass(hole,board){const h=best([...hole,...board]);const br=board.map
  if(made==='air'&&strongD)return 'draw';
  if(made==='air'&&(d.st===1||(board.length===3&&hole[0].s===hole[1].s&&board.filter(c=>c.s===hole[0].s).length===1)||(board.length===3&&Math.max(hole[0].r,hole[1].r)===14)))return 'gut';
  return made;}
+const RKN=r=>({14:'A',13:'K',12:'Q',11:'J',10:'10'})[r]||String(r);
+function huHandName(hole,board){const h=best([...hole,...board]);const pp=hole[0].r===hole[1].r;let n;
+ if(h[0]===8)n=h[1]===14?'로열 플러시':RKN(h[1])+' 하이 스트레이트 플러시';else if(h[0]===7)n=RKN(h[1])+' 포카드';else if(h[0]===6)n=RKN(h[1])+' 풀하우스';
+ else if(h[0]===5)n=RKN(h[1])+' 하이 플러시';else if(h[0]===4)n=RKN(h[1])+' 하이 스트레이트';else if(h[0]===3)n=(pp&&hole[0].r===h[1]?RKN(h[1])+' 셋':RKN(h[1])+' 트리플');
+ else if(h[0]===2&&!hole.some(c=>c.r===h[1]||c.r===h[2]))n='보드 투페어만 (내 패는 '+RKN(Math.max(hole[0].r,hole[1].r))+' 하이)';else if(h[0]===2)n=RKN(h[1])+'·'+RKN(h[2])+' 투페어';else if(h[0]===1&&!hole.some(c=>c.r===h[1]))n='보드 페어만 (내 패는 '+RKN(Math.max(hole[0].r,hole[1].r))+' 하이)';else if(h[0]===1){const br=board.map(c=>c.r).sort((a,b)=>b-a);n=pp&&h[1]===hole[0].r?(hole[0].r>br[0]?RKN(h[1])+' 오버페어':RKN(h[1])+' 포켓페어'):(h[1]===br[0]?'탑페어':'') ;n=(n||RKN(h[1])+' 원페어')+(n==='탑페어'?' ('+RKN(h[1])+')':'');}else n=RKN(Math.max(hole[0].r,hole[1].r))+' 하이 (페어 없음)';
+ if(board.length<5){const d=huDraw(hole,board);const ds=[];if(d.fd&&h[0]<5)ds.push('플러시 드로우');if(d.st===2&&h[0]<4)ds.push('양방 스트레이트 드로우');else if(d.st===1&&h[0]<4)ds.push('거트샷');if(ds.length)n+=' + '+ds.join('·');}
+ return n;}
 function huTex(b){const rs=[...new Set(b.map(c=>c.r))].sort((x,y)=>y-x);const sc=[0,1,2,3].map(s=>b.filter(c=>c.s===s).length);const mx=Math.max(...sc);let conn=false;for(let k=0;k+2<rs.length;k++)if(rs[k]-rs[k+2]<=4)conn=true;
  const pair=rs.length<b.length,hi=rs[0];const mono=mx>=3,two=!mono&&b.length===3&&mx===2;return {hi,conn,pair,mono,two,low:hi<=9,high:hi>=12,wet:conn||mono||two};}
 // 체크/베팅 빈도 (베팅할 차례, 앞에 베팅 없음)
@@ -880,9 +887,47 @@ function huRangeStat(A,B,board,N){const sa=huSample(A,board),sb=huSample(B,board
  const nut=R=>{let n=0,tt=0;const ds=new Set(board.map(c=>c.r*4+c.s));HU.ALL.forEach(([a,b],i)=>{const x=R[i];if(!x||ds.has(a.r*4+a.s)||ds.has(b.r*4+b.s))return;tt+=x;if(huClass([a,b],board)==='nut')n+=x;});return tt?n/tt:0;};
  return {eq:t?w/t:.5,na:nut(A),nb:nut(B)};}
 G.push({k:'hustudy',study:true,cat:'공부',e:'🎓',n:'헤즈업 공부',d:'스트리트별 판단 피드백',
- start(){this.Ssel=lsGet('hu_S2',100);this.S=this.Ssel==='랜덤'?100:this.Ssel;this.pos=lsGet('hu_pos','랜덤');this.h=null;this.tot=lsGet('hu_tot',[0,0]);rr();},
+ start(){this.Ssel=lsGet('hu_S2',100);this.S=this.Ssel==='랜덤'?100:this.Ssel;this.pos=lsGet('hu_pos','랜덤');this.h=null;this.tot=lsGet('hu_tot',[0,0]);this.shared=null;this.ai=null;this.link=null;
+  const m=location.hash.match(/sh=([0-9a-f]{6,12})/);if(m){this.shared={loading:true};rr();fetch(API+'/api/hu/share/'+m[1],{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{if(r.ok){this.shared=this.clean(JSON.parse(r.data));this.shared.nick=r.nick;this.shared.id=m[1];}else this.shared={err:'공유된 스팟을 못 찾았어요'};rr();}).catch(()=>{this.shared={err:'서버에 연결이 안 돼요'};rr();});return;}
+  rr();},
+ clean(D){const C=a=>(Array.isArray(a)?a:[]).slice(0,7).map(c=>({r:Math.min(14,Math.max(2,+c.r||2)),s:Math.min(3,Math.max(0,+c.s||0))}));const E=x=>esc(String(x??''));
+  return {S:+D.S||100,hero:D.hero==='BB'?'BB':'BTN',vil:D.vil==='BB'?'BB':'BTN',hc:C(D.hc),vc:D.vc?C(D.vc):null,board:C(D.board),pot:+D.pot||0,res:E(D.res),
+   acts:(D.acts||[]).slice(0,40).map(a=>({st:+a.st||0,me:!!a.me,p:E(a.p),t:String(a.t||'').slice(0,30)})),
+   fb:(D.fb||[]).slice(0,12).map(x=>({ctx:String(x.ctx||'').slice(0,60),street:Math.min(3,+x.street||0),board:C(x.board),hole:C(x.hole),pot:+x.pot||0,lab:E(x.lab),mixTxt:E(x.mixTxt),grade:Math.min(2,Math.max(0,+x.grade||0)),
+    why:(x.why||[]).slice(0,12).map(w=>esc(String(w)).replace(/&lt;(\/?)b&gt;/g,'<$1b>')),rf:x.rf&&{ag:+x.rf.ag||0,pa:+x.rf.pa||0,fo:+x.rf.fo||0},pos:E(x.pos)}))};},
+ cT(c){return RKN(c.r)+'♠♥♦♣'[c.s];},
+ pack(){const h=this.h;return {S:this.S,hero:h.hero,vil:h.vil,hc:h.C[h.hero],vc:h.over&&h.over.why==='sd'?h.C[h.vil]:null,board:h.board,acts:h.acts,pot:h.pot,
+  res:h.over?(h.over.win==='tie'?'무승부':h.over.win===h.hero?'승':'패'):'',fb:this.fbAll.map(x=>({ctx:x.ctx,street:x.street,board:x.board,hole:x.hole,pot:x.pot,lab:x.lab,mixTxt:x.mixTxt,grade:x.grade,why:x.why,rf:x.rf,pos:x.pos}))};},
+ sumText(D,link){const st=k=>D.acts.filter(a=>a.st===k).map(a=>`${a.me?'나':'상대'} ${a.t}`).join(' → ');const b=D.board.map(c=>this.cT(c));
+  const L=[`🎓 헤즈업 스팟 (${D.S}BB · 빅앤티)`,`나: ${D.hero} ${D.hc.map(c=>this.cT(c)).join('')} / 상대: ${D.vil}${D.vc?' '+D.vc.map(c=>this.cT(c)).join(''):''}`];
+  if(b.length)L.push(`보드: ${b.slice(0,3).join(' ')}${b[3]?' | '+b[3]:''}${b[4]?' | '+b[4]:''}`);
+  [0,1,2,3].forEach(k=>{const t=st(k);if(t)L.push(`${HU_ST[k]}: ${t}`);});
+  if(D.res)L.push(`결과: ${D.res} (팟 ${D.pot.toFixed(1)}BB)`);
+  D.fb.forEach(x=>L.push(`${['⚠️','🙂','👍'][x.grade]} ${HU_ST[x.street]} ${x.ctx} → 내 선택 ${x.lab} (근사 GTO: ${x.mixTxt})`));
+  L.push('❓ 여러분이라면 어떻게 하셨나요?');if(link)L.push(link);return L.join('\n');},
+ async mkLink(D){if(this.link)return this.link;try{const r=await fetch(API+'/api/hu/share',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({nick:NICK||'',data:JSON.stringify(D)})}).then(r=>r.json());
+  if(r.ok){this.link=location.origin+location.pathname+'#g=hustudy&sh='+r.id;return this.link;}}catch(e){}toast('링크 만들기 실패 (요약만 복사해요)');return '';},
+ async copySum(){const D=this.shared&&this.shared.fb?this.shared:this.pack();const link=this.shared&&this.shared.id?location.href:await this.mkLink(D);copy(this.sumText(D,link).replace(/<[^>]+>/g,''));},
+ async shareIt(){const D=this.shared&&this.shared.fb?this.shared:this.pack();const link=this.shared&&this.shared.id?location.href:await this.mkLink(D);const t=this.sumText(D,link).replace(/<[^>]+>/g,'');
+  if(navigator.share){try{await navigator.share({text:t});return;}catch(e){}}copy(t);},
+ async askAI(){if(this.ai&&this.ai.loading)return;const D=this.shared&&this.shared.fb?this.shared:this.pack();
+  const t=this.sumText(D,'').replace(/<[^>]+>/g,'')+'\n\n[앱 해설]\n'+D.fb.map(x=>`${HU_ST[x.street]}: `+x.why.join(' / ').replace(/<[^>]+>/g,'')).join('\n');
+  this.ai={loading:true};rr();
+  try{const r=await fetch(API+'/api/hu/ask',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({text:t})}).then(r=>r.json());this.ai={text:r.answer||'답을 못 받았어요'};}
+  catch(e){this.ai={text:'서버에 연결이 안 돼요'};}rr();},
+ askHtml(){return `<div class="card" style="border-color:var(--blue)"><div class="t">🙋 이 스팟 물어보기</div><div class="m" style="margin:4px 0 8px">단톡방 사람들에게 물어보거나, AI 코치에게 바로 물어봐요</div>
+   <div class="g2b" style="margin-top:0"><button class="btn b2" onclick="CUR.copySum()">📋 카톡용 요약+링크 복사</button><button class="btn" onclick="CUR.shareIt()">📤 공유하기</button></div>
+   <button class="btn full g" style="margin-top:8px" onclick="CUR.askAI()">🤖 AI 코치에게 물어보기</button>
+   ${this.ai?`<div class="card" style="margin-top:10px;background:#fff;white-space:pre-wrap;font-size:13.5px;line-height:1.6">${this.ai.loading?'🤖 생각 중… (10~20초)':esc(this.ai.text)}</div><div class="m">AI 답변도 틀릴 수 있어요. 참고용이에요.</div>`:''}</div>`;},
+ sharedView(){const D=this.shared;if(D.loading)return '<div class="gq">불러오는 중…</div>';if(D.err)return `<div class="gq">${esc(D.err)}</div><button class="btn full" onclick="CUR.shared=null;location.hash='g=hustudy'">헤즈업 공부하러 가기</button>`;
+  const st=k=>D.acts.filter(a=>a.st===k);
+  return `<div class="card"><div class="t">📨 ${esc(D.nick||'회원')}님이 공유한 스팟 · ${D.S}BB 빅앤티</div><div class="m">나 = ${D.hero} · 상대 = ${D.vil}${D.res?' · 결과 '+D.res:''}</div>
+    <div style="display:flex;gap:10px;justify-content:center;align-items:center;margin:8px 0">${cardsHtml(D.hc)}${D.board.length?cardsHtml(D.board,true):''}</div>${D.vc?`<div class="m" style="text-align:center">상대 패 ${D.vc.map(c=>this.cT(c)).join(' ')}</div>`:''}
+    ${[0,1,2,3].filter(k=>st(k).length).map(k=>`<div style="margin:3px 0"><b style="color:var(--brown)">${HU_ST[k]}</b> ${st(k).map(a=>`<span style="padding:3px 8px;border-radius:999px;font-weight:800;background:${a.me?'var(--blue2)':'#eee'}">${a.me?'공유자':'상대'} ${esc(a.t)}</span>`).join(' ')}</div>`).join('')}</div>
+   ${D.fb.map(x=>this.fbHtml(x,true)).join('')}${this.askHtml()}
+   <button class="btn full b2" style="margin-top:10px" onclick="CUR.shared=null;CUR.ai=null;location.hash='g=hustudy'">나도 헤즈업 공부하기</button>`;},
  setS(v){this.Ssel=v;lsSet('hu_S2',v);rr();},setP(v){this.pos=v;lsSet('hu_pos',v);rr();},
- deal(){this.S=this.Ssel==='랜덤'?pick(HU_STACKS):this.Ssel;const hero=this.pos==='랜덤'?pick(['BTN','BB']):this.pos;const vil=hero==='BTN'?'BB':'BTN';const d=deck();
+ deal(){this.link=null;this.ai=null;this.S=this.Ssel==='랜덤'?pick(HU_STACKS):this.Ssel;const hero=this.pos==='랜덤'?pick(['BTN','BB']):this.pos;const vil=hero==='BTN'?'BB':'BTN';const d=deck();
   const C={BTN:[d[0],d[1]],BB:[d[2],d[3]]};const one=()=>new Array(HU.ALL.length).fill(1);
   this.h={hero,vil,C,rest:d.slice(4),board:[],street:0,pot:2.5,st:{BTN:this.S-.5,BB:this.S-2},inv:{BTN:.5,BB:1},acts:[],toAct:'BTN',raises:1,acted:{},lastAgg:'BB',pfAgg:null,rng:{BTN:one(),BB:one()},log:[],fb:null,over:null,stat:{}};
   this.fbAll=[];this.step();},
@@ -976,16 +1021,21 @@ G.push({k:'hustudy',study:true,cat:'공부',e:'🎓',n:'헤즈업 공부',d:'스
     why.push(`올인 콜 판단: 상대 레인지 상대로 내 승률 ${Math.round(eq*100)}% · 필요 승률 ${Math.round(need*100)}%`);}}
   else{let rz;this._boost=false;[mix,cls,rz]=this.postStrat(p,hole,opts);eq=huEq(hole,h.rng[this.opp(p)],h.board,500);
    const st=h.stat[h.street],tx=huTex(h.board),me=p==='BTN'?st.eqBTN:1-st.eqBTN,nm=p==='BTN'?st.nBTN:st.nBB,no=p==='BTN'?st.nBB:st.nBTN;
-   why.push(`내 패: ${HU_KO[cls]} · 상대 레인지 상대로 승률 ${Math.round(eq*100)}%`);
-   why.push(`보드: ${tx.mono?(h.board.length===3?'모노톤':'플러시 가능'):tx.two?'투톤':'레인보우'}${tx.conn?'·연결':''}${tx.pair?'·페어':''}${tx.high?'·하이':''}${tx.low?'·로우':''} → 레인지 에퀴티 나 ${Math.round(me*100)}% · 넛 비율 나 ${(nm*100).toFixed(1)}% vs 상대 ${(no*100).toFixed(1)}%`);
+   const fl3=[0,1,2,3].some(su=>h.board.filter(c=>c.s===su).length>=3),pairB=tx.pair;
+   why.push(`<b>내 패: ${huHandName(hole,h.board)}</b> (${HU_KO[cls]})`);
+   why.push(`보드: ${fl3?(h.board.length===3?'한 무늬 3장(플러시 완성 가능)':'같은 무늬 3장↑ → 플러시 가능'):tx.two?'같은 무늬 2장(플러시 드로우 가능)':'무늬 흩어짐'}${tx.conn?' · 숫자가 이어져 스트레이트 가능':''}${pairB?' · 페어 보드(풀하우스 가능)':''}`);
    if(tc>0){need=tc/(h.pot+tc);
-    // 에퀴티로 보정 (메이드 계열)
-    if(['medium','weak','strong'].includes(cls)){if(eq<need-.07){mix={fold:.85,call:.15};}else if(eq>need+.12&&cls!=='strong'){mix={fold:.1,call:.9};}}
-    if(eq>.8&&rz){mix={call:.35,['raise:'+rz.lab]:.65};}
-    why.push(`콜에 필요한 승률 ${Math.round(need*100)}% (팟 오즈)`+(['draw','combo','gut'].includes(cls)&&h.street<3?' · 드로우는 다음 카드 가치(임플라이드)까지 봐요':''));}
-   else{const k=Object.keys(mix).find(x=>x.startsWith('bet'));const thr=h.street===3?.72:.62,cap=this.ctxFor(p).donk?.3:.8;const up=Math.max(0,Math.min(1,(eq-thr)/.22))*cap;
+    this._eqAdj=null;if(['medium','weak','strong'].includes(cls)){if(eq<need-.07){mix={fold:.85,call:.15};this._eqAdj='fold';}else if(eq>need+.12&&cls!=='strong'){mix={fold:.1,call:.9};this._eqAdj='call';}}
+    if(rz){if(h.street<3&&eq>.8&&['nut','strong','combo'].includes(cls))mix={call:.5,['raise:'+rz.lab]:.5};else if(h.street===3&&cls==='nut'&&eq>.85)mix={call:.4,['raise:'+rz.lab]:.6};}
+    why.push(`상대가 ${tc.toFixed(1)}BB를 걸었어요. 내가 ${tc.toFixed(1)}BB를 내고 ${(h.pot+tc).toFixed(1)}BB 팟을 다투는 거라 <b>${Math.round(need*100)}%만 이기면 본전</b>이에요 (팟 오즈).`);
+    why.push(`상대가 여기서 이렇게 베팅할 만한 패들(지금까지 액션으로 추린 범위) 상대로 내 승률은 <b>약 ${Math.round(eq*100)}%</b> → ${eq>=need+.05?'콜은 확실히 이득':eq>=need-.03?'콜과 폴드가 비슷':'콜하면 손해 쪽'}.`);
+    if(rz&&h.street===3&&cls!=='nut'&&eq>need)why.push(`그럼 레이즈(올인)는? 리버 레이즈는 <b>나보다 약한 패가 콜해줄 때만</b> 이득이에요. 상대는 블러프면 폴드하고, 콜하는 건 대부분 나를 이기는 패${fl3?'(플러시 등)':''}라서 → 레이즈보다 <b>콜로 받는 게 기본</b>이에요.`);
+    if(rz&&cls==='nut')why.push(`거의 최고 패라 레이즈하면 상대의 강한 패(나보다 약한)에게서 칩을 더 받을 수 있어요. 일부는 콜로 숨겨 상대 블러프도 받아요.`);
+    if(['draw','combo','gut'].includes(cls)&&h.street<3)why.push('드로우는 지금 승률 + 완성됐을 때 더 받을 칩(임플라이드)까지 생각해요.');}
+   else{why.push(`지금까지 액션으로 추린 상대 패 범위 대비 내 승률 약 ${Math.round(eq*100)}%.`);const k=Object.keys(mix).find(x=>x.startsWith('bet'));const thr=h.street===3?.72:.62,cap=this.ctxFor(p).donk?.3:.8;const up=Math.max(0,Math.min(1,(eq-thr)/.22))*cap;
     if(k&&up>0&&['medium','weak','strong'].includes(cls)){const f0=mix[k];const f1=f0+(1-f0)*up;if(f1-f0>.08){mix={check:1-f1,[k]:f1};this._boost=true;why.push(`상대 레인지(지금까지 액션으로 좁혀진) 대비 승률 ${Math.round(eq*100)}%라 얇은 밸류 베팅 빈도를 올려요.`);}}
     if(h.street===3&&['air','draw','gut'].includes(cls))why.push('리버 블러프는 쇼다운으로 못 이기는 패 중에서, 상대 콜 레인지를 막는 카드(블로커)가 있을 때 고르면 좋아요.');}
+   why.push(`전체 그림: 서로 가능한 모든 패로 보면 내 쪽 승률 ${Math.round(me*100)}% · 강한 패(투페어 이상) 비율 나 ${(nm*100).toFixed(1)}% vs 상대 ${(no*100).toFixed(1)}%`);
    why.push(this.reason(cls,p,tc>0,tx,me,nm-no));}
   // 이번 선택의 빈도
   const catOf=k=>{const t=k.split(':')[0];return t==='fold'?'fold':(t==='call'||t==='check')?'pass':'agg';};const myc=catOf(a.t);let f=0,szTip='';
@@ -1003,8 +1053,8 @@ G.push({k:'hustudy',study:true,cat:'공부',e:'🎓',n:'헤즈업 공부',d:'스
    if(s===2)R.push('턴은 레인지가 갈라지는 구간: 밸류 + 에퀴티 있는 드로우는 계속 압박, 쇼다운 가치 있는 중간 패는 체크로 팟 조절.');
    if(s===3)R.push('리버는 양극화: 강한 밸류와 블러프(드로우 실패한 패)만 베팅, 중간 패는 체크해서 쇼다운.');
    if(this._boost&&['medium','weak'].includes(cls))R.push('보통 이런 패는 체크가 기본이지만, 상대가 약함을 보였으면 더 약한 패(콜 할 패)가 많아 얇은 밸류 베팅이 이득이에요.');else if(cls==='nut'&&this.ctxFor(p).donk)R.push('넛급도 공격자 앞에선 체크 후 체크레이즈로 팟을 키우는 게 기본이에요.');else R.push({nut:'넛급은 팟을 키워야 해요.',strong:'강한 메이드는 더 약한 패에게 콜 받기 좋아 밸류 베팅.',medium:'중간 패는 베팅하면 더 좋은 패만 콜/약한 패는 폴드 → 체크가 기본.',weak:'약한 메이드는 쇼다운 가치를 지키며 체크.',combo:'메이드+드로우는 폴드 에퀴티와 에퀴티가 다 있어 공격적으로.',draw:'강한 드로우는 세미블러프 베팅 후보.',gut:'백도어·거트샷은 블러프 후보 (낮은 빈도).',air:'아무것도 없으면 레인지 우위가 있을 때만 블러프, 아니면 포기.'}[cls]);}
-  else{R.push({nut:'넛급은 레이즈로 밸류를 키워요 (일부는 콜로 숨기기).',strong:'강한 메이드는 주로 콜 — 레이즈하면 더 약한 패가 다 폴드해요.',medium:'중간 패는 사이즈가 작으면 콜, 크면 폴드 많이.',weak:'약한 메이드는 작은 베팅에만 일부 콜.',combo:'콤보드로우는 레이즈 좋은 후보 (폴드 에퀴티+에퀴티).',draw:'드로우는 팟 오즈·임플라이드가 맞으면 콜, 일부 레이즈.',gut:'거트샷은 싼 가격일 때만.',air:'에어는 대부분 폴드 (낮은 빈도 블러프 레이즈).'}[cls]);
-   R.push(`MDF: 이 사이즈면 레인지의 ${Math.round(100/(1+this.toCall(p)/Math.max(.1,h.pot-this.toCall(p))))}% 정도는 지켜야 상대 블러프가 공짜가 안 돼요.`);}
+  else{if(this._eqAdj==='call')R.push('패 등급만 보면 애매하지만, 상대가 이 라인으로 베팅하는 범위엔 블러프·나보다 약한 패가 많아서 콜이 이득이에요.');else if(this._eqAdj==='fold')R.push('패는 괜찮아 보여도 이 가격에선 이기는 경우가 적어서 폴드가 기본이에요.');else R.push({nut:'넛급은 레이즈로 밸류를 키워요 (일부는 콜로 숨기기).',strong:'강한 메이드는 주로 콜 — 레이즈하면 나보다 약한 패는 다 폴드하고 강한 패만 남아요.',medium:'중간 패는 사이즈가 작으면 콜, 크면 폴드 많이.',weak:'약한 메이드는 작은 베팅에만 일부 콜.',combo:'콤보드로우는 레이즈 좋은 후보 (폴드 에퀴티+에퀴티).',draw:'드로우는 팟 오즈·임플라이드가 맞으면 콜, 일부 레이즈.',gut:'거트샷은 싼 가격일 때만.',air:'에어는 대부분 폴드 (낮은 빈도 블러프 레이즈).'}[cls]);
+   R.push(`참고(최소 방어 빈도 MDF): 상대 블러프가 공짜로 먹히지 않으려면 이 사이즈에선 내 전체 패 중 ${Math.round(100/(1+this.toCall(p)/Math.max(.1,h.pot-this.toCall(p))))}% 정도는 콜·레이즈로 지켜야 해요.`);}
   return R.join(' ');},
  fbHtml(x,full){const G2=['⚠️ 빈도 낮은 선택','🙂 가능한 선택 (혼합)','👍 좋은 선택'];const col=['#c62828','#b8860b','#2e7d32'][x.grade];
   return `<div class="card" style="border-color:${col}"><div style="font-size:13px;color:var(--sub);font-weight:700">${HU_ST[x.street]} · ${esc(x.ctx||'')} · 팟 ${x.pot.toFixed(1)}BB</div><div class="t" style="color:${col};font-size:17px">내 선택: ${x.lab} → ${G2[x.grade]}</div>
@@ -1012,7 +1062,7 @@ G.push({k:'hustudy',study:true,cat:'공부',e:'🎓',n:'헤즈업 공부',d:'스
    <div style="font-size:13.5px;margin:4px 0"><b>근사 GTO:</b> ${x.mixTxt}</div>
    ${x.rf?`<div class="m">내 레인지 전체(${x.pos}): 공격 ${Math.round(x.rf.ag*100)}% · 체크/콜 ${Math.round(x.rf.pa*100)}%${x.rf.fo>.005?' · 폴드 '+Math.round(x.rf.fo*100)+'%':''}</div>`:''}
    <div style="font-size:13px;line-height:1.55;margin-top:6px">${x.why.map(w=>'· '+w).join('<br>')}</div></div>`;},
- view(){const h=this.h;
+ view(){if(this.shared)return this.sharedView();const h=this.h;
   if(!h){const t=this.tot;return `<div class="card"><div class="t">🎓 헤즈업 공부</div><div class="m" style="line-height:1.6;margin-top:4px">1:1 노리밋 홀덤 한 핸드씩 진행돼요. 프리플랍·플랍·턴·리버에서 액션을 고를 때마다 <b>근사 GTO 빈도</b>와 이유를 알려줘요.<br>승패보다 <b>결정의 질</b>을 보는 공부용이에요.</div></div>
    <div class="sec">스택 (유효 스택)</div><div class="g3b" style="margin-top:0;grid-template-columns:repeat(5,1fr)">${[...HU_STACKS,'랜덤'].map(v=>`<button class="btn ${this.Ssel===v?'':'gr'}" style="padding:10px 2px;font-size:14px" onclick="CUR.setS(${typeof v==='number'?v:"'랜덤'"})">${v}${typeof v==='number'?'':''}</button>`).join('')}</div>
    <div class="card m" style="margin-top:10px;line-height:1.6">💡 <b>블라인드</b>: 헤즈업은 <b>버튼(BTN)이 스몰블라인드 0.5BB</b>를 내고, <b>BB는 1BB + 빅앤티 1BB</b>를 내요 (시작 팟 2.5BB).<br>프리플랍은 BTN이 먼저, 플랍부터는 BB가 먼저 행동해요 (BTN이 포지션).</div>
@@ -1039,7 +1089,7 @@ G.push({k:'hustudy',study:true,cat:'공부',e:'🎓',n:'헤즈업 공부',d:'스
    ${res}
    ${!h.over&&h.toAct===H?`<div class="g2b" style="margin-top:0">${h.opts.map((o,i)=>`<button class="btn ${o.t==='fold'?'gr':o.t==='check'||o.t==='call'?'b2':''}" onclick="CUR.act(${i})">${o.lab}</button>`).join('')}</div>`:''}
    ${h.over?`<div class="g2b"><button class="btn g" onclick="CUR.deal()">다음 핸드</button><button class="btn b2" onclick="CUR.h=null;rr()">설정</button></div>
-     <div class="sec">📋 이번 핸드 복기 · 좋은 선택 ${g}/${this.fbAll.length}</div>${this.fbAll.map(x=>this.fbHtml(x,true)).join('')||'<div class="card m">내 결정이 없었어요 (상대가 먼저 폴드)</div>'}`
+     <div class="sec">📋 이번 핸드 복기 · 좋은 선택 ${g}/${this.fbAll.length}</div>${this.fbAll.map(x=>this.fbHtml(x,true)).join('')||'<div class="card m">내 결정이 없었어요 (상대가 먼저 폴드)</div>'}${this.fbAll.length?this.askHtml():''}`
     :(last?'<div class="sec">방금 내 결정</div>'+this.fbHtml(last,false):'')}
    <div class="sec">진행</div><div class="card m" style="font-size:12.5px;line-height:1.6">${h.log.map(esc).join('<br>')||'-'}</div>`;}});
 // ===== 🕹️ 아케이드 =====
@@ -1081,7 +1131,7 @@ function rankView(){const B=GD.boards||{};let h='<div class="sec">🏆 이번 �
  return h+'<div class="m" style="text-align:center">랭킹은 홈이 갱신될 때(10분 안) 반영돼요</div>';}
 function render(){const hsh=location.hash.slice(1);if(CUR&&CUR.stop)CUR.stop();SWH=null;clearInterval(clock.iv);
  const back=$('backBtn');
- if(hsh.startsWith('g=')){const g=G.find(x=>x.k===hsh.slice(2));if(g){CUR=g;setTitle(g.e+' '+g.n);back.style.display=g.study?'none':'';g.start();scrollTo(0,0);return;}}
+ if(hsh.startsWith('g=')){const g=G.find(x=>x.k===hsh.slice(2).split('&')[0]);if(g){CUR=g;setTitle(g.e+' '+g.n);back.style.display=g.study?'none':'';g.start();scrollTo(0,0);return;}}
  CUR=null;back.style.display='none';
  if(hsh==='rank'){setTitle('🏆 게임 랭킹');back.style.display='';show(rankView());return;}
  setTitle('🎮 뚝섬 게임 · '+G.filter(g=>!g.study).length+'종');show(listView());}
