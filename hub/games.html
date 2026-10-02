@@ -59,7 +59,13 @@ input.q{width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius
 <div class="wrap" id="app"></div>
 <div class="toast" id="toast"></div>
 <script>
-const GD={},API="https://majority-rebuild-take.ngrok-free.dev";
+const GD={"d": "2026-10-03", "boards": {"whowins": [["구우", 1]], "hilo": [["구우", 3]], "c2048": [["구우", 1072]], "snake": [["구우", 10]], "breakout": [["구우", 90]], "flappy": [["구우", 0]], "stack": [["구우", 2]]}, "today": [], "games": {"challenge": ["오늘의 챌린지", false, "x5", false], "pushfold": ["푸시/폴드", false, "streak", false], "equity": ["승률 맞히기", false, "pt", false], "handrank": ["족보 맞히기", false, "pt", false], "whowins": ["누가 이겼나", false, "streak", false], "outs": ["아웃츠 세기", false, "x10", false], "potodds": ["팟 오즈", false, "pt", false], "hilo": ["하이로우", false, "streak", false], "blackjack": ["블랙잭", false, "chip", false], "vpoker": ["비디오 포커", false, "chip", false], "memory": ["카드 짝맞추기", true, "sec", false], "c2048": ["카드 2048", false, "pt", false], "n2048": ["2048", false, "pt", false], "mines": ["지뢰찾기", true, "sec", true], "slide15": ["15퍼즐", true, "moves", false], "nonogram": ["네모로직", true, "sec", true], "lights": ["라이츠 아웃", true, "moves", false], "chosung": ["홀덤 초성퀴즈", false, "pt", false], "baseball": ["숫자야구", true, "tries", false], "hanoi": ["하노이 탑", true, "moves", false], "sudoku": ["스도쿠", true, "sec", true], "omok": ["오목", false, "win", true], "othello": ["오델로", false, "win", true], "snake": ["뱀 게임", false, "pt", false], "breakout": ["벽돌 깨기", false, "pt", false], "flappy": ["플래피 칩", false, "pt", false], "reaction": ["반응속도", true, "ms", false], "stack": ["스택 쌓기", false, "pt", false], "mole": ["두더지 잡기", false, "pt", false], "baccarat": ["바카라", false, "chip", false], "threecard": ["3카드 포커", false, "chip", false], "psquares": ["포커 스퀘어", false, "pt", false], "pyramid": ["피라미드", false, "pt", false], "klondike": ["솔리테어", true, "sec", false], "headsup": ["헤즈업 vs AI", false, "win", false], "crossword": ["가로세로 낱말퀴즈", true, "sec", false]}},API="https://majority-rebuild-take.ngrok-free.dev";
+// 푸시/폴드 범위표·승률표는 고정 값이라 페이지에 넣어둠 (서버 계산 없이 항상 동작)
+const GS={"order":"AA KK QQ JJ TT 99 88 AKs 77 AQs AKo AJs AQo ATs 66 KQs AJo KJs A9s ATo KTs A8s KQo 55 KJo A7s A9o QJs K9s KTo A5s A8o QTs A6s A4s A7o QJo K8s A3s 44 K9o Q9s JTs QTo A5o K7s A6o A2s K6s A4o Q8s K8o J9s K5s A3o JTo Q9o K7o A2o K4s 33 Q7s T9s J8s K6o K3s Q8o Q6s J9o K2s K5o Q5s T8s J7s K4o Q4s Q7o T9o J8o 22 K3o Q3s 98s Q6o T7s J6s K2o Q2s Q5o J5s T8o J7o 97s J4s Q4o T6s J3s 98o Q3o 87s T7o J6o 96s J2s Q2o T5s J5o T4s 97o 86s J4o T6o 95s T3s 76s J3o 87o T2s 85s 96o J2o T5o 94s 75s T4o 93s 86o 65s 84s 95o T3o 92s 76o 74s T2o 54s 85o 64s 83s 94o 75o 82s 93o 73s 65o 53s 63s 84o 92o 43s 74o 72s 54o 64o 52s 62s 83o 82o 42s 73o 53o 63o 32s 43o 72o 52o 62o 42o 32o","ranges":{"6_2":"1111111111111111111111111111111111111111111111111111111111111010110001000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","6_3":"1111111111111111111111111111111111111111111111111111111111111011110001001000000100100000000000000000000000000000000000000000000000000000000000000000000000000000000000000","6_4":"1111111111111111111111111111111111111111111111111111111111111111110101101000000100100000000000000001000000000000000000000000000000000000000000000000000000000000000000000","6_5":"1111111111111111111111111111111111111111111111111111111111111111111111111111010110101010000010000001000000000000000000000000000000000000000000000000000000000000000000000","6_6":"1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111110001001000000100001000000000000000000000000000000000000000000000000000000","6_7":"1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111011011110010000100000000000000","8_2":"1111111111111111111111111111111111110011001010110100001000001000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","8_3":"1111111111111111111111111111111111111111011010110100001000101010000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","8_4":"1111111111111111111111111111111111111111111111111100101000101010000000000000000100100000000000000000000000000000000000000000000000000000000000000000000000000000000000000","8_5":"1111111111111111111111111111111111111111111111111111111101111011010001001000000100100000000010000001000000000000001000000000000000000000000000000000000000000000000000000","8_6":"1111111111111111111111111111111111111111111111111111111111111111111111111111010111101010000010000001001000000100001000000001000100000001000000000000000000000000000000000","8_7":"1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111011110011101011010011110010010100010000000000","10_2":"1111111111111111111111111111001111100011001000000000000000001000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","10_3":"1111111111111111111111111111101111110011001000010000000000001000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","10_4":"1111111111111111111111111111111111111011011010110100101000001010000000000000000100100000000000000000000000000000000000000000000000000000000000000000000000000000000000000","10_5":"1111111111111111111111111111111111111111111111111110111100101011000000001000000100100000000010000001000000000000001000000000000000000000000000000000000000000000000000000","10_6":"1111111111111111111111111111111111111111111111111111111111111111110111111101010100101000000010010001001000000100001000000001000100000001000000000000000000000000000000000","10_7":"1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111011110011011110001101010010011110010010100010000000000","12_2":"1111111111111111111111110111000010000001001000000000000000001000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","12_3":"1111111111111111111111111111001111100001001000000000000000001000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","12_4":"1111111111111111111111111111111111110011011000010000100000001010000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","12_5":"1111111111111111111111111111111111111111011111110110101100101011000000001000000100100000000010000001000000000000001000000000000000000000000000000000000000000000000000000","12_6":"1111111111111111111111111111111111111111111111111111111100111111010101011100010100101000000010010001001000000100001000100001000100000001000000000000000000000000000000000","12_7":"1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111101111011100111011100011011110001101010010011110010010100010000000000","15_2":"1111111111111111111110010001000000000001000000000000000000001000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","15_3":"1111111111111111111111110001000010000001001000000000000000001000000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","15_4":"1111111111111111111111111111101111100001001000000000100000001010000000000000000100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000","15_5":"1111111111111111111111111111111111111111011111110000100100001011000000001000000100100000000000000001000000000000000000000000000000000000000000000000000000000000000000000","15_6":"1111111111111111111111111111111111111111111111111110111100111111000100001100010100101000000010000001001000000100001000000001000100000001000000000000000000000000000000000","15_7":"1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111011101101101011100111011100011001110001101010000011110010000100000000000000"},"eqs":[["JJ","J8o",90],["AA","QTo",85],["A9s","T4s",63],["J8s","QJo",30],["Q6s","ATs",36],["22","A4o",53],["Q8o","A3s",39],["88","QQ",19],["J6s","33",49],["K6s","J6o",76],["KQs","Q3s",73],["J3s","AJo",27],["T5s","22",50],["K3s","AKs",27],["K2o","K9s",28],["Q5s","J5o",75],["T9s","A9s",34],["KTo","A3s",41],["QTo","98s",61],["JTs","TT",38],["QTs","55",51],["K3s","Q5o",62],["T6s","TT",14],["K9o","K7o",70],["A6o","TT",28],["KJo","AKo",26],["Q2s","T5s",58],["Q9s","Q4s",67],["J5s","98o",57],["Q2o","K8s",34],["A3s","A2o",56],["QJs","J3s",72],["AJo","Q8o",64],["K9o","K8o",70],["T7s","A9s",40],["44","Q8o",53],["A7s","44",48],["A8o","55",45],["KQs","Q8o",76],["T4s","K2s",42],["TT","K5o",72],["AKo","K3s",73],["T6s","KQo",37],["A3o","KK",29],["44","Q2o",70],["98o","JJ",16],["Q5o","K9s",34],["A5s","K5o",76],["97s","J5s",44],["J2s","AJs",26],["Q6o","J8s",54],["87s","99",18],["T6s","J9s",36],["96s","J8s",37],["K6o","Q8o",59],["T6s","A8o",41],["Q6s","JTs",54],["Q4s","K5s",38],["A6s","Q5o",66],["AJs","A8s",70],["QQ","Q9s",86],["88","K3o",71],["K9s","J8s",62],["A7s","K5s",63],["Q4o","Q9o",30],["T9s","ATs",31],["A6s","QQ",32],["K5s","K6o",44],["J9o","AQs",34],["AJo","J5s",72],["55","Q5o",69],["AKo","J5o",67],["Q8o","T4s",61],["87s","Q8s",31],["T9s","A7s",45],["AKs","T7s",64],["A8o","98s",66],["98s","JTs",35],["T7s","K7s",31],["Q3o","A5s",33],["A7s","86s",60],["55","Q9s",50],["QJo","KJs",25],["K9o","A9s",25],["AJs","J4s",73],["98o","J8s",28],["JJ","QTo",71],["A9o","KK",28],["K4o","K9o",30],["JJ","QJs",63],["J6o","J4s",56],["K4s","KTo",32],["88","AKo",55],["Q6o","44",45],["KTo","Q8o",66],["J7o","J4s",60],["KJs","96s",64],["AQo","AA",7],["J5s","K2s",42],["K6s","K7o",40],["K9s","Q8s",63],["J8s","Q2s",44],["T4s","J8s",36],["K9s","T6s",62],["97o","Q5s",41],["A2s","97s",55],["97o","KK",17],["Q4s","66",33],["Q8s","K3o",45],["T4s","A6o",41],["87s","K2o",49],["T9s","J7o",47],["K3o","Q7s",56],["A5o","Q2o",65],["97s","A8s",40],["T4s","Q5o",40],["86s","K5s",43],["A2s","A4s",47],["AKs","J6s",66],["J4s","Q8o",39],["A2o","J6o",59],["A4o","44",33],["96s","JTo",36],["A8s","K6s",62],["T9o","J8o",42],["A7o","86s",57],["Q9o","JTo",58],["Q2s","AKs",33],["KQs","88",49],["Q8s","22",51],["K2s","QJs",56],["JTs","J4s",70],["AQo","T9o",63],["KQs","Q6o",76],["J6o","K9s",34],["K3s","K9s",33],["77","66",82],["AJo","K2s",62],["Q6o","T9s",52],["66","Q6s",65],["Q5s","JTs",54],["44","Q3o",70],["T7s","QJs",34],["J4s","AQs",34],["KJs","A7o",46],["A4o","88",30],["Q9s","98o",72],["QQ","A7o",72],["KTo","Q7o",66],["T4s","T8o",36],["A4s","22",50],["KJs","A9s",43],["T9s","Q4o",49],["KJs","A4s",43],["98o","K7o",43],["99","K4o",72],["AJo","33",48],["A3s","Q2s",64],["A9o","T9o",69],["QJo","AA",15],["Q3s","97s",56],["J2s","22",37],["A8s","Q9s",58],["86s","55",49],["A5o","T7s",54],["55","A8s",53],["J5o","Q3s",39],["88","QJs",51],["JJ","A7s",68],["Q3s","T8o",58],["T4s","KK",17],["J6s","A6o",30],["K9o","J8o",62],["87s","A7o",35],["97o","A6s",40],["T6s","Q9s",36],["T5s","A7o",40],["66","K5o",70],["KK","J7s",82],["QTo","K9o",42],["TT","98s",82],["99","AJs",52],["K5s","J8o",60],["ATs","KTs",71],["Q3o","Q7o",37],["Q7s","A9o",40],["97o","K2s",42],["A5s","Q4o",67],["Q3o","J5o",59],["K5s","66",34],["A8s","KQs",57],["J2s","KK",16],["TT","QQ",18],["KJo","77",46],["Q2s","KJs",35],["KQo","QJs",70],["Q5s","A2s",41],["K5o","97o",57],["J5o","AQo",32],["J7s","J6o",66],["A9o","Q7s",60],["K2s","KTo",32],["T9s","33",53],["K7s","T4s",62],["A2o","86s",52],["T6s","A6o",31],["Q4s","J3s",63],["98o","K9s",28],["Q9s","ATo",40],["Q4s","A5s",37],["K9o","98s",68],["J2s","K3o",40],["Q6s","A4s",41],["K8o","33",47],["J6s","J5o",61],["ATs","J7s",63],["K6o","Q7o",61],["A6s","A4o",60],["AQs","A7o",74],["Q7o","K7s",24],["98s","AQs",38],["AQs","44",48],["Q6o","Q3s",56],["TT","A9s",68],["22","Q6o",53],["AKs","K8s",72],["A4o","K6o",60],["96s","97s",38],["Q8s","JTs",56],["T8o","QTo",27],["KQo","J6s",64],["T8o","A8s",28],["K4s","A7o",40],["Q9s","K8o",45],["Q3s","J9s",56],["T8s","J5o",47],["98o","Q3s",43],["55","T7o",52],["A5o","98s",53],["A9s","K8o",66],["KTo","K3s",68],["KTo","AQs",36],["A4o","98o",55],["QQ","ATs",68],["K6s","Q9s",57],["98s","A7o",47],["Q7s","Q9s",33],["AJs","Q9s",62],["Q9o","Q3o",70],["A4o","AKo",27],["98o","QJo",36],["98o","K8s",29],["T5s","A5o",29],["AJo","K7o",64],["Q5o","KTo",34],["66","J3s",67],["A2s","77",33],["KTo","K6o",71],["Q3o","AA",12],["K6s","KJs",30],["K3o","Q8s",55],["Q9s","J3s",64],["Q2s","K3o",39],["87s","QJo",39],["A2o","QTo",56],["86s","A7s",40],["Q7o","JTo",55],["A6s","Q6o",76],["K9o","JTs",53],["A4s","Q7s",59],["Q3o","33",33],["Q5o","AQs",23],["AQo","33",47],["Q5s","A5s",28],["J9s","99",37],["Q5s","97s",56],["Q9s","K9s",29],["98s","ATs",39],["Q8s","QTo",32],["Q8s","Q7o",69],["KJs","QJo",75],["97s","A4s",44],["55","K8o",55],["KQs","AJs",41],["QTs","J8o",67],["K9o","A3s",39],["T6s","J5o",44],["77","K4o",71],["T7o","96s",60],["K6s","77",33],["A8s","AA",12],["ATo","K9s",61],["Q6o","T7s",55],["KQs","A2s",43],["A3s","KQo",60],["JTo","K6o",46],["K3o","98o",54],["K5o","QTs",52],["T4s","J3s",41],["T9o","A5s",42],["QJo","K2s",42],["J5s","T8s",56],["T9o","Q7o",44],["Q3s","T9s",54],["J7o","QJo",25],["KJs","A3o",46],["T5s","J9o",37],["QQ","T9o",84],["J9s","K5o",47],["A9s","97s",69],["JJ","K4s",68],["AJo","A2o",72],["A7s","99",33],["T6s","A9o",42],["K6s","A2o",44],["Q3s","Q4o",50],["J6o","33",46],["Q4s","K3o",43],["K5s","T8o",58],["99","88",82],["J7s","K2s",43],["K3s","Q4s",60],["QJo","A9o",43],["Q5s","T8o",58],["A2o","Q2o",76],["Q3o","97o",56],["J9o","A7s",41],["A8o","Q8s",70],["A7o","J8s",55],["K4o","A3o",38],["Q2o","K3s",34],["K3o","JTo",54],["T5s","97o",59],["97o","A8o",39],["T7s","33",51],["A5o","J9o",57],["A9s","Q5s",62],["K9s","Q7o",67],["Q9s","T8s",61],["K2o","K9o",29],["A9s","T9o",71],["K2s","T6s",57],["K7o","KQs",25],["Q8o","JTs",53],["KQs","K4o",75],["66","A2o",70],["Q6o","Q4s",56],["J7o","A6o",42],["A4o","Q4o",75],["A3s","66",34],["J7o","K6s",39],["K7o","QTo",56],["87s","A2s",46],["J3s","JTs",30],["KQs","99",47],["K8s","KTs",30],["J7s","Q3o",45],["97s","QTs",35],["A6s","JTo",57],["J8o","A2s",40],["Q8o","Q3s",64],["J3s","K9o",39],["J4s","QJo",29],["T6s","K4s",42],["Q6o","K5s",38],["AQs","KTo",64],["A7s","J9o",59],["A9s","A4s",66],["KTo","Q9s",61],["Q2o","KTo",33],["J4s","K4o",30],["Q4s","JTs",55],["J9s","J7o",71],["K4o","KTs",27],["A6o","QJo",56],["K6s","A2s",42],["J7o","AKo",34],["KJs","88",49],["KTs","QTs",70],["33","98o",49],["Q8o","A9o",37],["Q4o","KJs",33],["A9s","Q6o",65],["A3s","JJ",33],["55","A7s",53],["A7s","A8o",36],["J4s","A2s",40],["TT","Q2o",73],["K5o","87s",53],["QJs","AQo",31],["KTo","A4o",43],["55","T9o",50],["K3o","KTs",26],["77","A4s",66],["J5o","KJs",24],["77","33",81],["J5s","J6o",44],["K5o","ATo",35],["K6o","A3o",40],["QJo","Q5s",69],["A5s","T7o",60],["K4o","44",32],["TT","KTo",68],["Q3o","AJs",33],["K7s","K9s",33],["98s","JJ",20],["T9s","88",49],["J9s","Q2s",45],["K6s","96s",69],["KK","J6o",88],["A6o","99",29],["ATo","J7s",60],["A9o","J7o",63],["JTs","AKo",41],["Q5o","K4o",40],["K8s","A5o",43],["A4o","K4o",76],["A4s","A7s",40],["22","A4s",50],["KTo","QJs",56],["ATo","QJs",56],["Q7o","T6s",59],["Q2s","ATo",38],["K5o","99",29],["K8s","ATo",38],["K7o","K8o",34],["A8o","T7s",58],["Q7s","87s",67],["Q7o","J9s",54],["J9o","A4o",44],["A5s","A7s",40],["KJo","44",48],["AKs","QQ",46],["J7s","44",49],["Q7s","QTo",32],["T6s","K7o",41],["T8o","QJo",33],["Q9o","T9o",71],["K5o","Q7s",56],["33","Q8o",52],["98s","A4s",45],["QTo","KTo",26],["JTo","Q5o",46],["A9o","J8s",58],["AQs","A3o",74],["QJo","Q6s",69],["AJs","T5s",67],["A4o","A7o",38],["JTs","T7o",75],["98o","KTs",35],["96s","A5o",45],["T8s","A6o",47],["J5o","A7s",35],["K6o","T6s",68],["Q2s","KTo",38],["AJo","T4s",64],["88","AA",20],["A2s","AJo",32],["K8s","Q2s",62],["QTo","JTo",73],["J6s","Q6s",28],["J9s","QJs",29],["98o","44",51],["A3o","KTo",57],["JJ","Q4o",72],["J3s","K8o",40],["K9s","T9s",68],["Q6s","A6o",29],["88","22",82],["QJo","K6o",44],["ATs","Q7o",67],["K4o","T8s",53],["A4s","A6o",45],["AJo","J3s",73],["Q2o","22",33],["A4s","K4o",77],["86s","J7s",39],["Q4s","T7o",60],["J8s","AJs",30],["K2o","K5o",44],["99","Q4o",72],["A2s","Q8s",57],["JTo","J7o",72],["A9o","77",43],["K5s","98s",56],["98o","A7o",43],["A5o","J6s",57],["QTs","T7s",71],["QTo","99",45],["55","K7s",53],["T8s","Q6s",44],["K2s","TT",31],["K2s","KQo",29],["A6s","J9o",58],["33","99",18],["KQs","K9o",75],["T5s","Q9s",36],["Q8o","87s",67],["A5s","K9o",62],["55","86s",51]]};
+GD.order=GS.order;GD.ranges=GS.ranges;GD.eqs=GS.eqs;
+if(!GD.d){const t=new Date();GD.d=t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');}
+function mb32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function hs(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(t,ms){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(()=>e.classList.remove('on'),ms||1700);}
@@ -103,6 +109,10 @@ function stage(){return $('app');}
 function setTitle(t){$('tt').textContent=t;}
 function show(h){stage().innerHTML=h;}
 function rr(){if(CUR&&CUR.view)show(CUR.view());}
+function buildChallenge(d){const rn=mb32(hs('ch'+d)),ri=n=>Math.floor(rn()*n),ORDL=GS.order.split(' '),out=[];
+ for(let k=0;k<5;k++){if(k===1||k===3){let e;do{e=GS.eqs[ri(GS.eqs.length)];}while(Math.abs(e[2]-50)<8);out.push({t:'eq',a:e[0],b:e[1],eq:e[2]});}
+  else{const bb=[6,8,10,12,15][ri(5)],o=2+ri(6),rg=GS.ranges[bb+'_'+o],cut=[...rg].filter(c=>c==='1').length,lo=Math.max(0,cut-14),hi=Math.min(168,cut+13),idx=lo+ri(hi-lo+1),cl=ORDL[idx];
+   out.push({t:'pf',bb,pos:POS9[o],cards:clsCards(cl,ri(1e9)),ans:rg[idx]==='1'?'올인':'폴드',pct:Math.round(cut/169*100),cl});}}return out;}
 const POS9=["UTG","UTG+1","MP","LJ","HJ","CO","BTN","SB","BB"];
 function clsCards(cl,seed){let h=seed==null?R(1e9):seed;const s1=h%4;let s2=s1;if(!cl.endsWith('s')){const o=[0,1,2,3].filter(x=>x!==s1);s2=o[Math.floor(h/4)%3];}
   const rv=ch=>RK.indexOf(ch)+2;return [{r:rv(cl[0]),s:s1},{r:rv(cl[1]),s:s2}];}
@@ -113,13 +123,13 @@ const G=[];
 // ===== 🃏 홀덤 =====
 // 1) 오늘의 챌린지
 G.push({k:'challenge',cat:'홀덤',e:'🃏',n:'오늘의 챌린지',d:'하루 5문제 · 모두 같은 문제',
- start(){const Q=GD.challenge||[];if(!Q.length){show('<div class="card">오늘 문제를 불러오지 못했어요</div>');return;}this.s=lsGet('ch_'+GD.d,{i:0,res:[]});rr();},
+ start(){GD.challenge=buildChallenge(GD.d);this.s=lsGet('ch_'+GD.d,{i:0,res:[]});rr();},
  view(){const Q=GD.challenge,s=this.s;
   if(s.i>=Q.length){const sc=s.res.filter(x=>x).length,grid=s.res.map(x=>x?'🟩':'🟥').join('');const share=`🃏 뚝섬 챌린지 ${+GD.d.slice(5,7)}/${+GD.d.slice(8,10)} ${sc}/5 ${grid}`;
    const T=(GD.today||[]);return `<div class="gbig">${sc}/5</div><div style="text-align:center;font-size:26px;letter-spacing:2px;margin-bottom:10px">${grid}</div>
     <button class="btn full" onclick="copy('${share}')">결과 복사 → 카톡에 붙여넣기</button><div class="sec">오늘 푼 사람</div><div class="card">${T.length?T.map((x,i)=>`<div class="row"><span>${i+1}. ${esc(x[0])}</span><span class="m">${x[1]}/5</span></div>`).join(''):'<div class="m">아직 없어요</div>'}</div>`;}
   const q=Q[s.i];const top=`<div class="gst"><span>${s.i+1} / ${Q.length}</span><span>${s.res.map(x=>x?'🟩':'🟥').join('')}</span></div>`;
-  if(q.t==='pf'){const cs=q.cards.map(x=>({r:RK.indexOf(x[0])+2,s:SU.indexOf(x[1])}));
+  if(q.t==='pf'){const cs=q.cards;
    return top+`<div class="gq">9인 토너먼트 · 앤티 있음<br>내 스택 <b>${q.bb}BB</b> · 위치 <b>${q.pos}</b> · 앞은 모두 폴드</div>${cardsHtml(cs)}<div class="g2b"><button class="btn" onclick="CUR.ans('올인')">올인</button><button class="btn b2" onclick="CUR.ans('폴드')">폴드</button></div>`;}
   return top+`<div class="gq">프리플랍 올인! 누가 더 유리할까?</div><div class="vs"><div>${cardsHtml(clsCards(q.a,7))}<b>${q.a}</b></div><span>VS</span><div>${cardsHtml(clsCards(q.b,11))}<b>${q.b}</b></div></div>
    <div class="g2b"><button class="btn" onclick="CUR.ans('a')">${q.a}</button><button class="btn b2" onclick="CUR.ans('b')">${q.b}</button></div>`;},
@@ -157,13 +167,6 @@ G.push({k:'handrank',cat:'홀덤',e:'🏅',n:'족보 맞히기',d:'7장 중 최�
    <div class="gq" style="margin-top:12px">내 최고 족보는?</div><div class="g4b">${this.opts.map(o=>`<button class="btn ${o.length>5?'b2':''}" style="font-size:15px" onclick="CUR.ans('${o}')">${o}</button>`).join('')}</div>`;},
  ans(o){if(this.over)return;if(o===this.a){this.sc++;toast('✅',500);}else toast('❌ 정답: '+this.a,1200);this.nq();rr();}});
 // 5) 누가 이겼나
-G.push({k:'whowins',cat:'홀덤',e:'⚔️',n:'누가 이겼나',d:'쇼다운 승자 맞히기 · 연속',
- start(){this.n=0;this.over=false;this.msg='';this.nq();rr();},
- nq(){const d=deck();this.A=d.slice(0,2);this.B=d.slice(2,4);this.b=d.slice(4,9);this.ha=best([...this.A,...this.b]);this.hb=best([...this.B,...this.b]);const c=cmpH(this.ha,this.hb);this.ans_=c>0?'A':c<0?'B':'=';},
- view(){const hd=`<div class="gst"><span>연속 <b>${this.n}</b></span><span>내 최고 ${myBest('whowins')||0}</span></div>`;if(this.over)return hd+overHtml(this.n+'연속',this.msg);
-  return hd+(this.msg?`<div class="gok">${this.msg}</div>`:'')+`<div class="lbl">보드</div>${cardsHtml(this.b,1)}<div class="vs" style="margin-top:10px"><div><div class="lbl">A</div>${cardsHtml(this.A)}</div><span>VS</span><div><div class="lbl">B</div>${cardsHtml(this.B)}</div></div>
-   <div class="g3b"><button class="btn" onclick="CUR.ans('A')">A 승</button><button class="btn gr" onclick="CUR.ans('=')">무승부</button><button class="btn b2" onclick="CUR.ans('B')">B 승</button></div>`;},
- ans(a){const why=`A ${catName(this.ha)} · B ${catName(this.hb)}`;if(a===this.ans_){this.n++;this.msg='✅ '+why;this.nq();}else{this.over=true;this.msg='❌ '+why+' → '+(this.ans_==='='?'무승부':this.ans_+' 승');if(this.n>0)record('whowins',this.n);}rr();}});
 // 6) 아웃츠 세기
 G.push({k:'outs',cat:'홀덤',e:'🎲',n:'아웃츠 세기',d:'스트레이트·플러시 이상 되는 카드 · 10문제',
  start(){this.i=0;this.sc=0;this.last='';this.nq();rr();},
@@ -184,46 +187,41 @@ G.push({k:'potodds',cat:'홀덤',e:'💰',n:'팟 오즈',d:'콜에 필요한 승
    <div class="g4b">${this.opts.map(o=>`<button class="btn" onclick="CUR.ans(${o})">${o}%</button>`).join('')}</div>`;},
  ans(o){if(this.over)return;if(o===this.a){this.sc++;toast('✅',500);}else toast('❌ 정답 '+this.a+'%',1200);this.nq();rr();}});
 // 8) 하이로우
-G.push({k:'hilo',cat:'카드',e:'↕️',n:'하이로우',d:'다음 카드 높을까 낮을까',
- start(){this.d=deck();this.c=this.d.pop();this.n=0;this.over=false;this.msg='';rr();},
- view(){const hd=`<div class="gst"><span>연속 <b>${this.n}</b></span><span>내 최고 ${myBest('hilo')||0}</span></div>`;if(this.over)return hd+overHtml(this.n+'연속',this.msg);
-  return hd+(this.msg?`<div class="gok">${this.msg}</div>`:'')+`<div style="transform:scale(1.5);margin:30px 0">${cardsHtml([this.c])}</div><div class="m" style="text-align:center">같은 숫자는 통과 · A가 가장 높아요</div>
-   <div class="g2b"><button class="btn" onclick="CUR.ans(1)">⬆ 높다</button><button class="btn b2" onclick="CUR.ans(-1)">⬇ 낮다</button></div>`;},
- ans(dir){if(this.d.length<2)this.d=deck();const nx=this.d.pop();const diff=nx.r-this.c.r;const prev=this.c;this.c=nx;
-  if(diff===0){this.msg=`${rkCh(prev.r)} → ${rkCh(nx.r)} 같은 숫자 · 통과`;}else if(Math.sign(diff)===dir){this.n++;this.msg=`✅ ${rkCh(prev.r)} → ${rkCh(nx.r)}`;}
-  else{this.over=true;this.msg=`❌ ${rkCh(prev.r)} → ${rkCh(nx.r)}`;if(this.n>0)record('hilo',this.n);}rr();}});
-// 9) 블랙잭 (10핸드 후 칩)
+// 9) 블랙잭 (10핸드 후 칩) · 액션마다 기본 전략과 비교해서 알려줌
 const bjv=cs=>{let t=0,a=0;cs.forEach(c=>{if(c.r===14){a++;t+=11;}else t+=Math.min(10,c.r);});while(t>21&&a){t-=10;a--;}return t;};
-G.push({k:'blackjack',cat:'카드',e:'🂡',n:'블랙잭',d:'10핸드 · 칩 1,000으로 시작',
- start(){this.chips=1000;this.hand=0;this.over=false;this.deal();rr();},
- deal(){if(this.hand>=10||this.chips<100){this.over=true;record('blackjack',this.chips);return;}this.hand++;this.d=deck();this.bet=100;this.p=[this.d.pop(),this.d.pop()];this.dl=[this.d.pop(),this.d.pop()];this.done=false;this.msg='';
+const bjSoft=cs=>{let t=0,a=0;cs.forEach(c=>{if(c.r===14){a++;t+=11;}else t+=Math.min(10,c.r);});while(t>21&&a){t-=10;a--;}return a>0&&t<=21;};
+const upv=c=>c.r===14?11:Math.min(10,c.r);
+// 기본 전략 (딜러 소프트17 스탠드 · 첫 두 장 더블 가능 · 스플릿 없음)
+function bjBasic(cs,up,canD){const t=bjv(cs),soft=bjSoft(cs),u=upv(up);let a;
+ if(soft){if(t>=19)a='S';else if(t===18)a=(u>=3&&u<=6)?'D':(u<=8?'S':'H');else if(t===17)a=(u>=3&&u<=6)?'D':'H';else if(t>=15)a=(u>=4&&u<=6)?'D':'H';else a=(u>=5&&u<=6)?'D':'H';
+  if(a==='D'&&!canD)a=t===18?'S':'H';}
+ else{if(t>=17)a='S';else if(t>=13)a=u<=6?'S':'H';else if(t===12)a=(u>=4&&u<=6)?'S':'H';else if(t===11)a=u<=10?'D':'H';else if(t===10)a=u<=9?'D':'H';else if(t===9)a=(u>=3&&u<=6)?'D':'H';else a='H';
+  if(a==='D'&&!canD)a='H';}
+ return a;}
+const BJN={H:'히트',S:'스탠드',D:'더블'};
+function bjWhy(cs,up,a){const t=bjv(cs),soft=bjSoft(cs),u=upv(up),us=u===11?'A':u;const hand=(soft?'소프트 ':'')+t;
+ const why={D:`${hand} vs 딜러 ${us} → 딜러가 버스트하기 쉽거나 내가 유리해서 베팅을 두 배로`,S:`${hand} vs 딜러 ${us} → 더 받으면 버스트 위험이 커서 딜러가 무너지길 기다려요`,H:`${hand} vs 딜러 ${us} → 이대로는 약해서 한 장 더`}[a];return why;}
+G.push({k:'blackjack',cat:'카드',e:'🂡',n:'블랙잭',d:'10핸드 · 액션마다 기본 전략 알려줌',
+ start(){this.chips=1000;this.hand=0;this.over=false;this.good=0;this.total=0;this.deal();rr();},
+ deal(){if(this.hand>=10||this.chips<100){this.over=true;record('blackjack',this.chips);return;}this.hand++;this.d=deck();this.bet=100;this.p=[this.d.pop(),this.d.pop()];this.dl=[this.d.pop(),this.d.pop()];this.done=false;this.msg='';this.log=[];
   if(bjv(this.p)===21){this.finish();}},
+ note(act){const canD=this.p.length===2&&this.chips>=this.bet;const rec=bjBasic(this.p,this.dl[0],canD);this.total++;if(rec===act)this.good++;
+  this.log.push({act,rec,why:bjWhy(this.p,this.dl[0],rec),t:bjv(this.p)});},
  finish(){this.done=true;let pv=bjv(this.p);while(pv<=21&&bjv(this.dl)<17)this.dl.push(this.d.pop());const dv=bjv(this.dl);let w=0;
   if(pv>21)w=-1;else if(pv===21&&this.p.length===2&&!(dv===21&&this.dl.length===2))w=1.5;else if(dv>21||pv>dv)w=1;else if(pv<dv)w=-1;
   this.chips+=this.bet*w;this.msg=(w>0?'✅ 이겼어요 ':w<0?'❌ 졌어요 ':'🤝 비겼어요 ')+`(나 ${pv} · 딜러 ${dv})`+(w>0?` +${this.bet*w}`:w<0?` -${this.bet}`:'');},
- view(){if(this.over)return overHtml(this.chips.toLocaleString()+'칩','10핸드 결과 · 내 최고 '+(myBest('blackjack')||this.chips).toLocaleString()+'칩');
-  const dc=this.done?this.dl:[this.dl[0],null];
+ view(){if(this.over)return overHtml(this.chips.toLocaleString()+'칩',`10핸드 결과 · 기본 전략 일치 ${this.good}/${this.total} · 내 최고 ${(myBest('blackjack')||this.chips).toLocaleString()}칩`);
+  const dc=this.done?this.dl:[this.dl[0],null];const canD=this.p.length===2&&this.chips>=this.bet;
+  const logH=this.log.length?`<div class="card" style="margin-top:10px;font-size:13px">${this.log.map(l=>`<div style="padding:4px 0;border-bottom:1px dashed var(--line)">${l.act===l.rec?'✅':'📘'} 내 선택 <b>${BJN[l.act]}</b> · 기본 전략 <b style="color:var(--blue)">${BJN[l.rec]}</b><div class="m">${l.why}</div></div>`).join('')}</div>`:'';
   return `<div class="gst"><span>핸드 ${this.hand}/10</span><span>칩 <b>${this.chips.toLocaleString()}</b> · 베팅 ${this.bet}</span></div>
-   <div class="lbl">딜러 ${this.done?bjv(this.dl):''}</div>${cardsHtml(dc)}<div class="lbl" style="margin-top:14px">나 ${bjv(this.p)}</div>${cardsHtml(this.p)}
+   <div class="lbl">딜러 ${this.done?bjv(this.dl):''}</div>${cardsHtml(dc)}<div class="lbl" style="margin-top:14px">나 ${bjSoft(this.p)&&bjv(this.p)<21?'소프트 ':''}${bjv(this.p)}</div>${cardsHtml(this.p)}
    ${this.msg?`<div class="gok" style="margin-top:12px">${this.msg}</div>`:''}
    ${this.done?`<button class="btn full" style="margin-top:12px" onclick="CUR.deal();rr()">${this.hand>=10?'결과 보기':'다음 핸드'}</button>`
-   :`<div class="g3b"><button class="btn" onclick="CUR.hit()">히트</button><button class="btn b2" onclick="CUR.finish();rr()">스탠드</button><button class="btn g" onclick="CUR.dbl()" ${this.p.length>2||this.chips<this.bet*2?'disabled':''}>더블</button></div>`}`;},
- hit(){this.p.push(this.d.pop());if(bjv(this.p)>=21)this.finish();rr();},
- dbl(){this.bet*=2;this.p.push(this.d.pop());this.finish();rr();}});
-// 10) 비디오 포커 (잭스 오어 베터)
-const VPP=[['로열 플러시',800],['스트레이트 플러시',50],['포카드',25],['풀하우스',9],['플러시',6],['스트레이트',4],['트리플',3],['투페어',2],['잭 이상 원페어',1]];
-function vpPay(cs){const h=ev5(cs);if(h[0]===8)return h[1]===14?0:1;const m={7:2,6:3,5:4,4:5,3:6,2:7};if(m[h[0]]!=null)return m[h[0]];if(h[0]===1&&h[1]>=11)return 8;return -1;}
-G.push({k:'vpoker',cat:'카드',e:'🎰',n:'비디오 포커',d:'잭 이상 원페어부터 · 20판',
- start(){this.cr=200;this.n=0;this.over=false;this.newHand();rr();},
- newHand(){if(this.n>=20||this.cr<5){this.over=true;record('vpoker',this.cr);return;}this.n++;this.d=deck();this.h=this.d.splice(0,5);this.hold=[0,0,0,0,0];this.drawn=false;this.cr-=5;this.msg='';},
- view(){if(this.over)return overHtml(this.cr+'칩','20판 결과 (판당 5칩) · 내 최고 '+(myBest('vpoker')||this.cr)+'칩');
-  return `<div class="gst"><span>${this.n}/20판</span><span>칩 <b>${this.cr}</b></span></div><div class="pcs">${this.h.map((c,i)=>`<div onclick="CUR.tg(${i})" style="text-align:center">${cardHtml(c,0,this.hold[i]?'hold':'')}<div class="m">${this.hold[i]?'홀드':''}</div></div>`).join('')}</div>
-   ${this.msg?`<div class="gok" style="margin-top:10px">${this.msg}</div>`:`<div class="m" style="text-align:center;margin-top:8px">남길 카드를 누르고 [바꾸기]</div>`}
-   <button class="btn full" style="margin-top:10px" onclick="CUR.go()">${this.drawn?'다음 판':'바꾸기'}</button>
-   <div class="card" style="margin-top:12px">${VPP.map(x=>`<div class="row"><span>${x[0]}</span><span class="m">×${x[1]}</span></div>`).join('')}</div>`;},
- tg(i){if(!this.drawn){this.hold[i]^=1;rr();}},
- go(){if(this.drawn){this.newHand();rr();return;}this.h=this.h.map((c,i)=>this.hold[i]?c:this.d.pop());this.drawn=true;const p=vpPay(this.h);
-  if(p>=0){const w=5*VPP[p][1];this.cr+=w;this.msg=`🎉 ${VPP[p][0]} +${w}`;}else this.msg='꽝';rr();}});
+   :`<div class="g3b"><button class="btn" onclick="CUR.hit()">히트</button><button class="btn b2" onclick="CUR.stand()">스탠드</button><button class="btn g" onclick="CUR.dbl()" ${canD?'':'disabled style="opacity:.4"'}>더블</button></div>`}
+   ${logH}<div class="m" style="text-align:center;margin-top:8px">딜러는 17 이상에서 멈춰요 · 블랙잭 1.5배 · 📘 = 기본 전략과 다른 선택</div>`;},
+ hit(){this.note('H');this.p.push(this.d.pop());if(bjv(this.p)>=21)this.finish();rr();},
+ stand(){this.note('S');this.finish();rr();},
+ dbl(){this.note('D');this.bet*=2;this.p.push(this.d.pop());this.finish();rr();}});
 // 11) 카드 짝맞추기
 G.push({k:'memory',cat:'카드',e:'🧠',n:'카드 짝맞추기',d:'8쌍 · 빠를수록 좋아요',
  start(){const d=deck().slice(0,8);this.c=shuf([...d,...d].map((x,i)=>({...x,id:i})));this.open=[];this.got=new Set();this.t0=0;this.moves=0;this.done=false;this.lock=false;rr();},
@@ -248,7 +246,6 @@ function mk2048(k,cat,e,n,d,lab){return {k,cat,e,n,d,
    <div class="ctl"><span></span><button onclick="CUR.mv('U')">⬆</button><span></span><button onclick="CUR.mv('L')">⬅</button><button onclick="CUR.mv('D')">⬇</button><button onclick="CUR.mv('R')">➡</button></div><div class="m" style="text-align:center">판을 밀어서(스와이프) 움직여도 돼요</div>`;},
  bind(){swipe(dir=>this.mv(dir));}};}
 const CARDLAB=['2','3','4','5','6','7','8','9','10','J','Q','K','A','👑','💎','🏆'];
-G.push(mk2048('c2048','카드','🂮','카드 2048','같은 카드 합치면 다음 카드 · A 다음은 👑',v=>CARDLAB[v-1]||'★'));
 G.push(mk2048('n2048','퍼즐','🔢','2048','숫자 합쳐서 2048 만들기',v=>2**v));
 // 스와이프 공통
 let SWH=null;function swipe(fn){SWH=fn;}
@@ -359,7 +356,7 @@ function omLine(b,p,c,dx,dy){let n=1,open=0;for(const s of[1,-1]){let x=p%ON,y=M
 function omWin(b,p){const c=b[p];return [[1,0],[0,1],[1,1],[1,-1]].some(([dx,dy])=>omLine(b,p,c,dx,dy)[0]>=5);}
 function omScore(b,p,c){let s=0;for(const[dx,dy]of[[1,0],[0,1],[1,1],[1,-1]]){b[p]=c;const[n,o]=omLine(b,p,c,dx,dy);b[p]=0;s+=n>=5?1e6:n===4?(o===2?5e4:o===1?6e3:0):n===3?(o===2?3e3:o===1?300:0):n===2?(o===2?120:o===1?20:0):o;}return s;}
 const vsPick=fn=>lvPick(fn,`<button class="btn g" onclick="${fn}('친구')">👥 친구와 (폰 하나로 둘이)</button>`);
-G.push({k:'omok',cat:'대전',e:'⚫',n:'오목',d:'AI 대전 · 친구와 2인',
+G.push({k:'omok',cat:'대전·도구',e:'⚫',n:'오목',d:'AI 대전 · 친구와 2인',
  start(){this.lv=null;rr();},
  go(lv){Object.assign(this,{lv,b:Array(ON*ON).fill(0),over:0,last:-1,turn:1,streak:lsGet('om_'+lv,0)});rr();},
  ai(){const b=this.b,c=[];for(let p=0;p<ON*ON;p++){if(b[p])continue;let near=false;const x=p%ON,y=Math.floor(p/ON);
@@ -384,7 +381,7 @@ function otEval(b){let s=0;for(let p=0;p<64;p++)s+=b[p]===2?OW[p]:b[p]===1?-OW[p
 function otMM(b,d,c,al,be){const ms=otMoves(b,c);if(d===0||(!ms.length&&!otMoves(b,3-c).length))return otEval(b);if(!ms.length)return otMM(b,d-1,3-c,al,be);
  if(c===2){let v=-1e9;for(const[p,f]of ms){v=Math.max(v,otMM(otPlay(b,p,f,2),d-1,1,al,be));al=Math.max(al,v);if(al>=be)break;}return v;}
  let v=1e9;for(const[p,f]of ms){v=Math.min(v,otMM(otPlay(b,p,f,1),d-1,2,al,be));be=Math.min(be,v);if(al>=be)break;}return v;}
-G.push({k:'othello',cat:'대전',e:'⚪',n:'오델로',d:'AI 대전 · 친구와 2인',
+G.push({k:'othello',cat:'대전·도구',e:'⚪',n:'오델로',d:'AI 대전 · 친구와 2인',
  start(){this.lv=null;rr();},
  go(lv){const b=Array(64).fill(0);b[27]=b[36]=2;b[28]=b[35]=1;Object.assign(this,{lv,b,over:0,turn:1,streak:lsGet('ot_'+lv,0),msg:''});rr();},
  ai(){const ms=otMoves(this.b,2);if(!ms.length)return null;if(this.lv==='쉬움'&&Math.random()<.5)return pick(ms);const d=this.lv==='쉬움'?1:this.lv==='보통'?2:4;let best_=null,bv=-1e9;
@@ -403,17 +400,8 @@ G.push({k:'othello',cat:'대전',e:'⚪',n:'오델로',d:'AI 대전 · 친구와
 // 틱택토
 function tttWin(b){const L=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];for(const[a,c,d]of L)if(b[a]&&b[a]===b[c]&&b[a]===b[d])return b[a];return b.includes(0)?0:3;}
 function tttMM(b,t){const w=tttWin(b);if(w===2)return 10;if(w===1)return -10;if(w===3)return 0;let best_=t===2?-99:99;for(let i=0;i<9;i++)if(!b[i]){b[i]=t;const v=tttMM(b,3-t);b[i]=0;best_=t===2?Math.max(best_,v):Math.min(best_,v);}return best_;}
-G.push({k:'ttt',cat:'대전',e:'⭕',n:'틱택토',d:'AI(절대 안 짐) · 친구와',
- start(){this.mode=null;rr();},
- go(m){this.mode=m;this.b=Array(9).fill(0);this.turn=1;this.w=0;rr();},
- tap(i){if(this.w||this.b[i])return;this.b[i]=this.mode==='친구'?this.turn:1;this.w=tttWin(this.b);if(this.mode==='친구'){this.turn=3-this.turn;rr();return;}
-  if(!this.w){let bi=-1,bv=-99;for(let j=0;j<9;j++)if(!this.b[j]){this.b[j]=2;const v=tttMM(this.b,1);this.b[j]=0;if(v>bv){bv=v;bi=j;}}this.b[bi]=2;this.w=tttWin(this.b);}rr();},
- view(){if(!this.mode)return `<div class="gq">상대</div><div style="display:grid;gap:8px"><button class="btn" onclick="CUR.go('AI')">🤖 AI와 (이기면 기적)</button><button class="btn g" onclick="CUR.go('친구')">👥 친구와</button></div>`;
-  const msg=this.w===3?'무승부':this.w===1?'⭕ 승리!':this.w===2?'❌ 승리!':(this.mode==='친구'?(this.turn===1?'⭕ 차례':'❌ 차례'):'내 차례 ⭕');
-  return `<div class="gst"><span>${this.mode==='친구'?'👥 친구와':'🤖 AI'}</span><span>${msg}</span></div><div class="board" style="grid-template-columns:repeat(3,1fr);max-width:300px">${this.b.map((v,i)=>`<div onclick="CUR.tap(${i})" style="aspect-ratio:1;background:#fff;border-radius:12px;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:900;color:${v===1?'var(--blue)':'var(--red)'}">${v===1?'○':v===2?'✕':''}</div>`).join('')}</div>
-   ${this.w?`<div class="g2b"><button class="btn" onclick="CUR.go('${this.mode}')">한 판 더</button><button class="btn b2" onclick="CUR.mode=null;rr()">상대 바꾸기</button></div>`:''}`;}});
 // 사다리 타기
-G.push({k:'ladder',cat:'대전',e:'🪜',n:'사다리 타기',d:'순서·벌칙·밥값 정하기',
+G.push({k:'ladder',cat:'대전·도구',e:'🪜',n:'사다리 타기',d:'순서·벌칙·밥값 정하기',
  start(){this.names=lsGet('ld_names','철수, 영희, 민수, 지수');this.res=lsGet('ld_res','꽝, 꽝, 커피, 꽝');this.out=null;rr();},
  run(){const N=this.names.split(',').map(s=>s.trim()).filter(Boolean),Rr=this.res.split(',').map(s=>s.trim()).filter(Boolean);if(N.length<2||N.length!==Rr.length){toast('이름과 결과 개수를 같게 (2명 이상)');return;}
   lsSet('ld_names',this.names);lsSet('ld_res',this.res);const n=N.length,rows=10+n*2,rungs=[];for(let r=0;r<rows;r++){const row=[];for(let c=0;c<n-1;c++)row.push(Math.random()<.45&&!(c>0&&row[c-1]));rungs.push(row);}
@@ -425,49 +413,28 @@ G.push({k:'ladder',cat:'대전',e:'🪜',n:'사다리 타기',d:'순서·벌칙�
   return `<div style="display:grid;grid-template-columns:repeat(${n},1fr);text-align:center;font-weight:800;font-size:13px">${N.map(s=>`<div>${esc(s)}</div>`).join('')}</div>${svg}<div style="display:grid;grid-template-columns:repeat(${n},1fr);text-align:center;font-size:13px">${Rr.map(s=>`<div>${esc(s)}</div>`).join('')}</div>
    <div class="card" style="margin-top:10px">${N.map((s,i)=>`<div class="row"><b>${esc(s)}</b><span>→ ${esc(Rr[map[i]])}</span></div>`).join('')}</div><div class="g2b"><button class="btn" onclick="CUR.run()">다시 타기</button><button class="btn b2" onclick="CUR.out=null;rr()">이름 바꾸기</button></div>`;}});
 // 룰렛
-G.push({k:'roulette',cat:'대전',e:'🎡',n:'룰렛 돌리기',d:'이름 넣고 한 명 뽑기',
+G.push({k:'roulette',cat:'대전·도구',e:'🎡',n:'룰렛 돌리기',d:'이름 넣고 한 명 뽑기',
  start(){this.names=lsGet('rl_names','구우, 해솔, 호야, KJ, 타이슨');this.rot=0;this.win=null;this.spin=false;rr();},
- go(){const N=this.names.split(',').map(s=>s.trim()).filter(Boolean);if(N.length<2){toast('2명 이상 넣어주세요');return;}lsSet('rl_names',this.names);this.N=N;const k=R(N.length),seg=360/N.length;
-  this.rot+=360*6+(360-(k*seg+seg/2))-(this.rot%360);this.win=null;this.spin=true;rr();setTimeout(()=>{this.win=N[k];this.spin=false;rr();},4200);},
+ go(){const N=this.names.split(',').map(s=>s.trim()).filter(Boolean);if(N.length<2){toast('2명 이상 넣어주세요');return;}lsSet('rl_names',this.names);this.N=N;this.win=null;rr();const k=R(N.length),seg=360/N.length;
+  this.rot+=360*6+(360-(k*seg+seg/2))-(this.rot%360);this.win=null;this.spin=true;
+  // 화면을 다시 그리지 않고 지금 있는 바퀴만 돌려야 회전 애니메이션이 보여요
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{const wh=$('wheel');if(wh)wh.style.transform=`rotate(${this.rot}deg)`;}));const b=$('rlbtn');if(b){b.disabled=true;b.textContent='돌아가는 중…';}const w=$('rlwin');if(w)w.innerHTML='';
+  let tk=0;const tick=setInterval(()=>{tk++;if(navigator.vibrate&&tk%3===0)try{navigator.vibrate(8);}catch(e){}},120);
+  setTimeout(()=>{clearInterval(tick);this.win=N[k];this.spin=false;rr();try{navigator.vibrate&&navigator.vibrate([60,40,120]);}catch(e){}},4300);},
  view(){const N=this.N||this.names.split(',').map(s=>s.trim()).filter(Boolean),n=Math.max(N.length,1),seg=360/n,cols=['#e05a5a','#e8a33d','#3a9d3f','#2f80ed','#8e5bd8','#d65db1','#17a2b8','#9a5a2a'];
   const grad=N.map((_,i)=>`${cols[i%8]} ${i*seg}deg ${(i+1)*seg}deg`).join(',');
   return `<div style="position:relative;width:260px;height:260px;margin:10px auto"><div style="position:absolute;left:50%;top:-8px;transform:translateX(-50%);font-size:26px;z-index:2">🔻</div>
-   <div style="width:260px;height:260px;border-radius:50%;background:conic-gradient(${grad});transition:transform 4s cubic-bezier(.17,.67,.12,.99);transform:rotate(${this.rot}deg);position:relative;border:4px solid #fff;box-shadow:0 4px 14px rgba(0,0,0,.2)">
+   <div id="wheel" style="width:260px;height:260px;border-radius:50%;background:conic-gradient(${grad});transition:transform 4.2s cubic-bezier(.12,.75,.1,1);transform:rotate(${this.rot}deg);position:relative;border:4px solid #fff;box-shadow:0 4px 14px rgba(0,0,0,.2)">
    ${N.map((s,i)=>`<div style="position:absolute;left:50%;top:50%;transform:rotate(${i*seg+seg/2}deg) translateY(-95px) translateX(-50%);transform-origin:0 0;color:#fff;font-weight:800;font-size:13px;white-space:nowrap">${esc(s)}</div>`).join('')}</div></div>
-   ${this.win?`<div class="gbig" style="font-size:32px">🎉 ${esc(this.win)}</div>`:''}
-   <input class="q" value="${esc(this.names)}" oninput="CUR.names=this.value;CUR.N=null" placeholder="이름을 쉼표로" ${this.spin?'disabled':''}><button class="btn full" style="margin-top:8px" onclick="CUR.go()" ${this.spin?'disabled':''}>돌리기!</button>`;}});
+   <div id="rlwin">${this.win?`<div class="gbig" style="font-size:32px">🎉 ${esc(this.win)}</div>`:''}</div>
+   <input class="q" value="${esc(this.names)}" oninput="CUR.names=this.value;CUR.N=null" placeholder="이름을 쉼표로" ${this.spin?'disabled':''}><button id="rlbtn" class="btn full" style="margin-top:8px" onclick="CUR.go()" ${this.spin?'disabled':''}>돌리기!</button>`;}});
 // ===== 🂠 카드 게임 추가 =====
 // 바카라
 const bcv=c=>c.r>=10&&c.r<=13?0:c.r===14?1:c.r;const bct=cs=>cs.reduce((a,c)=>a+bcv(c),0)%10;
-G.push({k:'baccarat',cat:'카드',e:'🎴',n:'바카라',d:'플레이어·뱅커·타이 · 20판',
- start(){this.chips=1000;this.n=0;this.bet=100;this.side=null;this.res=null;this.over=false;rr();},
- deal(side){if(this.chips<this.bet){toast('칩이 부족해요');return;}this.side=side;this.n++;const d=deck();const P=[d.pop(),d.pop()],B=[d.pop(),d.pop()];let p=bct(P),b=bct(B);
-  if(p<8&&b<8){let p3=null;if(p<=5){p3=d.pop();P.push(p3);}const bv=bct(B);
-   if(p3==null){if(bv<=5)B.push(d.pop());}else{const t=bcv(p3);if(bv<=2||(bv===3&&t!==8)||(bv===4&&t>=2&&t<=7)||(bv===5&&t>=4&&t<=7)||(bv===6&&t>=6&&t<=7))B.push(d.pop());}}
-  p=bct(P);b=bct(B);const win=p>b?'P':b>p?'B':'T';let gain=-this.bet;if(win===side)gain=side==='P'?this.bet:side==='B'?Math.round(this.bet*.95):this.bet*8;else if(win==='T'&&side!=='T')gain=0;
-  this.chips+=gain;this.res={P,B,p,b,win,gain};if(this.n>=20||this.chips<50){this.over=true;record('baccarat',this.chips);}rr();},
- view(){if(this.over&&!this.res)return overHtml(this.chips.toLocaleString()+'칩','20판 결과');const r=this.res,nm={P:'플레이어',B:'뱅커',T:'타이'};
-  return `<div class="gst"><span>${this.n}/20판</span><span>칩 <b>${this.chips.toLocaleString()}</b></span></div>
-   ${r?`<div class="vs"><div><div class="lbl">플레이어 ${r.p}</div>${cardsHtml(r.P,1)}</div><span>VS</span><div><div class="lbl">뱅커 ${r.b}</div>${cardsHtml(r.B,1)}</div></div>
-    <div class="gok" style="margin-top:10px">${nm[r.win]} 승! · ${r.gain>0?'+'+r.gain:r.gain===0?'무승부 반환':r.gain}</div>`:'<div class="gq">어디에 걸까요? (뱅커 승은 5% 수수료 · 타이 8배)</div>'}
-   ${this.over?`<div class="gbig">${this.chips.toLocaleString()}칩</div><button class="btn full" onclick="CUR.start()">다시 하기</button>`:`
-   <div class="tabs" style="justify-content:center">${[50,100,200,500].map(v=>`<button class="${this.bet===v?'on':''}" onclick="CUR.bet=${v};rr()">${v}</button>`).join('')}</div>
-   <div class="g3b"><button class="btn" onclick="CUR.deal('P')">플레이어</button><button class="btn g" onclick="CUR.deal('T')">타이</button><button class="btn b2" onclick="CUR.deal('B')">뱅커</button></div>`}`;}});
 // 3카드 포커
 function ev3(cs){const r=cs.map(c=>c.r).sort((a,b)=>b-a);const fl=cs.every(c=>c.s===cs[0].s);let st=0;if(r[0]-r[2]===2&&new Set(r).size===3)st=r[0];if(r[0]===14&&r[1]===3&&r[2]===2)st=3;
  if(st&&fl)return [5,st];if(r[0]===r[2])return [4,r[0]];if(st)return [3,st];if(fl)return [2,...r];if(r[0]===r[1]||r[1]===r[2]){const p=r[1];return [1,p,r[0]===r[1]?r[2]:r[0]];}return [0,...r];}
 const C3=['하이카드','원페어','플러시','스트레이트','트리플','스트레이트 플러시'];
-G.push({k:'threecard',cat:'카드',e:'🃏',n:'3카드 포커',d:'딜러와 3장 승부 · 20판',
- start(){this.chips=300;this.n=0;this.over=false;this.newH();rr();},
- newH(){if(this.n>=20||this.chips<20){this.over=true;record('threecard',this.chips);return;}this.n++;const d=deck();this.p=d.slice(0,3);this.dl=d.slice(3,6);this.chips-=10;this.st='dec';this.msg='';},
- act(play){if(!play){this.st='done';this.msg='폴드 · 앤티 -10';rr();return;}this.chips-=10;const ph=ev3(this.p),dh=ev3(this.dl);const q=cmpH(dh,[0,12,0,0])>=0;
-  let w=0;if(!q){w=20+10;this.msg='딜러 퀸 미만 → 앤티 2배, 플레이 반환';}else{const c=cmpH(ph,dh);if(c>0){w=40;this.msg=`이겼어요! (${C3[ph[0]]} vs ${C3[dh[0]]})`;}else if(c===0){w=20;this.msg='무승부';}else this.msg=`졌어요 (${C3[ph[0]]} vs ${C3[dh[0]]})`;}
-  const bonus={5:40,4:30,3:6}[ph[0]]||0;if(bonus){w+=bonus*1;this.msg+=` · 보너스 +${bonus}`;}this.chips+=w;this.st='done';rr();},
- view(){if(this.over)return overHtml(this.chips+'칩','20판 결과 · 내 최고 '+(myBest('threecard')||this.chips)+'칩');
-  return `<div class="gst"><span>${this.n}/20판</span><span>칩 <b>${this.chips}</b></span></div><div class="lbl">딜러</div>${cardsHtml(this.st==='done'?this.dl:[null,null,null])}
-   <div class="lbl" style="margin-top:12px">내 패 · ${C3[ev3(this.p)[0]]}</div>${cardsHtml(this.p)}${this.msg?`<div class="gok" style="margin-top:10px">${this.msg}</div>`:''}
-   ${this.st==='dec'?`<div class="g2b"><button class="btn" onclick="CUR.act(1)">플레이 (+10)</button><button class="btn gr" onclick="CUR.act(0)">폴드</button></div>`:`<button class="btn full" style="margin-top:10px" onclick="CUR.newH();rr()">다음 판</button>`}
-   <div class="m" style="text-align:center;margin-top:8px">앤티 10 · 딜러는 Q 이상일 때만 승부 · 스트레이트 이상 보너스</div>`;}});
 // 포커 스퀘어
 const PSQ=[2,5,10,15,20,25,50,75];
 function psScore(cs){if(cs.some(c=>!c))return 0;const h=ev5(cs);if(h[0]===8)return h[1]===14?100:75;return [0,2,5,10,15,20,25,50][h[0]]||0;}
@@ -498,34 +465,6 @@ G.push({k:'pyramid',cat:'카드',e:'🔺',n:'피라미드',d:'합이 13인 두 �
    <div class="m" style="text-align:center;margin-top:8px">A=1 · J=11 · Q=12 · K=13 · 위가 덮이지 않은 카드만 · 덱을 눌러 한 장씩</div>`;}});
 // 클론다이크 솔리테어 (터치로 고르고 옮기기)
 const red=c=>c.s===1||c.s===2;
-G.push({k:'klondike',cat:'카드',e:'♣️',n:'솔리테어',d:'클래식 클론다이크 · 시간 기록',
- start(){const d=deck().map(c=>({...c,r:c.r===14?1:c.r,up:false}));this.t=[];for(let i=0;i<7;i++){const col=d.splice(0,i+1);col[i].up=true;this.t.push(col);}
-  this.stock=d;this.waste=[];this.f=[[],[],[],[]];this.sel=null;this.t0=Date.now();this.moves=0;this.done=false;clock(()=>this.done?null:secs(this.t0));rr();},
- cardOf(c){return {r:c.r===1?14:c.r,s:c.s};},
- canF(c,fi){const f=this.f[fi];return f.length?(f[f.length-1].s===c.s&&f[f.length-1].r===c.r-1):c.r===1;},
- canT(c,ti){const col=this.t[ti];if(!col.length)return c.r===13;const top=col[col.length-1];return top.up&&red(top)!==red(c)&&top.r===c.r+1;},
- pick(src,idx){ // src: 'w' | ['t',col,idx] | ['f',i]
-  if(this.sel==null){if(src==='w'&&!this.waste.length)return;if(src[0]==='t'){const c=this.t[src[1]][src[2]];if(!c||!c.up)return;}if(src[0]==='f'&&!this.f[src[1]].length)return;
-   // 같은 카드 두 번 누르면 파운데이션 자동
-   this.sel=src;rr();return;}
-  const s=this.sel;this.sel=null;if(JSON.stringify(s)===JSON.stringify(src)){this.auto(s);return;}
-  let cards;if(s==='w')cards=[this.waste[this.waste.length-1]];else if(s[0]==='t')cards=this.t[s[1]].slice(s[2]);else cards=[this.f[s[1]][this.f[s[1]].length-1]];
-  let ok=false;if(src[0]==='f'&&cards.length===1&&this.canF(cards[0],src[1])){this.f[src[1]].push(cards[0]);ok=true;}
-  else if(src[0]==='t'&&this.canT(cards[0],src[1])){this.t[src[1]].push(...cards);ok=true;}
-  if(ok){if(s==='w')this.waste.pop();else if(s[0]==='t'){this.t[s[1]].splice(s[2]);const col=this.t[s[1]];if(col.length)col[col.length-1].up=true;}else this.f[s[1]].pop();this.moves++;this.chk();}
-  else if(src==='w'||(src[0]==='t'&&this.t[src[1]][src[2]]&&this.t[src[1]][src[2]].up)){this.sel=src;}rr();},
- auto(s){let c;if(s==='w')c=this.waste[this.waste.length-1];else if(s[0]==='t'){const col=this.t[s[1]];if(s[2]!==col.length-1){rr();return;}c=col[col.length-1];}else{rr();return;}
-  for(let i=0;i<4;i++)if(this.canF(c,i)){this.f[i].push(c);if(s==='w')this.waste.pop();else{this.t[s[1]].pop();const col=this.t[s[1]];if(col.length)col[col.length-1].up=true;}this.moves++;this.chk();break;}rr();},
- draw(){this.sel=null;if(this.stock.length){const c=this.stock.pop();c.up=true;this.waste.push(c);}else{this.stock=this.waste.reverse().map(c=>({...c,up:false}));this.waste=[];}rr();},
- chk(){if(this.f.every(f=>f.length===13)){this.done=true;record('klondike',secs(this.t0));}},
- view(){const S=JSON.stringify(this.sel);const sc=(c,extra)=>cardHtml(this.cardOf(c),1,extra);const w=this.waste[this.waste.length-1];
-  let top=`<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:8px">
-   <div onclick="CUR.draw()">${this.stock.length?cardHtml(null,1):'<div class="pc sm" style="opacity:.4">↻</div>'}</div><div onclick="CUR.pick('w')">${w?sc(w,S==='"w"'?'hold':''):'<div class="pc sm" style="opacity:.25"></div>'}</div><div></div>
-   ${this.f.map((f,i)=>`<div onclick="CUR.pick(['f',${i}])">${f.length?sc(f[f.length-1],S===JSON.stringify(['f',i])?'hold':''):`<div class="pc sm" style="opacity:.35">${'♠♥♦♣'[i]}</div>`}</div>`).join('')}</div>`;
-  let cols='<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px">';this.t.forEach((col,ci)=>{cols+=`<div onclick="if(!CUR.t[${ci}].length)CUR.pick(['t',${ci},0])" style="min-height:70px">`;
-   col.forEach((c,k)=>{const sel=this.sel&&this.sel[0]==='t'&&this.sel[1]===ci&&k>=this.sel[2];cols+=`<div onclick="event.stopPropagation();CUR.pick(['t',${ci},${k}])" style="margin-top:${k?(col[k-1].up?'-30px':'-40px'):'0'}">${c.up?sc(c,sel?'hold':''):cardHtml(null,1)}</div>`;});cols+='</div>';});cols+='</div>';
-  return `<div class="gst"><span>이동 ${this.moves}</span><span>⏱ <b id="clk">${fmtScore('memory',secs(this.t0))}</b></span></div>${this.done?`<div class="gok">🎉 완성! ${fmtScore('memory',secs(this.t0))}</div>`:''}${top}${cols}
-   <div class="m" style="text-align:center;margin-top:10px">카드를 누르고 옮길 곳을 누르세요 · 같은 카드를 두 번 누르면 위쪽(무늬 칸)으로 자동</div><button class="btn full b2" style="margin-top:8px" onclick="CUR.start()">새 게임</button>`;}});
 // 헤즈업 홀덤 vs AI
 function mcEq(h,b,n){let w=0;for(let k=0;k<n;k++){const used=new Set([...h,...b].map(c=>c.r*4+c.s));const d=deck().filter(c=>!used.has(c.r*4+c.s));const o=[d.pop(),d.pop()];const bb=b.concat(d.splice(0,5-b.length));
   const c=cmpH(best([...h,...bb]),best([...o,...bb]));w+=c>0?1:c===0?.5:0;}return w/n;}
@@ -604,53 +543,11 @@ const setSc=v=>{const e=$('csc');if(e)e.textContent=v.toLocaleString();};
 const cmsg=t=>{const e=$('cmsg');if(e)e.innerHTML=t;};
 function arcadeOver(g,sc){g.dead=true;record(g.k,sc);cmsg(`<b>게임 끝! ${sc.toLocaleString()}점</b> · <button class="btn" style="padding:5px 12px;font-size:13px" onclick="CUR.start()">다시</button>`);}
 // 뱀
-G.push({k:'snake',cat:'아케이드',e:'🐍',n:'뱀 게임',d:'칩 먹고 길어지기 · 스와이프',
- start(){const pos=cvSetup(this,320,320,`<div class="ctl"><span></span><button onclick="CUR.dir('U')">⬆</button><span></span><button onclick="CUR.dir('L')">⬅</button><button onclick="CUR.dir('D')">⬇</button><button onclick="CUR.dir('R')">➡</button></div>`);
-  this.N=16;this.s=[[8,8],[7,8],[6,8]];this.d=[1,0];this.nd=[1,0];this.f=this.food();this.sc=0;this.dead=false;this.last=0;this.spd=150;swipe(d=>this.dir(d));cmsg('스와이프나 화살표로 방향');},
- stop(){this.alive=false;SWH=null;},
- food(){while(true){const f=[R(this.N),R(this.N)];if(!this.s.some(p=>p[0]===f[0]&&p[1]===f[1]))return f;}},
- dir(d){const v={U:[0,-1],D:[0,1],L:[-1,0],R:[1,0]}[d];if(v[0]===-this.d[0]&&v[1]===-this.d[1])return;this.nd=v;},
- tick(t){if(this.dead||t-this.last<this.spd)return;this.last=t;this.d=this.nd;const h=[this.s[0][0]+this.d[0],this.s[0][1]+this.d[1]];
-  if(h[0]<0||h[1]<0||h[0]>=this.N||h[1]>=this.N||this.s.some(p=>p[0]===h[0]&&p[1]===h[1]))return arcadeOver(this,this.sc);
-  this.s.unshift(h);if(h[0]===this.f[0]&&h[1]===this.f[1]){this.sc+=10;setSc(this.sc);this.f=this.food();this.spd=Math.max(70,this.spd-3);}else this.s.pop();
-  const x=this.cx,z=320/this.N;x.fillStyle='#14324f';x.fillRect(0,0,320,320);x.fillStyle='#e8a33d';x.beginPath();x.arc(this.f[0]*z+z/2,this.f[1]*z+z/2,z/2.4,0,7);x.fill();
-  this.s.forEach((p,i)=>{x.fillStyle=i?'#3a9d3f':'#7ed07f';x.fillRect(p[0]*z+1,p[1]*z+1,z-2,z-2);});}});
 // 벽돌 깨기
-G.push({k:'breakout',cat:'아케이드',e:'🧱',n:'벽돌 깨기',d:'손가락으로 막대 움직이기',
- start(){const pos=cvSetup(this,320,420);this.px=160;this.lives=3;this.sc=0;this.dead=false;this.lvl=1;this.mk();this.reset();
-  const mv=e=>{e.preventDefault();this.px=Math.max(30,Math.min(290,pos(e)[0]));};this.cv.addEventListener('touchmove',mv,{passive:false});this.cv.addEventListener('mousemove',mv);this.cv.addEventListener('touchstart',mv,{passive:false});cmsg('막대를 손가락으로 끌어요 · 목숨 3개');},
- stop(){this.alive=false;},
- mk(){this.br=[];for(let r=0;r<5;r++)for(let c=0;c<8;c++)this.br.push({x:4+c*39.5,y:40+r*18,a:1,r});},
- reset(){this.bx=160;this.by=300;const s=3+this.lvl*.5;this.vx=(Math.random()<.5?-1:1)*s*.6;this.vy=-s;},
- tick(){if(this.dead)return;const x=this.cx;this.bx+=this.vx;this.by+=this.vy;if(this.bx<6||this.bx>314)this.vx*=-1;if(this.by<6)this.vy=Math.abs(this.vy);
-  if(this.by>388&&this.by<400&&Math.abs(this.bx-this.px)<34&&this.vy>0){this.vy=-Math.abs(this.vy);this.vx=(this.bx-this.px)/6;}
-  if(this.by>430){this.lives--;if(this.lives<=0)return arcadeOver(this,this.sc);this.reset();}
-  for(const b of this.br){if(b.a&&this.bx>b.x&&this.bx<b.x+37&&this.by>b.y&&this.by<b.y+15){b.a=0;this.vy*=-1;this.sc+=10*(5-b.r);setSc(this.sc);break;}}
-  if(this.br.every(b=>!b.a)){this.lvl++;this.mk();this.reset();}
-  x.fillStyle='#14324f';x.fillRect(0,0,320,420);const cols=['#e05a5a','#e8a33d','#ffd23f','#3a9d3f','#2f80ed'];this.br.forEach(b=>{if(b.a){x.fillStyle=cols[b.r];x.fillRect(b.x,b.y,37,15);}});
-  x.fillStyle='#fff';x.fillRect(this.px-32,392,64,9);x.beginPath();x.arc(this.bx,this.by,6,0,7);x.fill();x.fillStyle='#fff';x.font='13px sans-serif';x.fillText('❤'.repeat(this.lives),8,20);}});
 // 플래피 칩
-G.push({k:'flappy',cat:'아케이드',e:'🪙',n:'플래피 칩',d:'톡톡 눌러서 칩 띄우기',
- start(){cvSetup(this,320,460);this.y=200;this.v=0;this.p=[];this.sc=0;this.dead=false;this.f=0;this.go=false;const tap=e=>{e.preventDefault();if(this.dead)return;this.go=true;this.v=-6.2;};
-  this.cv.addEventListener('touchstart',tap,{passive:false});this.cv.addEventListener('mousedown',tap);cmsg('화면을 눌러서 시작');},
- stop(){this.alive=false;},
- tick(){const x=this.cx;if(this.go&&!this.dead){this.v+=.38;this.y+=this.v;this.f++;if(this.f%90===0){const gap=135,top=60+R(220);this.p.push({x:330,t:top,g:gap,s:0});}
-   this.p.forEach(p=>{p.x-=2.4;if(!p.s&&p.x<60){p.s=1;this.sc++;setSc(this.sc);}});this.p=this.p.filter(p=>p.x>-60);
-   if(this.y>445||this.y<0||this.p.some(p=>p.x<88&&p.x+52>52&&(this.y-14<p.t||this.y+14>p.t+p.g)))return arcadeOver(this,this.sc);}
-  x.fillStyle='#14324f';x.fillRect(0,0,320,460);x.fillStyle='#3a9d3f';this.p.forEach(p=>{x.fillRect(p.x,0,52,p.t);x.fillRect(p.x,p.t+p.g,52,460);});
-  x.fillStyle='#e8a33d';x.beginPath();x.arc(70,this.y,14,0,7);x.fill();x.strokeStyle='#fff';x.lineWidth=3;x.setLineDash([4,4]);x.beginPath();x.arc(70,this.y,9,0,7);x.stroke();x.setLineDash([]);}});
 // 스택 쌓기
-G.push({k:'stack',cat:'아케이드',e:'🏗️',n:'스택 쌓기',d:'타이밍 맞춰 블록 쌓기',
- start(){cvSetup(this,320,460);this.st=[{x:80,w:160}];this.cur={x:0,w:160,d:1};this.sp=2.2;this.sc=0;this.dead=false;const tap=e=>{e.preventDefault();this.drop();};this.cv.addEventListener('touchstart',tap,{passive:false});this.cv.addEventListener('mousedown',tap);cmsg('눌러서 블록 내려놓기');},
- stop(){this.alive=false;},
- drop(){if(this.dead)return;const top=this.st[this.st.length-1],c=this.cur;const l=Math.max(top.x,c.x),r=Math.min(top.x+top.w,c.x+c.w);if(r<=l)return arcadeOver(this,this.sc);
-  this.st.push({x:l,w:r-l});this.sc++;setSc(this.sc);this.cur={x:this.sc%2?320-(r-l):0,w:r-l,d:this.sc%2?-1:1};this.sp=Math.min(6,this.sp+.15);},
- tick(){const x=this.cx;if(!this.dead){this.cur.x+=this.cur.d*this.sp;if(this.cur.x<0||this.cur.x+this.cur.w>320)this.cur.d*=-1;}
-  x.fillStyle='#14324f';x.fillRect(0,0,320,460);const base=Math.max(0,this.st.length-14);const H=24;
-  this.st.slice(base).forEach((b,i)=>{x.fillStyle=`hsl(${(base+i)*18},65%,58%)`;x.fillRect(b.x,440-i*H,b.w,H-2);});
-  if(!this.dead){const i=this.st.length-base;x.fillStyle=`hsl(${this.st.length*18},65%,58%)`;x.fillRect(this.cur.x,440-i*H,this.cur.w,H-2);}}});
 // 반응속도
-G.push({k:'reaction',cat:'아케이드',e:'⚡',n:'반응속도',d:'초록불에 터치 · 5번 평균',
+G.push({k:'reaction',cat:'대전·도구',e:'⚡',n:'반응속도',d:'초록불에 터치 · 5번 평균',
  start(){this.r=[];this.st='ready';this.t=0;this.show_();},
  stop(){clearTimeout(this.to);},
  show_(){const s=this.st,bg={ready:'#3b4656',wait:'#c0392b',go:'#27ae60',done:'#2f80ed',early:'#8e44ad'}[s];
@@ -661,16 +558,8 @@ G.push({k:'reaction',cat:'아케이드',e:'⚡',n:'반응속도',d:'초록불에
   else if(s==='wait'){clearTimeout(this.to);this.st='early';this.show_();}
   else if(s==='go'){this.r.push(Math.round(performance.now()-this.t));if(this.r.length>=5){this.st='done';record('reaction',Math.round(this.r.reduce((a,b)=>a+b,0)/5));}else this.st='ready';this.show_();}}});
 // 두더지 잡기
-G.push({k:'mole',cat:'아케이드',e:'🐹',n:'두더지 잡기',d:'30초 동안 최대한 많이',
- start(){this.sc=0;this.on=-1;this.bomb=-1;this.over=false;this.go=false;this.v();},
- stop(){clearInterval(this.iv);if(this.stopT)this.stopT();},
- begin(){this.go=true;this.stopT=timer(30,()=>{this.over=true;clearInterval(this.iv);record('mole',this.sc);this.v();});this.iv=setInterval(()=>{this.on=R(9);this.bomb=Math.random()<.18?(this.on+1+R(8))%9:-1;this.v();},Math.max(450,800));this.v();},
- hit(i){if(!this.go||this.over)return;if(i===this.on){this.sc+=10;this.on=-1;}else if(i===this.bomb){this.sc=Math.max(0,this.sc-20);this.bomb=-1;toast('💣 -20',500);}this.v();},
- v(){if(this.over){show(overHtml(this.sc+'점','30초 결과 · 내 최고 '+(myBest('mole')||this.sc)+'점'));return;}
-  show(`<div class="gst"><span>⏱ <b id="tleft">30초</b></span><span>점수 <b>${this.sc}</b></span></div><div class="board" style="grid-template-columns:repeat(3,1fr);max-width:320px">${[...Array(9).keys()].map(i=>`<div onpointerdown="CUR.hit(${i})" style="aspect-ratio:1;border-radius:50%;background:#7a5230;display:flex;align-items:center;justify-content:center;font-size:44px;box-shadow:inset 0 8px 0 rgba(0,0,0,.3)">${i===this.on?'🐹':i===this.bomb?'💣':''}</div>`).join('')}</div>
-   ${this.go?'<div class="m" style="text-align:center;margin-top:8px">🐹 +10 · 💣 -20</div>':'<button class="btn full" style="margin-top:12px" onclick="CUR.begin()">시작!</button>'}`);}});
 // ===== 목록 · 랭킹 · 화면 전환 =====
-const CATS=['전체','홀덤','카드','퍼즐','아케이드','대전'];let CATSEL=lsGet('gcat','전체');
+const CATS=['전체','홀덤','카드','퍼즐','대전·도구'];let CATSEL=lsGet('gcat','전체');
 const RANKED=G.filter(g=>GCFG[g.k]);
 function tileBest(g){const c=GCFG[g.k];if(!c)return '';if(c[3]){const b=myBest(g.k,'어려움')??myBest(g.k,'보통')??myBest(g.k,'쉬움');return b==null?'':'내 기록 '+fmtScore(g.k,b);}const b=myBest(g.k);return b==null?'':'내 최고 '+fmtScore(g.k,b);}
 function listView(){const L=G.filter(g=>CATSEL==='전체'||g.cat===CATSEL);
