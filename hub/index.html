@@ -59,6 +59,15 @@ a.card{display:block;text-decoration:none}
 .cmd code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:var(--blue);font-weight:700;background:var(--blue2);border-radius:7px;padding:2px 7px;word-break:keep-all}
 .jc{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;margin-top:7px;padding-top:7px;border-top:1px dashed var(--line)}
 .jc code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;color:var(--blue);font-weight:700;background:var(--blue2);border-radius:7px;padding:2px 7px;cursor:pointer}
+.stat{display:flex;align-items:center;gap:6px;margin:5px 0 2px}
+.stat .dd{font-size:12px;font-weight:800;color:#fff;background:var(--brown);border-radius:7px;padding:1px 7px}
+.stat .dd.now{background:#d9534f}
+.stat .cnt{font-size:12.5px;font-weight:700;color:var(--blue)}
+.big{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.big>div{background:var(--paper2);border:1.5px solid var(--line);border-radius:14px;padding:12px 8px;text-align:center}
+.big .bn{font-size:28px;font-weight:900;color:var(--blue);line-height:1.1}
+.big .bn small{font-size:15px;margin-left:2px}
+.big .bl{font-size:12px;color:var(--sub);margin-top:3px}
 .exs{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
 .exs code{font-size:11.5px;font-weight:600;padding:1px 6px;cursor:pointer}
 .cmd code{cursor:pointer}
@@ -160,7 +169,7 @@ body.lock{overflow:hidden}
   <button type="button" class="bgm" id="bgm" aria-label="배경음악 켜기/끄기" aria-pressed="false">🔇</button>
 </div>
 <script>
-const D={"updated": "10/02 22:25", "month": "2026-10", "parts": [{"label": "WPL 데이1-B14 10/2(금) 10:00 · 야자수 서울센터", "date": "2026-10-02", "time": "10:00", "people": [{"n": "호야", "m": ""}, {"n": "크라잉", "m": ""}], "event": false}, {"label": "WPL 딥스택 #3 10/3(토) 18:00 · 야자수 서울센터", "date": "2026-10-03", "time": "18:00", "people": [{"n": "욱스", "m": ""}], "event": false}, {"label": "피망 데이1-B 10/5(월) 12:00 · 경기 시흥 KIMS", "date": "2026-10-05", "time": "12:00", "people": [{"n": "구우", "m": ""}, {"n": "방장봊", "m": ""}, {"n": "내꿈은너야차무식", "m": ""}, {"n": "타이슨", "m": ""}, {"n": "구우형 우승못한지 9년", "m": ""}, {"n": "호야", "m": ""}, {"n": "해솔", "m": ""}], "event": false}, {"label": "10/10 15:00 정모 · 강남 뉴스톤 아레나", "date": "2026-10-10", "time": "15:00", "people": [{"n": "구우", "m": ""}, {"n": "해솔", "m": ""}, {"n": "호야", "m": ""}, {"n": "LawYS", "m": ""}, {"n": "KJ", "m": ""}, {"n": "방장봊", "m": ""}, {"n": "김탱", "m": ""}, {"n": "크라잉", "m": ""}, {"n": "녹애옹", "m": ""}], "event": true, "closed": false, "cmd": "정모", "host": ""}], "tours": [{"label": "로티아레나", "date": "2026-10-02", "rows": [{"n": "방장봊", "r": "1등", "p": "400만", "k": 1}]}], "board_month": [{"n": "방장봊", "pt": 100, "itm": 1, "win": 1}], "board_all": [{"n": "방장봊", "pt": 100, "itm": 1, "win": 1}], "reviews": [{"id": 14, "nick": "구우", "date": "2026-10-02", "head": "2026-10-02 강남 뉴스톤 AWS SERIES (AWS 2 TICKET or GOLD 0.2M)", "hero": "UTG 250BB  A♥ K♥", "q": "❓ 리버벳에 폴드했어야했나?", "own": false}, {"id": 8, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "BTN 30BB  K♠ Q♠", "q": "리버 콜 맞나요? 턴 체크는 괜찮았나요?", "own": false}], "learned": [], "posters": {"sched": [], "contest": ["contest-3사비교", "contest-6TH HPT00", "contest-6TH HPT01", "contest-8THWPL", "contest-9th wpl", "contest-APL01", "contest-APL02", "contest-apl프라이즈율", "contest-피망", "contest-하"], "official": ["official-260803-261005 8th wpl (1)", "official-260803-261005 8th wpl (2)", "official-260803-261005 8th wpl (3)", "official-260803-261005 8th wpl (4)", "official-260803-261005 8th wpl (5)", "official-260803-261005 8th wpl (6)", "official-260803-261005 8th wpl (7)", "official-260803-261005 8th wpl (8)", "official-260902-261223 showdown (1)", "official-260902-261223 showdown (2)", "official-261002-261213 9th wpl (1)", "official-261002-261213 9th wpl (2)", "official-261002-261213 9th wpl (3)", "official-261002-261213 9th wpl (4)", "official-261002-261213 9th wpl (5)", "official-261002-261213 9th wpl (6)", "official-261002-261213 9th wpl (7)", "official-261002-261213 9th wpl (8)", "official-261002-261213 9th wpl (9)", "official-261023-261025 apl circuit1 (1)", "official-261023-261025 apl circuit1 (2)"], "apl": ["apl-apl01", "apl-apl02", "apl-apl03", "apl-apl04", "apl-apl05"]}}, B="https://metlifeguide-png.github.io/posters";
+const D={"updated": "10/02 22:32", "month": "2026-10", "parts": [{"label": "WPL 데이1-B14 10/2(금) 10:00 · 야자수 서울센터", "date": "2026-10-02", "time": "10:00", "people": [{"n": "호야", "m": ""}, {"n": "크라잉", "m": ""}], "event": false}, {"label": "WPL 딥스택 #3 10/3(토) 18:00 · 야자수 서울센터", "date": "2026-10-03", "time": "18:00", "people": [{"n": "욱스", "m": ""}], "event": false}, {"label": "피망 데이1-B 10/5(월) 12:00 · 경기 시흥 KIMS", "date": "2026-10-05", "time": "12:00", "people": [{"n": "구우", "m": ""}, {"n": "방장봊", "m": ""}, {"n": "내꿈은너야차무식", "m": ""}, {"n": "타이슨", "m": ""}, {"n": "구우형 우승못한지 9년", "m": ""}, {"n": "호야", "m": ""}, {"n": "해솔", "m": ""}], "event": false}, {"label": "10/10 15:00 정모 · 강남 뉴스톤 아레나", "date": "2026-10-10", "time": "15:00", "people": [{"n": "구우", "m": ""}, {"n": "해솔", "m": ""}, {"n": "호야", "m": ""}, {"n": "LawYS", "m": ""}, {"n": "KJ", "m": ""}, {"n": "방장봊", "m": ""}, {"n": "김탱", "m": ""}, {"n": "크라잉", "m": ""}, {"n": "녹애옹", "m": ""}], "event": true, "closed": false, "cmd": "정모", "host": ""}], "tours": [{"label": "로티아레나", "date": "2026-10-02", "rows": [{"n": "방장봊", "r": "1등", "p": "400만", "k": 1}]}], "board_month": [{"n": "방장봊", "pt": 100, "itm": 1, "win": 1}], "board_all": [{"n": "방장봊", "pt": 100, "itm": 1, "win": 1}], "reviews": [{"id": 14, "nick": "구우", "date": "2026-10-02", "head": "2026-10-02 강남 뉴스톤 AWS SERIES (AWS 2 TICKET or GOLD 0.2M)", "hero": "UTG 250BB  A♥ K♥", "q": "❓ 리버벳에 폴드했어야했나?", "own": false}, {"id": 8, "nick": "구우", "date": "2026-09-28", "head": "피망", "hero": "BTN 30BB  K♠ Q♠", "q": "리버 콜 맞나요? 턴 체크는 괜찮았나요?", "own": false}], "learned": [], "posters": {}}, B="https://metlifeguide-png.github.io/posters";
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const md=d=>d&&d.length>=10?(+d.slice(5,7))+'/'+(+d.slice(8,10)):'';
 const POSTERS_DEFAULT={sched:[],contest:["00","01","02","03","03-1","04","apl-1","apl-2","apl-3","05"],
@@ -221,8 +230,8 @@ const CMDS=[
   ["!@캘린더","날짜별 매장 대회 · 메인 일정 · 온라인 새틀"],["!@오늘요약","오늘 방 대화를 주제별로 요약 (기록은 48시간 뒤 자동 삭제)"],
   ["!@새틀목록","온라인 새틀·프리롤 알림 시간표"],["!@뚝섬홈","이 페이지 주소 (!@뚝섬통합도 OK)"]],
   "💬 그냥 물어봐도 돼요"],
- ["💬 이렇게 물어봐요",[
-  ["!@피망데이1 일정",""],["!@WPL 데이2 언제",""],["!@강남뉴스톤 오늘 뭐해",""],["!@강남뉴스톤 바인 얼마야",""],["!@피망 주차",""],["!@kims 주소",""],["!@오늘 대회추천",""]]],
+ ["💬 이렇게 물어봐요 (일정·장소·포스터는 !@ 없이 물어봐도 봇이 답해요)",[
+  ["!@피망데이1 일정",""],["!@WPL 데이2 언제",""],["!@강남뉴스톤 오늘 뭐해",""],["!@강남뉴스톤 바인 얼마야",""],["!@피망 주차",""],["!@리버라운지 포스터",""],["!@정모 언제야",""],["!@kims 주소",""],["!@오늘 대회추천",""]]],
  ["🛠️ 방장 전용",[
   ["!@학습 키워드=내용","봇에게 정보 가르치기 · 같은 단어를 또 가르치면 덮어쓰지 않고 뜻이 추가돼서 질문 상황에 맞게 골라 답해요",["!@학습목록","!@학습삭제 도비","!@학습삭제 도비=해리"]],
   ["!@새틀추가 시작|종료|시각들|문구","새틀·프리롤 자동 알림 (관리 페이지에서도 가능)"],
@@ -232,8 +241,12 @@ const cq=c=>esc(c).replace(/'/g,"&#39;");
 function cmdCard([c,x,ex]){return `<div class="card cmd"><div style="min-width:0"><code onclick="copy(this.textContent)">${esc(c)}</code>${x?`<div class="m" style="margin-top:3px">${esc(x)}</div>`:''}${ex?`<div class="exs"><span class="m">예)</span>${ex.map(e=>`<code onclick="copy(this.textContent)">${esc(e)}</code>`).join('')}</div>`:''}</div></div>`;}
 function cmdPage(){return head('📖 명령어','파란 글씨를 누르면 복사돼요')+'<div class="card m">명령어는 모두 앞에 <b>!@</b> · 명령어가 아닌 문장은 일반 질문으로 답해요</div>'
   +CMDS.map(([h,items,note])=>`<div class="sec">${h}</div>`+(h.includes('물어봐요')?`<div class="card"><div class="exs">${items.map(([c])=>`<code onclick="copy(this.textContent)">${esc(c)}</code>`).join('')}</div></div>`:items.map(cmdCard).join('')+(note&&!note.startsWith('💬')?`<div class="m" style="margin:2px 4px 6px">${esc(note)}</div>`:''))).join('');}
+// D-day: 오늘=D-DAY · 내일=D-1 …
+function dday(d){if(!d||d.length<10)return '';const t=new Date();t.setHours(0,0,0,0);const x=new Date(+d.slice(0,4),+d.slice(5,7)-1,+d.slice(8,10));
+  const n=Math.round((x-t)/864e5);return n<0?'':n===0?'D-DAY':'D-'+n;}
+function statLine(x){const dd=dday(x.date);return `<div class="stat">${dd?`<span class="dd${dd==='D-DAY'?' now':''}">${dd}</span>`:''}<span class="cnt">🙋 ${x.people.length}명 참석</span></div>`;}
 function meetPage(){
-  return head('🏝 뚝섬유원지 정모','다음 모임 안내')
+  return head('🏝 뚝섬유원지 정모','다음 모임 안내')+meetBig()
    +`<div class="card" style="padding:0;overflow:hidden"><img src="meet.jpg" alt="뚝섬 300명예 GTD 토너먼트 정모 안내 포스터" style="display:block;width:100%;height:auto"></div>`
    +`<div class="card"><div class="t">뚝섬 300명예 GTD 토너먼트</div><div class="m">*60엔트리 기준 프라이즈업 · 듀레이션 15분에 느껴보는 빅재미</div>
    <div class="row"><span>일시</span><span class="m">26년 10월10일(토) 오후 3시</span></div>
@@ -242,6 +255,8 @@ function meetPage(){
    +`<div class="card cmd"><div style="min-width:0"><code onclick="copy(this.textContent)">!@참가 정모</code><div class="m" style="margin-top:3px">참석하시려면 채팅창에 이 명령어를 입력해주세요 (누르면 복사)</div></div></div>`
    +meetPeople();
 }
+function meetBig(){const g=D.parts.find(x=>x.event&&/정모/.test(x.label));const dd=g?dday(g.date):'';
+  return g?`<div class="big"><div><div class="bn">${dd||'-'}</div><div class="bl">정모까지</div></div><div><div class="bn">${g.people.length}<small>명</small></div><div class="bl">참석 예정</div></div></div>`:'';}
 // 정모 참석자: 참가 현황에서 '정모' 행사만 골라 보여줘요
 function meetPeople(){const g=D.parts.filter(x=>x.event&&/정모/.test(x.label));
   if(!g.length)return '<div class="card e">아직 참석 신청이 없어요 · 첫 번째로 !@참가 정모</div>';
@@ -318,7 +333,7 @@ const MENU=[
      const core=x.label.split('·')[0].replace(/\d{1,2}\/\d{1,2}(\([가-힣]\))?/g,'').replace(/\d{1,2}:\d{2}/g,'').replace(/\s+/g,' ').trim();
      return `!@참가 ${(mmdd?mmdd+' ':'')}${core}`.trim();};
    const joinCmd=x=>x.closed?`<div class="jc"><span class="m">🔒 마감된 모임이에요</span></div>`:`<div class="jc"><span class="m">🙋 참석 등록</span><code onclick="copy(this.textContent)">${esc(suggestCmd(x))}</code></div>`;
-   return head('🙋 참가 현황',`${D.parts.length}개 대회`)+search('닉네임 · 대회로 찾기')+(g.length?g.map(x=>`<div class="card"><div class="t">${esc(x.label)}${x.event?`<span class="tag">${x.host?'⚡ 벙개':'행사'}</span>`:''}${x.closed?'<span class="tag">🔒 마감</span>':''}</div><div class="m">${x.people.length}명</div><div class="ppl">${x.people.map(p=>esc(p.n)+(p.m?` <span class="m">(${esc(p.m)})</span>`:'')).join(', ')}</div>${joinCmd(x)}</div>`).join('')
+   return head('🙋 참가 현황',`${D.parts.length}개 대회`)+search('닉네임 · 대회로 찾기')+(g.length?g.map(x=>`<div class="card"><div class="t">${esc(x.label)}${x.event?`<span class="tag">${x.host?'⚡ 벙개':'행사'}</span>`:''}${x.closed?'<span class="tag">🔒 마감</span>':''}</div>${statLine(x)}<div class="ppl">${x.people.map(p=>esc(p.n)+(p.m?` <span class="m">(${esc(p.m)})</span>`:'')).join(', ')}</div>${joinCmd(x)}</div>`).join('')
    :'<div class="e">예정된 참가 신청이 없어요<br>카톡에서 !@참가 피망 1b</div>')+'<div class="m" style="margin-top:4px">⏰ 대회 당일 오전 9시에 참가자를 태그해서 시작 시각·주소·주차를 알려드려요 · 🎉 정모 등 행사는 위 카드에 나온 명령어로 참석 등록하세요</div>';}},
  {k:"rank",n:"입상·순위",d:"뚝섬리더보드",f:()=>{const pod=a=>{const o=[a[1],a[0],a[2]];return `<div class="podium">${o.map((x,i)=>x?`<div class="pd ${i===1?'p1':''}"><div class="md">${['🥈','🥇','🥉'][i]}</div><div class="nk">${esc(x.n)}</div><div class="pt">${x.pt}pt</div></div>`:'<div></div>').join('')}</div>`;};
    const list=(a,from)=>a.slice(from).map((x,i)=>`<div class="row"><span>${i+from+1}. ${esc(x.n)}</span><span class="m">${x.pt}pt · 우승 ${x.win} · 입상 ${x.itm}</span></div>`).join('');
@@ -338,8 +353,7 @@ const MENU=[
 ];
 // 처음 들어오면 뚝섬유원지 정모부터. 단, #part 링크로 들어오면 참가 탭부터
 let cur='meet', Q='';
-if(location.hash==='#part')cur='part';
-else if(location.hash)history.replaceState(null,'',location.pathname+location.search);
+{const _h=location.hash.slice(1);if(MENU.some(m=>m.k===_h&&m.f))cur=_h;else if(location.hash)history.replaceState(null,'',location.pathname+location.search);}
 function draw(){
   document.getElementById('side').innerHTML=MENU.map(m=>m.g?`<div class="grp">${m.g}</div>`:`<button class="${m.k===cur?'on':''}" data-k="${m.k}"><span class="nm">${m.n}</span><span class="ds">${m.d}</span></button>`).join('');
   const m=MENU.find(x=>x.k===cur);
