@@ -2112,7 +2112,7 @@ G.push({k:'reaction',cat:'대전·도구',e:'⚡',n:'반응속도',d:'초록불�
 // 두더지 잡기
 // ===== 목록 · 랭킹 · 오늘의 문제 · 화면 전환 =====
 G.forEach(g=>g.nm=g.n);   // 게임 안에서 this.n 을 숫자로 쓰는 경우가 있어 이름은 따로 보관
-const CATS=['전체','펫','홀덤','카드','퍼즐','대전·도구'];let CATSEL=lsGet('gcat','전체');
+const CATS=['전체','홀덤','카드','퍼즐','대전·도구'];let CATSEL=lsGet('gcat','전체');
 const RANKED=G.filter(g=>GCFG[g.k]);
 const gName=k=>{const g=G.find(x=>x.k===k);return g?g.e+' '+g.nm:k;};
 const lvTag=n=>{const l=(GD.lv||{})[n];return l?`<span style="font-size:11px;background:var(--blue2);color:var(--blue);border-radius:999px;padding:1px 6px;margin-left:4px;font-weight:800">Lv.${l}</span>`:'';};
@@ -2124,7 +2124,7 @@ function meBar(){if(!NICK)return '';if(!ME)return `<div class="m" style="margin-
 function tileBest(g){const c=GCFG[g.k];if(!c)return '';if(c[3]){const b=(c[4]||['쉬움','보통','어려움']).slice().reverse().map(l=>myBest(g.k,l)).find(v=>v!=null)??null;return b==null?'':'내 기록 '+fmtScore(g.k,b);}const b=myBest(g.k);return b==null?'':'내 최고 '+fmtScore(g.k,b);}
 function dailyTile(){const d=kstDay(),[k]=dailyType(d);const done=lsGet('daily_done_'+d,null);
  return `<div class="card" style="cursor:pointer;border-color:var(--blue);background:var(--blue2)" onclick="location.hash='daily'"><div class="row"><b style="font-size:16px">📅 오늘의 문제 · ${gName(k)}</b><span class="m">${done?'✅ 제출함':'하루 1번'}</span></div><div class="m">모두 같은 문제 · 오늘 순위 · +50xp</div></div>`;}
-function listView(){const L=G.filter(g=>!g.study&&(CATSEL==='전체'||g.cat===CATSEL));
+function listView(){if(CATSEL==='펫')CATSEL='전체';const L=G.filter(g=>!g.study&&g.cat!=='펫'&&(CATSEL==='전체'||g.cat===CATSEL));
  return `<div class="card"><div class="t" style="margin-bottom:6px">카톡 닉네임 <span class="m">(랭킹·레벨·업적·카톡방 자랑)</span></div><div style="display:flex;gap:6px"><input class="q" id="nk" value="${esc(NICK)}" placeholder="예: 구우"><button class="btn" onclick="setNick($('nk').value);loadMe(rr2)">저장</button></div>${meBar()}</div>
   ${dailyTile()}
   <div class="tabs">${CATS.map(c=>`<button class="${c===CATSEL?'on':''}" onclick="CATSEL='${c}';lsSet('gcat',CATSEL);render()">${c}</button>`).join('')}<button onclick="location.hash='rank'">🏆 랭킹·업적</button></div>
