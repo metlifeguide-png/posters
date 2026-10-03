@@ -56,7 +56,7 @@ input.q{width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius
 </style>
 </head>
 <body>
-<div class="top"><a id="homeBtn" href="https://metlifeguide-png.github.io/posters/hub/#game">← 홈</a><span class="tt" id="tt">🎮 뚝섬 게임</span><button id="backBtn" style="display:none" onclick="location.href=$('homeBtn').href">목록</button></div>
+<div class="top"><a id="homeBtn" href="https://metlifeguide-png.github.io/posters/hub/#game">← 홈</a><span class="tt" id="tt">🎮 뚝섬 게임</span><button id="backBtn" style="display:none" onclick="if(window.top!==window.self)parent.postMessage({t:'ttuk-back'},'*');else location.href=$('homeBtn').href">목록</button></div>
 <div class="wrap" id="app"></div>
 <div class="toast" id="toast"></div>
 <script>
@@ -519,7 +519,7 @@ G.push({k:'roulette',cat:'대전·도구',e:'🎡',n:'룰렛 돌리기',d:'이�
  view(){const N=this.N||this.names.split(',').map(s=>s.trim()).filter(Boolean),n=Math.max(N.length,1),seg=360/n,cols=['#e05a5a','#e8a33d','#3a9d3f','#2f80ed','#8e5bd8','#d65db1','#17a2b8','#9a5a2a'];
   const grad=N.map((_,i)=>`${cols[i%8]} ${i*seg}deg ${(i+1)*seg}deg`).join(',');
   return `<div style="position:relative;width:260px;height:260px;margin:10px auto"><div style="position:absolute;left:50%;top:-8px;transform:translateX(-50%);font-size:26px;z-index:2">🔻</div>
-   <div id="wheel" style="width:260px;height:260px;border-radius:50%;background:conic-gradient(${grad});transition:transform 4.2s cubic-bezier(.12,.75,.1,1);transform:rotate(${this.rot}deg);position:relative;border:4px solid #fff;box-shadow:0 4px 14px rgba(0,0,0,.2)">
+   <div id="wheel" style="width:min(260px,82vw);height:min(260px,82vw);border-radius:50%;background:conic-gradient(${grad});transition:transform 4.2s cubic-bezier(.12,.75,.1,1);transform:rotate(${this.rot}deg);position:relative;border:4px solid #fff;box-shadow:0 4px 14px rgba(0,0,0,.2)">
    ${N.map((s,i)=>`<div style="position:absolute;left:50%;top:50%;transform:rotate(${i*seg+seg/2}deg) translateY(-95px) translateX(-50%);transform-origin:0 0;color:#fff;font-weight:800;font-size:13px;white-space:nowrap">${esc(s)}</div>`).join('')}</div></div>
    <div id="rlwin">${this.win?`<div class="gbig" style="font-size:32px">🎉 ${esc(this.win)}</div>`:''}</div>
    <input class="q" value="${esc(this.names)}" oninput="CUR.names=this.value;CUR.N=null" placeholder="이름을 쉼표로" ${this.spin?'disabled':''}><button id="rlbtn" class="btn full" style="margin-top:8px" onclick="CUR.go()" ${this.spin?'disabled':''}>돌리기!</button>`;}});
@@ -1230,7 +1230,7 @@ G.push({k:'kakuro',cat:'퍼즐',e:'➕',n:'카쿠로',d:'가로세로 합 맞추
   else if(d){const nx=P.runs[P.H[this.sel]].cells.find(k=>k>this.sel&&!this.cur[k]);if(nx!=null)this.sel=nx;}rr();},
  bad(i){const P=this.P,v=this.cur[i];if(!v)return false;return [P.runs[P.H[i]],P.runs[P.V[i]]].some(r=>r.cells.some(k=>k!==i&&this.cur[k]===v)||(r.cells.every(k=>this.cur[k])&&r.cells.reduce((a,k)=>a+this.cur[k],0)!==r.sum));},
  view(){if(!this.lv)return `<div class="card m" style="line-height:1.6">검은 칸의 숫자 = 그 오른쪽(▶) 또는 아래(▼) 흰 칸들의 합이에요.<br>한 줄 안에서는 1~9를 <b>한 번씩만</b> 써요.</div>`+lvPick('CUR.go');
-  const P=this.P,n=P.n,cs=Math.min(44,Math.floor(340/n));const heads={};P.runs.forEach(r=>{heads[r.head]=heads[r.head]||{};heads[r.head][r.dir]=r.sum;});
+  const P=this.P,n=P.n,cs=Math.min(44,Math.floor((Math.min(innerWidth,420)-28-2*n)/n));const heads={};P.runs.forEach(r=>{heads[r.head]=heads[r.head]||{};heads[r.head][r.dir]=r.sum;});
   let g=`<div style="display:grid;grid-template-columns:repeat(${n},${cs}px);gap:2px;justify-content:center;margin:0 auto">`;
   for(let i=0;i<n*n;i++){if(!P.W[i]){const h=heads[i];g+=`<div style="width:${cs}px;height:${cs}px;background:#3b3f47;border-radius:4px;position:relative;${h?'background:linear-gradient(to top right,#3b3f47 49%,#777 50%,#3b3f47 51%)':''}">${h&&h.dn?`<b style="position:absolute;left:3px;bottom:2px;color:#ffd666;font-size:${cs>36?12:10}px">${h.dn}</b>`:''}${h&&h.rt?`<b style="position:absolute;right:3px;top:2px;color:#9fd1ff;font-size:${cs>36?12:10}px">${h.rt}</b>`:''}</div>`;}
    else{const v=this.cur[i];g+=`<div onclick="CUR.sel=${i};rr()" style="width:${cs}px;height:${cs}px;background:${i===this.sel?'#ffe9a8':'#fff'};border:1.5px solid ${i===this.sel?'#e0a800':'#ccc'};border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:${cs*.5}px;font-weight:900;color:${this.bad(i)?'#c62828':'var(--ink)'}">${v||''}</div>`;}}
