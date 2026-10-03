@@ -88,7 +88,18 @@ function record(k,score,lv){if(window.DAILY&&DAILY.k===k&&!DAILY.sent){dailySubm
   const key='best_'+k+(lv?'_'+lv:'');const b=lsGet(key,null);const better=b==null||(lowerBetter(k)?score<b:score>b);if(better)lsSet(key,score);
   if(!NICK){toast((better?'🏆 내 최고 기록! ':'')+'닉네임을 넣으면 랭킹·레벨·업적이 쌓여요',2400);return;}
   fetch(API+'/api/game/record',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({nick:NICK,game:k,score,detail:lv||''})})
-   .then(r=>r.json()).then(r=>{if(r&&r.ok){toast((r.best?('🏆 개인 최고 기록!'+(r.rank?` 주간 ${r.rank}위`:'')):'기록했어요')+' · +'+(r.best?25:10)+'xp');xpToast(r);}}).catch(()=>{if(better)toast('🏆 내 최고 기록! (서버 연결 안 돼서 랭킹엔 못 올렸어요)',2400);});}
+   .then(r=>r.json()).then(r=>{if(r&&r.ok){toast((r.best?('🏆 개인 최고 기록!'+(r.rank?` 주간 ${r.rank}위`:'')):'기록했어요')+' · +'+(r.best?25:10)+'xp');xpToast(r);if(r.missions&&r.missions.length){const m=r.missions[0];setTimeout(()=>{toast(`🎯 미션 달성! ${m[0]} · 보상: ${m[1]} (운영진 확인 후 지급)`,4500);bragOffer(k,score,lv,r.rank||0,`🎯 미션 달성 · ${m[0]}`);},1300);if(typeof MIS_AT!=='undefined')MIS_AT=0;}else if(r.best&&r.rank&&r.rank<=3)setTimeout(()=>bragOffer(k,score,lv,r.rank),900);}}).catch(()=>{if(better)toast('🏆 내 최고 기록! (서버 연결 안 돼서 랭킹엔 못 올렸어요)',2400);});}
+// 📣 자랑하기: 주간 랭킹 1~3위에 들면 카톡에 붙여넣을 문구·링크를 바로 만들어줘요 (자동으로 방에 보내지 않음)
+function hubLink(h){try{return $('homeBtn').href.split('#')[0].split('?')[0]+'?home#'+(h||'game');}catch(e){return '';}}
+function bragOffer(k,score,lv,rank,extra){const nm=(GCFG[k]||[])[0]||k;const md=extra||{1:'🥇 주간 1위',2:'🥈 주간 2위',3:'🥉 주간 3위'}[rank]||'';
+ const txt=`🎮 [${nm}] ${NICK||'익명'}님 ${fmtScore(k,score,lv)}${lv&&!/^\d/.test(lv)?' ('+lv+')':''} 달성! ${md}\n뚝섬 게임에서 도전해보세요 👉 ${hubLink('game')}`;
+ let e=$('brag');if(!e){e=document.createElement('div');e.id='brag';document.body.appendChild(e);}
+ e.innerHTML=`<div style="position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fffaf0;border-top:3px solid #f6c344;box-shadow:0 -6px 20px rgba(0,0,0,.18);padding:14px 14px 18px;max-width:560px;margin:0 auto;border-radius:16px 16px 0 0">
+  <div style="font-size:19px;font-weight:900;text-align:center">${extra?esc(extra)+' 달성!':rank===1?'🥇 주간 1위 달성!':'🏆 주간 '+rank+'위 달성!'}</div>
+  <div style="font-size:13.5px;color:var(--sub);text-align:center;margin:4px 0 8px">카톡방에 자랑해보세요 · 자동으로 보내지 않아요</div>
+  <pre style="white-space:pre-wrap;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px;font-size:13.5px;font-family:inherit;margin:0 0 10px">${esc(txt)}</pre>
+  <div style="display:grid;grid-template-columns:1fr 1fr 70px;gap:6px"><button class="btn" onclick="copy(${esc(JSON.stringify(txt))})">📋 카톡용 복사</button><button class="btn g" onclick="bragShare(${esc(JSON.stringify(txt))})">📤 공유하기</button><button class="btn gr" onclick="$('brag').innerHTML=''">닫기</button></div></div>`;}
+function bragShare(t){if(navigator.share){navigator.share({text:t}).catch(()=>{});}else copy(t);}
 // ---------- 📅 오늘의 문제 (모두 같은 문제 · 하루 1번) ----------
 const DTYPES=[['sudoku','보통'],['logic',''],['speed50',''],['codebreak',''],['nutadv',''],['nonogram','보통']];
 function kstDay(){const t=new Date(Date.now()+9*3600e3);return t.toISOString().slice(0,10);}
@@ -100,7 +111,7 @@ function dailyBegin(){const d=kstDay(),[k,lv]=dailyType(d);if(!NICK){toast('먼�
 function dailyEnd(){window.DAILY=null;Math.random=RAND0;}
 function dailySubmit(score,detail){const D=window.DAILY;if(!D||D.sent)return;D.sent=true;Math.random=RAND0;lsSet('daily_done_'+D.d,{score,detail});
  fetch(API+'/api/daily/submit',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({nick:NICK,score,detail,d:D.d,game:D.k})})
-  .then(r=>r.json()).then(r=>{if(r.ok){toast(`📅 오늘의 문제 제출! 현재 ${r.rank}위 / ${r.total}명 · +50xp${r.streak>1?` · ${r.streak}일 연속`:''}`,3200);xpToast(r);}else toast(r.msg||'제출 실패',2600);})
+  .then(r=>r.json()).then(r=>{if(r.ok){toast(`📅 오늘의 문제 제출! 현재 ${r.rank}위 / ${r.total}명 · +50xp${r.streak>1?` · ${r.streak}일 연속`:''}`,3200);xpToast(r);if(r.rank===1)setTimeout(()=>bragOffer(D.k,score,'',1,'📅 오늘의 문제 1등'),1200);}else toast(r.msg||'제출 실패',2600);})
   .catch(()=>toast('서버 연결이 안 돼서 제출 못 했어요',2600));}
 // ---------- 카드 · 족보 ----------
 const RK='23456789TJQKA',SU='♠♥♦♣';
@@ -197,17 +208,30 @@ G.push({k:'pushfold',cat:'홀덤',e:'🔥',n:'푸시/폴드',d:'올인·콜 판�
 // 4) 족보 맞히기 (60초)
 // 5) 누가 이겼나
 // 6) 아웃츠 세기
-G.push({k:'potodds',cat:'홀덤',e:'💰',n:'팟 오즈',d:'콜에 필요한 승률 · 60초',
- start(){this.sc=0;this.over=false;this.nq();if(this.stopT)this.stopT();this.stopT=timer(60,()=>{this.over=true;record('potodds',this.sc);rr();});rr();},
- stop(){if(this.stopT)this.stopT();},
+G.push({k:'potodds',cat:'홀덤',e:'💰',n:'팟 오즈',d:'10문제 · 정답+속도 점수 · 시간 무제한',
+ // 점수: 정답 1개 100점 + 빨리 맞히면 보너스 최대 20점 (20초 안에 맞히면 남은 시간만큼 · 틀리면 0점)
+ start(){Object.assign(this,{i:0,ok:0,sc:0,tsum:0,over:false,fb:null,log:[]});this.nq();rr();},
+ stop(){clearInterval(this.iv);},
  nq(){const P=(4+R(37))*50,f=pick([.25,1/3,.5,2/3,.75,1,1.5,2]),B=Math.max(50,Math.round(P*f/50)*50);this.P=P;this.B=B;const need=Math.round(B/(P+2*B)*100);this.a=need;
-  const o=new Set([need]);[Math.round(B/(P+B)*100),Math.round(B/P*100),need+pick([-7,-5,5,7]),need+pick([-12,-10,10,12])].forEach(v=>{if(o.size<4&&v>0&&v<100)o.add(v);});while(o.size<4)o.add(need+o.size*3);this.opts=shuf([...o]);},
- view(){if(this.over)return overHtml(this.sc+'점','필요 승률 = 콜 ÷ (팟 + 베팅 + 콜) · 내 최고 '+(myBest('potodds')||this.sc));
-  return `<div class="gst"><span>⏱ <b id="tleft">60초</b></span><span>점수 <b>${this.sc}</b></span></div><div class="card" style="text-align:center;font-size:17px;line-height:1.8">팟 <b>${this.P.toLocaleString()}</b><br>상대 베팅 <b>${this.B.toLocaleString()}</b><br><span class="m">콜하려면 최소 몇 % 이겨야 할까?</span></div>
-   <div class="g4b">${this.opts.map(o=>`<button class="btn" onclick="CUR.ans(${o})">${o}%</button>`).join('')}</div>`;},
- ans(o){if(this.over)return;if(o===this.a){this.sc++;toast('✅',500);}else toast('❌ 정답 '+this.a+'%',1200);this.nq();rr();}});
+  const o=new Set([need]);[Math.round(B/(P+B)*100),Math.round(B/P*100),need+pick([-7,-5,5,7]),need+pick([-12,-10,10,12])].forEach(v=>{if(o.size<4&&v>0&&v<100)o.add(v);});while(o.size<4)o.add(need+o.size*3);this.opts=shuf([...o]);
+  this.t0=Date.now();clearInterval(this.iv);this.iv=setInterval(()=>{if(CUR!==this||this.fb||this.over){return;}const e=$('poT');if(e)e.textContent=((Date.now()-this.t0)/1000).toFixed(1)+'초';},100);},
+ ans(o){if(this.over||this.fb)return;const t=(Date.now()-this.t0)/1000,ok=o===this.a,bonus=ok?Math.round(20*Math.max(0,1-t/20)):0,pts=ok?100+bonus:0;
+  this.i++;this.tsum+=t;if(ok)this.ok++;this.sc+=pts;const L={P:this.P,B:this.B,a:this.a,o,ok,t,pts,bonus};this.log.push(L);this.fb=L;
+  if(this.i>=10){this.over=true;record('potodds',this.sc);}rr();},
+ next(){this.fb=null;this.nq();rr();},
+ expl(L){const tot=L.P+2*L.B;return `팟 ${L.P.toLocaleString()} + 상대 베팅 ${L.B.toLocaleString()} + 내 콜 ${L.B.toLocaleString()} = <b>${tot.toLocaleString()}</b> 을 놓고, 내가 내는 돈은 <b>${L.B.toLocaleString()}</b><br>→ 필요 승률 = ${L.B.toLocaleString()} ÷ ${tot.toLocaleString()} = <b>${L.a}%</b><br><span class="m">빠른 계산: 상대가 팟의 ${Math.round(L.B/L.P*100)}%를 걸면 → 베팅 ÷ (팟 + 베팅×2)</span>`;},
+ view(){const hd=`<div class="gst"><span>${Math.min(this.i+(this.fb||this.over?0:1),10)} / 10 · 정답 <b>${this.ok}</b></span><span>점수 <b>${this.sc}</b></span></div>`;
+  const rule='<div class="m" style="text-align:center;margin-top:8px">점수 = 정답 1개 100점 + 빨리 맞힌 보너스(최대 20점 · 20초 안에) · 시간 무제한 · 정확도가 가장 중요해요</div>';
+  if(this.over){const L=this.fb;return hd+(L?`<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t">${L.ok?'✅ 정답':'❌ 오답 · 정답 '+L.a+'%'} · ${L.t.toFixed(1)}초${L.ok?` · +${L.pts}점`:''}</div><div style="font-size:14px;line-height:1.7;margin-top:4px">${this.expl(L)}</div></div>`:'')
+   +`<div class="gbig">${this.sc}점</div><div class="card" style="text-align:center;font-size:15px;line-height:1.8">정답 <b>${this.ok}</b>/10 · 총 ${this.tsum.toFixed(1)}초 · 평균 ${(this.tsum/10).toFixed(1)}초<br>정답 점수 ${this.ok*100} + 속도 보너스 ${this.sc-this.ok*100}<br><span class="m">내 최고 ${Math.max(myBest('potodds')||0,this.sc)}점</span></div>
+   <div class="card"><div class="t">문제별 기록</div>${this.log.map((x,k)=>`<div class="row"><span>${k+1}. 팟 ${x.P.toLocaleString()} · 베팅 ${x.B.toLocaleString()} → ${x.a}%</span><span class="m">${x.ok?'✅':'❌ '+x.o+'%'} ${x.t.toFixed(1)}초 · ${x.pts}점</span></div>`).join('')}</div>
+   <button class="btn full" onclick="CUR.start()">다시 하기</button>`+rule;}
+  if(this.fb){const L=this.fb;return hd+`<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:16px">${L.ok?'✅ 정답':'❌ 오답 · 정답 '+L.a+'%'} · ${L.t.toFixed(1)}초 · ${L.ok?`+${L.pts}점 (보너스 ${L.bonus})`:'0점'}</div>
+   <div style="font-size:14.5px;line-height:1.75;margin-top:6px">${this.expl(L)}</div></div><button class="btn full g" style="font-size:17px;padding:13px" onclick="CUR.next()">다음 문제 (${this.i+1}/10)</button>${rule}`;}
+  return hd+`<div class="card" style="text-align:center;font-size:17px;line-height:1.8">팟 <b>${this.P.toLocaleString()}</b><br>상대 베팅 <b>${this.B.toLocaleString()}</b><br><span class="m">콜하려면 최소 몇 % 이겨야 할까?</span><div style="font-size:14px;color:var(--sub)">⏱ <span id="poT">0.0초</span></div></div>
+   <div class="g4b">${this.opts.map(o=>`<button class="btn" onclick="CUR.ans(${o})">${o}%</button>`).join('')}</div>${rule}`;}});
 // 8) 하이로우
-// ===================== 🎰 뚝섬 라이브 카지노 (모두 같은 판 · 15초 베팅 · 주간 칩 랭킹) =====================
+// ===================== 🎰 뚝섬 라이브 카지노 (모두 같은 판 · 15초 베팅 · 일일 칩 랭킹) =====================
 (function(){const s=document.createElement('style');s.textContent=`
 .lvw{display:flex;justify-content:space-between;align-items:center;background:#1b1f2a;color:#fff;border-radius:14px;padding:9px 12px;margin-bottom:8px}
 .lvw b{font-size:19px;color:#ffd54a}.lvw .m{color:#c9cfdb}
@@ -298,15 +322,15 @@ G.push({k:'live',cat:'카드',e:'🎰',n:'라이브 카지노',d:'블랙잭 · �
  rebet(){const S=this.S;if(!S||!S.lastBets){toast('지난 베팅이 없어요');return;}this.setWant(Object.assign({},S.lastBets));},
  dbl(){const b=this.curBets();if(!Object.keys(b).length){toast('베팅이 없어요');return;}for(const k in b)b[k]*=2;this.setWant(b);},
  setChip(v){this.chip=v;lsSet('lv_chip',v);this.draw(1);},
- rescue(){this.touch();lvApi('/api/live/rescue',{nick:NICK}).then(r=>{toast(r.ok?'💸 지원금 10,000칩 받았어요':(r.msg||'받을 수 없어요'),2400);if(r.ok&&this.S&&this.S.me){this.S.me.chips=r.chips;this.S.me.rescue=false;}if(this.tab==='rank')this.loadRank();this.draw(1);});},
+ rescue(){this.touch();lvApi('/api/live/rescue',{nick:NICK}).then(r=>{toast(r.ok?`💸 1만 칩 충전했어요 (오늘 남은 충전 ${r.left}번)`:(r.msg||'받을 수 없어요'),2400);if(r.ok&&this.S&&this.S.me){this.S.me.chips=r.chips;this.S.me.rescue=false;this.S.me.rescue_left=r.left;}if(this.tab==='rank')this.loadRank();this.draw(1);});},
  act(a){const S=this.S;this.touch();if(this.actBusy)return;this.actBusy=1;lvApi('/api/live/act',{nick:NICK,g:'bj',rnd:S.rnd,act:a}).then(r=>{this.actBusy=0;if(r.ok===false&&r.msg){toast(r.msg,2000);return;}if(r.ok)this.S=r;this.draw(1);}).catch(()=>{this.actBusy=0;toast('서버 연결이 안 돼요');});},
  // ----- 화면 -----
- view(){const tabs=`<div class="tabs" style="margin-bottom:8px">${[['bac','🎴 바카라'],['bj','🂡 블랙잭'],['rank','🏆 주간 랭킹']].map(([k,n])=>`<button class="${this.tab===k?'on':''}" onclick="CUR.setTab('${k}')">${n}</button>`).join('')}</div>`;
+ view(){const tabs=`<div class="tabs" style="margin-bottom:8px">${[['bac','🎴 바카라'],['bj','🂡 블랙잭'],['rank','🏆 오늘 랭킹']].map(([k,n])=>`<button class="${this.tab===k?'on':''}" onclick="CUR.setTab('${k}')">${n}</button>`).join('')}</div>`;
   const nick=NICK?'':`<div class="card" style="border-color:var(--blue)"><div class="t">닉네임을 넣어야 베팅할 수 있어요 (카톡 닉네임)</div><div style="display:flex;gap:6px;margin-top:6px"><input class="q" id="lvnick" placeholder="카톡 닉네임"><button class="btn" style="flex:none" onclick="setNick($('lvnick').value);CUR.fetch();rr()">저장</button></div></div>`;
   if(this.tab==='rank')return tabs+nick+this.ruleBox()+this.rankView()+`<button class="btn gr full" style="margin-top:8px" onclick="CUR.loadRank()">🔄 새로고침</button>`;
   const S=this.S;if(!S)return tabs+nick+`<div class="card" style="text-align:center;padding:30px 10px">${this.err?esc(this.err):'테이블에 들어가는 중…'}</div>`;
-  const me=S.me;const wallet=`<div class="lvw"><div><div class="m" style="font-size:12px">내 칩 (이번 주 시즌)</div><b>${me?this.shown().toLocaleString():'-'}</b></div><div style="text-align:right"><div class="m" style="font-size:12px">👥 이번 판</div><div style="font-weight:900">${S.crowd.n}명 참여</div></div></div>`;
-  const resc=me&&me.rescue?`<button class="btn full g" style="margin-bottom:8px" onclick="CUR.rescue()">💸 1만 칩 충전 받기 (5,000 미만 · 하루 1번)</button>`:'';
+  const me=S.me;const wallet=`<div class="lvw"><div><div class="m" style="font-size:12px">내 칩 (오늘)</div><b>${me?this.shown().toLocaleString():'-'}</b></div><div style="text-align:right"><div class="m" style="font-size:12px">👥 이번 판</div><div style="font-weight:900">${S.crowd.n}명 참여</div></div></div>`;
+  const resc=me&&me.rescue?`<button class="btn full g" style="margin-bottom:8px" onclick="CUR.rescue()">💸 1만 칩 충전 (오늘 남은 ${me.rescue_left}번)</button>`:'';
   const tm=`<div class="lvtm" id="lvtm"><i></i><span></span></div>`;
   const stg=this.stage();const prev=(stg===99||stg==='next')&&S.prev&&S.prev.length?`<div class="lvprev">🎉 이번 판 큰 승리: ${S.prev.map(([n,v])=>`<b>${esc(n)}</b> +${lvN(v)}`).join(' · ')}</div>`:'';
   const pause=this.paused?`<div class="card" style="text-align:center;border-color:var(--blue);font-size:15px;cursor:pointer" onclick="CUR.touch()">⏸ 한동안 움직임이 없어서 자동으로 멈췄어요<br><b style="color:var(--blue)">눌러서 다시 보기</b></div>`:'';
@@ -317,13 +341,13 @@ G.push({k:'live',cat:'카드',e:'🎰',n:'라이브 카지노',d:'블랙잭 · �
   const d=mine?'결과를 기다려요 · 다음 판 베팅은 곧 열려요':(S.shuffle?'새 슈를 섞고 있어요':'이번 판이 끝나면 다음 판부터 베팅할 수 있어요');
   return `<div class="lvwait"><b>${t}</b><div>${d}</div><div id="lvwt" style="font-weight:900;font-size:17px"></div></div>`;},
  ruleBox(){const S=this.S,R=this.rank;const season=(S&&S.season)||(R&&R.season);let left='';
-  if(season){const end=Date.parse(season+'T00:00:00+09:00')+7*864e5,ms=end-this.now()*1000;if(ms>0){const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4);left=d?`${d}일 ${h}시간`:h?`${h}시간 ${m}분`:`${m}분`;}}
+  if(season){const end=Date.parse(season+'T00:00:00+09:00')+864e5,ms=end-this.now()*1000;if(ms>0){const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4);left=d?`${d}일 ${h}시간`:h?`${h}시간 ${m}분`:`${m}분`;}}
   const me=R&&R.me&&R.me.rank?`내 순위 <b>${R.me.rank}위</b> / ${R.players}명`:'첫 판을 걸면 순위에 올라가요';
-  return `<div class="lvrule"><div class="h">🏆 주간 칩 경쟁</div>
-   📅 매주 <b>월요일 0시</b>에 모두 <b>10만 칩</b>으로 다시 시작<br>
-   🥇 일요일 밤까지 <b>칩이 가장 많은 사람이 1위</b> · 1~3위는 카톡방에 발표 (10판 이상)<br>
-   💸 칩이 <b>5,000 미만</b>이면 <b>하루 1번 1만 칩 충전</b> (바카라·블랙잭 칩은 하나로 같이 써요)
-   <div class="end">⏳ 시즌 끝까지 ${left||'-'} · ${me}</div></div>`;},
+  return `<div class="lvrule"><div class="h">🏆 오늘의 칩 경쟁</div>
+   📅 <b>매일 0시</b>에 모두 <b>10만 칩</b>으로 다시 시작<br>
+   🥇 밤 12시까지 <b>칩이 가장 많은 사람이 오늘의 1위</b><br>
+   💸 다 잃으면 <b>1만 칩 충전 · 하루 5번까지</b> (바카라·블랙잭 칩은 하나로 같이 써요)
+   <div class="end">⏳ 오늘 마감까지 ${left||'-'} · ${me}</div></div>`;},
  chipsRow(){return `<div class="lvch">${LV_CHIPS.map(([v,n,c])=>`<button class="${this.chip===v?'on':''}" style="background:${c}" onclick="CUR.setChip(${v})">${n}</button>`).join('')}</div>`;},
  btnRow(){const op=this.open();return `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px"><button class="btn gr" ${op?'':'disabled'} onclick="CUR.clearB()">지우기</button><button class="btn b2" ${op?'':'disabled'} onclick="CUR.rebet()">재베팅</button><button class="btn b2" ${op?'':'disabled'} onclick="CUR.dbl()">2배</button></div>${this.wantDirty?'<div class="lvprev">⏳ 곧 접수돼요 (손을 멈추면 1초 뒤)</div>':this.S&&this.S.my&&this.S.my.amt&&op?`<div class="lvprev">✅ ${this.S.my.amt.toLocaleString()}칩 접수됨 · 마감 전까지 바꿀 수 있어요</div>`:''}`;},
  bacView(){const S=this.S,st=this.stage(),b=this.curBets(),cr=S.crowd.tot||{};
@@ -367,17 +391,17 @@ G.push({k:'live',cat:'카드',e:'🎰',n:'라이브 카지노',d:'블랙잭 · �
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">${spot('pp','퍼펙트 페어','6 · 12 · 25 : 1','#6a1b9a')}${spot('t3','21+3','5 · 10 · 30 · 40 · 100 : 1','#00695c')}</div>${this.chipsRow()}</div>${this.btnRow()}`;},
  rankView(){const R=this.rank;if(!R)return `<div class="card" style="text-align:center;padding:30px">${this.err?esc(this.err):'불러오는 중…'}</div>`;
   const md=['🥇','🥈','🥉'];const me=R.me;
-  return `<div class="card"><div class="t" style="font-size:16px">🏆 이번 주 시즌 · ${R.season.slice(5).replace('-','/')} ~ ${R.end.slice(5).replace('-','/')} 0시</div>
+  return `<div class="card"><div class="t" style="font-size:16px">🏆 오늘 · ${R.season.slice(5).replace('-','/')} (밤 12시 마감)</div>
    
    ${me?`<div class="row me"><span>${me.rank?me.rank+'위':'-'} · <b>${esc(NICK)}</b></span><span><b>${me.chips.toLocaleString()}</b>칩 · ${me.hands}판</span></div>`:''}
-   <div class="lvrk">${R.top.length?R.top.map((r,i)=>`<div class="row${r[0]===NICK?' me':''}"><span>${md[i]||(i+1)+'.'} ${esc(r[0])}</span><span><b>${r[1].toLocaleString()}</b> · ${r[2]}판</span></div>`).join(''):'<div class="m" style="text-align:center;padding:14px">아직 이번 주 기록이 없어요 · 첫 1위가 되어보세요!</div>'}</div>
+   <div class="lvrk">${R.top.length?R.top.map((r,i)=>`<div class="row${r[0]===NICK?' me':''}"><span>${md[i]||(i+1)+'.'} ${esc(r[0])}</span><span><b>${r[1].toLocaleString()}</b> · ${r[2]}판</span></div>`).join(''):'<div class="m" style="text-align:center;padding:14px">아직 오늘 기록이 없어요 · 첫 1위가 되어보세요!</div>'}</div>
    <div class="m" style="margin-top:6px">참여 ${R.players}명${me?` · 내 최고 칩 ${me.peak.toLocaleString()} · 한 판 최대 +${me.best.toLocaleString()}`:''}</div></div>
-   ${R.prev.length?`<div class="card"><div class="t">지난주 결과</div>${R.prev.map((r,i)=>`<div class="row"><span>${md[i]} ${esc(r[0])}</span><span>${r[1].toLocaleString()}칩</span></div>`).join('')}</div>`:''}
-   ${this.S&&this.S.me&&this.S.me.rescue?`<button class="btn full g" onclick="CUR.rescue()">💸 파산 지원금 10,000칩 받기 (하루 1번)</button>`:''}${this.howTo()}`;},
+   ${R.prev.length?`<div class="card"><div class="t">어제 결과</div>${R.prev.map((r,i)=>`<div class="row"><span>${md[i]} ${esc(r[0])}</span><span>${r[1].toLocaleString()}칩</span></div>`).join('')}</div>`:''}
+   ${this.S&&this.S.me&&this.S.me.rescue?`<button class="btn full g" onclick="CUR.rescue()">💸 1만 칩 충전 (오늘 남은 ${this.S.me.rescue_left}번)</button>`:''}${this.howTo()}`;},
  howTo(){return `<details class="card" style="margin-top:8px"><summary style="font-weight:800;cursor:pointer">📖 방법 · 배당</summary><div style="font-size:14px;line-height:1.75;margin-top:6px">
   • 모든 사람이 <b>같은 테이블·같은 카드</b>를 봐요 · 그림장도 다 같이 채워져요<br>
   • <b>15초 베팅</b> → 마감 → 동시에 카드 공개 · 칸을 누르면 바로 걸리고, 마감 전까지 바꿀 수 있어요<br>
-  • 칩은 <b>주간 시즌</b>: 매주 월요일 0시에 모두 10만 칩으로 다시 시작 · 칩이 5,000 미만이면 하루 1번 지원금 1만 칩<br>
+  • 칩은 <b>매일 0시</b>에 모두 10만 칩으로 다시 시작 · 다 잃으면 1만 칩 충전 (하루 5번까지)<br>
   • <b>바카라</b>: 플레이어 1:1 · 뱅커 0.95:1 · 타이 8:1 (타이면 P·B 베팅 돌려줌) · P/B페어 11:1 · 8덱 60판마다 셔플<br>
   • <b>인피니트 블랙잭</b>: 모두 같은 첫 2장 · 히트하면 모두 같은 순서로 다음 카드 · 15초 안에 결정 (안 하면 스탠드)<br>
   &nbsp;&nbsp;블랙잭 3:2 · 딜러는 소프트 17 스탠드 · 더블 처음 두 장 · 스플릿 1번 (A 스플릿은 1장씩) · 딜러 블랙잭이면 처음 건 메인만 잃어요<br>
@@ -787,7 +811,7 @@ G.push({k:'crossword',cat:'퍼즐',e:'📝',n:'가로세로 낱말퀴즈',d:'상
 // ===== 🧭 넛 우위 맞히기 (포지션별 레인지 · 플랍) =====
 function parseRange(s){const out=new Set();const RO='AKQJT98765432';const idx=c=>RO.indexOf(c);
  s.split(',').map(x=>x.trim()).filter(Boolean).forEach(t=>{const plus=t.endsWith('+');const dash=t.includes('-');let a=t.replace('+','');
-  if(dash){const [x,y]=a.split('-');if(x.length===2){for(let i=idx(x[0]);i<=idx(y[0]);i++)out.add(RO[i]+RO[i]);}else{const h=x[0],sfx=x[2];for(let i=idx(x[1]);i<=idx(y[1]);i++)out.add(h+RO[i]+sfx);}return;}
+  if(dash){const [x,y]=a.split('-');if(x.length===2){const p=idx(x[0]),q=idx(y[0]);for(let i=Math.min(p,q);i<=Math.max(p,q);i++)out.add(RO[i]+RO[i]);}else{const h=x[0],sfx=x[2],p=idx(x[1]),q=idx(y[1]);for(let i=Math.min(p,q);i<=Math.max(p,q);i++)out.add(h+RO[i]+sfx);}return;}
   if(a.length===2){if(plus){for(let i=0;i<=idx(a[0]);i++)out.add(RO[i]+RO[i]);}else out.add(a);return;}
   const h=a[0],k=a[1],sfx=a[2];if(plus){for(let i=idx(h)+1;i<=idx(k);i++)out.add(h+RO[i]+sfx);}else out.add(a);});return out;}
 function combos(cls,dead){const o=[];const rv=ch=>RK.indexOf(ch)+2;const deadS=new Set(dead.map(c=>c.r*4+c.s));
@@ -822,7 +846,7 @@ G.push({k:'nutadv',cat:'홀덤',e:'🧭',n:'넛 우위 맞히기',d:'포지션�
   const fb=r?`<div class="sec" style="margin-top:14px">직전 문제 풀이</div><div class="card" style="border-color:${r.ok?'#3a9d3f':'#d33b3b'}"><div class="t">${r.ok?'✅ 정답':'❌ 오답'} · ${r.q.ans==='='?'비슷해요':(r.q.ans==='ip'?r.q.sp.ip:r.q.sp.oop)+' 넛 우위'}</div>
     <div class="m" style="font-size:12.5px;margin-top:4px">${r.q.sp.t} · ${r.q.sp.n}</div><div style="margin:4px 0">${cardsHtml(r.q.board,true)}</div>
     <div class="m" style="margin:4px 0">넛(투페어 이상) 비율 ${r.q.sp.ip} ${(r.q.ni*100).toFixed(1)}% · ${r.q.sp.oop} ${(r.q.no*100).toFixed(1)}% · 레인지 에퀴티 ${r.q.sp.ip} ${Math.round(r.q.eq*100)}%</div>
-    <div style="font-size:13.5px;line-height:1.6">${this.explain(r.q)}</div></div>`:'';
+    ${this.explain(r.q)}</div>${this.askBoxHtml?this.askBoxHtml():''}`:'';
   if(this.i>=10)return overHtml(this.sc+'/10','넛 우위 맞히기 10문제 · 내 최고 '+(myBest('nutadv')||this.sc)+'/10')+fb;
   return `<div class="gst"><span>${this.i+1} / 10</span><span>정답 <b>${this.sc}</b></span></div>
    <div class="card" style="text-align:center"><div class="m">${q.sp.t} · 100BB</div><div class="t" style="font-size:16px;margin:4px 0">${q.sp.n}</div><div class="lbl">플랍</div>${cardsHtml(q.board)}
@@ -1327,6 +1351,8 @@ G.push({k:'hustudy',study:true,cat:'공부',e:'🎓',n:'헤즈업 공부',d:'스
   if(h.street===0){const hi=hole[0].r>=hole[1].r?hole[0]:hole[1],lo=hi===hole[0]?hole[1]:hole[0];const cl='AKQJT98765432'[14-hi.r]+'AKQJT98765432'[14-lo.r]+(hi.r===lo.r?'':hi.s===lo.s?'s':'o');
    const q=HU.PCT[cl];mix=this.pfStrat(p,cl,opts);const ch=huCh(this.S);
    why.push(`${cl} = 상위 ${Math.round(q*100)}% 핸드`);
+   if(typeof handFeat==='function')handFeat(cl).slice(0,3).forEach(f=>why.push(f));
+   why.push(p==='BTN'?'BTN(SB)은 플랍부터 <b>마지막에 행동</b>해서 상대 행동을 보고 결정할 수 있어요 → 같은 패라도 더 넓게 참여해요.':'BB는 플랍부터 <b>먼저 행동</b>해서 정보가 불리하지만, 이미 1BB+앤티를 냈기 때문에 싸게 콜할 수 있어 넓게 지켜요.');
    if(h.raises===1&&p==='BTN')why.push(`${this.S}BB 헤즈업 BTN은 상위 ${Math.round(ch.open*100)}% 정도를 오픈해요 (BB가 포지션 불리라 아주 넓게)`);
    else if(h.raises===2&&p==='BB')why.push(`BB 방어: 약 ${Math.round(ch.tb*100)}% 3벳${ch.tsz?' (밸류 상위 '+Math.round(ch.tb*60)+'% + 수딧 핸드 일부 블러프)':' (올인)'} · 상위 ${Math.round(ch.call*100)}%까지 콜 · 1BB+앤티가 이미 팟에 있어 팟 오즈가 좋아서 넓게 지켜요`);
    else if(h.raises===3&&p==='BTN')why.push(`3벳 받은 BTN: 상위 ${Math.round((ch.fb||0)*100)}% 4벳 · ${Math.round(ch.f3call*100)}%까지 콜`);
@@ -1350,6 +1376,7 @@ G.push({k:'hustudy',study:true,cat:'공부',e:'🎓',n:'헤즈업 공부',d:'스
     if(k&&up>0&&['medium','weak','strong'].includes(cls)){const f0=mix[k];const f1=f0+(1-f0)*up;if(f1-f0>.08){mix={check:1-f1,[k]:f1};this._boost=true;why.push(`상대 레인지(지금까지 액션으로 좁혀진) 대비 승률 ${Math.round(eq*100)}%라 얇은 밸류 베팅 빈도를 올려요.`);}}
     if(h.street===3&&['air','draw','gut'].includes(cls))why.push('리버 블러프는 쇼다운으로 못 이기는 패 중에서, 상대 콜 레인지를 막는 카드(블로커)가 있을 때 고르면 좋아요.');}
    why.push(`전체 그림: 서로 가능한 모든 패로 보면 내 쪽 승률 ${Math.round(me*100)}% · 강한 패(투페어 이상) 비율 나 ${(nm*100).toFixed(1)}% vs 상대 ${(no*100).toFixed(1)}%`);
+   why.push(`왜 이게 중요할까: 평균 승률(레인지 우위)이 높으면 <b>작게 자주</b> 베팅해도 상대 대부분을 이기고 있고, 강한 패 비율(넛 우위)이 높으면 상대가 레이즈로 맞서기 어려워 <b>크게</b> 베팅할 수 있어요. 지금은 ${me>.55?'레인지 우위가 나에게':me<.45?'레인지 우위가 상대에게':'레인지가 팽팽'} · ${nm-no>.015?'넛 우위도 나에게':no-nm>.015?'넛 우위는 상대에게':'넛은 비슷'}.`);
    why.push(this.reason(cls,p,tc>0,tx,me,nm-no));}
   // 이번 선택의 빈도
   const catOf=k=>{const t=k.split(':')[0];return t==='fold'?'fold':(t==='call'||t==='check')?'pass':'agg';};const myc=catOf(a.t);let f=0,szTip='';
@@ -2087,6 +2114,169 @@ G.push({k:'hula',cat:'카드',e:'🀄',n:'세븐훌라',d:'AI 대전 · 등록·
    h+=`<div class="cgbtn c3"><button class="btn g" ${ty?'':'disabled'} onclick="CUR.regBtn()">등록${ty?` (${ty==='set'?'트리플':ty==='run'?'스트레이트':'7'})`:''}</button><button class="btn" ${cs.length===1&&S.must==null?'':'disabled'} onclick="CUR.discBtn()">버리기</button><button class="btn gr" onclick="CUR.hint()">💡 힌트</button></div>
    <div class="cgsum" style="margin-top:6px">붙이기: 카드를 고른 뒤 바닥의 반짝이는 묶음을 눌러요${S.must!=null&&!S.acted&&!S.stolen?' · <a href="javascript:void 0" onclick="CUR.undoTake()" style="color:var(--red)">땡큐 취소</a>':''}</div>`;}
   return h;}});
+// ===================== 📚 푸시/폴드 · 넛 우위 — 자세한 해설 · 카톡 공유 · AI 코치 =====================
+(function(){const s=document.createElement('style');s.textContent=`
+.xp{font-size:14px;line-height:1.7;margin-top:8px}.xp .h{font-weight:900;margin:10px 0 2px;color:var(--brown);font-size:14.5px}.xp b{color:var(--blue)}
+.xp .k{display:inline-block;background:var(--blue2);border-radius:6px;padding:0 6px;font-weight:800;color:var(--ink)}
+.xp table{width:100%;border-collapse:collapse;font-size:13.5px;margin:4px 0}.xp td,.xp th{border-bottom:1px dashed var(--line);padding:4px 3px;text-align:center}.xp th{color:var(--sub);font-weight:700}
+.xp td:first-child,.xp th:first-child{text-align:left}.xp .win{color:#2d7a31;font-weight:900}
+.askb{border-color:var(--blue)!important}.askb .g3b{margin-top:6px}.askb .btn{font-size:14.5px!important;padding:11px 4px!important}
+`;document.head.appendChild(s);})();
+const XRK='AKQJT98765432';
+// 범위를 사람이 읽는 글로: 페어 22+ · A2s+ · K9s+ · ATo+ ...
+function rangeText(bits,max){const on=cl=>bits[ORD.indexOf(cl)]==='1';const out=[];
+ const pairs=[...XRK].filter(r=>on(r+r));if(pairs.length===13)out.push('모든 페어');else if(pairs.length)out.push(pairs[pairs.length-1]+pairs[pairs.length-1]+'+');
+ for(const sfx of ['s','o'])for(let i=0;i<12;i++){const h=XRK[i];const ks=[];for(let j=i+1;j<13;j++)if(on(h+XRK[j]+sfx))ks.push(XRK[j]);
+  if(!ks.length)continue;out.push(ks.length===12-i?`${h}x ${sfx==='s'?'수딧':'오프'} 전부`:`${h}${ks[ks.length-1]}${sfx}+`);}
+ const L=max||9;return out.slice(0,L).join(' · ')+(out.length>L?` 외 ${out.length-L}종`:'');}
+// 169개 중 내 패 순위 (ORD는 강한 순)
+function handRankPct(cl){const i=ORD.indexOf(cl);let c=0;for(let k=0;k<=i;k++)c+=wcl(ORD[k]);return {i:i+1,pct:Math.round(c/1326*100)};}
+// 내 패 특징 설명
+function handFeat(cl){const a=cl[0],b=cl[1],pair=a===b,suited=cl[2]==='s',hi=XRK.indexOf(a),lo=XRK.indexOf(b),gap=lo-hi-1,F=[];
+ if(pair){F.push(hi<=3?`<b>강한 페어</b>: 콜 받아도 대부분의 패를 이기고 있어요 (오버페어면 약 80%)`:hi<=7?`<b>중간 페어</b>: 큰 카드 2장(예: AK) 상대로 약 55:45 코인플립, 더 큰 페어에겐 약 20%`:`<b>작은 페어</b>: 큰 카드 2장 상대로 약 50:50이지만, 더 큰 페어에 걸리면 약 20% · 플랍 이후 이길 길이 적어 올인으로 끝내는 게 유리`);}
+ else{if(a==='A')F.push(`<b>A 블로커</b>: 내가 A를 들고 있어서 상대가 AA·AK 같은 강한 콜 패를 가질 확률이 줄어요`);
+  if(a==='A'&&lo>=6)F.push(`<b>킥커가 약함</b>: 콜 받으면 더 높은 A(AQ·AJ)에게 지배당하기 쉬워요 (약 25~30%)`);
+  if(suited)F.push(`<b>수딧</b>: 플러시로 이길 길이 있어 같은 숫자 오프수트보다 승률이 약 2~3% 높아요`);
+  if(!pair&&gap<=1&&hi>=3)F.push(`<b>연결</b>: 스트레이트 가능성이 있어 큰 패 상대로도 승률이 생각보다 덜 떨어져요`);
+  if(hi>=4&&!suited&&gap>=3)F.push(`<b>약한 오프수트</b>: 콜 받으면 승률이 30%대로 떨어지는 경우가 많아요`);
+  if(hi<=3&&lo<=4)F.push(`<b>브로드웨이 2장</b>: 콜 범위의 중간 패를 상대로는 앞서지만 AA·KK·AK에는 크게 밀려요`);}
+ return F;}
+// 내 2장 vs 상대 범위(비트) 승률 (몬테카를로)
+function eqVsBits(cards,bits,N){const cls=ORD.filter((c,i)=>bits[i]==='1');const cmb=combos(cls,cards);if(!cmb.length)return null;let w=0,t=0;
+ for(let k=0;k<(N||600);k++){const v=pick(cmb);const used=new Set([...cards,...v].map(c=>c.r*4+c.s));if(used.size<4)continue;const d=shuf(deck().filter(c=>!used.has(c.r*4+c.s))).slice(0,5);
+  const c=cmpH(best([...cards,...d]),best([...v,...d]));w+=c>0?1:c===0?.5:0;t++;}return t?w/t:null;}
+// 상대 올인 범위를 '실전 보정'처럼 좁히기 (내시 범위의 앞쪽 65%)
+function tightBits(bits,frac){const idx=[];for(let i=0;i<bits.length;i++)if(bits[i]==='1')idx.push(i);const keep=new Set(idx.slice(0,Math.max(1,Math.round(idx.length*frac))));return [...bits].map((b,i)=>keep.has(i)?'1':'0').join('');}
+
+// ---------- 🔥 푸시/폴드 해설 ----------
+function pfExplain(L,basis){const P=POS9[L.o],bb=L.bb,behind=8-L.o,X=[];const hr=handRankPct(L.cl);
+ if(L.type==='open'){const os=L.os;const cnt=t=>Math.round([...os].reduce((a,c,i)=>a+(c===t?wcl(ORD[i]):0),0)/1326*100);
+  X.push(`<div class="h">📋 상황</div>${P} · 20BB · 앞은 모두 폴드 · 뒤에 ${behind}명. 팟에는 SB 0.5 + BB 1 + 빅앤티 1 = <span class="k">2.5BB</span>가 있어요.`);
+  X.push(`<div class="h">🤔 왜 20BB는 '오픈'이 기본일까?</div>2.5BB를 먹으려고 20BB 전부를 거는 건 <b>너무 큰 리스크</b>예요 (콜 받으면 20BB가 걸린 승부). 2.2BB만 걸어도 상대가 많이 폴드하니까, 같은 2.5BB를 훨씬 싸게 노릴 수 있어요. 대신 오픈 뒤 상대가 올인(3벳)하면 그때 콜/폴드를 정해요.`);
+  X.push(`<div class="h">🗂 ${P} 20BB 전략 (상위 ${L.pct}%만 참여)</div>🔴 바로 올인 약 ${cnt('J')}% · 🟢 오픈→올인 받으면 콜 약 ${cnt('C')}% · 🟩 오픈→올인 받으면 폴드 약 ${cnt('O')}%`);
+  X.push(`<div class="h">🃏 내 패 ${L.cl}</div>169개 중 ${hr.i}번째 (상위 ${hr.pct}%) → 정답 <b>${O20N[L.act]}</b><br>`+({
+   J:'바로 올인하는 패는 <b>중간 페어·약한 A</b>처럼 "오픈했다가 올인 받으면 애매한" 패예요. 처음부터 올인하면 상대가 폴드하는 이득(폴드 에퀴티)을 다 가져가고, 애매한 결정을 피할 수 있어요.',
+   C:'충분히 강해서 오픈 뒤 상대가 올인해도 <b>콜해서 이길 확률이 충분</b>해요. 그래서 작게 오픈해 상대의 약한 패·블러프 올인까지 받아요.',
+   O:'오픈해서 블라인드를 훔칠 가치는 있지만, 상대가 올인하면 <b>그 범위 상대로 승률이 부족</b>해서 폴드해요. (오픈 2.2BB만 잃음)',
+   F:`이 자리(${P}, 뒤에 ${behind}명)에서 참여하기엔 약해요. 뒤에 누군가 강한 패를 들 확률이 높아서 오픈해도 손해예요.`})[L.act]);
+  handFeat(L.cl).forEach(f=>X.push('· '+f));return X.join('<br>');}
+ if(L.type==='push'){const callKey=bb+'_'+L.o;const cb=GS.calls[callKey];const cpct=cb?rgPct(cb):0;
+  const behindTxt=L.o===7?'BB 1명':`${behind}명 (BB 포함)`;const pAllFold=cb?Math.pow(1-cpct/100*0.75,Math.max(0,behind-1))*(1-cpct/100):null;
+  const eq=cb?eqVsBits(L.cards,cb,500):null;const inR=L.inr;const cut=handRankPct(ORD[[...L.rg].lastIndexOf('1')]||'AA');
+  X.push(`<div class="h">📋 상황</div>${P} · ${bb}BB · 앞은 모두 폴드 · 뒤에 남은 사람 ${behindTxt}. 팟에는 <span class="k">2.5BB</span> (SB 0.5 + BB 1 + 빅앤티 1)`);
+  X.push(`<div class="h">⚖️ 올인의 이득 2가지</div>① <b>모두 폴드</b>하면 2.5BB를 그냥 가져와요 (${bb}BB 스택이면 한 번에 ${Math.round(2.5/bb*100)}% 증가)<br>② <b>콜 받으면</b> ${bb}BB를 걸고 승부 → 이때 내 승률이 너무 낮지만 않으면 ①의 이득이 더 커요${pAllFold!=null?`<br>→ 대략 모두 폴드할 확률 약 <b>${Math.round(pAllFold*100)}%</b>${eq!=null?` · BB가 콜했을 때 내 승률 약 <b>${Math.round(eq*100)}%</b>`:''}`:''}`);
+  X.push(`<div class="h">🧭 왜 자리마다 범위가 다를까?</div>뒤에 사람이 많을수록 그중 누군가 강한 패를 들고 있을 확률이 커져요. ${behind}명이 남은 ${P}는 ${behind>=5?'아직 많이 남아서 <b>좁게</b>':behind>=2?'중간 정도라 <b>적당히</b>':'BB만 남아서 <b>아주 넓게</b>'} 올인해요. 스택이 짧을수록(${bb}BB) 2.5BB의 가치가 커져 범위가 넓어져요.`);
+  X.push(`<div class="h">🗂 ${P} ${bb}BB 올인 범위 (상위 ${L.pct}%)</div>${rangeText(L.rg)}`);
+  X.push(`<div class="h">🃏 내 패 ${L.cl}</div>169개 중 ${hr.i}번째 · 상위 <b>${hr.pct}%</b> · 범위 경계는 상위 ${L.pct}% → ${inR?`범위 <b>안</b>${L.pct-hr.pct<=4?' (경계 근처 · 아슬아슬하게 올인)':''}`:`범위 <b>밖</b>${hr.pct-L.pct<=4?' (경계 바로 밖 · 아깝게 폴드)':''}`}`);
+  handFeat(L.cl).forEach(f=>X.push('· '+f));return X.join('<br>');}
+ // 콜 문제
+ const shove=bb,pot=shove+1+1+(L.o===7?0:0.5),call=shove-1,need=call/(pot+call);const real=basis==='실전';
+ const vb=real?tightBits(GS.ranges[bb+'_'+L.o],0.65):GS.ranges[bb+'_'+L.o];const vp=rgPct(vb);const eq=eqVsBits(L.cards,vb,600);const need2=need+(real?0.02:0);
+ X.push(`<div class="h">📋 상황</div>나는 BB · ${P}가 ${bb}BB 올인 · 나머지는 폴드. 나는 이미 BB 1 + 빅앤티 1을 냈어요.`);
+ X.push(`<div class="h">💰 팟 오즈 (콜에 필요한 승률)</div>콜하려면 <span class="k">${call}BB</span>를 더 내고, 이기면 <span class="k">${(pot+call).toFixed(1)}BB</span>를 가져와요 (올인 ${shove} + 내 블라인드·앤티 2${L.o===7?'':' + SB 0.5'} + 내 콜 ${call}).<br>→ 본전 승률 = ${call} ÷ ${(pot+call).toFixed(1)} = <b>${Math.round(need*100)}%</b>${real?` · 실전 보정은 여유분 2%p를 더해 <b>${Math.round(need2*100)}%</b>`:''}`);
+ X.push(`<div class="h">🗂 ${P}의 ${bb}BB 올인 범위 (${real?'실전 보정 · 내시의 65%':'이론 내시'}) 상위 ${vp}%</div>${rangeText(vb)}${real?'<br><span class="m">실제 사람들은 이론만큼 넓게 올인하지 않아서 더 강한 범위로 봐요</span>':''}`);
+ X.push(`<div class="h">🃏 내 패 ${L.cl} vs 이 범위</div>${eq!=null?`승률 약 <b>${Math.round(eq*100)}%</b> vs 필요 ${Math.round(need2*100)}% → ${eq>=need2?'<b class="win">콜이 이득</b>':'<b style="color:#c62828">폴드가 이득</b>'}${Math.abs(eq-need2)<0.03?' (차이가 작아 경계선)':''}`:''}<br><span class="m">(승률은 즉석 계산이라 ±2% 정도 오차가 있어요)</span>`);
+ handFeat(L.cl).forEach(f=>X.push('· '+f));return X.join('<br>');}
+function pfSumText(L,basis,link){const P=POS9[L.o];const q=L.type==='open'?`${P} 20BB · 앞 모두 폴드 · 폴드/오픈/올인?`:L.type==='push'?`${P} ${L.bb}BB · 앞 모두 폴드 · 올인?`:`BB ${L.bb}BB · ${P} 올인에 콜?`;
+ return [`🔥 [푸시/폴드] ${q}`,`내 패: ${L.cards.map(c=>rkCh(c.r)+SU[c.s]).join(' ')} (${L.cl})`,`정답: ${L.ans}${L.my!=null?` · 내 선택: ${L.my}`:''}`,'9인 · 빅앤티 · '+(L.type==='call'?(basis==='실전'?'실전 보정':'이론 내시'):'내시 기준'),'❓ 여러분이라면?',link||''].filter(Boolean).join('\n');}
+
+// ---------- 공유·AI 공통 ----------
+async function xShare(kind,data){try{const r=await fetch(API+'/api/hu/share',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({nick:NICK||'',data:JSON.stringify({kind,...data})})}).then(r=>r.json());
+ if(r.ok)return location.origin+location.pathname+'#g='+(kind==='pf'?'pushfold':'nutadv')+'&sh='+r.id;}catch(e){}toast('링크 만들기 실패 (내용만 복사해요)');return '';}
+function askBox(o){return `<div class="card askb" style="margin-top:10px"><div class="t">🙋 이 문제 물어보기</div><div class="m" style="margin:2px 0 6px">단톡방에 물어보거나 AI 코치에게 바로 물어봐요</div>
+ <div class="g3b"><button class="btn b2" onclick="CUR.xCopy()">📋 카톡복사</button><button class="btn" onclick="CUR.xShareBtn()">📤 공유하기</button><button class="btn g" onclick="CUR.xAsk()">🤖 AI 코치</button></div>
+ ${o&&o.ai?`<div class="card" style="margin-top:10px;background:#fff;white-space:pre-wrap;font-size:14px;line-height:1.65">${o.ai.loading?'🤖 생각 중… (10~20초)':esc(o.ai.text)}</div><div class="m">AI 답변도 틀릴 수 있어요. 참고용이에요.</div>`:''}</div>`;}
+async function xAskAI(kind,text,obj){if(obj.ai&&obj.ai.loading)return;obj.ai={loading:true};rr();
+ try{const r=await fetch(API+'/api/hu/ask',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({text,kind})}).then(r=>r.json());obj.ai={text:r.answer||'답을 못 받았어요'};}
+ catch(e){obj.ai={text:'서버에 연결이 안 돼요'};}rr();}
+const xPlain=h=>String(h).replace(/<br>/g,'\n').replace(/<div class="h">/g,'\n').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').replace(/\n{3,}/g,'\n\n').trim();
+
+// 🔥 푸시/폴드에 붙이기
+(function(){const PF=G.find(g=>g.k==='pushfold');if(!PF)return;const st0=PF.start,v0=PF.view,a0=PF.ans;
+ PF.start=function(){this.shared=null;this.ai=null;const m=location.hash.match(/sh=([0-9a-f]{6,12})/);
+  if(m){this.shared={loading:true};rr();fetch(API+'/api/hu/share/'+m[1],{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{if(!r.ok){this.shared={err:'공유된 문제를 찾지 못했어요'};rr();return;}
+   const D=JSON.parse(r.data);const L=D.L;L.cards=L.cards.map(c=>({r:c.r,s:c.s}));this.shared={L,basis:D.basis,nick:r.nick,id:m[1]};rr();}).catch(()=>{this.shared={err:'서버에 연결이 안 돼요'};rr();});return;}
+  return st0.call(this);};
+ PF.ans=function(yes){this.ai=null;this.linkFor=null;const q=this.q;const r=a0.call(this,yes);if(this.last)this.last.my=q.type==='open'?['폴드','올인','오픈'][yes]:yes?(q.type==='push'?'올인':'콜'):'폴드';return r;};
+ PF.cur=function(){return this.shared&&this.shared.L?this.shared:{L:this.last,basis:this.basis||lsGet('pf_basis','실전')};};
+ PF.xLink=async function(){const C=this.cur();if(this.shared&&this.shared.id)return location.href;if(this.linkFor===C.L&&this.link)return this.link;this.link=await xShare('pf',{L:C.L,basis:C.basis});this.linkFor=C.L;return this.link;};
+ PF.xCopy=async function(){const C=this.cur();if(!C.L)return;copy(pfSumText(C.L,C.basis,await this.xLink()));};
+ PF.xShareBtn=async function(){const C=this.cur();if(!C.L)return;const t=pfSumText(C.L,C.basis,await this.xLink());if(navigator.share){try{await navigator.share({text:t});return;}catch(e){}}copy(t);};
+ PF.xAsk=function(){const C=this.cur();if(!C.L)return;xAskAI('pf',pfSumText(C.L,C.basis,'')+'\n\n[앱 해설]\n'+xPlain(pfExplain(C.L,C.basis)),this);};
+ PF.xHtml=function(L){const basis=this.cur().basis;return `<details class="card" style="margin-top:8px" ${L.right?'':'open'}><summary style="font-weight:800;cursor:pointer;font-size:15px">📚 왜 그런지 자세히 보기</summary><div class="xp">${pfExplain(L,basis)}</div></details>${askBox(this)}`;};
+ PF.view=function(){if(this.shared){const S=this.shared;if(S.loading)return '<div class="gq">불러오는 중…</div>';if(S.err)return `<div class="gq">${esc(S.err)}</div><button class="btn full" onclick="location.hash='g=pushfold'">푸시/폴드 하러 가기</button>`;
+   const L=S.L,P=POS9[L.o];return `<div class="card" style="padding:12px"><div class="m">${esc(S.nick||'누군가')}님이 공유한 문제</div><div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;margin-top:6px"><div><div style="font-size:28px;font-weight:900;color:var(--blue)">${L.bb}BB</div>
+    <div style="font-size:19px;font-weight:900">${L.type==='open'?`${P} · 액션?`:L.type==='push'?`${P} · 올인?`:`BB · ${P} 올인에 콜?`}</div></div><div>${cardsHtml(L.cards)}</div></div>${seatRow(L.o,L.type)}</div>
+    <div class="gok" style="margin-top:8px">정답: <b>${esc(L.ans)}</b>${L.my?` · 공유한 사람의 선택: ${esc(L.my)}`:''}</div>
+    <div class="card"><div class="xp">${pfExplain(L,S.basis)}</div></div>${L.type==='open'?chartOpen(L.os,L.cl):chart13(L.type==='call'&&S.basis==='실전'?L.rg:L.rg,L.cl)}${askBox(this)}
+    <button class="btn full" style="margin-top:8px" onclick="location.hash='g=pushfold';CUR&&CUR.start()">🔥 나도 풀어보기</button>`;}
+  let h=v0.call(this);if(this.last&&this.mode){const add=this.xHtml(this.last);h=h.includes('<div class="gbig">')?h.replace('<div class="gbig">',add+'<div class="gbig">'):h+add;}return h;};})();
+
+// ---------- 🧭 넛 우위 해설 ----------
+const SPOT_WHY={
+ 'UTG 오픈 vs BB 콜':'UTG는 9명 중 가장 먼저 말해서 강한 패만 오픈해요(약 15%) — AA·KK·AK·AQ 같은 큰 카드가 많아요. BB는 이미 1BB를 내서 싸게 넓게 콜하지만, AA·KK·AK 같은 최상위 패는 3벳으로 보내서 <b>콜 레인지엔 거의 없어요(캡된 레인지)</b>. 대신 작은 페어·수딧 커넥터가 많아요.',
+ 'BTN 오픈 vs BB 콜':'BTN은 마지막 자리라 아주 넓게(약 45%) 오픈해서 약한 패도 많아요. BB도 넓게 지키지만 강한 패는 3벳으로 보내 콜 레인지는 중간·작은 카드 위주예요.',
+ 'CO 오픈 vs BTN 콜':'BTN은 CO 오픈에 QQ+·AK 같은 강한 패를 3벳해서 <b>콜 레인지가 캡</b>돼 있어요(중간 페어·수딧 브로드웨이 위주). CO는 오픈 레인지 그대로라 AA·KK·AK까지 다 가지고 있어요.',
+ 'BB 3벳 vs BTN 콜':'BB 3벳은 TT+·AJs+·AQo+ 같은 강한 패 + A5s~A2s 같은 블러프로 양극화돼 있어요. BTN은 QQ+를 4벳하니까 콜 레인지는 중간 페어·수딧 커넥터 위주예요.',
+ 'UTG 오픈 · BTN 3벳 · UTG 콜':'BTN 3벳은 QQ+·AK 중심이고, UTG는 KK+를 4벳하니 콜 레인지는 TT~QQ·AQ·KQ 위주예요. 둘 다 좁고 강한 레인지라 SPR(남은 스택÷팟)이 낮아요.',
+ 'CO 오픈 · BTN 3벳 · CO 4벳 · BTN 콜':'CO 4벳은 KK+·AK(+A5s 블러프), BTN 콜은 QQ·JJ·AQs·AK. 아주 좁은 레인지끼리라 보드에 A·K가 깔리면 누가 유리한지가 극단적으로 갈려요.'};
+function nutBreak(cmb,board){const br=board.map(c=>c.r),bmax=Math.max(...br),C={str:0,set:0,two:0,trips:0,over:0,top:0,fd:0,weak:0},ex={str:{},set:{},two:{}};
+ const cl=([a,b])=>{const hi=a.r>=b.r?a:b,lo=hi===a?b:a;return rkCh(hi.r).replace('10','T')+rkCh(lo.r).replace('10','T')+(hi.r===lo.r?'':hi.s===lo.s?'s':'o');};
+ cmb.forEach(h=>{const [a,b]=h;const e=ev5([a,b,...board]);let k;
+  if(e[0]>=4)k='str';else if(e[0]===3){k=(a.r===b.r&&br.includes(a.r))?'set':'trips';}else if(e[0]===2&&a.r!==b.r&&br.includes(a.r)&&br.includes(b.r))k='two';
+  else if(e[0]>=1&&a.r===b.r&&a.r>bmax)k='over';else if(e[0]>=1&&(a.r===bmax||b.r===bmax))k='top';else k='weak';
+  C[k]++;if(ex[k]){const c=cl(h);ex[k][c]=(ex[k][c]||0)+1;}
+  const su=[0,1,2,3].some(s=>[a,b,...board].filter(c=>c.s===s).length===4&&(a.s===s||b.s===s));if(su&&e[0]<5)C.fd++;});
+ const n=cmb.length||1;const P={};for(const k in C)P[k]=C[k]/n;const top=k=>Object.entries(ex[k]).sort((x,y)=>y[1]-x[1]).slice(0,4).map(x=>x[0]);
+ return {P,n,top:{str:top('str'),set:top('set'),two:top('two')}};}
+function nutExplain(q){const sp=q.sp,T=texture(q.board),bI=nutBreak(combos(parseRange(sp.IP),q.board),q.board),bO=nutBreak(combos(parseRange(sp.OOP),q.board),q.board);
+ const IP=sp.ip,OOP=sp.oop,aggP=sp.agg==='ip'?IP:OOP,defP=sp.agg==='ip'?OOP:IP,A=sp.agg==='ip'?bI:bO,Dd=sp.agg==='ip'?bO:bI;const aggEq=sp.agg==='ip'?q.eq:1-q.eq;
+ const pc=x=>(x*100).toFixed(1)+'%',X=[];const nut=b=>b.P.str+b.P.set+b.P.two,strong1=b=>b.P.over+b.P.top;
+ const tex=[T.high?'하이카드':T.low?'로우':'미들',T.conn?'연결된':'',T.pair?'페어드':'',T.mono?'모노톤':T.two?'투톤':'레인보우'].filter(Boolean).join(' · ');
+ X.push(`<div class="h">📋 프리플랍에서 이미 정해진 것</div>${SPOT_WHY[sp.n]||''}`);
+ X.push(`<div class="h">🃏 보드 성격: ${tex}</div>`+[T.high?'A·K·Q 같은 큰 카드 보드는 <b>프리플랍에 강하게 들어온 쪽(오픈·3벳한 쪽)</b>에 유리해요 — 그쪽 레인지에 큰 카드가 더 많으니까요.':'',
+  T.low?'낮은 카드 보드는 <b>넓게 콜한 쪽</b>에 유리해지기 쉬워요 — 작은 페어(셋)·수딧 커넥터(투페어·스트레이트)가 콜 레인지에 더 많아요.':'',
+  T.conn?'숫자가 이어져 있어 스트레이트가 가능해요 → 커넥터를 많이 가진 쪽이 넛을 더 많이 만들어요.':'',T.pair?'페어 보드라 트립스·풀하우스가 생겨요 → 그 숫자를 더 많이 가진 쪽이 유리.':'',
+  T.mono?'한 무늬 3장 → 그 무늬 수딧을 많이 가진 쪽이 플러시를 만들어요.':T.two?'같은 무늬 2장이라 플러시 드로우가 생겨요.':''].filter(Boolean).join(' '));
+ X.push(`<div class="h">📊 두 레인지가 이 보드에 맞은 정도</div><table><tr><th></th><th>${IP}</th><th>${OOP}</th></tr>
+  <tr><td>스트레이트 이상</td><td>${pc(bI.P.str)}</td><td>${pc(bO.P.str)}</td></tr><tr><td>셋</td><td>${pc(bI.P.set)}</td><td>${pc(bO.P.set)}</td></tr>
+  <tr><td>투페어 (두 장 다 사용)</td><td>${pc(bI.P.two)}</td><td>${pc(bO.P.two)}</td></tr><tr><td><b>넛 합계</b></td><td class="${nut(bI)>nut(bO)?'win':''}">${pc(nut(bI))}</td><td class="${nut(bO)>nut(bI)?'win':''}">${pc(nut(bO))}</td></tr>
+  <tr><td>오버페어·탑페어</td><td>${pc(strong1(bI))}</td><td>${pc(strong1(bO))}</td></tr><tr><td>플러시 드로우</td><td>${pc(bI.P.fd)}</td><td>${pc(bO.P.fd)}</td></tr>
+  <tr><td>레인지 에퀴티</td><td class="${q.eq>0.5?'win':''}">${Math.round(q.eq*100)}%</td><td class="${q.eq<0.5?'win':''}">${Math.round((1-q.eq)*100)}%</td></tr></table>`);
+ const who=nut(bI)>nut(bO)?IP:OOP,W=who===IP?bI:bO,Lz=who===IP?bO:bI;const d=Math.abs(nut(bI)-nut(bO));
+ const src=[];if(W.P.set-Lz.P.set>0.003)src.push(`셋 (${W.top.set.join('·')||'-'})`);if(W.P.two-Lz.P.two>0.003)src.push(`투페어 (${W.top.two.join('·')||'-'})`);if(W.P.str-Lz.P.str>0.003)src.push(`스트레이트+ (${W.top.str.join('·')||'-'})`);
+ X.push(`<div class="h">💡 왜 ${d<0.015?'비슷할까?':who+'가 넛 우위일까?'}</div>`+(d<0.015?`두 레인지 모두 이 보드에서 넛(투페어 이상) 비율이 ${pc(nut(bI))} vs ${pc(nut(bO))}로 거의 같아요. 이럴 땐 넛보다 <b>강한 원페어·드로우가 누구에게 많은지</b>와 레인지 에퀴티로 전략이 정해져요.`
+  :`${who}가 ${src.length?src.join(', ')+' 쪽에서 더 많이 맞아서':'강한 패를 더 많이 가져서'} 넛 비율이 ${pc(nut(W))} vs ${pc(nut(Lz))}로 앞서요. 쉽게 말해 ${who}의 레인지에는 ${[...new Set([...W.top.set,...W.top.two,...W.top.str])].slice(0,4).join('·')||'이 보드에 맞는 패'} 같은 패가 들어 있는데, ${who===IP?OOP:IP}는 프리플랍 액션상 이런 조합을 ${nut(Lz)<0.005?'거의 안':'덜'} 가지고 와요.`+(who===aggP?` (프리플랍에 강하게 들어온 쪽이 이 보드와 맞는 큰 카드·페어를 더 많이 가진 경우)`:` (공격자 ${aggP}보다 수비하는 ${defP} 쪽 레인지가 이 보드와 더 잘 맞는 경우 — 위 '프리플랍에서 정해진 것' 참고)`)));
+ X.push(`<div class="h">📈 레인지 에퀴티 ${aggP} ${Math.round(aggEq*100)}%의 뜻</div>두 레인지 전체를 서로 붙여 끝까지 돌렸을 때 평균 승률이에요. 50%보다 높으면 '평균적으로 이기고 있는 쪽'이라 <b>베팅 빈도</b>를 높일 수 있고, 넛 비율이 높으면 <b>큰 사이즈</b>를 쓸 수 있어요.`);
+ const aggNut=nut(A),defNut=nut(Dd);let plan;
+ if(aggNut>defNut+0.015&&aggEq>0.52)plan=`${aggP}는 넛도 많고 평균 승률도 높아요 → <b>자주 베팅</b>하는 게 기본. 상대 레인지 대부분을 이기고 있으니 작은 사이즈(1/3팟)로 거의 전부 베팅해도 상대가 많은 패를 버리거나 불리하게 콜해요. 넛 차이가 크면 큰 사이즈도 섞어요. ${defP}는 체크 후 넓게 지키되, 넛이 적어서 체크레이즈는 낮은 빈도.`;
+ else if(aggNut>defNut+0.015)plan=`${aggP}는 넛은 더 많지만 평균 승률은 비슷 → <b>큰 사이즈를 강한 패+블러프로만</b> (양극화). 중간 패는 체크해서 지켜요.`;
+ else if(defNut>aggNut+0.015)plan=`${defP}가 넛이 더 많아요 → ${aggP}가 크게 베팅하면 체크레이즈에 당하기 쉬워요. ${aggP}는 <b>체크 빈도를 높이고</b>, 베팅한다면 작게·좁게. ${defP}는 넛으로 <b>체크레이즈를 적극적으로</b> 섞기 좋은 보드예요.`;
+ else plan=`넛이 비슷 → 한쪽이 크게 밀어붙이기 어려워요. <b>중간 사이즈·체크와 베팅을 섞는</b> 전략이 많고, 레인지 에퀴티가 높은 쪽(${q.eq>0.5?IP:OOP})이 조금 더 자주 베팅해요.`;
+ X.push(`<div class="h">🎯 그래서 전략은</div>${plan}`+(sp.t!=='싱글레이즈'?`<br>(${sp.t}는 레인지가 좁고 팟이 커서 SPR이 낮아요 — 탑페어 이상이면 스택을 다 넣는 결정이 많아져요.)`:''));
+ X.push(`<div class="h">📖 용어</div><b>넛</b> = 투페어(두 장 다 사용)·셋·스트레이트 이상 · <b>캡된 레인지</b> = 강한 패를 앞에서 레이즈로 보내서 콜 레인지에 최상위 패가 없는 상태 · <b>양극화</b> = 아주 강한 패와 블러프로만 베팅`);
+ return X.join('');}
+function nutSumText(q,my,link){return [`🧭 [넛 우위] ${q.sp.t} · ${q.sp.n} · 100BB`,`플랍: ${q.board.map(c=>rkCh(c.r)+SU[c.s]).join(' ')}`,`정답: ${q.ans==='='?'비슷':(q.ans==='ip'?q.sp.ip:q.sp.oop)+' 넛 우위'}${my?` · 내 선택: ${my}`:''}`,
+ `넛(투페어+) ${q.sp.ip} ${(q.ni*100).toFixed(1)}% · ${q.sp.oop} ${(q.no*100).toFixed(1)}% · 레인지 에퀴티 ${q.sp.ip} ${Math.round(q.eq*100)}%`,'❓ 여러분 생각은?',link||''].filter(Boolean).join('\n');}
+(function(){const NA=G.find(g=>g.k==='nutadv');if(!NA)return;const st0=NA.start,v0=NA.view,a0=NA.ans;
+ NA.start=function(){this.shared=null;this.ai=null;const m=location.hash.match(/sh=([0-9a-f]{6,12})/);
+  if(m){this.shared={loading:true};rr();fetch(API+'/api/hu/share/'+m[1],{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{if(!r.ok){this.shared={err:'공유된 문제를 찾지 못했어요'};rr();return;}
+   const D=JSON.parse(r.data);const q=D.q;q.sp=SPOTS[q.spi];this.shared={q,my:D.my,nick:r.nick,id:m[1]};rr();}).catch(()=>{this.shared={err:'서버에 연결이 안 돼요'};rr();});return;}
+  return st0.call(this);};
+ NA.ans=function(a){this.ai=null;this.link=null;const q=this.q;const r=a0.call(this,a);if(this.res)this.res.my=a==='='?'비슷':(a==='ip'?q.sp.ip:q.sp.oop);return r;};
+ NA.explain=function(q){return '<div class="xp">'+nutExplain(q)+'</div>';};
+ NA.cur=function(){return this.shared&&this.shared.q?{q:this.shared.q,my:this.shared.my}:this.res?{q:this.res.q,my:this.res.my}:null;};
+ NA.xLink=async function(){if(this.shared&&this.shared.id)return location.href;if(this.link)return this.link;const C=this.cur();const q=C.q;
+  this.link=await xShare('nut',{q:{spi:SPOTS.indexOf(q.sp),board:q.board,ni:q.ni,no:q.no,si:q.si,so:q.so,eq:q.eq,ans:q.ans},my:C.my});return this.link;};
+ NA.xCopy=async function(){const C=this.cur();if(!C)return;copy(nutSumText(C.q,C.my,await this.xLink()));};
+ NA.xShareBtn=async function(){const C=this.cur();if(!C)return;const t=nutSumText(C.q,C.my,await this.xLink());if(navigator.share){try{await navigator.share({text:t});return;}catch(e){}}copy(t);};
+ NA.xAsk=function(){const C=this.cur();if(!C)return;xAskAI('nut',nutSumText(C.q,C.my,'')+`\nIP(${C.q.sp.ip}) 레인지: ${C.q.sp.IP}\nOOP(${C.q.sp.oop}) 레인지: ${C.q.sp.OOP}\n\n[앱 해설]\n`+xPlain(nutExplain(C.q)),this);};
+ NA.view=function(){if(this.shared){const S=this.shared;if(S.loading)return '<div class="gq">불러오는 중…</div>';if(S.err)return `<div class="gq">${esc(S.err)}</div><button class="btn full" onclick="location.hash='g=nutadv'">넛 우위 맞히기 하러 가기</button>`;
+   const q=S.q;return `<div class="card" style="text-align:center"><div class="m">${esc(S.nick||'누군가')}님이 공유한 문제 · ${q.sp.t} · 100BB</div><div class="t" style="font-size:16px;margin:4px 0">${q.sp.n}</div>${cardsHtml(q.board)}</div>
+    <div class="gok">정답: <b>${q.ans==='='?'비슷해요':(q.ans==='ip'?q.sp.ip:q.sp.oop)+' 넛 우위'}</b>${S.my?` · 공유한 사람의 선택: ${esc(S.my)}`:''}</div>
+    <div class="card">${this.explain(q)}</div>${askBox(this)}<button class="btn full" style="margin-top:8px" onclick="location.hash='g=nutadv';CUR&&CUR.start()">🧭 나도 풀어보기</button>`;}
+  return v0.call(this);};
+ NA.askBoxHtml=function(){return askBox(this);};})();
 // ===== 🕹️ 아케이드 =====
 function cvSetup(game,w,h,extra){show(`<div class="gst"><span>점수 <b id="csc">0</b></span><span>내 최고 ${(myBest(game.k)||0).toLocaleString()}</span></div><canvas id="cv" class="cv" width="${w}" height="${h}"></canvas>${extra||''}<div id="cmsg" class="m" style="text-align:center;margin-top:8px"></div>`);
  const c=$('cv');game.cv=c;game.cx=c.getContext('2d');game.alive=true;const loop=t=>{if(!game.alive||CUR!==game)return;game.tick(t);requestAnimationFrame(loop);};requestAnimationFrame(loop);
@@ -2124,12 +2314,23 @@ function meBar(){if(!NICK)return '';if(!ME)return `<div class="m" style="margin-
 function tileBest(g){const c=GCFG[g.k];if(!c)return '';if(c[3]){const b=(c[4]||['쉬움','보통','어려움']).slice().reverse().map(l=>myBest(g.k,l)).find(v=>v!=null)??null;return b==null?'':'내 기록 '+fmtScore(g.k,b);}const b=myBest(g.k);return b==null?'':'내 최고 '+fmtScore(g.k,b);}
 function dailyTile(){const d=kstDay(),[k]=dailyType(d);const done=lsGet('daily_done_'+d,null);
  return `<div class="card" style="cursor:pointer;border-color:var(--blue);background:var(--blue2)" onclick="location.hash='daily'"><div class="row"><b style="font-size:16px">📅 오늘의 문제 · ${gName(k)}</b><span class="m">${done?'✅ 제출함':'하루 1번'}</span></div><div class="m">모두 같은 문제 · 오늘 순위 · +50xp</div></div>`;}
+// 🎯 운영진 미션 (일일·주간) · 게임 목록 맨 위에
+let MISSIONS=null,MIS_AT=0;
+function loadMissions(){if(!API||Date.now()-MIS_AT<60000)return;MIS_AT=Date.now();fetch(API+'/api/missions',{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{MISSIONS=r.missions||[];if(!CUR)rr2();}).catch(()=>{});}
+function missionBox(){loadMissions();const L=(MISSIONS||[]).filter(m=>m.state!=='끝'||m.winners.length);if(!L.length)return '';
+ const cond=m=>m.cond==='score'?`${m.gname}${m.lv?' '+m.lv:''} <b>${esc(m.target_txt)}</b> 달성${m.lim?` · 선착순 ${m.lim}명`:''}`:m.cond==='top1'?`${m.gname}${m.lv?' '+m.lv:''} 기간 <b>1위</b>`:'운영진 확인';
+ return `<div class="card" style="border:2px solid #f6c344;background:#fffaf0"><div class="t" style="font-size:16px;margin-bottom:4px">🎯 이번 미션</div>${L.map(m=>`<div style="padding:7px 0;border-top:1px dashed var(--line)">
+  <div style="font-size:15px;font-weight:800">${m.period==='weekly'?'📆 주간':'📅 일일'} · ${esc(m.title)} ${m.state!=='진행 중'?`<span class="m">(${m.state})</span>`:''}</div>
+  <div style="font-size:14px">🎁 <b style="color:#c62828">${esc(m.reward||'-')}</b> · <span class="m">${cond(m)} · ~${+m.end_d.slice(5,7)}/${+m.end_d.slice(8,10)}</span></div>
+  ${m.note?`<div class="m">${esc(m.note)}</div>`:''}
+  <div style="font-size:13.5px;margin-top:2px">${m.winners.length?(m.leader?'👑 현재 1위: ':'🏅 달성: ')+m.winners.map(w=>esc(w.nick)+(w.rec?` (${esc(w.rec)})`:'')+(w.paid?' ✅':'')).join(', '):'<span class="m">아직 달성자 없음 · 첫 주인공이 되어보세요!</span>'}</div>
+  ${m.game&&m.state==='진행 중'?`<button class="btn" style="padding:5px 12px;font-size:13.5px;margin-top:5px" onclick="location.hash='g=${m.game}'">도전하기</button>`:''}</div>`).join('')}</div>`;}
 function listView(){if(CATSEL==='펫')CATSEL='전체';const L=G.filter(g=>!g.study&&g.cat!=='펫'&&(CATSEL==='전체'||g.cat===CATSEL));
- return `<div class="card"><div class="t" style="margin-bottom:6px">카톡 닉네임 <span class="m">(랭킹·레벨·업적·카톡방 자랑)</span></div><div style="display:flex;gap:6px"><input class="q" id="nk" value="${esc(NICK)}" placeholder="예: 구우"><button class="btn" onclick="setNick($('nk').value);loadMe(rr2)">저장</button></div>${meBar()}</div>
-  ${dailyTile()}
+ return `<div class="card"><div class="t" style="margin-bottom:6px">카톡 닉네임 <span class="m">(랭킹·레벨·업적·미션)</span></div><div style="display:flex;gap:6px"><input class="q" id="nk" value="${esc(NICK)}" placeholder="예: 구우"><button class="btn" onclick="setNick($('nk').value);loadMe(rr2)">저장</button></div>${meBar()}</div>
+  ${missionBox()}${dailyTile()}
   <div class="tabs">${CATS.map(c=>`<button class="${c===CATSEL?'on':''}" onclick="CATSEL='${c}';lsSet('gcat',CATSEL);render()">${c}</button>`).join('')}<button onclick="location.hash='rank'">🏆 랭킹·업적</button></div>
   <div class="grid">${L.map(g=>`<div class="tile" onclick="location.hash='g='+'${g.k}'"><div class="e">${g.e}</div><div class="n">${g.nm}</div><div class="b">${tileBest(g)}</div></div>`).join('')}</div>
-  <div class="m" style="text-align:center;margin-top:14px">대단한 기록·희귀 업적은 봇이 카톡방에 자랑해요 🎉</div>`;}
+  <div class="m" style="text-align:center;margin-top:14px">주간 1~3위에 들면 📣 자랑하기 버튼이 떠요 · 카톡방에 직접 공유해보세요 🎉</div>`;}
 function rr2(){if(!CUR)render0();}
 // 📅 오늘의 문제
 let DLIVE=null;
