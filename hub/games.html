@@ -2162,7 +2162,18 @@ function rankView(){const tabs=[['week','🏆 주간'],['today','⏰ 오늘'],['
    const got=ME.ach.filter(a=>a[4]),no=ME.ach.filter(a=>!a[4]);
    h+=`<div class="sec">달성 ${got.length}/${ME.ach.length}</div><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px">${[...got,...no].map(a=>`<div class="card" style="margin:0;padding:8px;${a[4]?'border-color:#e0a800;background:#fff8e1':'opacity:.5;filter:grayscale(1)'}"><div style="font-size:22px">${a[1]}</div><b style="font-size:13.5px">${a[2]}</b><div class="m" style="font-size:11.5px">${a[3]}</div>${a[4]?`<div class="m" style="font-size:10.5px">${a[4].slice(0,10)}</div>`:''}</div>`).join('')}</div>`;}}
  return h+'<div class="m" style="text-align:center;margin-top:8px">주간·오늘·레벨 랭킹은 홈이 갱신될 때(10분 안) 반영돼요</div>';}
-function gvisit(p){if(!API)return;try{fetch(API+'/api/visit',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({p,n:NICK||''})}).catch(()=>{});}catch(e){}}
+// 🟢 실시간 접속 (관리자 페이지에서 지금 누가 어떤 화면을 보는지) · 15초마다 신호 · 화면을 끄거나 나가면 바로 OFF
+const PSID=(()=>{try{let v=localStorage.getItem('psid');if(!v){v=Math.random().toString(36).slice(2,10);localStorage.setItem('psid',v);}return v;}catch(e){return Math.random().toString(36).slice(2,10);}})();
+let PPAGE='';
+function pres(off){if(!API)return;let n='';try{n=localStorage.getItem('nick')||'';}catch(e){}
+ const b=JSON.stringify({s:PSID,p:PPAGE,n,f:window.top!==window.self?1:0,off:off?1:0});
+ try{if(off&&navigator.sendBeacon&&navigator.sendBeacon(API+'/api/presence',new Blob([b],{type:'text/plain'})))return;
+  fetch(API+'/api/presence',{method:'POST',headers:{'Content-Type':'text/plain'},body:b,keepalive:true}).catch(()=>{});}catch(e){}}
+function presPage(p){PPAGE=String(p||'').slice(0,40);pres();}
+setInterval(()=>{if(!document.hidden&&PPAGE)pres();},15000);
+document.addEventListener('visibilitychange',()=>{if(PPAGE)pres(document.hidden);});
+window.addEventListener('pagehide',()=>{if(PPAGE)pres(1);});
+function gvisit(p){presPage(p);if(!API)return;try{fetch(API+'/api/visit',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({p,n:NICK||''})}).catch(()=>{});}catch(e){}}
 function render0(){setTitle('🎮 뚝섬 게임 · '+G.filter(g=>!g.study).length+'종');show(listView());}
 function render(){const hsh=location.hash.slice(1);if(CUR&&CUR.stop)CUR.stop();SWH=null;clearInterval(clock.iv);
  const back=$('backBtn');
@@ -2174,7 +2185,7 @@ function render(){const hsh=location.hash.slice(1);if(CUR&&CUR.stop)CUR.stop();S
  CUR=null;back.style.display='none';
  if(hsh==='rank'){gvisit('게임·랭킹');setTitle('🏆 랭킹·업적');back.style.display='';show(rankView());if(RTAB==='ach'||RTAB==='level')loadMe(()=>{if(location.hash==='#rank')show(rankView());});return;}
  if(hsh==='daily'){gvisit('게임·오늘의 문제');setTitle('📅 오늘의 문제');back.style.display='';show(dailyView());loadDaily();return;}
- render0();if(window.top===window.self)gvisit('게임 목록');if(NICK&&!ME)loadMe(()=>{if(!CUR&&!location.hash.slice(1))render0();});}
+ render0();if(window.top===window.self)gvisit('게임 목록');else presPage('게임 목록');if(NICK&&!ME)loadMe(()=>{if(!CUR&&!location.hash.slice(1))render0();});}
 addEventListener('hashchange',render);
 if(window.top!==window.self){$('homeBtn').style.display='none';}   // 홈 안에서 열렸으면 홈 버튼 숨김 (위의 ← 뒤로로 닫기)
 render();
