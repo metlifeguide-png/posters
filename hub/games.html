@@ -1905,6 +1905,11 @@ G.push({k:'hula',cat:'카드',e:'🀄',n:'세븐훌라',d:'AI 대전 · 등록·
 .lvbj .pcs{min-height:52px}
 .lvact{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.lvact .btn{font-size:16px;padding:12px 2px}.lvact .btn:disabled{opacity:.35}
 .lvh{background:rgba(0,0,0,.18);border-radius:12px;padding:6px;margin-top:6px;text-align:center}.lvh.cur{box-shadow:0 0 0 3px #ffd54a}
+.lvrule{background:linear-gradient(135deg,#2b1d4a,#1b2c55);color:#fff;border-radius:14px;padding:12px 14px;margin-bottom:8px;font-size:15.5px;line-height:1.7}
+.lvrule .h{font-size:19px;font-weight:900;color:#ffd54a;margin-bottom:2px}.lvrule b{color:#ffd54a}
+.lvrule .end{margin-top:6px;background:rgba(255,255,255,.12);border-radius:10px;padding:6px 10px;font-weight:900;font-size:16px;text-align:center}
+.lvwait{position:absolute;inset:0;z-index:2;background:rgba(10,30,20,.82);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;padding:10px}
+.lvwait b{font-size:21px;color:#ffd54a}.lvwait div{font-size:15px;margin-top:6px;line-height:1.5}
 .lvrk .row{font-size:14.5px;padding:7px 0}.lvrk .me{background:var(--blue2);border-radius:8px;padding:7px 6px}
 `;document.head.appendChild(s);})();
 const LV_EPOCH=1790000000,LV_CHIPS=[[1000,'1K','#8a8f98'],[5000,'5K','#c62828'],[10000,'10K','#1565c0'],[50000,'50K','#2e7d32'],[100000,'100K','#6a1b9a']];
@@ -1914,17 +1919,17 @@ const lvN=v=>v>=10000?(v%10000?(v/10000).toFixed(1):v/10000)+'만':v.toLocaleStr
 function lvApi(path,body){return fetch(API+path,body?{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(body)}:{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json());}
 G.push({k:'live',cat:'카드',e:'🎰',n:'라이브 카지노',d:'모두 같은 판 · 15초 베팅 · 주간 칩 랭킹 (바카라·블랙잭)',
  start(){Object.assign(this,{tab:lsGet('lv_tab','bac'),chip:lsGet('lv_chip',5000),S:null,off:0,want:null,wantDirty:0,sendAt:0,rank:null,sig:'',busy:0,err:'',got:{},act0:Date.now(),paused:false});
-  clearInterval(this.iv2);this.iv2=setInterval(()=>{if(CUR!==this){clearInterval(this.iv2);return;}this.tick();},200);if(this.tab==='rank')this.loadRank();else this.fetch();rr();},
- setTab(t){this.tab=t;lsSet('lv_tab',t);this.S=null;this.want=null;this.wantDirty=0;this.sig='';this.got={};this.act0=Date.now();this.paused=false;if(t==='rank')this.loadRank();else this.fetch();rr();},
+  clearInterval(this.iv2);this.iv2=setInterval(()=>{if(CUR!==this){clearInterval(this.iv2);return;}this.tick();},200);this.loadRank();if(this.tab!=='rank')this.fetch();rr();},
+ setTab(t){this.tab=t;lsSet('lv_tab',t);this.S=null;this.want=null;this.wantDirty=0;this.sig='';this.got={};this.act0=Date.now();this.paused=false;this.loadRank();if(t!=='rank')this.fetch();rr();},
  touch(){this.act0=Date.now();if(this.paused){this.paused=false;this.err='';if(this.tab!=='rank')this.fetch();this.draw(1);}},
  now(){return (Date.now()+this.off)/1000;},
  per(){return this.tab==='bj'?[15,15,9]:[15,10];},
  loc(){const P=this.per(),T=P.reduce((a,b)=>a+b,0),n=this.now(),rnd=Math.floor((n-LV_EPOCH)/T);return {rnd,t:n-(LV_EPOCH+rnd*T),T};},
- loadRank(){lvApi('/api/live/rank?nick='+encodeURIComponent(NICK)).then(r=>{this.rank=r;this.err='';this.draw(1);}).catch(()=>{this.err='서버 연결이 안 돼요';this.draw(1);});},
+ loadRank(){this.rankAt=Date.now();lvApi('/api/live/rank?nick='+encodeURIComponent(NICK)).then(r=>{this.rank=r;this.err='';this.draw(1);}).catch(()=>{this.err='서버 연결이 안 돼요';this.draw(1);});},
  // 서버 요청은 꼭 필요할 때만: 들어올 때 · 베팅 마감 직후(결과) · 블랙잭 결정 시작/딜러 공개 · 베팅·동작 보낼 때
  fetch(){if(this.busy)return;this.busy=1;const g=this.tab,t0=Date.now();
   lvApi(`/api/live/state?g=${g}&nick=${encodeURIComponent(NICK)}`).then(r=>{this.busy=0;if(g!==this.tab||!r.ok)return;const rtt=Date.now()-t0;this.off=r.now*1000-(t0+rtt/2);
-   if(this.S&&this.S.rnd!==r.rnd&&!this.wantDirty)this.want=null;this.S=r;this.err='';this.draw();}).catch(()=>{this.busy=0;this.err='서버 연결이 안 돼요 · 화면을 누르면 다시 연결해요';this.paused=true;this.draw(1);});},
+   if(this.S&&this.S.rnd!==r.rnd&&!this.wantDirty)this.want=null;this.S=r;this.err='';if(Date.now()-(this.rankAt||0)>180000)this.loadRank();this.draw();}).catch(()=>{this.busy=0;this.err='서버 연결이 안 돼요 · 화면을 누르면 다시 연결해요';this.paused=true;this.draw(1);});},
  // 판이 넘어가면 서버에 묻지 않고 화면에서 바로 다음 판으로 (그림장도 이어서)
  advance(){const S=this.S,L=this.loc();if(!S||L.rnd===S.rnd)return;
   if(L.rnd-S.rnd>1||(this.tab==='bac'&&!S.cur&&!S.shuffle)||(this.tab==='bj'&&L.rnd<S.rnd)){if(!this.busy)this.fetch();return;}
@@ -1944,6 +1949,7 @@ G.push({k:'live',cat:'카드',e:'🎰',n:'라이브 카지노',d:'모두 같은 
   let left,tot,txt,hot=false;const t=L.t;
   if(this.tab==='bac'){if(S.shuffle&&L.rnd===S.rnd){left=L.T-t;tot=L.T;txt=`🔀 셔플 중 · ${Math.ceil(left)}초`;}else if(t<P[0]){left=P[0]-t;tot=P[0];hot=left<=5;txt=`베팅 중 · ${Math.ceil(left)}초 남음`;}else{left=L.T-t;tot=P[1];txt=`카드 공개 · 다음 판 ${Math.ceil(left)}초`;}}
   else{if(t<P[0]){left=P[0]-t;tot=P[0];hot=left<=5;txt=`베팅 중 · ${Math.ceil(left)}초 남음`;}else if(t<P[0]+P[1]){left=P[0]+P[1]-t;tot=P[1];hot=left<=5;txt=`결정 시간 · ${Math.ceil(left)}초 (시간 지나면 스탠드)`;}else{left=L.T-t;tot=P[2];txt=`딜러 공개 · 다음 판 ${Math.ceil(left)}초`;}}
+  const w=document.getElementById('lvwt');if(w){const nx=L.T-t;w.textContent=`다음 판 베팅까지 ${Math.ceil(nx)}초`;}
   const i=e.querySelector('i'),sp=e.querySelector('span');i.style.width=Math.max(0,Math.min(100,left/tot*100))+'%';i.className=hot?'hot':'';sp.textContent=txt;},
  // 진행 단계: 0 베팅 · 1..n 카드 오픈 · 99 결과
  stage(){const S=this.S,L=this.loc();if(!S)return -1;if(L.rnd!==S.rnd)return L.rnd>S.rnd?'next':'prev';const t=L.t;
@@ -1973,14 +1979,27 @@ G.push({k:'live',cat:'카드',e:'🎰',n:'라이브 카지노',d:'모두 같은 
  // ----- 화면 -----
  view(){const tabs=`<div class="tabs" style="margin-bottom:8px">${[['bac','🎴 바카라'],['bj','🂡 블랙잭'],['rank','🏆 주간 랭킹']].map(([k,n])=>`<button class="${this.tab===k?'on':''}" onclick="CUR.setTab('${k}')">${n}</button>`).join('')}</div>`;
   const nick=NICK?'':`<div class="card" style="border-color:var(--blue)"><div class="t">닉네임을 넣어야 베팅할 수 있어요 (카톡 닉네임)</div><div style="display:flex;gap:6px;margin-top:6px"><input class="q" id="lvnick" placeholder="카톡 닉네임"><button class="btn" style="flex:none" onclick="setNick($('lvnick').value);CUR.fetch();rr()">저장</button></div></div>`;
-  if(this.tab==='rank')return tabs+nick+this.rankView()+`<button class="btn gr full" style="margin-top:8px" onclick="CUR.loadRank()">🔄 새로고침</button>`;
+  if(this.tab==='rank')return tabs+nick+this.ruleBox()+this.rankView()+`<button class="btn gr full" style="margin-top:8px" onclick="CUR.loadRank()">🔄 새로고침</button>`;
   const S=this.S;if(!S)return tabs+nick+`<div class="card" style="text-align:center;padding:30px 10px">${this.err?esc(this.err):'테이블에 들어가는 중…'}</div>`;
   const me=S.me;const wallet=`<div class="lvw"><div><div class="m" style="font-size:12px">내 칩 (이번 주 시즌)</div><b>${me?this.shown().toLocaleString():'-'}</b></div><div style="text-align:right"><div class="m" style="font-size:12px">👥 이번 판</div><div style="font-weight:900">${S.crowd.n}명 참여</div></div></div>`;
-  const resc=me&&me.rescue?`<button class="btn full g" style="margin-bottom:8px" onclick="CUR.rescue()">💸 파산 지원금 10,000칩 받기 (하루 1번)</button>`:'';
+  const resc=me&&me.rescue?`<button class="btn full g" style="margin-bottom:8px" onclick="CUR.rescue()">💸 1만 칩 충전 받기 (5,000 미만 · 하루 1번)</button>`:'';
   const tm=`<div class="lvtm" id="lvtm"><i></i><span></span></div>`;
   const stg=this.stage();const prev=(stg===99||stg==='next')&&S.prev&&S.prev.length?`<div class="lvprev">🎉 이번 판 큰 승리: ${S.prev.map(([n,v])=>`<b>${esc(n)}</b> +${lvN(v)}`).join(' · ')}</div>`:'';
   const pause=this.paused?`<div class="card" style="text-align:center;border-color:var(--blue);font-size:15px;cursor:pointer" onclick="CUR.touch()">⏸ 한동안 움직임이 없어서 자동으로 멈췄어요<br><b style="color:var(--blue)">눌러서 다시 보기</b></div>`:'';
-  return `<div onclick="CUR.act0=Date.now()">`+tabs+nick+pause+wallet+resc+tm+(this.tab==='bac'?this.bacView():this.bjView())+prev+(this.err?`<div class="m" style="text-align:center;color:var(--red)">${esc(this.err)}</div>`:'')+this.howTo()+'</div>';},
+  return `<div onclick="CUR.act0=Date.now()">`+tabs+nick+pause+this.ruleBox()+wallet+resc+tm+(this.tab==='bac'?this.bacView():this.bjView())+prev+(this.err?`<div class="m" style="text-align:center;color:var(--red)">${esc(this.err)}</div>`:'')+this.howTo()+'</div>';},
+ // 베팅 시간이 아니면 베팅판 위에 안내를 덮어요 (중간에 들어온 사람: 이전 게임 진행 중)
+ waitBox(){const S=this.S;if(!S||this.open())return '';const mine=S.my&&S.my.amt;
+  const t=mine?'⏳ 베팅 마감':(S.shuffle?'🔀 셔플 중':'⏳ 이전 게임 진행 중');
+  const d=mine?'결과를 기다려요 · 다음 판 베팅은 곧 열려요':(S.shuffle?'새 슈를 섞고 있어요':'이번 판이 끝나면 다음 판부터 베팅할 수 있어요');
+  return `<div class="lvwait"><b>${t}</b><div>${d}</div><div id="lvwt" style="font-weight:900;font-size:17px"></div></div>`;},
+ ruleBox(){const S=this.S,R=this.rank;const season=(S&&S.season)||(R&&R.season);let left='';
+  if(season){const end=Date.parse(season+'T00:00:00+09:00')+7*864e5,ms=end-this.now()*1000;if(ms>0){const d=Math.floor(ms/864e5),h=Math.floor(ms%864e5/36e5),m=Math.floor(ms%36e5/6e4);left=d?`${d}일 ${h}시간`:h?`${h}시간 ${m}분`:`${m}분`;}}
+  const me=R&&R.me&&R.me.rank?`내 순위 <b>${R.me.rank}위</b> / ${R.players}명`:'첫 판을 걸면 순위에 올라가요';
+  return `<div class="lvrule"><div class="h">🏆 주간 칩 경쟁</div>
+   📅 매주 <b>월요일 0시</b>에 모두 <b>10만 칩</b>으로 다시 시작<br>
+   🥇 일요일 밤까지 <b>칩이 가장 많은 사람이 1위</b> · 1~3위는 카톡방에 발표 (10판 이상)<br>
+   💸 칩이 <b>5,000 미만</b>이면 <b>하루 1번 1만 칩 충전</b> (바카라·블랙잭 칩은 하나로 같이 써요)
+   <div class="end">⏳ 시즌 끝까지 ${left||'-'} · ${me}</div></div>`;},
  chipsRow(){return `<div class="lvch">${LV_CHIPS.map(([v,n,c])=>`<button class="${this.chip===v?'on':''}" style="background:${c}" onclick="CUR.setChip(${v})">${n}</button>`).join('')}</div>`;},
  btnRow(){const op=this.open();return `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px"><button class="btn gr" ${op?'':'disabled'} onclick="CUR.clearB()">지우기</button><button class="btn b2" ${op?'':'disabled'} onclick="CUR.rebet()">재베팅</button><button class="btn b2" ${op?'':'disabled'} onclick="CUR.dbl()">2배</button></div>${this.wantDirty?'<div class="lvprev">⏳ 곧 접수돼요 (손을 멈추면 1초 뒤)</div>':this.S&&this.S.my&&this.S.my.amt&&op?`<div class="lvprev">✅ ${this.S.my.amt.toLocaleString()}칩 접수됨 · 마감 전까지 바꿀 수 있어요</div>`:''}`;},
  bacView(){const S=this.S,st=this.stage(),b=this.curBets(),cr=S.crowd.tot||{};
@@ -1996,7 +2015,7 @@ G.push({k:'live',cat:'카드',e:'🎰',n:'라이브 카지노',d:'모두 같은 
   const won=k=>done&&S.cur&&({P:S.cur.w==='P',B:S.cur.w==='B',T:S.cur.w==='T',PP:S.cur.pp,BP:S.cur.bp})[k];
   const spot=(k,nm,od,bg,big)=>`<div class="lvsp${won(k)?' win':''}" style="background:${bg};padding:${big?'15px 4px':'8px 2px'};font-size:${big?18:13}px" onclick="CUR.add('${k}')">${nm}<div class="od">${od}</div>${cr[k]?`<div class="cr">👥 ${lvN(cr[k])}</div>`:''}${b[k]?`<span class="my">${lvN(b[k])}</span>`:''}</div>`;
   return `<div class="lvt">${table}</div>${res}
-   <div style="background:#0f5b3a;border-radius:16px;padding:10px;margin-top:8px;opacity:${this.open()?1:.75}">
+   <div style="background:#0f5b3a;border-radius:16px;padding:10px;margin-top:8px;position:relative">${this.waitBox()}
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">${spot('PP','P페어','11:1','#1e5fa8')}${spot('T','타이','8:1','#2e7d32')}${spot('BP','B페어','11:1','#b23232')}</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">${spot('P','플레이어','1:1','#1565c0',1)}${spot('B','뱅커','0.95:1','#d32f2f',1)}</div>${this.chipsRow()}</div>${this.btnRow()}
    <div class="card" style="margin-top:8px"><div class="t" style="margin-bottom:4px">📋 이번 슈 그림장 · ${H.length}판 (뱅커 ${H.filter(x=>x.w==='B').length} · 플레이어 ${H.filter(x=>x.w==='P').length} · 타이 ${H.filter(x=>x.w==='T').length})</div>${bacRoadsHtml(H)}</div>`;},
@@ -2019,13 +2038,13 @@ G.push({k:'live',cat:'카드',e:'🎰',n:'라이브 카지노',d:'모두 같은 
   const res=done&&my&&my.done?(my.win>0?`<div class="lvwin">${my.win>my.amt?'🎉 +'+(my.win-my.amt).toLocaleString():my.win===my.amt?'🤝 무승부 (돌려받음)':'↩️ 일부 돌려받음 '+my.win.toLocaleString()} </div>`:`<div class="lvprev">이번 판 −${my.amt.toLocaleString()}</div>`):'';
   const spot=(k,nm,od,bg)=>`<div class="lvsp" style="background:${bg};padding:${k==='m'?'16px 4px':'9px 2px'};font-size:${k==='m'?18:13}px" onclick="CUR.add('${k}')">${nm}<div class="od">${od}</div>${b[k]?`<span class="my">${lvN(b[k])}</span>`:''}</div>`;
   return `<div class="lvt lvbj">${top}${hands}</div>${res}
-   <div style="background:#0f5b3a;border-radius:16px;padding:10px;margin-top:8px;opacity:${this.open()?1:.75}">
+   <div style="background:#0f5b3a;border-radius:16px;padding:10px;margin-top:8px;position:relative">${this.waitBox()}
     ${spot('m','메인 베팅','블랙잭 3:2 · 승리 1:1','#1565c0')}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">${spot('pp','퍼펙트 페어','6 · 12 · 25 : 1','#6a1b9a')}${spot('t3','21+3','5 · 10 · 30 · 40 · 100 : 1','#00695c')}</div>${this.chipsRow()}</div>${this.btnRow()}`;},
  rankView(){const R=this.rank;if(!R)return `<div class="card" style="text-align:center;padding:30px">${this.err?esc(this.err):'불러오는 중…'}</div>`;
   const md=['🥇','🥈','🥉'];const me=R.me;
   return `<div class="card"><div class="t" style="font-size:16px">🏆 이번 주 시즌 · ${R.season.slice(5).replace('-','/')} ~ ${R.end.slice(5).replace('-','/')} 0시</div>
-   <div class="note-lv m" style="font-size:13.5px;margin:4px 0 8px;line-height:1.6">매주 월요일 0시에 모두 <b>${R.start.toLocaleString()}칩</b>으로 다시 시작 · 칩이 가장 많은 사람이 1위 · 결과는 카톡방에 알려드려요</div>
+   
    ${me?`<div class="row me"><span>${me.rank?me.rank+'위':'-'} · <b>${esc(NICK)}</b></span><span><b>${me.chips.toLocaleString()}</b>칩 · ${me.hands}판</span></div>`:''}
    <div class="lvrk">${R.top.length?R.top.map((r,i)=>`<div class="row${r[0]===NICK?' me':''}"><span>${md[i]||(i+1)+'.'} ${esc(r[0])}</span><span><b>${r[1].toLocaleString()}</b> · ${r[2]}판</span></div>`).join(''):'<div class="m" style="text-align:center;padding:14px">아직 이번 주 기록이 없어요 · 첫 1위가 되어보세요!</div>'}</div>
    <div class="m" style="margin-top:6px">참여 ${R.players}명${me?` · 내 최고 칩 ${me.peak.toLocaleString()} · 한 판 최대 +${me.best.toLocaleString()}`:''}</div></div>
