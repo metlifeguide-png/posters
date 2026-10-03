@@ -153,7 +153,8 @@ body.isetc .noetc{display:none!important}
 <div class="panel easy-only" id="easy">
   <div class="chips" id="ezGames"></div>
   <div class="ez-status" id="ezStatus"></div>
-  <div class="ez-grid">
+  <div id="ezEtcBox"></div>
+  <div class="ez-grid noetc">
     <div class="ez-ctl"><div class="k"><b>게임 시작 시각</b> (자동 · 레잇레지면 직접)</div><select id="ezStart"></select></div>
     <div class="ez-ctl"><div class="k">블라인드 레벨</div><select id="ezLevel"></select></div>
   </div>
@@ -626,11 +627,21 @@ function etcPay(){const c=EC();if(c.kind==="sat")return Array(Math.max(1,+c.seat
 function etcStage(){const c=EC(),p=+st.players||0;if(c.kind==="sat"){const n=+c.seats;return p>n?(p-n<=Math.max(2,Math.ceil(n*0.2))?`🔥 버블 근처 · 티켓까지 ${p-n}명`:`티켓까지 ${p-n}명`):"✅ 티켓 확정권";}
   const n=+c.itm,ft=+c.tsize||9;if(p>n)return p-n<=Math.max(2,Math.ceil(n*0.15))?`🔥 버블 근처 · ITM까지 ${p-n}명 (ICM 압박 최대)`:(c.reg==="open"?"레지 중 · 칩 모으기 구간":`ITM까지 ${p-n}명`);
   if(p>ft)return `💰 ITM 진입 · 파이널 테이블(${ft}명)까지 ${p-ft}명 · 페이점프 구간`;return `🏆 파이널 테이블 · ${p}명 남음 (등수마다 상금 차이 큼)`;}
-function etcForm(){ if(st.game!=="etc") return ""; const c=EC();
+function etcRender(id,html){ const eb=$(id); if(!eb) return; const c=EC(); const sig=st.game==="etc"?`${c.kind}|${c.anteType}|${c.reg}`:"";
+  if(eb.dataset.sig!==sig||!eb.firstChild){ eb.innerHTML=html(); eb.dataset.sig=sig; return; }
+  if(!sig) return; const pay=etcPay(),avg=Math.round((+st.entries||0)*(+c.start||0)/Math.max(1,+st.players||1));
+  eb.querySelectorAll(".etc-stage").forEach(x=>x.textContent=etcStage()); eb.querySelectorAll(".etc-sum").forEach(x=>x.textContent=etcSum());
+  eb.querySelectorAll(".etc-avg").forEach(x=>x.textContent=`${avg.toLocaleString()}칩 (${(avg/Math.max(1,+c.bb)).toFixed(1)}BB)`);
+  eb.querySelectorAll(".etc-pay").forEach(x=>x.textContent=`상금표: ${pay.slice(0,9).map((v,i)=>`${i+1}위 ${v}`).join(" · ")}${pay.length>9?` … ${pay.length}위 ${pay[pay.length-1]}`:""}`);
+  eb.querySelectorAll("[data-etc]").forEach(x=>{ if(x!==document.activeElement && x.value!==String(c[x.dataset.etc])) x.value=c[x.dataset.etc]; }); }
+function etcSum(){ const c=EC(); return `${c.kind==="mtt"?"MTT":"새틀"} · ${Number(c.sb).toLocaleString()}/${Number(c.bb).toLocaleString()}${c.anteType==="big"?" 빅앤티":c.anteType==="each"?" 앤티 "+c.ante:""} · ${c.kind==="mtt"?`ITM ${c.itm}명 · 상금 ${c.pool}만`:`티켓 ${c.seats}장`} · ${c.reg==="open"?"레지 중":"레지 마감"}`; }
+function etcEasy(){ const sum=etcSum();
+  return `<details class="more" id="ezEtcD" ${st.etcOpen!==false?"open":""} style="margin:8px 0"><summary><b>⚙️ 대회 구조</b> · <span class="etc-sum">${sum}</span></summary>${etcForm(true)}</details>`; }
+function etcForm(easy){ if(st.game!=="etc") return ""; const c=EC();
   const inp=(k,lab,type,extra)=>`<label class="f">${lab}<div class="num"><input data-etc="${k}" type="${type}" value="${String(c[k]).replace(/"/g,"&quot;")}" ${extra||""}></div></label>`;
   const seg=(k,opts)=>`<div class="chips" style="margin:4px 0 6px">${opts.map(([v,n])=>`<button type="button" class="chip ${c[k]===v?"on":""}" data-etcv="${k}" data-v="${v}">${n}</button>`).join("")}</div>`;
   const pay=etcPay();const avg=Math.round((+st.entries||0)*(+c.start||0)/Math.max(1,+st.players||1));
-  return `<div class="info" style="margin-top:10px"><b>그외 게임</b> · MTT·새틀 어떤 대회든 구조를 넣으면 그 구간에 맞춰 차트가 계산돼요<br><b style="color:var(--accent)">${etcStage()}</b></div>
+  return `<div class="info" style="margin-top:10px"><b>그외 게임</b> · MTT·새틀 어떤 대회든 구조를 넣으면 그 구간에 맞춰 차트가 계산돼요<br><b style="color:var(--accent)" class="etc-stage">${etcStage()}</b></div>
    <h3>대회 종류</h3>${seg("kind",[["mtt","🏆 MTT (등수별 상금)"],["sat","🎫 새틀 (티켓 같은 가치)"]])}
    <h3>레지</h3>${seg("reg",[["open","레지 중 (칩EV)"],["closed","레지 마감 (ICM)"]])}
    <h3>블라인드</h3><div class="grid2">${inp("sb","SB","number",'min="1"')}${inp("bb","BB","number",'min="1"')}</div>
@@ -639,9 +650,9 @@ function etcForm(){ if(st.game!=="etc") return ""; const c=EC();
    <h3>구조</h3><div class="grid2">${inp("start","시작 칩 (평균 스택 계산용)","number",'min="1"')}${inp("tsize","테이블 인원","number",'min="2" max="9"')}${inp("name","대회 이름 (선택)","text")}</div>
    ${c.kind==="mtt"?`<div class="grid2">${inp("itm","ITM 인원 (몇 위까지 상금)","number",'min="1"')}${inp("pool","총 상금 (만원)","number",'min="1"')}</div>
      ${inp("payList","등수별 상금 직접 입력 (만원, 쉼표로 · 비우면 자동 분배)","text",'placeholder="예: 300,180,120,90,70,60,50,45,40"')}
-     <div class="hint">상금표: ${pay.slice(0,9).map((x,i)=>`${i+1}위 ${x}`).join(" · ")}${pay.length>9?` … ${pay.length}위 ${pay[pay.length-1]}`:""}</div>`
+     <div class="hint etc-pay">상금표: ${pay.slice(0,9).map((x,i)=>`${i+1}위 ${x}`).join(" · ")}${pay.length>9?` … ${pay.length}위 ${pay[pay.length-1]}`:""}</div>`
     :`<div class="grid2">${inp("seats","티켓 받는 인원","number",'min="1"')}${inp("val","티켓 1장 가치 (만원)","number",'min="0" step="0.1"')}</div>`}
-   <div class="hint" style="margin-top:6px">전체 엔트리·현재 인원·내 스택은 아래 ③ 내 상황에 넣어요 · 평균 스택 ${avg.toLocaleString()}칩 (${(avg/Math.max(1,+c.bb)).toFixed(1)}BB)</div>`; }
+   <div class="hint" style="margin-top:6px">${easy?"총 바이인 수는 바로 아래, 남은 인원·내 스택은 '계속 바뀌는 3가지'에 넣어요":"전체 엔트리·현재 인원·내 스택은 아래 ③ 내 상황에 넣어요"} · 평균 스택 <span class="etc-avg">${avg.toLocaleString()}칩 (${(avg/Math.max(1,+c.bb)).toFixed(1)}BB)</span></div>`; }
 // 💡 게임별 구조 적용 (시작 칩 · 앤티 · 레벨 시간 · 레지 마감 레벨). 없는 값은 기존 게임 기본값
 function applyGame(){ const g=GAMES[st.game]||GAMES.hg; START=g.start||10000; ANTE=(g.ante!=null?g.ante:0.1); LEVEL_MIN=g.levelMin||7; REG_LEVEL=(g.regLevel!=null?g.regLevel:15); }
 const MODES={chip:{name:"레지 마감 전",desc:"칩EV · 칩 = 가치"},icm:{name:"레지 마감 후",desc:"ICM EV · 티켓 확보"}};
@@ -687,6 +698,7 @@ function nextLevelIn(){
 // 휴식 중이면 'Break time · 다음 N레벨 (스몰/빅)' 표시용
 const inBreakNow=()=>!st.level && new Date().getMinutes()>=55;
 function lvLabel(){ const L=curLevel(), g=GAMES[st.game], b=g.blinds[Math.min(L,g.blinds.length)-1];
+  if(st.game==="etc"){ const c=EC(); return `블라인드 ${won(+c.sb)}/${won(+c.bb)}${c.anteType==="big"?` · 빅앤티 ${won(+c.ante||+c.bb)}`:c.anteType==="each"?` · 앤티 ${won(+c.ante)}`:""}`; }
   return inBreakNow() ? `☕ Break time · 다음 ${L}레벨 ${won(b/2)}/${won(b)}` : `${L}레벨 ${won(b/2)}/${won(b)}`; }
 // 시작 시각부터 지금까지 레벨 (매시 55분~00분 5분 휴식은 레벨 시간에서 뺌)
 function autoLevel(){
@@ -758,8 +770,9 @@ function fix(){
 function detailValid(){const n=st.tsize,sc=SCEN[st.scen]; return sc.vilAfter? st.hero<=n-2 : st.hero>=1;}
 function drawStatic(){
   $("games").innerHTML=Object.entries(GAMES).map(([k,g])=>`<button type="button" class="opt ${st.game===k?"on":""}" data-g="${k}"><b>${g.name}</b><span>${g.desc}</span></button>`).join("");
-  { const eb=$("etcBox"); if(eb && !eb.contains(document.activeElement)) eb.innerHTML=etcForm(); }
+  etcRender("etcBox",()=>etcForm());
   document.body.classList.toggle("isetc",st.game==="etc");
+  etcRender("ezEtcBox",()=>st.game==="etc"?etcEasy():"");
   $("modes").innerHTML=Object.entries(MODES).map(([k,m])=>`<button type="button" class="opt ${st.mode===k?"on":""}" data-m="${k}"><b>${m.name}</b><span>${m.desc}</span></button>`).join("");
   $("scen").innerHTML=Object.entries(SCEN).map(([k,s])=>`<button type="button" class="chip ${st.scen===k?"on":""}" data-sc="${k}">${s.name}</button>`).join("");
   for(const k of ["entries","players","heroStack","vilStack","qvStack"]) if(document.activeElement!==$(k)) $(k).value=st[k];
@@ -1112,13 +1125,13 @@ function drawEasy(){
   document.body.classList.toggle("easy",st.ui==="easy");
   $("mEasy").classList.toggle("on",st.ui==="easy"); $("mPro").classList.toggle("on",st.ui==="pro");
   $("ezGames").innerHTML=Object.entries(GAMES).map(([k,x])=>`<button type="button" class="chip ${st.game===k?"on":""}" data-g="${k}">${x.name}</button>`).join("")+
-    (st.game==="etc"?`<span class="hint" style="align-self:center">${etcStage()} · <a href="#" data-ui="pro" style="color:var(--accent)">구조 입력·바꾸기</a></span>`:`<span class="hint" style="align-self:center">${startOf()} 게임 · <a href="#" data-ui="pro" style="color:var(--accent)">시간·설정 바꾸기</a></span>`);
+    (st.game==="etc"?`<span class="hint" style="align-self:center">${etcStage()} · <a href="#" onclick="event.preventDefault();const d=document.getElementById('ezEtcD');if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'});}" style="color:var(--accent)">구조 입력·바꾸기</a></span>`:`<span class="hint" style="align-self:center">${startOf()} 게임 · <a href="#" data-ui="pro" style="color:var(--accent)">시간·설정 바꾸기</a></span>`);
   const pj=isPreReg()?projectClose():null;
   const lines=pj
     ? [`레지 마감 전이라 인원이 계속 늘어요 · 마감 예상 ${pj.fin}바이인 / ${pj.live}명 → ${g.bubbles.map(b=>`${b.label}까지 약 ${Math.max(0,pj.live-b.n)}명`).join(" · ")}`]
     : g.bubbles.map(b=>st.players>b.n?`${b.label}까지 <b>${st.players-b.n}명</b>`:`${b.label} ✅`);
   const av=avgBB(), bad=av<3||av>300;
-  const clk = st.level ? `(레벨 직접 고름)` : (hasStart() ? `<span id="ezClk">${clkText()}</span>`
+  const clk = st.game==="etc" ? etcStage() : st.level ? `(레벨 직접 고름)` : (hasStart() ? `<span id="ezClk">${clkText()}</span>`
             : `<b style="color:var(--push)">⏰ 게임 시작 시각을 골라주세요 — 블라인드·BB가 시계에 맞춰 자동으로 바뀌어요</b>`);
   $("ezStatus").innerHTML=`${lvLabel()} · 평균 ${r1(av)}BB <span style="font-weight:500">(바이인 ${st.entries} ÷ 남은 ${st.players}명)</span> · ${st.mode==="icm"?"ICM(마감 후)":"칩EV(마감 전)"}<br>${clk}<br>${lines.join(" · ")}`+
     (bad?`<br><b style="color:var(--push)">⚠️ 평균 ${r1(av)}BB는 이상해요. 총 바이인 수·남은 인원을 먼저 맞춰주세요.</b>`:"");
@@ -1492,6 +1505,7 @@ document.addEventListener("click",e=>{
 });
 document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("[data-etcv]"); if(!b) return; const c=EC(),k=b.dataset.etcv,v=b.dataset.v; c[k]=v; if(k==="anteType"&&v==="big") c.ante=+c.bb; etcApply(); });
 function etcApply(){ if(st.game!=="etc") return; st.level=1; st.modeManual=false; applyGame(); schedule(); }
+document.addEventListener("toggle",e=>{ if(e.target&&e.target.id==="ezEtcD"){ st.etcOpen=e.target.open; save(); } },true);
 document.addEventListener("change",e=>{ const ek=e.target.dataset&&e.target.dataset.etc; if(ek){ const c=EC(); let v=e.target.value.trim();
     if(ek==="name"||ek==="payList"){ c[ek]=v; } else { v=parseFloat(v); if(!isFinite(v)||v<0) v=c[ek]; if(["sb","bb","ante","start","tsize","itm","seats"].includes(ek)) v=Math.round(v); if(ek==="tsize") v=Math.min(9,Math.max(2,v)); c[ek]=v;
       if(ek==="bb"){ c.sb=Math.round(v/2); if(c.anteType==="big") c.ante=v; } }
