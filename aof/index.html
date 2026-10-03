@@ -139,6 +139,7 @@ input[type=range]{padding:0;border:0;background:transparent;accent-color:var(--a
 .rng .k{font-size:12px;color:var(--muted);display:flex;justify-content:space-between}
 .rng .k b{color:var(--text)}
 footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px;line-height:1.6}
+body.isetc .noetc{display:none!important}
 </style>
 </head>
 <body class="easy">
@@ -212,18 +213,18 @@ footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px;line-
   <h2>① 게임</h2>
   <div class="seg g3" id="games"></div>
   <div id="etcBox"></div>
-  <h3>② 레지 마감 전 / 후</h3>
-  <div class="seg g2" id="modes"></div>
+  <div class="noetc"><h3>② 레지 마감 전 / 후</h3>
+  <div class="seg g2" id="modes"></div></div>
 </div>
 
 <div class="panel pro-only">
   <h2>③ 내 상황</h2>
   <div class="grid2">
-    <label class="f"><b style="color:var(--text)">현재 블라인드 레벨</b><span id="lvHint">시작 시각 기준 자동</span><select id="level"></select></label>
+    <label class="f noetc"><b style="color:var(--text)">현재 블라인드 레벨</b><span id="lvHint">시작 시각 기준 자동</span><select id="level"></select></label>
     <label class="f"><b style="color:var(--text)">내 스택 (BB)</b>내 칩 ÷ 빅블라인드<div class="num"><input id="heroStack" type="number" inputmode="decimal" min="0.5" step="0.1"></div></label>
   </div>
-  <h3>게임 시작 시각 <span class="hint" id="startHint"></span></h3>
-  <div class="chips" id="startChips"></div>
+  <div class="noetc"><h3>게임 시작 시각 <span class="hint" id="startHint"></span></h3>
+  <div class="chips" id="startChips"></div></div>
   <h3>내 포지션</h3>
   <div class="chips" id="heroPos"></div>
   <div class="grid2" style="margin-top:12px">
@@ -605,21 +606,44 @@ const GAMES={
        pay:()=>[5,3,2,1,1,1,1,1].map(x=>x*TV.apl),
        bubbles:[{key:"t1",label:"입상 (8위 안 · 1장+)",n:8},{key:"t2",label:"3위 안 (2장+)",n:3}],
        start:10000,ante:0.1,levelMin:5,regLevel:8,tsize:8},
-  // 그외 게임: 직접 입력 (다른 사이트·오프라인 새틀 등)
-  etc:{blinds:STD_BB,get times(){return [EC().time];},get name(){return EC().name||"그외 게임";},get desc(){const c=EC();return `직접 입력 · ${c.seats}명 × ${c.val}만`;},
-       pay:()=>Array(EC().seats).fill(EC().val),get bubbles(){return [{key:"t1",label:`티켓 (${EC().seats}위 안)`,n:EC().seats}];},
-       get start(){return EC().start;},get ante(){return EC().ante;},get levelMin(){return EC().lvmin;},get regLevel(){return EC().reg;},get tsize(){return EC().tsize;}},
+  // 그외 게임: MTT(상금) · 새틀(티켓) 무엇이든 직접 입력
+  etc:{get blinds(){return [Math.max(1,+EC().bb||400)];},times:["00:00"],get name(){return EC().name||"그외 게임";},
+       get desc(){const c=EC();return c.kind==="mtt"?`MTT · ITM ${c.itm}명`:`새틀 · 티켓 ${c.seats}장`;},
+       pay:()=>etcPay(),
+       get bubbles(){const c=EC();if(c.kind==="sat")return [{key:"t1",label:`티켓 (${c.seats}위 안)`,n:+c.seats}];
+         const b=[{key:"t1",label:`ITM (${c.itm}위 안)`,n:+c.itm}];const ft=+c.tsize||9;if(+c.itm>ft)b.push({key:"t2",label:`파이널 테이블 (${ft}명)`,n:ft});return b;},
+       get start(){return +EC().start||10000;},get ante(){return etcAnte();},levelMin:20,get regLevel(){return EC().reg==="open"?1:0;},get tsize(){return +EC().tsize||9;}},
 };
-const ETC_DEF={name:"그외 게임",time:"20:00",seats:10,val:10,start:10000,ante:0.1,lvmin:7,reg:12,tsize:9};
+const ETC_DEF={name:"그외 게임",kind:"mtt",sb:200,bb:400,anteType:"big",ante:400,start:30000,tsize:9,reg:"closed",itm:15,pool:1000,payList:"",seats:10,val:10};
 function EC(){ try{ st; }catch(e){ return ETC_DEF; } st.etc=Object.assign({},ETC_DEF,st.etc||{}); return st.etc; }
+// 1인당 앤티 (BB 대비) — 빅앤티는 BB가 혼자 내는 금액 ÷ 테이블 인원으로 환산
+function etcAnte(){const c=EC(),bb=Math.max(1,+c.bb||1),t=+c.tsize||9;if(c.anteType==="none")return 0;if(c.anteType==="big")return (+c.ante||bb)/bb/t;return (+c.ante||0)/bb;}
+// 상금표: 직접 입력이 있으면 그대로, 없으면 총상금·ITM 인원으로 표준 MTT 분배(1위 약 20~30%)
+function etcPay(){const c=EC();if(c.kind==="sat")return Array(Math.max(1,+c.seats)).fill(+c.val||1);
+  const L=String(c.payList||"").split(/[,\s/]+/).map(Number).filter(x=>x>0);if(L.length)return L;
+  const n=Math.max(1,+c.itm||1),pool=+c.pool||100,a=n<=10?1.25:n<=30?1.1:1.0;const w=[...Array(n)].map((_,i)=>1/Math.pow(i+1,a));const sw=w.reduce((x,y)=>x+y,0);
+  return w.map(x=>Math.round(pool*x/sw*10)/10);}
+function etcStage(){const c=EC(),p=+st.players||0;if(c.kind==="sat"){const n=+c.seats;return p>n?(p-n<=Math.max(2,Math.ceil(n*0.2))?`🔥 버블 근처 · 티켓까지 ${p-n}명`:`티켓까지 ${p-n}명`):"✅ 티켓 확정권";}
+  const n=+c.itm,ft=+c.tsize||9;if(p>n)return p-n<=Math.max(2,Math.ceil(n*0.15))?`🔥 버블 근처 · ITM까지 ${p-n}명 (ICM 압박 최대)`:(c.reg==="open"?"레지 중 · 칩 모으기 구간":`ITM까지 ${p-n}명`);
+  if(p>ft)return `💰 ITM 진입 · 파이널 테이블(${ft}명)까지 ${p-ft}명 · 페이점프 구간`;return `🏆 파이널 테이블 · ${p}명 남음 (등수마다 상금 차이 큼)`;}
 function etcForm(){ if(st.game!=="etc") return ""; const c=EC();
-  const f=(k,lab,type,extra)=>`<label class="f">${lab}<div class="num"><input data-etc="${k}" type="${type}" value="${c[k]}" ${extra||""}></div></label>`;
-  return `<div class="info" style="margin-top:10px"><b>그외 게임 설정</b> · 다른 게임은 여기서 구조를 직접 넣으면 차트가 맞춰져요</div><div class="grid2" style="margin-top:8px">`+
-    f("name","대회 이름","text")+f("time","시작 시각 (예: 20:00)","text",'inputmode="numeric"')+f("seats","티켓 받는 인원 (몇 위까지)","number",'min="1"')+f("val","티켓 1장 가치 (만원)","number",'min="0" step="0.1"')+
-    f("start","시작 칩","number",'min="100" step="100"')+f("ante","1인당 앤티 (BB 대비 · 예 0.1 · 빅앤티면 1÷인원)","number",'min="0" step="0.05"')+
-    f("lvmin","레벨 시간 (분)","number",'min="1"')+f("reg","레지 마감 레벨","number",'min="1"')+f("tsize","테이블 인원","number",'min="2" max="9"')+`</div>`; }
+  const inp=(k,lab,type,extra)=>`<label class="f">${lab}<div class="num"><input data-etc="${k}" type="${type}" value="${String(c[k]).replace(/"/g,"&quot;")}" ${extra||""}></div></label>`;
+  const seg=(k,opts)=>`<div class="chips" style="margin:4px 0 6px">${opts.map(([v,n])=>`<button type="button" class="chip ${c[k]===v?"on":""}" data-etcv="${k}" data-v="${v}">${n}</button>`).join("")}</div>`;
+  const pay=etcPay();const avg=Math.round((+st.entries||0)*(+c.start||0)/Math.max(1,+st.players||1));
+  return `<div class="info" style="margin-top:10px"><b>그외 게임</b> · MTT·새틀 어떤 대회든 구조를 넣으면 그 구간에 맞춰 차트가 계산돼요<br><b style="color:var(--accent)">${etcStage()}</b></div>
+   <h3>대회 종류</h3>${seg("kind",[["mtt","🏆 MTT (등수별 상금)"],["sat","🎫 새틀 (티켓 같은 가치)"]])}
+   <h3>레지</h3>${seg("reg",[["open","레지 중 (칩EV)"],["closed","레지 마감 (ICM)"]])}
+   <h3>블라인드</h3><div class="grid2">${inp("sb","SB","number",'min="1"')}${inp("bb","BB","number",'min="1"')}</div>
+   ${seg("anteType",[["big","빅앤티 (BB가 냄)"],["each","1인당 앤티"],["none","앤티 없음"]])}
+   ${c.anteType!=="none"?`<div class="grid2">${inp("ante",c.anteType==="big"?"빅앤티 금액 (보통 BB와 같음)":"1인당 앤티 금액","number",'min="0"')}</div>`:""}
+   <h3>구조</h3><div class="grid2">${inp("start","시작 칩 (평균 스택 계산용)","number",'min="1"')}${inp("tsize","테이블 인원","number",'min="2" max="9"')}${inp("name","대회 이름 (선택)","text")}</div>
+   ${c.kind==="mtt"?`<div class="grid2">${inp("itm","ITM 인원 (몇 위까지 상금)","number",'min="1"')}${inp("pool","총 상금 (만원)","number",'min="1"')}</div>
+     ${inp("payList","등수별 상금 직접 입력 (만원, 쉼표로 · 비우면 자동 분배)","text",'placeholder="예: 300,180,120,90,70,60,50,45,40"')}
+     <div class="hint">상금표: ${pay.slice(0,9).map((x,i)=>`${i+1}위 ${x}`).join(" · ")}${pay.length>9?` … ${pay.length}위 ${pay[pay.length-1]}`:""}</div>`
+    :`<div class="grid2">${inp("seats","티켓 받는 인원","number",'min="1"')}${inp("val","티켓 1장 가치 (만원)","number",'min="0" step="0.1"')}</div>`}
+   <div class="hint" style="margin-top:6px">전체 엔트리·현재 인원·내 스택은 아래 ③ 내 상황에 넣어요 · 평균 스택 ${avg.toLocaleString()}칩 (${(avg/Math.max(1,+c.bb)).toFixed(1)}BB)</div>`; }
 // 💡 게임별 구조 적용 (시작 칩 · 앤티 · 레벨 시간 · 레지 마감 레벨). 없는 값은 기존 게임 기본값
-function applyGame(){ const g=GAMES[st.game]||GAMES.hg; START=g.start||10000; ANTE=(g.ante!=null?g.ante:0.1); LEVEL_MIN=g.levelMin||7; REG_LEVEL=g.regLevel||15; }
+function applyGame(){ const g=GAMES[st.game]||GAMES.hg; START=g.start||10000; ANTE=(g.ante!=null?g.ante:0.1); LEVEL_MIN=g.levelMin||7; REG_LEVEL=(g.regLevel!=null?g.regLevel:15); }
 const MODES={chip:{name:"레지 마감 전",desc:"칩EV · 칩 = 가치"},icm:{name:"레지 마감 후",desc:"ICM EV · 티켓 확보"}};
 const SCEN={
   open:{name:"내가 먼저 (앞 모두 폴드)",vil:"뒤에서 콜할 수 있는 큰 스택",vilAfter:true},
@@ -735,6 +759,7 @@ function detailValid(){const n=st.tsize,sc=SCEN[st.scen]; return sc.vilAfter? st
 function drawStatic(){
   $("games").innerHTML=Object.entries(GAMES).map(([k,g])=>`<button type="button" class="opt ${st.game===k?"on":""}" data-g="${k}"><b>${g.name}</b><span>${g.desc}</span></button>`).join("");
   { const eb=$("etcBox"); if(eb && !eb.contains(document.activeElement)) eb.innerHTML=etcForm(); }
+  document.body.classList.toggle("isetc",st.game==="etc");
   $("modes").innerHTML=Object.entries(MODES).map(([k,m])=>`<button type="button" class="opt ${st.mode===k?"on":""}" data-m="${k}"><b>${m.name}</b><span>${m.desc}</span></button>`).join("");
   $("scen").innerHTML=Object.entries(SCEN).map(([k,s])=>`<button type="button" class="chip ${st.scen===k?"on":""}" data-sc="${k}">${s.name}</button>`).join("");
   for(const k of ["entries","players","heroStack","vilStack","qvStack"]) if(document.activeElement!==$(k)) $(k).value=st[k];
@@ -1087,7 +1112,7 @@ function drawEasy(){
   document.body.classList.toggle("easy",st.ui==="easy");
   $("mEasy").classList.toggle("on",st.ui==="easy"); $("mPro").classList.toggle("on",st.ui==="pro");
   $("ezGames").innerHTML=Object.entries(GAMES).map(([k,x])=>`<button type="button" class="chip ${st.game===k?"on":""}" data-g="${k}">${x.name}</button>`).join("")+
-    `<span class="hint" style="align-self:center">${startOf()} 게임 · <a href="#" data-ui="pro" style="color:var(--accent)">시간·설정 바꾸기</a></span>`;
+    (st.game==="etc"?`<span class="hint" style="align-self:center">${etcStage()} · <a href="#" data-ui="pro" style="color:var(--accent)">구조 입력·바꾸기</a></span>`:`<span class="hint" style="align-self:center">${startOf()} 게임 · <a href="#" data-ui="pro" style="color:var(--accent)">시간·설정 바꾸기</a></span>`);
   const pj=isPreReg()?projectClose():null;
   const lines=pj
     ? [`레지 마감 전이라 인원이 계속 늘어요 · 마감 예상 ${pj.fin}바이인 / ${pj.live}명 → ${g.bubbles.map(b=>`${b.label}까지 약 ${Math.max(0,pj.live-b.n)}명`).join(" · ")}`]
@@ -1434,7 +1459,7 @@ function drawResult(){
 document.addEventListener("click",e=>{
   const ez=e.target.closest("[data-ezk]"); if(ez){st.pick={k:+ez.dataset.ezk}; save(); drawVerdict(); const v=$("ezVerdict"); if(v.getBoundingClientRect().top>window.innerHeight-120) v.scrollIntoView({behavior:"smooth",block:"center"}); return;}
   const t=e.target.closest("button,a,[data-k]"); if(!t) return;
-  if(t.dataset.g){st.game=t.dataset.g;st.level=null;st.modeManual=false;st.bustLog=[];st.tsize=GAMES[st.game].tsize||9;applyGame();schedule();return;}
+  if(t.dataset.g){st.game=t.dataset.g;st.level=st.game==="etc"?1:null;st.modeManual=false;st.bustLog=[];st.tsize=GAMES[st.game].tsize||9;applyGame();schedule();return;}
   if(t.dataset.m){st.mode=t.dataset.m;st.modeManual=true;schedule();return;}
   if(t.dataset.sc){st.scen=t.dataset.sc;schedule();return;}
   if(t.dataset.st){ setStart(t.dataset.st==="auto"?null:t.dataset.st); schedule(); return; }
@@ -1465,9 +1490,12 @@ document.addEventListener("click",e=>{
   if(t.dataset.k&&window.CURS){const kk=+t.dataset.k,ch=t.dataset.ch,L=window.CURS[ch]||[];
     $(ch==="chart"?"pick":"qpick").textContent=SAT.handName(kk)+": "+L.map(([a,,n])=>`${n} ${Math.round(a[kk]*100)}%`).join(" · ");}
 });
+document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closest("[data-etcv]"); if(!b) return; const c=EC(),k=b.dataset.etcv,v=b.dataset.v; c[k]=v; if(k==="anteType"&&v==="big") c.ante=+c.bb; etcApply(); });
+function etcApply(){ if(st.game!=="etc") return; st.level=1; st.modeManual=false; applyGame(); schedule(); }
 document.addEventListener("change",e=>{ const ek=e.target.dataset&&e.target.dataset.etc; if(ek){ const c=EC(); let v=e.target.value.trim();
-    if(ek==="time"){ if(!/^\d{1,2}:\d{2}$/.test(v)) v=c.time; } else if(ek!=="name"){ v=parseFloat(v); if(!isFinite(v)||v<=0) v=c[ek]; if(["seats","start","lvmin","reg","tsize"].includes(ek)) v=Math.round(v); if(ek==="tsize") v=Math.min(9,Math.max(2,v)); }
-    c[ek]=v; if(ek==="tsize") st.tsize=v; if(ek==="time") setStart(null); st.level=null; applyGame(); schedule(); return; }
+    if(ek==="name"||ek==="payList"){ c[ek]=v; } else { v=parseFloat(v); if(!isFinite(v)||v<0) v=c[ek]; if(["sb","bb","ante","start","tsize","itm","seats"].includes(ek)) v=Math.round(v); if(ek==="tsize") v=Math.min(9,Math.max(2,v)); c[ek]=v;
+      if(ek==="bb"){ c.sb=Math.round(v/2); if(c.anteType==="big") c.ante=v; } }
+    if(ek==="tsize") st.tsize=c.tsize; etcApply(); return; }
   const s=e.target;
   if(s.dataset.for&&s.value){st[s.dataset.for]=+s.value;s.value="";schedule();return;}
   if(s.dataset.seatpk&&s.value){st.others[s.dataset.seatpk]=+s.value;s.value="";schedule();return;}
