@@ -1672,6 +1672,7 @@ G.push({k:'pet',cat:'펫',e:'🐣',n:'뚝섬펫',d:'30일 동안 키우는 다�
 .cgres{background:var(--paper2);border:2px solid var(--blue);border-radius:14px;padding:12px;text-align:center;margin:8px 0}
 .cgres .big{font-size:26px;font-weight:900;margin-bottom:4px}
 .cgsum{text-align:center;font-size:13.5px;color:var(--sub);margin-top:2px}
+.tqbar{height:8px;background:#ddd;border-radius:6px;overflow:hidden;margin-top:6px}.tqbar i{display:block;height:100%;background:#2e7d32;animation:tqs linear forwards}@keyframes tqs{from{width:100%}to{width:0}}
 .cgintro{font-size:14.5px;line-height:1.7;background:rgba(31,95,174,.07);border-left:3px solid var(--blue);border-radius:8px;padding:9px 11px;margin:8px 0}
 `;document.head.appendChild(s);})();
 const CR=r=>r===1?'A':r===11?'J':r===12?'Q':r===13?'K':String(r);
@@ -1880,7 +1881,8 @@ G.push({k:'onecard',cat:'카드',e:'🃏',n:'원카드',d:'AI 대전 · 공격·
   return h;}});
 
 // ---------------- 🀄 세븐훌라 ----------------
-const HL_DEF={lv:'보통',ai:1,take:'등록',stop:'등록후',stopX:2,hulaX:2,aceHi:1,seven:1,attReq:0,face:'숫자',peek:0,speed:'보통'};
+const HL_DEF={lv:'보통',ai:1,take:'등록',stop:'등록후',stopX:2,hulaX:2,aceHi:1,seven:1,attReq:0,face:'숫자',peek:0,speed:'보통',tq:3};
+const HL_SPD={'빠름':600,'보통':1050,'느림':1600};
 const hlVal=(c,o)=>c.r>10&&o.face==='10점'?10:c.r;
 const hlSum=(h,o)=>h.reduce((a,c)=>a+hlVal(c,o),0);
 function hlRanks(cs){const r=cs.map(c=>c.r);const hiA=r.includes(1)&&r.includes(13);return r.map(x=>x===1&&hiA?14:x).sort((a,b)=>a-b);}
@@ -1920,8 +1922,8 @@ G.push({k:'hula',cat:'카드',e:'🀄',n:'세븐훌라',d:'AI 대전 · 등록·
   for(let i=0;i<n;i++)S.pl.push({nm:i?'🤖 '+CG_AI[i-1]:'나',ai:!!i,hand:[],reg:0,took:[],tossed:[]});
   for(let k=0;k<7;k++)S.pl.forEach(p=>p.hand.push(S.deck.pop()));
   S.disc.push(S.deck.pop());S.cur=R(n);this.S=S;this.sortHand();this.msg(S.cur?`${S.pl[S.cur].nm} 먼저 시작해요`:'내가 먼저 시작해요');this.beginTurn();},
- beginTurn(){const S=this.S;S.phase='draw';S.must=null;S.acted=false;S.sel=[];S.regAtStart=S.pl[S.cur].reg;this.step();},
- step(){const S=this.S;rr();if(!S||S.over||S.dead)return;if(!S.pl[S.cur].ai)return;clearTimeout(S.tm);S.tm=setTimeout(()=>{if(this.live(S))this.aiTurn();},CG_SPD[this.o.speed]);},
+ beginTurn(){const S=this.S;S.phase='draw';S.must=null;S.acted=false;S.stolen=false;S.sel=[];S.regAtStart=S.pl[S.cur].reg;this.step();},
+ step(){const S=this.S;rr();if(!S||S.over||S.dead||S.tq)return;if(!S.pl[S.cur].ai)return;clearTimeout(S.tm);S.tm=setTimeout(()=>{if(this.live(S))this.aiTurn();},HL_SPD[this.o.speed]||1050);},
  stopOK(pi){const o=this.o,P=this.S.pl[pi];return o.stop!=='없음'&&(o.stop==='언제나'||P.reg>0);},
  attOK(pi){return !this.o.attReq||this.S.pl[pi].reg>0;},
  usable(pi,c){const S=this.S,o=this.o,P=S.pl[pi],h=P.hand.concat([c]),L=h.length-1;
@@ -1940,7 +1942,17 @@ G.push({k:'hula',cat:'카드',e:'🀄',n:'세븐훌라',d:'AI 대전 · 등록·
   if(cards.some(c=>c.id===S.must))S.must=null;this.msg(`${P.nm}: 붙이기 ${cards.map(cname).join(' ')}`);return true;},
  afterAct(pi){const P=this.S.pl[pi];if(!P.hand.length){this.win(pi,'손패를 다 냈어요');return true;}return false;},
  doDisc(pi,c){const S=this.S,P=S.pl[pi];P.hand=P.hand.filter(x=>x!==c);S.disc.push(c);P.tossed.push(c);this.msg(`${P.nm}: ${cname(c)} 버림`);S.sel=[];S.newId=pi===0?null:S.newId;
-  if(!P.hand.length)return this.win(pi,'마지막 카드까지 버렸어요');S.cur=(S.cur+1)%S.pl.length;S.turnN++;this.beginTurn();},
+  if(!P.hand.length)return this.win(pi,'마지막 카드까지 버렸어요');this.afterDisc(pi,c);},
+ // 🙏 땡큐 끼어들기: 누가 버리면 잠깐 기다려서, 바로 등록·붙이기할 수 있는 사람이 차례 밖에서도 가져갈 수 있어요
+ afterDisc(pi,c){const S=this.S,o=this.o,n=S.pl.length,nx=(pi+1)%n;
+  if(pi!==0&&nx!==0&&o.tq&&this.usable(0,c)){const tq={c,pi};S.tq=tq;rr();setTimeout(()=>{if(!this.live(S)||S.tq!==tq)return;S.tq=null;if(!this.aiSteal(pi,c))this.nextTurn(pi);},o.tq*1000);return;}
+  if(this.aiSteal(pi,c))return;this.nextTurn(pi);},
+ nextTurn(pi){const S=this.S;S.cur=(pi+1)%S.pl.length;S.turnN++;this.beginTurn();},
+ steal(pi,c){const S=this.S,P=S.pl[pi];S.disc.pop();P.hand.push(c);P.took.push(c);S.cur=pi;S.phase='act';S.must=c.id;S.acted=false;S.stolen=true;S.regAtStart=P.reg;S.sel=pi===0?[c.id]:[];
+  if(pi===0){S.newId=c.id;this.sortHand();}this.msg(`${P.nm}: 🙏 땡큐! ${cname(c)} 가져감 (차례 끼어들기)`);S.turnN++;this.step();},
+ aiSteal(pi,c){const S=this.S,o=this.o,n=S.pl.length;for(let k=2;k<n;k++){const q=(pi+k)%n,P=S.pl[q];if(!P.ai)continue;const lv=P.lv||o.lv;
+   if(lv!=='쉬움'&&this.usable(q,c)&&Math.random()<(lv==='어려움'?.95:.6)){this.steal(q,c);return true;}}return false;},
+ thanks(){const S=this.S;if(!S||!S.tq||S.over)return;const c=S.tq.c;if(S.disc[S.disc.length-1]!==c){S.tq=null;return;}S.tq=null;this.steal(0,c);toast('🙏 땡큐!');},
  sums(){return this.S.pl.map(p=>hlSum(p.hand,this.o));},
  win(pi,why){const S=this.S,o=this.o,sm=this.sums();const hula=S.regAtStart===0&&S.cur===pi;let pts=sm.reduce((a,v,i)=>a+(i===pi?0:v),0);if(hula)pts*=o.hulaX;
   this.over(pi,hula?`🀄 훌라! 한 번에 다 내서 점수 ×${o.hulaX}`:why,pts,{hula});},
@@ -1962,7 +1974,7 @@ G.push({k:'hula',cat:'카드',e:'🀄',n:'세븐훌라',d:'AI 대전 · 등록·
  drawBtn(){if(this.my()&&this.S.phase==='draw')this.doDraw(0);},
  takeBtn(){const S=this.S,o=this.o;if(!this.my()||S.phase!=='draw'||!S.disc.length)return;const c=this.topD();
   if(o.take==='등록'&&!this.usable(0,c)){toast('이 카드로 바로 등록·붙이기할 수 없어서 못 가져와요',2200);return;}this.doTake(0);},
- undoTake(){const S=this.S;if(!this.my()||S.must==null||S.acted)return;const P=S.pl[0],c=P.hand.find(x=>x.id===S.must);P.hand=P.hand.filter(x=>x!==c);P.took.pop();S.disc.push(c);S.must=null;S.sel=[];S.phase='draw';this.msg('나: 땡큐 취소');rr();},
+ undoTake(){const S=this.S;if(!this.my()||S.must==null||S.acted||S.stolen)return;const P=S.pl[0],c=P.hand.find(x=>x.id===S.must);P.hand=P.hand.filter(x=>x!==c);P.took.pop();S.disc.push(c);S.must=null;S.sel=[];S.phase='draw';this.msg('나: 땡큐 취소');rr();},
  stopBtn(){const S=this.S;if(!this.my()||S.phase!=='draw')return;if(!this.stopOK(0)){toast(this.o.stop==='없음'?'스톱 없는 룰이에요':'한 번이라도 등록·붙이기 한 뒤에 스톱할 수 있어요',2200);return;}this.doStop(0);},
  regBtn(){const S=this.S;if(!this.my()||S.phase!=='act')return;const cs=this.selC();if(!cs.length){toast('등록할 카드를 골라요');return;}
   if(!this.doReg(0,cs)){toast('트리플(같은 숫자 3~4장) · 스트레이트(같은 무늬 연속 3장+)'+(this.o.seven?' · 7 한 장':'')+'만 등록돼요',2600);return;}
@@ -2011,6 +2023,7 @@ G.push({k:'hula',cat:'카드',e:'🀄',n:'세븐훌라',d:'AI 대전 · 등록·
  // ----- 화면 -----
  rules(){const o=this.o;return `<div class="card cgrule"><div class="t" style="font-size:16px;margin-bottom:4px">📖 세븐훌라 룰 (지금 설정 기준)</div>
   • 7장씩 받고 시작 · 내 차례엔 <b>덱에서 1장</b> 또는 <b>버린 카드 가져오기(땡큐)</b>${o.take==='등록'?' — 땡큐는 그 카드로 <b>바로 등록·붙이기</b>할 때만':''}<br>
+  ${o.tq?`• 상대가 많을 땐(AI 2명+) 남이 버린 카드로 바로 등록·붙이기할 수 있으면 <b>차례가 아니어도 🙏 땡큐</b>로 가져와요 (${o.tq}초 안에 · 그 뒤 차례는 내 다음 사람부터)<br>`:''}
   • <b>등록</b>: 트리플(같은 숫자 3~4장) · 스트레이트(같은 무늬 연속 3장 이상${o.aceHi?', Q-K-A도 OK':''})${o.seven?' · <b>7은 한 장만</b> 등록 가능':''}<br>
   • <b>붙이기</b>: 바닥에 등록된 카드(상대 것도)에 이어 붙이기${o.attReq?' — 내가 한 번 등록한 뒤부터':''}<br>
   • 마지막에 <b>1장 버리면</b> 차례 끝 · 손패를 <b>먼저 다 내면 승리</b><br>
@@ -2029,6 +2042,7 @@ G.push({k:'hula',cat:'카드',e:'🀄',n:'세븐훌라',d:'AI 대전 · 등록·
    ${cgOpt(o,'take','땡큐 (버린 카드)',[['등록','바로 쓸 때만'],['자유','언제든 가져오기']],f)}
    ${cgOpt(o,'stop','스톱',[['등록후','등록 1번 뒤'],['언제나','언제나'],['없음','없음']],f)}
    ${o.stop!=='없음'?cgOpt(o,'stopX','스톱 실패 벌점',[[1,'×1'],[2,'×2'],[3,'×3']],f):''}
+   ${cgOpt(o,'tq','땡큐 끼어들기 대기',[[0,'끄기'],[2,'2초'],[3,'3초'],[5,'5초']],f,'AI 2명 이상일 때 · 남이 버린 카드를 차례 밖에서 가져오기')}
    ${cgOpt(o,'hulaX','훌라 점수',[[1,'×1'],[2,'×2'],[3,'×3']],f)}
    ${cgOpt(o,'seven','7 한 장 등록',[[1,'가능'],[0,'불가']],f)}
    ${cgOpt(o,'aceHi','Q-K-A 스트레이트',[[1,'가능'],[0,'불가 (A는 1만)']],f)}
@@ -2053,10 +2067,11 @@ G.push({k:'hula',cat:'카드',e:'🀄',n:'세븐훌라',d:'AI 대전 · 등록·
   const sm=me.hand.length>10?'sm ':'';
   h+=`<div class="cgh">${me.hand.map(c=>cc(c,sm+(S.sel.includes(c.id)?'sel':'')+(c.id===S.newId?' new':''),`CUR.tap(${c.id})`)).join('')}</div>
    <div class="cgsum">내 카드 ${me.hand.length}장 · 합 <b>${hlSum(me.hand,o)}점</b>${me.reg?'':' · 아직 등록 0 (한 번에 다 내면 훌라)'} · <a href="javascript:void 0" onclick="CUR.sortBtn()" style="color:var(--blue)">${S.byRank?'무늬순 정렬':'숫자순 정렬'}</a></div>`;
+  if(S.tq&&!S.over)h+=`<button class="btn cgone" style="background:#2e7d32" onclick="CUR.thanks()">🙏 땡큐! ${cname(S.tq.c)} 가져오기</button><div class="tqbar"><i style="animation-duration:${o.tq}s"></i></div>`;
   if(my&&S.phase==='draw')h+=`<div class="cgbtn c3"><button class="btn" onclick="CUR.drawBtn()">🂠 덱에서 뽑기</button><button class="btn g" ${canTake?'':'disabled'} onclick="CUR.takeBtn()">🙏 땡큐</button><button class="btn b2" ${this.stopOK(0)?'':'disabled'} onclick="CUR.stopBtn()">✋ 스톱</button></div>`;
   if(my&&S.phase==='act'){const ty=cs.length?hlType(cs,o):null;
    h+=`<div class="cgbtn c3"><button class="btn g" ${ty?'':'disabled'} onclick="CUR.regBtn()">등록${ty?` (${ty==='set'?'트리플':ty==='run'?'스트레이트':'7'})`:''}</button><button class="btn" ${cs.length===1&&S.must==null?'':'disabled'} onclick="CUR.discBtn()">버리기</button><button class="btn gr" onclick="CUR.hint()">💡 힌트</button></div>
-   <div class="cgsum" style="margin-top:6px">붙이기: 카드를 고른 뒤 바닥의 반짝이는 묶음을 눌러요${S.must!=null&&!S.acted?' · <a href="javascript:void 0" onclick="CUR.undoTake()" style="color:var(--red)">땡큐 취소</a>':''}</div>`;}
+   <div class="cgsum" style="margin-top:6px">붙이기: 카드를 고른 뒤 바닥의 반짝이는 묶음을 눌러요${S.must!=null&&!S.acted&&!S.stolen?' · <a href="javascript:void 0" onclick="CUR.undoTake()" style="color:var(--red)">땡큐 취소</a>':''}</div>`;}
   return h;}});
 // ===== 🕹️ 아케이드 =====
 function cvSetup(game,w,h,extra){show(`<div class="gst"><span>점수 <b id="csc">0</b></span><span>내 최고 ${(myBest(game.k)||0).toLocaleString()}</span></div><canvas id="cv" class="cv" width="${w}" height="${h}"></canvas>${extra||''}<div id="cmsg" class="m" style="text-align:center;margin-top:8px"></div>`);
