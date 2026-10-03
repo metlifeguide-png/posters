@@ -629,14 +629,17 @@ G.push({k:'nutadv',cat:'홀덤',e:'🧭',n:'넛 우위 맞히기',d:'포지션�
   else if(defNut>aggNut+0.015){s+=`${defP}(콜한 쪽)가 넛 조합이 더 많아요${T.low||T.conn?' — 낮고 연결된 보드에 수딧 커넥터·작은 페어(셋)가 많이 맞아서':''}. → ${aggP}는 체크 빈도를 높이고, 베팅한다면 작게·좁게. ${defP}는 체크레이즈를 적극적으로 섞기 좋은 보드.`;}
   else{s+=`넛 비율은 비슷하고 레인지 에퀴티는 ${aggP} ${Math.round(aggEq*100)}%. → 한쪽이 크게 밀어붙이기보다 중간 사이즈·혼합 전략이 많은 보드예요.`;}
   if(sp.t!=='싱글레이즈')s+=` (${sp.t}는 레인지가 좁고 강해서 SPR이 낮아요 — 탑페어 이상이면 스택을 넣는 결정이 많아져요.)`;return s;},
- view(){if(this.i>=10)return overHtml(this.sc+'/10','넛 우위 맞히기 10문제 · 내 최고 '+(myBest('nutadv')||this.sc)+'/10');const q=this.q,r=this.res;
-  return `<div class="gst"><span>${this.i+1} / 10</span><span>정답 <b>${this.sc}</b></span></div>
-   ${r?`<div class="card" style="border-color:${r.ok?'#3a9d3f':'#d33b3b'}"><div class="t">${r.ok?'✅ 정답':'❌ 오답'} · ${r.q.ans==='='?'비슷해요':(r.q.ans==='ip'?r.q.sp.ip:r.q.sp.oop)+' 넛 우위'}</div>
+ view(){const q=this.q,r=this.res;
+  const fb=r?`<div class="sec" style="margin-top:14px">직전 문제 풀이</div><div class="card" style="border-color:${r.ok?'#3a9d3f':'#d33b3b'}"><div class="t">${r.ok?'✅ 정답':'❌ 오답'} · ${r.q.ans==='='?'비슷해요':(r.q.ans==='ip'?r.q.sp.ip:r.q.sp.oop)+' 넛 우위'}</div>
+    <div class="m" style="font-size:12.5px;margin-top:4px">${r.q.sp.t} · ${r.q.sp.n}</div><div style="margin:4px 0">${cardsHtml(r.q.board,true)}</div>
     <div class="m" style="margin:4px 0">넛(투페어 이상) 비율 ${r.q.sp.ip} ${(r.q.ni*100).toFixed(1)}% · ${r.q.sp.oop} ${(r.q.no*100).toFixed(1)}% · 레인지 에퀴티 ${r.q.sp.ip} ${Math.round(r.q.eq*100)}%</div>
-    <div style="font-size:13.5px;line-height:1.6">${this.explain(r.q)}</div></div>`:''}
+    <div style="font-size:13.5px;line-height:1.6">${this.explain(r.q)}</div></div>`:'';
+  if(this.i>=10)return overHtml(this.sc+'/10','넛 우위 맞히기 10문제 · 내 최고 '+(myBest('nutadv')||this.sc)+'/10')+fb;
+  return `<div class="gst"><span>${this.i+1} / 10</span><span>정답 <b>${this.sc}</b></span></div>
    <div class="card" style="text-align:center"><div class="m">${q.sp.t} · 100BB</div><div class="t" style="font-size:16px;margin:4px 0">${q.sp.n}</div><div class="lbl">플랍</div>${cardsHtml(q.board)}
     <div class="gq" style="margin:10px 0 0">넛 우위는 누구에게?</div></div>
    <div class="g3b"><button class="btn" onclick="CUR.ans('ip')">${q.sp.ip}</button><button class="btn gr" onclick="CUR.ans('=')">비슷</button><button class="btn b2" onclick="CUR.ans('oop')">${q.sp.oop}</button></div>
+   ${fb}
    <div class="m" style="text-align:center;margin-top:8px">넛 = 투페어(두 장 다 사용)·셋·스트레이트 이상 · 레인지는 100BB 기준 대표 레인지 · 계산 기반 해설(솔버 경향 요약)</div>`;},
  ans(a){const ok=a===this.q.ans;if(ok)this.sc++;this.res={ok,q:this.q};this.i++;if(this.i>=10)record('nutadv',this.sc);else this.nq();rr();scrollTo(0,0);}});
 // ===== 🎴 바카라 카운팅 트레이너 (8덱 슈 · 컷카드 16장) =====
@@ -1344,6 +1347,112 @@ G.push({k:'kakuro',cat:'퍼즐',e:'➕',n:'카쿠로',d:'가로세로 합 맞추
   return `<div class="gst"><span>${this.lv} ${n}×${n}</span><span>⏱ <b id="clk">${fmtScore('memory',secs(this.t0))}</b></span></div>${this.done?`<div class="gok">🎉 완성! ${fmtScore('memory',secs(this.t0))}</div>`:''}${g}
    ${hint}<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:10px">${[1,2,3,4,5,6,7,8,9].map(d=>`<button class="btn b2" style="padding:12px 0" onclick="CUR.put(${d})">${d}</button>`).join('')}<button class="btn gr" style="padding:12px 0" onclick="CUR.put(0)">⌫</button></div>
    <button class="btn full gr" style="margin-top:8px" onclick="CUR.lv=null;rr()">난이도</button>`;}});
+// ===== 🐣 뚝섬펫 (다마고치 · 30일 키우기) =====
+const PET_COL=['#f8a5c2','#8ec5fc','#a8e063','#ffd76e','#b39ddb','#ffab76','#7fe0c8','#f4f1ea','#b0b7c3','#ef7676','#6c8cf5','#5cc27a','#c49a6c','#5a5a66','gold','rainbow'];
+function petFill(ci,id){if(ci===14)return `url(#pg${id})`;if(ci===15)return `url(#pr${id})`;return PET_COL[ci]||PET_COL[0];}
+function petDefs(id){return `<defs><linearGradient id="pg${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset=".5" stop-color="#f5c542"/><stop offset="1" stop-color="#c9952b"/></linearGradient>
+ <linearGradient id="pr${id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9a9e"/><stop offset=".25" stop-color="#fbd786"/><stop offset=".5" stop-color="#a8e063"/><stop offset=".75" stop-color="#8ec5fc"/><stop offset="1" stop-color="#c3a5ff"/></linearGradient>
+ <radialGradient id="pa${id}"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>`;}
+const PET_BODY=[ // 몸통 (중심 60,68)
+ f=>`<path d="M26 78 Q24 40 60 36 Q96 40 94 78 Q92 100 60 100 Q28 100 26 78Z" fill="${f}" stroke="#0002" stroke-width="2"/>`,
+ f=>`<circle cx="60" cy="68" r="34" fill="${f}" stroke="#0002" stroke-width="2"/>`,
+ f=>`<rect x="36" y="26" width="48" height="78" rx="24" fill="${f}" stroke="#0002" stroke-width="2"/>`,
+ f=>`<path d="M32 50 L36 22 L52 38 Z M88 50 L84 22 L68 38 Z" fill="${f}" stroke="#0002" stroke-width="2"/><circle cx="60" cy="68" r="32" fill="${f}" stroke="#0002" stroke-width="2"/>`,
+ f=>`<ellipse cx="48" cy="26" rx="7" ry="20" fill="${f}" stroke="#0002" stroke-width="2"/><ellipse cx="72" cy="26" rx="7" ry="20" fill="${f}" stroke="#0002" stroke-width="2"/><ellipse cx="60" cy="70" rx="30" ry="32" fill="${f}" stroke="#0002" stroke-width="2"/>`,
+ f=>`<circle cx="34" cy="40" r="10" fill="${f}" stroke="#0002" stroke-width="2"/><circle cx="86" cy="40" r="10" fill="${f}" stroke="#0002" stroke-width="2"/><circle cx="60" cy="68" r="33" fill="${f}" stroke="#0002" stroke-width="2"/>`,
+ f=>`<ellipse cx="60" cy="68" rx="32" ry="30" fill="${f}" stroke="#0002" stroke-width="2"/><path d="M58 76 L68 80 L58 84Z" fill="#ffb347"/><ellipse cx="86" cy="74" rx="8" ry="13" fill="${f}" stroke="#0002" stroke-width="2"/>`,
+ f=>`<path d="M92 68 L112 52 L112 84Z" fill="${f}" stroke="#0002" stroke-width="2"/><ellipse cx="58" cy="68" rx="36" ry="26" fill="${f}" stroke="#0002" stroke-width="2"/><path d="M50 44 Q60 32 70 44Z" fill="${f}" stroke="#0002" stroke-width="2"/>`,
+ f=>`<path d="M28 100 L28 64 Q28 32 60 32 Q92 32 92 64 L92 100 L82 92 L71 100 L60 92 L49 100 L38 92Z" fill="${f}" stroke="#0002" stroke-width="2"/>`,
+ f=>`<path d="M60 28 Q72 50 90 70 Q100 100 60 102 Q20 100 30 70 Q48 50 60 28Z" fill="${f}" stroke="#0002" stroke-width="2"/>`,
+ f=>`<path d="M40 40 L46 30 L50 40 M56 36 L62 24 L66 36 M72 40 L78 30 L80 42" fill="${f}" stroke="#0002" stroke-width="2"/><path d="M88 86 Q108 92 110 76" fill="none" stroke="${f}" stroke-width="7" stroke-linecap="round"/><ellipse cx="60" cy="70" rx="32" ry="30" fill="${f}" stroke="#0002" stroke-width="2"/><path d="M44 42 L40 30 M76 42 L80 30" stroke="#e8d9a8" stroke-width="4" stroke-linecap="round"/>`,
+ f=>`<path d="M60 22 L71 50 L101 52 L77 70 L86 99 L60 82 L34 99 L43 70 L19 52 L49 50Z" fill="${f}" stroke="#0002" stroke-width="2" stroke-linejoin="round"/>`];
+const PET_EYES=[ // 10종 (눈 위치 48/72, 62)
+ ()=>`<circle cx="48" cy="62" r="4" fill="#333"/><circle cx="72" cy="62" r="4" fill="#333"/>`,
+ ()=>`<circle cx="48" cy="62" r="7" fill="#333"/><circle cx="72" cy="62" r="7" fill="#333"/><circle cx="50" cy="59" r="2.5" fill="#fff"/><circle cx="74" cy="59" r="2.5" fill="#fff"/>`,
+ ()=>`<path d="M42 63 Q48 56 54 63 M66 63 Q72 56 78 63" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>`,
+ ()=>`<path d="M42 62 L54 62 M66 62 L78 62" stroke="#333" stroke-width="3" stroke-linecap="round"/><circle cx="48" cy="65" r="2.5" fill="#333"/><circle cx="72" cy="65" r="2.5" fill="#333"/>`,
+ ()=>`<path d="M42 57 L54 61 M78 57 L66 61" stroke="#333" stroke-width="3" stroke-linecap="round"/><circle cx="48" cy="65" r="3.5" fill="#333"/><circle cx="72" cy="65" r="3.5" fill="#333"/>`,
+ ()=>`<path d="M48 67 L42 61 Q42 56 48 59 Q54 56 54 61Z M72 67 L66 61 Q66 56 72 59 Q78 56 78 61Z" fill="#e94b6a"/>`,
+ ()=>`<path d="M48 56 L50 61 L55 61 L51 64 L53 69 L48 66 L43 69 L45 64 L41 61 L46 61Z M72 56 L74 61 L79 61 L75 64 L77 69 L72 66 L67 69 L69 64 L65 61 L70 61Z" fill="#f5b400"/>`,
+ ()=>`<circle cx="48" cy="62" r="5" fill="#333"/><circle cx="72" cy="62" r="5" fill="#333"/><circle cx="49" cy="60" r="1.6" fill="#fff"/><circle cx="73" cy="60" r="1.6" fill="#fff"/><circle cx="46" cy="64" r="1" fill="#fff"/><circle cx="70" cy="64" r="1" fill="#fff"/>`,
+ ()=>`<circle cx="48" cy="62" r="4.5" fill="#333"/><path d="M66 62 Q72 58 78 62" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>`,
+ ()=>`<ellipse cx="48" cy="62" rx="3" ry="6" fill="#333"/><ellipse cx="72" cy="62" rx="3" ry="6" fill="#333"/>`];
+const PET_MOUTH=[()=>`<path d="M54 76 Q60 82 66 76" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>`,()=>`<ellipse cx="60" cy="78" rx="5" ry="4" fill="#a33"/>`,
+ ()=>`<path d="M52 76 Q56 80 60 76 Q64 80 68 76" fill="none" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>`,()=>`<circle cx="60" cy="78" r="3" fill="none" stroke="#333" stroke-width="2.5"/>`,
+ ()=>`<path d="M54 76 Q60 82 66 76" fill="none" stroke="#333" stroke-width="2.5"/><path d="M58 79 Q60 85 62 79" fill="#f77"/>`,()=>`<path d="M54 76 Q60 81 66 76" fill="none" stroke="#333" stroke-width="2.5"/><path d="M56 77 L57 81 L58 77.5Z" fill="#fff"/>`,
+ ()=>`<path d="M55 78 L65 78" stroke="#333" stroke-width="2.5" stroke-linecap="round"/>`,()=>`<path d="M52 75 Q60 86 68 75Z" fill="#fff" stroke="#333" stroke-width="2"/>`];
+const PET_PAT=[()=>``,()=>`<circle cx="40" cy="80" r="4" fill="#0001"/><circle cx="78" cy="86" r="5" fill="#0001"/><circle cx="66" cy="94" r="3" fill="#0001"/><circle cx="46" cy="94" r="3" fill="#0001"/>`,
+ ()=>`<path d="M34 84 Q60 88 86 84 M36 92 Q60 96 84 92" stroke="#0001" stroke-width="4" fill="none"/>`,()=>`<ellipse cx="60" cy="88" rx="16" ry="11" fill="#fff6"/>`,
+ ()=>`<path d="M42 90 l-4 -4 q0 -3 4 -1 q4 -2 4 1z M78 90 l-4 -4 q0 -3 4 -1 q4 -2 4 1z" fill="#ff6b8b99"/>`,()=>`<path d="M40 88 l2 4 l4 0 l-3 3 l1 4 l-4 -2 l-4 2 l1 -4 l-3 -3 l4 0z M80 84 l2 4 l4 0 l-3 3 l1 4 l-4 -2 l-4 2 l1 -4 l-3 -3 l4 0z" fill="#fff9"/>`,
+ ()=>`<path d="M30 74 Q60 70 90 74" stroke="#fff8" stroke-width="5" fill="none"/>`,()=>`<circle cx="42" cy="72" r="5" fill="#ff7b9c66"/><circle cx="78" cy="72" r="5" fill="#ff7b9c66"/>`];
+const PET_ACC_BACK={11:`<ellipse cx="28" cy="62" rx="12" ry="8" fill="#fff" stroke="#0002"/><ellipse cx="92" cy="62" rx="12" ry="8" fill="#fff" stroke="#0002"/>`,
+ 13:`<path d="M30 52 Q60 44 90 52 L100 104 L20 104Z" fill="#c0392b" stroke="#0002"/>`,
+ 16:`<path d="M30 58 L4 34 L10 56 L0 62 L24 70Z M90 58 L116 34 L110 56 L120 62 L96 70Z" fill="#6a4c93" stroke="#0003"/>`,
+ 19:`<path d="M30 60 Q2 40 6 74 Q16 70 30 72Z M90 60 Q118 40 114 74 Q104 70 90 72Z" fill="#fff" stroke="#cfd8e6" stroke-width="2"/>`};
+const PET_ACC_FRONT={1:`<path d="M60 34 Q60 22 52 18 Q60 18 62 28 Q66 18 74 20 Q64 24 62 34" fill="#5cc27a"/>`,2:`<path d="M60 36 L48 28 L48 44Z M60 36 L72 28 L72 44Z" fill="#ff6b8b"/><circle cx="60" cy="36" r="4" fill="#e94b6a"/>`,
+ 3:`<path d="M34 40 Q60 18 86 40Z" fill="#3a7bd5"/><path d="M80 40 L100 42 L84 46Z" fill="#2a5fa5"/>`,4:`<path d="M32 44 Q60 10 88 44Z" fill="#e67e22"/><circle cx="60" cy="18" r="5" fill="#fff"/><rect x="32" y="40" width="56" height="6" rx="3" fill="#fff"/>`,
+ 5:`<circle cx="48" cy="62" r="8" fill="none" stroke="#333" stroke-width="2.5"/><circle cx="72" cy="62" r="8" fill="none" stroke="#333" stroke-width="2.5"/><path d="M56 62 L64 62" stroke="#333" stroke-width="2.5"/>`,
+ 6:`<path d="M34 86 Q60 96 86 86 L86 92 Q60 102 34 92Z" fill="#e74c3c"/><rect x="70" y="90" width="7" height="14" rx="2" fill="#c0392b"/>`,7:`<g transform="translate(80 36)"><circle r="5" fill="#ffd76e"/><circle cx="0" cy="-7" r="5" fill="#ff9ff3"/><circle cx="7" cy="0" r="5" fill="#ff9ff3"/><circle cx="0" cy="7" r="5" fill="#ff9ff3"/><circle cx="-7" cy="0" r="5" fill="#ff9ff3"/><circle r="4" fill="#ffd76e"/></g>`,
+ 8:`<path d="M50 38 Q44 22 38 18 M70 38 Q76 22 82 18" stroke="#333" stroke-width="2.5" fill="none"/><circle cx="38" cy="18" r="4" fill="#f5b400"/><circle cx="82" cy="18" r="4" fill="#f5b400"/>`,
+ 9:`<path d="M30 62 Q30 28 60 28 Q90 28 90 62" fill="none" stroke="#333" stroke-width="4"/><rect x="24" y="56" width="10" height="16" rx="4" fill="#e74c3c"/><rect x="86" y="56" width="10" height="16" rx="4" fill="#e74c3c"/>`,
+ 10:`<path d="M60 36 L56 14 L66 36Z" fill="#f5e6c8" stroke="#0003"/>`,12:`<path d="M40 40 Q36 18 50 22 Q56 10 66 20 Q82 16 80 40Z" fill="#fff" stroke="#0002"/><rect x="40" y="36" width="40" height="7" rx="2" fill="#eee"/>`,
+ 14:`<path d="M30 42 L60 2 L90 42Z" fill="#5b2c83"/><circle cx="62" cy="22" r="3" fill="#ffd76e"/><circle cx="52" cy="32" r="2" fill="#ffd76e"/><rect x="26" y="38" width="68" height="6" rx="3" fill="#3d1d5c"/>`,
+ 15:`<path d="M60 40 L66 46 L60 54 L54 46Z" fill="#4fc3f7" stroke="#fff" stroke-width="1.5"/>`,17:`<ellipse cx="60" cy="20" rx="20" ry="6" fill="none" stroke="#f5c542" stroke-width="4"/>`,
+ 18:`<path d="M38 40 L40 18 L50 30 L60 14 L70 30 L80 18 L82 40Z" fill="#f5c542" stroke="#c9952b" stroke-width="2"/><circle cx="60" cy="30" r="3" fill="#e74c3c"/>`};
+function petSVG(f,o){o=o||{};const id=(f.uid!=null?f.uid:Math.random().toString(36).slice(2,7));const fill=petFill(f.color,id);const sick=o.sick,sleep=o.sleep;
+ const aura=f.aura?`<circle cx="60" cy="66" r="${52+f.aura*2}" fill="${f.aura===3?`url(#pr${id})`:f.aura===2?'#ffe08a':'#fff'}" opacity="${f.aura===3?.35:.5}"/><circle cx="60" cy="66" r="50" fill="url(#pa${id})"/>${f.aura>=2?'<text x="14" y="26" font-size="12">✨</text><text x="96" y="30" font-size="10">✨</text><text x="100" y="104" font-size="11">✨</text>':''}`:'';
+ const eyes=sick?`<path d="M44 58 L52 66 M52 58 L44 66 M68 58 L76 66 M76 58 L68 66" stroke="#333" stroke-width="3" stroke-linecap="round"/>`:sleep?`<path d="M42 63 Q48 67 54 63 M66 63 Q72 67 78 63" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>`:PET_EYES[f.eyes%10]();
+ return `<svg viewBox="0 0 120 120" width="${o.size||120}" height="${o.size||120}" style="overflow:visible">${petDefs(id)}${aura}<g class="${o.anim===false?'':'petb'}">${PET_ACC_BACK[f.acc]||''}${PET_BODY[f.body%12](fill)}${PET_PAT[f.pattern%8]()}${eyes}${sick||sleep?PET_MOUTH[6]():PET_MOUTH[f.mouth%8]()}${PET_ACC_FRONT[f.acc]||''}${sick?'<path d="M28 60 Q60 50 92 60" stroke="#7bc96f" stroke-width="0" fill="none"/>':''}</g>${sleep?'<text x="88" y="30" font-size="16" fill="#6c8cf5">z<tspan font-size="12" dy="-8">z</tspan></text>':''}</svg>`;}
+function petStageLook(v){const seed=v.seed||1;if(v.stage==='알'){const crack=v.age>1.5/24;return `<svg viewBox="0 0 120 120" width="130" height="130"><g class="petw"><ellipse cx="60" cy="66" rx="30" ry="38" fill="#fff8e7" stroke="#d9c9a3" stroke-width="3"/><circle cx="48" cy="54" r="5" fill="${PET_COL[seed%14]}"/><circle cx="70" cy="78" r="7" fill="${PET_COL[(seed+5)%14]}"/><circle cx="66" cy="46" r="3" fill="${PET_COL[(seed+9)%14]}"/>${crack?'<path d="M40 64 L48 58 L54 66 L62 58 L70 66 L80 60" fill="none" stroke="#8a7650" stroke-width="2.5"/>':''}</g></svg>`;}
+ const sc={'아기':.55,'어린이':.7,'청소년':.85,'어른':1}[v.stage]||1;const bodies={'아기':0,'어린이':1,'청소년':[1,3,4,5][seed%4],'어른':[3,4,5,6,8,9,10][seed%7]};
+ const f={uid:'s'+seed,body:bodies[v.stage],color:seed%14,eyes:v.stage==='아기'?1:(seed%10),mouth:seed%8,pattern:v.stage==='어른'?seed%8:0,acc:v.stage==='청소년'?1:0,aura:0};
+ return `<div style="transform:scale(${sc});transform-origin:center bottom;display:inline-block">${petSVG(f,{sick:v.sick,sleep:v.asleep,size:130})}</div>`;}
+function petApi(path,body){return fetch(API+path,body?{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(body)}:{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json());}
+const petStars=n=>`<span style="color:#f5b400;letter-spacing:-1px">${'★'.repeat(n||0)}</span><span style="color:#ccc;letter-spacing:-1px">${'★'.repeat(10-(n||0))}</span>`;
+G.push({k:'pet',cat:'펫',e:'🐣',n:'뚝섬펫',d:'30일 동안 키우는 다마고치 · 최종 모습 수천 가지',
+ start(){this.tab='home';this.data=null;this.msg='';this.err='';this.load();rr();clearInterval(this.iv);this.iv=setInterval(()=>{if(CUR===this&&this.tab==='home')this.load(true);},60000);},
+ stop(){clearInterval(this.iv);},
+ load(quiet){if(!NICK){rr();return;}petApi('/api/pet?nick='+encodeURIComponent(NICK)).then(r=>{this.data=r;this.err='';if(CUR===this)rr();}).catch(()=>{this.err='서버에 연결이 안 돼요';if(!quiet)rr();});},
+ act(a,name){if(this.busy)return;this.busy=true;petApi('/api/pet/act',{nick:NICK,act:a,name:name||''}).then(r=>{this.busy=false;this.msg=r.msg||'';if(r.pet)this.data={...(this.data||{}),pet:r.pet};if(a==='new')this.load(true);if(r.msg)toast(r.msg,1800);rr();}).catch(()=>{this.busy=false;toast('서버 연결 실패');});},
+ loadRank(){petApi('/api/pet/rank').then(r=>{this.rank=r;rr();}).catch(()=>{});},
+ bar(lb,v,col){return `<div style="display:grid;grid-template-columns:62px 1fr 34px;align-items:center;gap:6px;font-size:12.5px;margin:3px 0"><span>${lb}</span><div style="height:9px;background:#e6e1d4;border-radius:99px;overflow:hidden"><div style="height:100%;width:${v}%;background:${v<25?'#e74c3c':col}"></div></div><b style="font-size:12px;text-align:right">${v}</b></div>`;},
+ view(){const css=`<style>.petb{animation:petb 1.6s ease-in-out infinite;transform-origin:60px 100px}@keyframes petb{50%{transform:translateY(-4px) scaleY(.97)}}.petw{animation:petw 2.2s ease-in-out infinite;transform-origin:60px 100px}@keyframes petw{25%{transform:rotate(-5deg)}75%{transform:rotate(5deg)}}
+   .pact{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}.pact button{border:0;border-radius:12px;padding:9px 2px;background:var(--paper2);border:1.5px solid var(--line);font-weight:800;font-size:12.5px;line-height:1.3}.pact button:active{transform:scale(.96)}.pact b{display:block;font-size:20px}</style>`;
+  const tabs=`<div class="tabs" style="margin-bottom:8px">${[['home','🐣 키우기'],['dex','📖 도감'],['rank','🏆 랭킹'],['help','❓ 방법']].map(([k,n])=>`<button class="${this.tab===k?'on':''}" onclick="CUR.tab='${k}';${k==='rank'?'CUR.loadRank();':''}rr()">${n}</button>`).join('')}</div>`;
+  if(!NICK)return css+`<div class="card"><div class="t">🐣 뚝섬펫</div><div class="m" style="margin:6px 0">카톡 닉네임으로 저장돼서 폰을 바꿔도 이어서 키울 수 있어요</div><div style="display:flex;gap:6px"><input class="q" id="nk" placeholder="카톡 닉네임"><button class="btn" onclick="setNick($('nk').value);CUR.load()">저장</button></div></div>`;
+  if(this.err)return css+tabs+`<div class="gq">${this.err}<br><button class="btn" onclick="CUR.load()">다시 시도</button></div>`;
+  if(!this.data)return css+tabs+'<div class="gq">불러오는 중…</div>';
+  if(this.tab==='help')return css+tabs+`<div class="card" style="line-height:1.75;font-size:14px"><b>🥚 30일 동안 키워요</b><br>알(2시간) → 아기 → 어린이(2일) → 청소년(7일) → 어른(18일) → <b>30일째 완성</b><br>
+   <b>⭐ 최종 등급 ★1~10</b><br>배부름·행복·청결·건강을 잘 지켜준 시간만큼 점수가 쌓여요. 과식·가출은 감점, 밤에 불 꺼주기·여러 음식 골고루는 가산점.<br>
+   <b>🎨 최종 모습</b><br>몸 12종 × 장식 20종 × 색 16종 + 눈·입·무늬 조합 → <b>수천 가지</b>. 키운 방식에 따라 달라져요 (간식 많이 → 동글이·슬라임, 채소 → 초록빛, 많이 놀기 → 토끼·새, 쓰다듬기 → 냥이, 특식 → 용…). 별이 높을수록 왕관·천사 날개 같은 희귀 장식과 오라가 나와요.<br>
+   <b>🌙 새벽 1~8시는 자요</b> · 밤엔 안 챙겨도 돼요. 자기 전에 불을 꺼주면 더 푹 자요.<br>
+   <b>🎁 간식·특식 받는 법</b><br>뚝섬 게임에서 기록을 남기면 간식 +1 (하루 5개) · 오늘의 문제를 풀면 특식 +1<br>
+   <b>😢 죽지 않아요</b><br>오래 방치하면 가출해요 (등급 감점). 간식으로 다시 불러올 수 있어요.<br>
+   <b>💬 카톡</b> · !@펫 하면 지금 상태를 알려줘요</div>`;
+  if(this.tab==='dex'){const D=this.data.dex||[];const sp=new Set(D.map(x=>x.species)).size;
+   return css+tabs+`<div class="card"><div class="row"><b>내 도감</b><span class="m">${sp} / ${this.data.dexTotal}종</span></div></div>`+(D.length?`<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px">${D.map((x,i)=>`<div class="card" style="margin:0;text-align:center;padding:8px">${petSVG({...x,uid:'d'+i},{size:96,anim:false})}<div style="font-weight:900;font-size:13px">${esc(x.name)}</div><div class="m" style="font-size:11.5px">${esc(x.title)}</div><div style="font-size:11px">${petStars(x.stars)}</div></div>`).join('')}</div>`:'<div class="card m">아직 다 키운 펫이 없어요. 30일 동안 키우면 여기에 모여요!</div>');}
+  if(this.tab==='rank'){const R=this.rank;if(!R)return css+tabs+'<div class="gq">불러오는 중…</div>';
+   return css+tabs+`<div class="card"><div class="row"><span>지금 자라는 펫</span><b>${R.live}마리</b></div><div class="row"><span>발견된 종류</span><b>${R.species} / ${R.dexTotal}종</b></div></div>`+(R.top.length?R.top.map((x,i)=>`<div class="card" style="display:flex;gap:10px;align-items:center;padding:8px">${petSVG({...x.final,uid:'r'+i},{size:64,anim:false})}<div style="flex:1;min-width:0"><b>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${esc(x.nick)}</b> · ${esc(x.name)}<div class="m" style="font-size:12px">${esc(x.final.title)}</div><div style="font-size:12px">${petStars(x.stars)}</div></div></div>`).join(''):'<div class="card m">아직 다 큰 펫이 없어요</div>');}
+  const v=this.data.pet;
+  if(!v||v.done){const fin=v&&v.done?`<div class="card" style="text-align:center;border:2px solid #f5c542;background:#fffbea"><div class="m">${v.gen}세대 · ${esc(v.finished||'')} 완성</div>${petSVG({...v.final,uid:'f'},{size:170})}<div style="font-size:20px;font-weight:900">${esc(v.name)}</div><div class="m">${esc(v.final.title)}</div><div style="font-size:18px;margin-top:4px">${petStars(v.stars)}</div></div>`:'';
+   return css+tabs+fin+`<div class="card"><div class="t">🥚 ${v?'새 알 받기':'첫 알 받기'}</div><div class="m" style="margin:6px 0;line-height:1.6">30일 동안 밥·놀이·청소·잠을 챙겨주면 키운 방식에 따라 수천 가지 중 하나의 모습으로 자라요. 등급은 ★1~10.</div>
+    <div style="display:flex;gap:6px"><input class="q" id="pnm" maxlength="10" placeholder="이름 (예: 몽실이)"><button class="btn g" onclick="CUR.act('new',$('pnm').value)">알 받기</button></div></div>`;}
+  const night=v.asleep||(!v.light);const need=[];if(v.runaway)need.push('😢 집을 나갔어요');else{if(v.asleep)need.push('💤 쿨쿨');if(v.hunger<30)need.push('🍚 배고파요!');if(v.happy<30)need.push('🎾 심심해요');if(v.poop)need.push('💩 치워주세요');if(v.sick)need.push('💊 아파요');if(v.energy<20&&!v.asleep)need.push('😪 졸려요');}
+  const room=`<div style="position:relative;height:190px;border-radius:16px;overflow:hidden;background:${night?'linear-gradient(#1f2a48,#34406a)':'linear-gradient(#bfe3ff,#e9f6ff 70%,#cfe8b8 70%)'};display:flex;align-items:flex-end;justify-content:center">
+    ${night?'<div style="position:absolute;right:16px;top:12px;font-size:22px">🌙</div>':'<div style="position:absolute;right:16px;top:10px;font-size:22px">☀️</div>'}
+    ${v.runaway?'<div style="font-size:15px;color:#fff;font-weight:800;margin-bottom:70px;text-shadow:0 1px 3px #0008">빈 집… 🏠</div>':`<div style="margin-bottom:10px">${petStageLook(v)}</div>`}
+    ${[...Array(v.poop)].map((_,i)=>`<div style="position:absolute;bottom:12px;left:${12+i*26}px;font-size:22px">💩</div>`).join('')}
+    ${need.length?`<div style="position:absolute;left:10px;top:10px;background:#fffffff0;border-radius:12px;padding:4px 10px;font-weight:800;font-size:13px">${need.join(' · ')}</div>`:''}</div>`;
+  const inv=v.inv||{};const B=(a,e,n,dis)=>`<button onclick="CUR.act('${a}')" ${dis?'style="opacity:.4"':''}><b>${e}</b>${n}</button>`;
+  return css+tabs+`<div class="card" style="padding:10px"><div class="row"><span style="font-size:17px;font-weight:900">${esc(v.name)} <span class="m" style="font-size:12px">${v.gen}세대</span></span><span class="m">D+${v.day}/30 · <b>${v.stage}</b></span></div>
+    <div style="height:6px;background:#e6e1d4;border-radius:99px;overflow:hidden;margin:6px 0"><div style="height:100%;width:${Math.min(100,v.age/30*100)}%;background:linear-gradient(90deg,#ffd76e,#f5a623)"></div></div>
+    ${room}
+    <div style="margin-top:8px">${this.bar('🍚 배부름',v.hunger,'#f5a623')}${this.bar('😊 행복',v.happy,'#ff6b8b')}${this.bar('⚡ 체력',v.energy,'#4fc3f7')}${this.bar('❤️ 건강',v.health,'#5cc27a')}</div>
+    <div class="row" style="font-size:12.5px;margin-top:4px"><span>⚖️ 체중 ${v.weight}</span><span>${v.est?`지금 페이스 예상 ${petStars(v.est)}`:'<span class="m">등급 예상은 조금 키운 뒤에 보여요</span>'}</span></div></div>
+   <div class="pact">${v.runaway?B('callback','🏠','불러오기'):''}${B('meal','🍚','밥')}${B('snack','🍪',`간식 ${inv.snack||0}`,!(inv.snack>0))}${B('special','🍖',`특식 ${inv.special||0}`,!(inv.special>0))}${B('veg','🥗','채소')}
+    ${B('play','🎾','놀기')}${B('pet','✋','쓰담')}${B('clean','🧹','치우기',!v.poop)}${B('bath','🛁','목욕')}${B('med','💊','약',!v.sick)}${B('light',v.light?'🌙':'💡',v.light?'불 끄기':'불 켜기')}</div>
+   <div class="m" style="font-size:12px;margin-top:8px;line-height:1.6">🎁 뚝섬 게임 기록 → 간식 +1 (하루 5개) · 오늘의 문제 → 특식 +1 · 💬 카톡 !@펫</div>
+   <div class="sec">최근 일</div><div class="card" style="font-size:12.5px;line-height:1.7">${(v.log||[]).map(x=>`<span class="m">${esc(x[0])}</span> ${esc(x[1])}`).join('<br>')||'-'}</div>`;}});
 // ===== 🕹️ 아케이드 =====
 function cvSetup(game,w,h,extra){show(`<div class="gst"><span>점수 <b id="csc">0</b></span><span>내 최고 ${(myBest(game.k)||0).toLocaleString()}</span></div><canvas id="cv" class="cv" width="${w}" height="${h}"></canvas>${extra||''}<div id="cmsg" class="m" style="text-align:center;margin-top:8px"></div>`);
  const c=$('cv');game.cv=c;game.cx=c.getContext('2d');game.alive=true;const loop=t=>{if(!game.alive||CUR!==game)return;game.tick(t);requestAnimationFrame(loop);};requestAnimationFrame(loop);
@@ -1369,7 +1478,7 @@ G.push({k:'reaction',cat:'대전·도구',e:'⚡',n:'반응속도',d:'초록불�
 // 두더지 잡기
 // ===== 목록 · 랭킹 · 오늘의 문제 · 화면 전환 =====
 G.forEach(g=>g.nm=g.n);   // 게임 안에서 this.n 을 숫자로 쓰는 경우가 있어 이름은 따로 보관
-const CATS=['전체','홀덤','카드','퍼즐','대전·도구'];let CATSEL=lsGet('gcat','전체');
+const CATS=['전체','펫','홀덤','카드','퍼즐','대전·도구'];let CATSEL=lsGet('gcat','전체');
 const RANKED=G.filter(g=>GCFG[g.k]);
 const gName=k=>{const g=G.find(x=>x.k===k);return g?g.e+' '+g.nm:k;};
 const lvTag=n=>{const l=(GD.lv||{})[n];return l?`<span style="font-size:11px;background:var(--blue2);color:var(--blue);border-radius:999px;padding:1px 6px;margin-left:4px;font-weight:800">Lv.${l}</span>`:'';};
