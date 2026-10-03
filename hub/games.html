@@ -163,7 +163,7 @@ G.push({k:'pushfold',cat:'홀덤',e:'🔥',n:'푸시/폴드',d:'올인·콜 판�
   if(this.over)return hd+fb+overHtml(this.n+'연속','다시 도전하거나 연습 모드로 차트를 익혀보세요',"CUR.go('도전')");
   return hd+fb+`<div class="card" style="text-align:center"><div class="m">9인 토너먼트 · 앤티 0.125BB · 모두 ${q.bb}BB</div>${seatRow(q.o,q.type)}
    <div style="font-size:16px;margin:6px 0">${q.type==='push'?`<b>${POS9[q.o]}</b>에서 앞이 모두 폴드 · <b>올인?</b>`:`<b>${POS9[q.o]}</b>가 올인 · 나는 <b>BB</b> · <b>콜?</b>`}</div>${cardsHtml(q.cards)}</div>
-   <div class="g2b"><button class="btn" onclick="CUR.ans(1)">${q.type==='push'?'올인':'콜'}</button><button class="btn b2" onclick="CUR.ans(0)">폴드</button></div>`;},
+   <div class="g2b"><button class="btn gr" onclick="CUR.ans(0)">폴드</button><button class="btn" onclick="CUR.ans(1)">${q.type==='push'?'올인':'콜'}</button></div>`;},
  statHtml(){const s=lsGet('pf_stat',{});const ks=Object.keys(s);if(!ks.length)return '';
   return `<div class="sec">내 약점 (위치별 정답률)</div><div class="card">${ks.sort((a,b)=>s[a][0]/s[a][1]-s[b][0]/s[b][1]).slice(0,6).map(k=>`<div class="row"><span>${k}</span><span class="m">${Math.round(s[k][0]/s[k][1]*100)}% (${s[k][0]}/${s[k][1]})</span></div>`).join('')}</div>`;},
  ans(yes){const q=this.q,right=(!!yes)===q.inr;this.tot++;if(right)this.ok++;
