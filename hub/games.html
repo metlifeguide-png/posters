@@ -2395,13 +2395,16 @@ G.push({k:'huview',cat:'홀덤',e:'📊',n:'헤즈업 레인지 뷰어',d:'솔�
   const crumbs=`<div class="card" style="padding:8px 10px;font-size:15px;line-height:1.9"><b>${this.S}BB</b> · <span class="m">BTN 0.5 · BB 1+앤티1</span>${W.steps.map((s,k)=>` → <a style="cursor:pointer;color:var(--blue);font-weight:800" onclick="CUR.path='${path.slice(0,k+1)}';CUR.sel=null;rr()">${s.p} ${s.nm}${s.amt?' '+(+s.amt.toFixed(1)):''}</a>`).join('')}
    ${path?` <button class="btn gr" style="padding:3px 10px;font-size:13px;margin-left:6px" onclick="CUR.path=CUR.path.slice(0,-1);CUR.sel=null;rr()">↶ 뒤로</button>`:''}</div>`;
   if(!n){const last=path.slice(-1);return crumbs+`<div class="card" style="text-align:center;font-size:16px">${last==='f'?'폴드로 끝':last==='c'||path.endsWith('a')?'플랍으로 가요 (또는 올인 쇼다운)':'끝'}<br><button class="btn" style="margin-top:8px" onclick="CUR.path='';CUR.sel=null;rr()">처음부터</button></div>`;}
+  const fi=n.a.indexOf('f'),simp=this.simp!==false&&fi>=0;
+  const S_=c=>{const ev=(n.ev||{})[c];if(simp&&ev&&ev[fi]>=Math.max(...ev)-HV_TOL&&n.s[c][fi]<100)return n.a.map((a,i)=>i===fi?100:0);return n.s[c];};
   const R=this.pfReach(path);let tw=0;const tot=n.a.map(()=>0);
-  for(const c in n.s){const w=hvW(c)*R[c];tw+=w;n.s[c].forEach((x,i)=>tot[i]+=w*x/100);}
+  for(const c in n.s){const w=hvW(c)*R[c];tw+=w;S_(c).forEach((x,i)=>tot[i]+=w*x/100);}
   const nm=a=>this.pfName(a,n.p,W.raises,path);
   const acts=`<div class="g2b" style="grid-template-columns:repeat(${n.a.length},1fr);margin-top:0">${n.a.map((a,i)=>`<button class="btn" style="background:${HV_COL[a]};padding:10px 2px;font-size:15px" onclick="CUR.path+='${a}';CUR.sel=null;rr()">${nm(a)}<br><span style="font-size:13px;opacity:.9">${tw?Math.round(tot[i]/tw*100):0}%</span></button>`).join('')}</div>`;
-  const grid=this.grid(c=>n.s[c],c=>R[c],n.a.map(a=>HV_COL[a]),c=>hvClose((n.ev||{})[c])!=null);
+  const grid=this.grid(c=>S_(c),c=>R[c],n.a.map(a=>HV_COL[a]),c=>hvClose((n.ev||{})[c])!=null);
   let det='';const c=this.sel;if(c&&n.s[c]){const ev=(n.ev||{})[c]||[];det=`<div class="card" style="font-size:15px;line-height:1.7"><b style="font-size:17px">${c}</b> <span class="m">(이 라인까지 올 확률 ${Math.round(R[c]*100)}%)</span><br>${n.a.map((a,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${HV_COL[a]}"></span> ${nm(a)} <b>${n.s[c][i]}%</b>${ev[i]!=null?` · EV <b>${ev[i]>0?'+':''}${ev[i].toFixed(2)}</b>BB`:''}`).join('<br>')}${hvEvLines(n.a,(n.ev||{})[c],nm)}</div>`;}
-  return crumbs+`<div style="font-size:15px;font-weight:800;margin:6px 2px">${n.p} 차례 · 레인지 전체</div>`+acts+grid+det+
+  const tg=fi>=0?`<div style="display:flex;gap:6px;align-items:center;margin:4px 2px;font-size:13.5px"><button class="btn ${simp?'':'gr'}" style="padding:4px 10px;font-size:13px" onclick="CUR.simp=${simp?'false':'true'};rr()">${simp?'✅':'⬜'} 실전 단순화</button><span class="m">${simp?'폴드와 EV 차이가 0.05BB 이내인 패는 폴드로 표시':'솔버 원래 빈도 그대로'}</span></div>`:'';
+  return crumbs+`<div style="font-size:15px;font-weight:800;margin:6px 2px">${n.p} 차례 · 레인지 전체</div>`+tg+acts+grid+det+
    `<div class="card m" style="font-size:13px;line-height:1.6">칸을 누르면 핸드별 빈도와 <b>EV</b>(핸드 시작 대비 기대 손익, BB)가 나와요. <b>≈</b> 표시는 액션끼리 EV 차이가 0.05BB 이내라 어느 쪽을 골라도 괜찮은 핸드예요. 흐린 칸은 앞선 액션 때문에 여기까지 잘 안 오는 핸드예요.</div>`;},
  // ---------- 13×13 그리드 ----------
  grid(freqOf,reachOf,cols,markOf){let h='<div style="display:grid;grid-template-columns:repeat(13,1fr);gap:1px;background:#ccc;border:1px solid #ccc;border-radius:6px;overflow:hidden;margin:8px 0">';
@@ -2513,6 +2516,8 @@ function dailyView(){const d=kstDay(),[k,lv]=dailyType(d);const g=G.find(x=>x.k=
 function loadDaily(){fetch(API+'/api/daily?nick='+encodeURIComponent(NICK||''),{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{if(r.ok){DLIVE=r;if(r.mine&&!lsGet('daily_done_'+r.d,null))lsSet('daily_done_'+r.d,{score:r.mine[0],detail:r.mine[1]});if(location.hash==='#daily')show(dailyView());}}).catch(()=>{});}
 // 🏆 랭킹·업적
 let RTAB=lsGet('rtab','week');
+// 💡 랭킹은 서버에서 바로 받아와요 (페이지에 들어 있는 랭킹은 홈 갱신 때만 바뀜)
+function loadRank(cb){if(!API){cb&&cb();return;}fetch(API+'/api/game/rankdata',{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{if(r&&r.ok){['boards','tbest','xtop','lv','daily'].forEach(k=>{if(r[k]!=null)GD[k]=r[k];});if(r.d)GD.d=r.d;}cb&&cb();}).catch(()=>cb&&cb());}
 function rankView(){const tabs=[['week','🏆 주간'],['today','⏰ 오늘'],['level','⭐ 레벨'],['ach','🏅 업적']];
  let h=`<div class="tabs">${tabs.map(([k,n])=>`<button class="${RTAB===k?'on':''}" onclick="RTAB='${k}';lsSet('rtab',RTAB);show(rankView());if(RTAB==='ach'||RTAB==='level')loadMe(()=>show(rankView()))">${n}</button>`).join('')}<button onclick="location.hash='daily'">📅 오늘의 문제</button></div>`;
  if(RTAB==='week'){const B=GD.boards||{};let any=false;h+='<div class="sec">이번 주 랭킹 (최근 7일)</div>';
@@ -2528,7 +2533,7 @@ function rankView(){const tabs=[['week','🏆 주간'],['today','⏰ 오늘'],['
   else{h+=`<div class="card"><div class="t">${esc(NICK)}</div>${meBar()}<div class="m" style="margin-top:6px">기록 남긴 게임 ${ME.played.length}/${ME.total_games}</div></div>`;
    const got=ME.ach.filter(a=>a[4]),no=ME.ach.filter(a=>!a[4]);
    h+=`<div class="sec">달성 ${got.length}/${ME.ach.length}</div><div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px">${[...got,...no].map(a=>`<div class="card" style="margin:0;padding:8px;${a[4]?'border-color:#e0a800;background:#fff8e1':'opacity:.5;filter:grayscale(1)'}"><div style="font-size:22px">${a[1]}</div><b style="font-size:13.5px">${a[2]}</b><div class="m" style="font-size:11.5px">${a[3]}</div>${a[4]?`<div class="m" style="font-size:10.5px">${a[4].slice(0,10)}</div>`:''}</div>`).join('')}</div>`;}}
- return h+'<div class="m" style="text-align:center;margin-top:8px">주간·오늘·레벨 랭킹은 홈이 갱신될 때(10분 안) 반영돼요</div>';}
+ return h;}
 // 🟢 실시간 접속 (관리자 페이지에서 지금 누가 어떤 화면을 보는지) · 15초마다 신호 · 화면을 끄거나 나가면 바로 OFF
 const PSID=(()=>{try{let v=localStorage.getItem('psid');if(!v){v=Math.random().toString(36).slice(2,10);localStorage.setItem('psid',v);}return v;}catch(e){return Math.random().toString(36).slice(2,10);}})();
 let PPAGE='';
@@ -2561,7 +2566,7 @@ function render(){const hsh=location.hash.slice(1);if(CUR&&CUR.stop)CUR.stop();S
    if(dly){if(key==='logic')g.go('오늘');else if(DAILY.lv&&g.go)g.go(DAILY.lv);}scrollTo(0,0);return;}}
  if(window.DAILY)dailyEnd();
  CUR=null;back.style.display='none';newBtnSync();
- if(hsh==='rank'){gvisit('게임·랭킹');setTitle('🏆 랭킹·업적');back.style.display='';show(rankView());if(RTAB==='ach'||RTAB==='level')loadMe(()=>{if(location.hash==='#rank')show(rankView());});return;}
+ if(hsh==='rank'){gvisit('게임·랭킹');setTitle('🏆 랭킹·업적');back.style.display='';show(rankView());loadRank(()=>{if(location.hash==='#rank')show(rankView());});if(RTAB==='ach'||RTAB==='level')loadMe(()=>{if(location.hash==='#rank')show(rankView());});return;}
  if(hsh==='daily'){gvisit('게임·오늘의 문제');setTitle('📅 오늘의 문제');back.style.display='';show(dailyView());loadDaily();return;}
  render0();if(window.top===window.self)gvisit('게임 목록');else presPage('게임 목록');if(NICK&&!ME)loadMe(()=>{if(!CUR&&!location.hash.slice(1))render0();});}
 addEventListener('hashchange',render);
