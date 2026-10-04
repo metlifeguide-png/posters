@@ -1415,9 +1415,9 @@ G.push({k:'hustudy',cat:'홀덤',e:'🎓',n:'헤즈업 공부',d:'스택별 헤�
   const posted=p=>h.street===0&&!h.acts.some(a=>a.p===p&&a.st===0)?(p==='BTN'?'SB 0.5 (블라인드)':'BB 1 + 앤티 1'):(h.inv[p]?`베팅 ${h.inv[p].toFixed(1)}`:'');
   const chip=(p)=>{const t=posted(p);return t?`<span style="display:inline-block;background:#f6d36b;color:#5a3d00;border-radius:999px;padding:2px 10px;font-weight:800;font-size:13px;margin-left:4px">🪙 ${t}</span>`:'';};
   const stActs=k=>h.acts.filter(a=>a.st===k);
-  const bar=[0,1,2,3].filter(k=>k<=h.street).map(k=>{const A=stActs(k);return `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:4px 0"><b style="min-width:52px;font-size:14px;color:var(--brown)">${HU_ST[k]}</b>${k===0?`<span style="font-size:13px;color:var(--sub)">BTN 0.5 · BB 1+앤티1 →</span>`:''}${A.map(a=>`<span style="padding:5px 10px;border-radius:999px;font-weight:900;font-size:15px;background:${a.me?'var(--blue2)':(a.agg?'#fde2e2':'#eee')};color:${a.agg&&!a.me?'#c62828':'var(--ink)'}">${a.me?'나':'상대'}(${a.p}) ${esc(a.t)}</span>`).join('')||'<span class="m">-</span>'}</div>`;}).join('');
+  const bar=[0,1,2,3].filter(k=>k<=h.street).map(k=>{const A=stActs(k);return `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:4px 0"><b style="min-width:52px;font-size:14px;color:var(--brown)">${HU_ST[k]}</b>${A.map(a=>`<span style="padding:5px 10px;border-radius:999px;font-weight:900;font-size:15px;background:${a.me?'var(--blue2)':(a.agg?'#fde2e2':'#eee')};color:${a.agg&&!a.me?'#c62828':'var(--ink)'}">${a.me?'나':'상대'}(${a.p}) ${esc(a.t)}</span>`).join('')||'<span class="m">-</span>'}</div>`;}).join('');
   const lastV=[...h.acts].reverse().find(a=>!a.me);
-  const turnMsg=!h.over&&h.toAct===H?`<div style="background:var(--blue);color:#fff;border-radius:12px;padding:10px 12px;margin:8px 0;font-size:17px;font-weight:900;text-align:center">${lastV&&lastV.st===h.street?`상대 ${esc(lastV.t)} → `:''}내 차례${tc>0?` · 콜하려면 <span style="color:#f6d36b">${Math.min(tc,h.st[H]).toFixed(1)}BB</span>`:''}<div style="font-size:13px;font-weight:600;opacity:.9">팟 ${potTxt}BB · 내 스택 ${h.st[H].toFixed(1)}BB${tc>0?` · 필요 승률 ${Math.round(Math.min(tc,h.st[H])/(h.pot+Math.min(tc,h.st[H]))*100)}%`:''}</div></div>`:'';
+  const turnMsg=!h.over&&h.toAct===H?`<div style="background:var(--blue);color:#fff;border-radius:12px;padding:10px 12px;margin:8px 0;font-size:17px;font-weight:900;text-align:center">${lastV&&lastV.st===h.street?`상대 ${esc(lastV.t)} → `:''}내 차례</div>`:'';
   return `<div class="gst"><span>${this.S}BB · 빅앤티 · 나 <b>${H}</b></span><span>${HU_ST[h.street]} · 팟 <b>${potTxt}</b>BB</span></div>
    <div class="card" style="padding:8px 10px">${bar}</div>
    <div class="card" style="text-align:center"><div style="font-size:14px;font-weight:800">상대 (${V}${V==='BTN'?'·SB':''}) · 스택 ${h.st[V].toFixed(1)}${chip(V)}</div><div style="display:flex;justify-content:center;margin:6px 0">${show&&h.over.why==='sd'?cardsHtml(h.C[V]):`<div class="pcs">${cardHtml(null)}${cardHtml(null)}</div>`}</div>
@@ -2350,6 +2350,85 @@ function huPfLoad(S,cb){if(HU_PF[S]||!API){cb&&cb();return;}if(HU_PF_WAIT[S]){HU
    const h=this.h;if(!h.over&&this._pfDone&&(k>=60||(h.pfRaises===2&&h.pfAgg==='BTN')||(h.pfRaises===3&&h.pfAgg==='BB')||(h.pfRaises===1&&!h.pfAgg))){h.log.push('— 프리플랍은 자동 진행 (솔버) —');this.nextStreet();return;}}
   this.step();};
 })();
+// ===================== 📊 헤즈업 레인지 뷰어 (프리플랍 솔버 트리 + 플랍 솔버 DB) =====================
+const HV_RK='AKQJT98765432';
+const HV_COL={f:'#9aa5b1',c:'#3a9d3f',r:'#e0663a',a:'#8b1a1a'};
+const hvCls=(i,j)=>i===j?HV_RK[i]+HV_RK[j]:i<j?HV_RK[i]+HV_RK[j]+'s':HV_RK[j]+HV_RK[i]+'o';
+const hvW=c=>c.length===2?6:c[2]==='s'?4:12;
+// 플랍 액션 색: 체크/콜 초록 · 폴드 회색 · 베팅/레이즈 크기 순으로 진해지는 빨강
+function hvFlopCol(acts){const nb=acts.filter(a=>a.startsWith('BET')||a.startsWith('RAISE')).length;let k=0;const P=['#f0a35e','#e0663a','#c0392b','#8b1a1a'];
+ return acts.map(a=>a==='FOLD'?HV_COL.f:a==='CHECK'||a==='CALL'?HV_COL.c:P[Math.max(0,Math.min(3,4-nb+(k++)))]);}
+// 범위 문자열 "AA,AKs:0.5,…" → {클래스:가중치}
+function hvRange(s){const o={};(s||'').split(',').forEach(e=>{if(!e)return;const [h,w]=e.split(':');o[h]=w?+w:1;});return o;}
+G.push({k:'huview',cat:'홀덤',e:'📊',n:'헤즈업 레인지 뷰어',d:'솔버 트리 · 핸드별 빈도·EV',
+ start(){this.tab=lsGet('hv_tab','pf');this.S=lsGet('hv_S',100);this.path='';this.sel=null;this.fl=null;this.fpath='root';this.spots=null;this.spot=lsGet('hv_spot','SRP100A');this.bin='';
+  huPfLoad(this.S,()=>rr());rr();if(this.tab==='flop')this.loadSpots();},
+ setTab(t){this.tab=t;lsSet('hv_tab',t);this.sel=null;if(t==='flop'&&!this.spots)this.loadSpots();rr();},
+ setS(S){this.S=S;lsSet('hv_S',S);this.path='';this.sel=null;huPfLoad(S,()=>rr());rr();},
+ // ---------- 프리플랍 ----------
+ pfWalk(path){const S=this.S,ch=huCh(S),E=S-1;const inv={BTN:.5,BB:1};let raises=1,p='BTN';const steps=[];
+  for(const c of path){const o=p==='BTN'?'BB':'BTN';const nm=this.pfName(c,p,raises,path.slice(0,steps.length));let amt=0;
+   if(c==='c')inv[p]=inv[o];else if(c==='r'){const to=raises===1&&p==='BTN'?ch.osz:raises===1?4:raises===2?inv[o]*ch.tsz:inv[o]*ch.fsz;inv[p]=to;amt=to;raises++;}else if(c==='a'){inv[p]=E;amt=E;raises++;}
+   steps.push({p,c,nm,amt});p=o;}
+  return {steps,raises,p,inv};},
+ pfName(c,p,raises,hist){if(c==='f')return '폴드';if(c==='a')return '올인';
+  if(c==='c')return hist===''&&p==='BTN'?'림프':hist==='c'?'체크':'콜';
+  return raises===1?(p==='BTN'?'오픈':'레이즈'):raises===2?'3벳':raises===3?'4벳':'5벳';},
+ pfReach(path){const N=HU_PF[this.S];const R={},me=this.pfWalk(path).p;
+  for(let i=0;i<13;i++)for(let j=0;j<13;j++)R[hvCls(i,j)]=1;
+  for(let k=0;k<path.length;k++){const n=N[path.slice(0,k)];if(!n||n.p!==me)continue;const ai=n.a.indexOf(path[k]);for(const c in R)R[c]*=((n.s[c]||[])[ai]||0)/100;}
+  return R;},
+ pfView(){const N=HU_PF[this.S];if(!N)return `<div class="card m">${API?'불러오는 중…':'서버 연결이 없어요'}</div>`;
+  const path=this.path,n=N[path],W=this.pfWalk(path);
+  const crumbs=`<div class="card" style="padding:8px 10px;font-size:15px;line-height:1.9"><b>${this.S}BB</b> · <span class="m">BTN 0.5 · BB 1+앤티1</span>${W.steps.map((s,k)=>` → <a style="cursor:pointer;color:var(--blue);font-weight:800" onclick="CUR.path='${path.slice(0,k+1)}';CUR.sel=null;rr()">${s.p} ${s.nm}${s.amt?' '+(+s.amt.toFixed(1)):''}</a>`).join('')}
+   ${path?` <button class="btn gr" style="padding:3px 10px;font-size:13px;margin-left:6px" onclick="CUR.path=CUR.path.slice(0,-1);CUR.sel=null;rr()">↶ 뒤로</button>`:''}</div>`;
+  if(!n){const last=path.slice(-1);return crumbs+`<div class="card" style="text-align:center;font-size:16px">${last==='f'?'폴드로 끝':last==='c'||path.endsWith('a')?'플랍으로 가요 (또는 올인 쇼다운)':'끝'}<br><button class="btn" style="margin-top:8px" onclick="CUR.path='';CUR.sel=null;rr()">처음부터</button></div>`;}
+  const R=this.pfReach(path);let tw=0;const tot=n.a.map(()=>0);
+  for(const c in n.s){const w=hvW(c)*R[c];tw+=w;n.s[c].forEach((x,i)=>tot[i]+=w*x/100);}
+  const nm=a=>this.pfName(a,n.p,W.raises,path);
+  const acts=`<div class="g2b" style="grid-template-columns:repeat(${n.a.length},1fr);margin-top:0">${n.a.map((a,i)=>`<button class="btn" style="background:${HV_COL[a]};padding:10px 2px;font-size:15px" onclick="CUR.path+='${a}';CUR.sel=null;rr()">${nm(a)}<br><span style="font-size:13px;opacity:.9">${tw?Math.round(tot[i]/tw*100):0}%</span></button>`).join('')}</div>`;
+  const grid=this.grid(c=>n.s[c],c=>R[c],n.a.map(a=>HV_COL[a]));
+  let det='';const c=this.sel;if(c&&n.s[c]){const ev=(n.ev||{})[c]||[];det=`<div class="card" style="font-size:15px;line-height:1.7"><b style="font-size:17px">${c}</b> <span class="m">(이 라인까지 올 확률 ${Math.round(R[c]*100)}%)</span><br>${n.a.map((a,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${HV_COL[a]}"></span> ${nm(a)} <b>${n.s[c][i]}%</b>${ev[i]!=null?` · EV <b>${ev[i]>0?'+':''}${ev[i].toFixed(2)}</b>BB`:''}`).join('<br>')}</div>`;}
+  return crumbs+`<div style="font-size:15px;font-weight:800;margin:6px 2px">${n.p} 차례 · 레인지 전체</div>`+acts+grid+det+
+   `<div class="card m" style="font-size:13px;line-height:1.6">칸을 누르면 핸드별 빈도와 <b>EV</b>(핸드 시작 대비 기대 손익, BB)가 나와요. 흐린 칸은 앞선 액션 때문에 여기까지 잘 안 오는 핸드예요.</div>`;},
+ // ---------- 13×13 그리드 ----------
+ grid(freqOf,reachOf,cols){let h='<div style="display:grid;grid-template-columns:repeat(13,1fr);gap:1px;background:#ccc;border:1px solid #ccc;border-radius:6px;overflow:hidden;margin:8px 0">';
+  for(let i=0;i<13;i++)for(let j=0;j<13;j++){const c=hvCls(i,j),f=freqOf(c),r=reachOf(c);let bg='#eee';
+   if(f&&r>0.005){let acc=0;const st=[];f.forEach((x,k)=>{if(x<=0)return;st.push(`${cols[k]} ${acc}% ${acc+x}%`);acc+=x;});if(acc<100)st.push(`#eee ${acc}% 100%`);bg=`linear-gradient(to right,${st.join(',')})`;}
+   const op=f&&r>0.005?.25+.75*Math.min(1,r):1;
+   h+=`<div onclick="CUR.sel='${c}';rr()" style="aspect-ratio:1;background:${bg};opacity:${op};display:flex;align-items:center;justify-content:center;font-size:clamp(7px,2.3vw,11px);font-weight:800;color:${f&&r>0.005?'#fff':'#999'};text-shadow:0 0 2px rgba(0,0,0,.6);cursor:pointer;${this.sel===c?'outline:2px solid #111;outline-offset:-2px;':''}">${c}</div>`;}
+  return h+'</div>';},
+ // ---------- 플랍 ----------
+ loadSpots(){if(!API)return;fetch(API+'/api/solver/spots',{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{this.spots=r.ok?r.spots:{};if(!this.spots[this.spot])this.spot=Object.keys(this.spots)[0]||'';if(this.spot&&!this.fl)this.loadBoard('');rr();}).catch(()=>{this.spots={};rr();});},
+ setSpot(s){this.spot=s;lsSet('hv_spot',s);this.loadBoard(this.fl?this.fl.rep:'');},
+ loadBoard(b){if(!API||!this.spot)return;this.loading=true;rr();
+  fetch(API+`/api/solver/board?spot=${this.spot}&board=${encodeURIComponent(b)}`,{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{this.loading=false;if(r.ok){this.fl=r;this.fpath='root';this.sel=null;this.ask=b;}else toast(r.msg||'불러오기 실패');rr();}).catch(()=>{this.loading=false;rr();});},
+ boardIn(){const v=($('hvb')||{}).value||'';const m=v.replace(/[\s,]/g,'').match(/([2-9TJQKA1][0]?[shdc♠♥♦♣])/gi);
+  if(!m||m.length<3){toast('예: AsKd7c');return;}const mp={'♠':'s','♥':'h','♦':'d','♣':'c'};
+  this.loadBoard(m.slice(0,3).map(x=>{x=x.replace('10','T');return x[0].toUpperCase()+(mp[x[1]]||x[1].toLowerCase());}).join(','));},
+ flView(){if(!API)return '<div class="card m">서버 연결이 없어요</div>';if(!this.spots)return '<div class="card m">불러오는 중…</div>';
+  const sp=Object.keys(this.spots);if(!sp.length)return '<div class="card m">아직 솔버 DB가 없어요</div>';
+  const tabs=`<div class="tabs" style="margin-bottom:6px;flex-wrap:wrap">${sp.map(k=>`<button class="${k===this.spot?'on':''}" onclick="CUR.setSpot('${k}')">${esc(this.spots[k].name.split('·')[0].trim())}</button>`).join('')}</div>`;
+  const inp=`<div style="display:flex;gap:6px;margin:6px 0"><input id="hvb" placeholder="플랍 입력 예: AsKd7c" value="${esc(this.bin||'')}" oninput="CUR.bin=this.value" style="flex:1;font-size:16px;padding:8px;border-radius:8px;border:1px solid #ccc"><button class="btn" style="padding:8px 12px" onclick="CUR.boardIn()">보기</button><button class="btn b2" style="padding:8px 12px" onclick="CUR.loadBoard('')">랜덤</button></div>`;
+  const F=this.fl;if(this.loading||!F)return tabs+inp+'<div class="card m">불러오는 중…</div>';
+  const nd=F.flop[this.fpath];const rep=svCards(F.rep);
+  const lineArr=this.fpath==='root'?[]:this.fpath.split('>');
+  const who=p=>p==='oop'?'BB':'BTN';
+  const crumbs=`<div class="card" style="padding:8px 10px;font-size:15px;line-height:1.9"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${cardsHtml(rep,true)}<span class="m">${esc(F.name)}${F.ask&&F.dist>0?'<br>입력한 보드와 가장 비슷한 대표 보드로 보여줘요':''}</span></div>
+   <a style="cursor:pointer;color:var(--blue);font-weight:800" onclick="CUR.fpath='root';CUR.sel=null;rr()">플랍</a>${lineArr.map((a,k)=>{const key=lineArr.slice(0,k+1).join('>');const pn=F.flop[k?lineArr.slice(0,k).join('>'):'root'];return ` → <a style="cursor:pointer;color:var(--blue);font-weight:800" onclick="CUR.fpath='${key}';CUR.sel=null;rr()">${pn?who(pn.p):''} ${svActName(a,F.pot,F.stack)}</a>`;}).join('')}</div>`;
+  if(!nd)return tabs+inp+crumbs+`<div class="card" style="text-align:center;font-size:16px">${/FOLD$/.test(this.fpath)?'폴드로 끝':'턴으로 넘어가요'}<br><button class="btn" style="margin-top:8px" onclick="CUR.fpath=CUR.fpath.split('>').slice(0,-1).join('>')||'root';rr()">↶ 뒤로</button></div>`;
+  // 도달 확률: 프리플랍 레인지 가중치 × 이 플레이어가 앞에서 고른 액션 빈도
+  const R=hvRange(nd.p==='oop'?F.oop:F.ip);for(let k=0;k<lineArr.length;k++){const pk=k?lineArr.slice(0,k).join('>'):'root',pn=F.flop[pk];if(!pn||pn.p!==nd.p)continue;const ai=pn.acts.indexOf(lineArr[k]);for(const c in R)R[c]*=((pn.cls[c]||[])[ai]||0)/100;}
+  const cols=hvFlopCol(nd.acts);
+  const acts=`<div class="g2b" style="grid-template-columns:repeat(${Math.min(nd.acts.length,4)},1fr);margin-top:0">${nd.acts.map((a,i)=>`<button class="btn" style="background:${cols[i]};padding:10px 2px;font-size:14px" onclick="CUR.fpath=(CUR.fpath==='root'?'':CUR.fpath+'>')+'${a}';CUR.sel=null;rr()">${svActName(a,F.pot,F.stack)}<br><span style="font-size:13px;opacity:.9">${Math.round(nd.all[i])}%</span></button>`).join('')}</div>`;
+  const grid=this.grid(c=>nd.cls[c],c=>nd.cls[c]?(R[c]||0):0,cols);
+  let det='';const c=this.sel;if(c&&nd.cls[c]){const cx=Object.entries(nd.cx||{}).filter(([k])=>{const a=k.slice(0,2),b=k.slice(2);const ra=HV_RK.indexOf(a[0]),rb=HV_RK.indexOf(b[0]);const hi=ra<=rb?a:b,lo=hi===a?b:a;return (hi[0]+lo[0]+(hi[0]===lo[0]?'':hi[1]===lo[1]?'s':'o'))===c;});
+   det=`<div class="card" style="font-size:15px;line-height:1.7"><b style="font-size:17px">${c}</b> <span class="m">(여기까지 올 확률 ${Math.round((R[c]||0)*100)}%)</span><br>${nd.acts.map((a,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${cols[i]}"></span> ${svActName(a,F.pot,F.stack)} <b>${nd.cls[c][i]}%</b>`).join('<br>')}
+    ${cx.length?`<div class="m" style="margin-top:6px">무늬별: ${cx.map(([k,v])=>`${rkCh(HV_RK.length+1-HV_RK.indexOf(k[0]))}${SU['shdc'.indexOf(k[1])]}${rkCh(HV_RK.length+1-HV_RK.indexOf(k[2]))}${SU['shdc'.indexOf(k[3])]} ${v.map((x,i)=>x?svActName(nd.acts[i],F.pot,F.stack)+' '+x+'%':'').filter(Boolean).join('·')}`).join('<br>')}</div>`:''}</div>`;}
+  return tabs+inp+crumbs+`<div style="font-size:15px;font-weight:800;margin:6px 2px">${who(nd.p)} 차례 · 레인지 전체</div>`+acts+grid+det+
+   `<div class="card m" style="font-size:13px;line-height:1.6">대표 보드 ${Object.values(this.spots).reduce((a,s)=>a+s.boards.length,0)}판을 직접 푼 결과예요 (계속 늘어나요). 플랍 EV는 준비 중이에요.</div>`;},
+ view(){return `<div class="tabs" style="margin-bottom:8px">${[['pf','프리플랍'],['flop','플랍']].map(([k,n])=>`<button class="${this.tab===k?'on':''}" onclick="CUR.setTab('${k}')">${n}</button>`).join('')}</div>`+
+  (this.tab==='pf'?`<div class="g3b" style="margin-top:0;grid-template-columns:repeat(5,1fr)">${HU_STACKS.map(v=>`<button class="btn ${this.S===v?'':'gr'}" style="padding:8px 2px;font-size:14px" onclick="CUR.setS(${v})">${v}</button>`).join('')}</div>`+this.pfView():this.flView());}});
 // ===== 🕹️ 아케이드 =====
 function cvSetup(game,w,h,extra){show(`<div class="gst"><span>점수 <b id="csc">0</b></span><span>내 최고 ${(myBest(game.k)||0).toLocaleString()}</span></div><canvas id="cv" class="cv" width="${w}" height="${h}"></canvas>${extra||''}<div id="cmsg" class="m" style="text-align:center;margin-top:8px"></div>`);
  const c=$('cv');game.cv=c;game.cx=c.getContext('2d');game.alive=true;const loop=t=>{if(!game.alive||CUR!==game)return;game.tick(t);requestAnimationFrame(loop);};requestAnimationFrame(loop);
@@ -2450,7 +2529,7 @@ window.addEventListener('pagehide',()=>{if(PPAGE)pres(1);});
 function gvisit(p){presPage(p);if(!API)return;try{fetch(API+'/api/visit',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({p,n:NICK||''})}).catch(()=>{});}catch(e){}}
 function render0(){setTitle('🎮 뚝섬 게임 · '+G.filter(g=>!g.study).length+'종');show(listView());}
 // 🔄 새 게임: 같은 난이도·옵션으로 바로 다시 시작
-const NO_NEW=['live','pet','blackjack','hustudy','ladder','roulette'];
+const NO_NEW=['live','pet','blackjack','hustudy','huview','ladder','roulette'];
 function newBtnSync(){const b=$('newBtn');if(!b)return;const g=CUR;b.style.display=g&&!g.study&&!NO_NEW.includes(g.k)&&!(window.DAILY&&DAILY.k===g.k)?'':'none';}
 function newGame(){const g=CUR;if(!g)return;if(g.stop)g.stop();SWH=null;clearInterval(clock.iv);
  if(g.k==='logic'&&g.mode)g.go(g.mode,g.lv);
