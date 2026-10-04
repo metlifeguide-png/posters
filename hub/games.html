@@ -1224,7 +1224,7 @@ function huRangeStat(A,B,board,N){const sa=huSample(A,board),sb=huSample(B,board
  const d=shuf(deck().filter(c=>!used.has(c.r*4+c.s)));const run=board.concat(d.slice(0,5-board.length));const c=cmpH(best([a[0],a[1],...run]),best([b[0],b[1],...run]));w+=c>0?1:c===0?.5:0;t++;}
  const nut=R=>{let n=0,tt=0;const ds=new Set(board.map(c=>c.r*4+c.s));HU.ALL.forEach(([a,b],i)=>{const x=R[i];if(!x||ds.has(a.r*4+a.s)||ds.has(b.r*4+b.s))return;tt+=x;if(huClass([a,b],board)==='nut')n+=x;});return tt?n/tt:0;};
  return {eq:t?w/t:.5,na:nut(A),nb:nut(B)};}
-G.push({k:'hustudy',study:true,cat:'공부',e:'🎓',n:'헤즈업 공부',d:'스트리트별 판단 피드백',
+G.push({k:'hustudy',cat:'홀덤',e:'🎓',n:'헤즈업 공부',d:'AI와 헤즈업 · 플랍은 솔버 기준 피드백',
  start(){this.Ssel=lsGet('hu_S2',100);this.S=this.Ssel==='랜덤'?100:this.Ssel;this.pos=lsGet('hu_pos','랜덤');this.h=null;this.tot=lsGet('hu_tot',[0,0]);this.shared=null;this.ai=null;this.link=null;
   const m=location.hash.match(/sh=([0-9a-f]{6,12})/);if(m){this.shared={loading:true};rr();fetch(API+'/api/hu/share/'+m[1],{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{if(r.ok){this.shared=this.clean(JSON.parse(r.data));this.shared.nick=r.nick;this.shared.id=m[1];}else this.shared={err:'공유된 스팟을 못 찾았어요'};rr();}).catch(()=>{this.shared={err:'서버에 연결이 안 돼요'};rr();});return;}
   rr();},
