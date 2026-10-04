@@ -2311,11 +2311,15 @@ function svMapActs(acts,opts,stack){const isAll=a=>{const n=+(a.split(' ')[1]||0
 
 // ---------- 🧮 솔버 퀴즈 ----------
 const svJ=w=>{const c=w.charCodeAt(w.length-1);return w+(c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28?'을':'를');};
+// 버튼 순서: 폴드 → 체크/콜 → 베팅·레이즈(작은 것부터) → 올인
+function sqOrder(q){const rk=a=>{const [t,n]=a.split(' ');const v=+n||0;if(t==='FOLD')return 0;if(t==='CHECK'||t==='CALL')return 1;if(q.stack&&v>=q.stack*0.9)return 1e9;return 2+v;};
+ return q.acts.map((a,k)=>k).sort((x,y)=>rk(q.acts[x])-rk(q.acts[y]));}
+const sqSorted=q=>{const o=sqOrder(q);return {...q,acts:o.map(k=>q.acts[k]),freq:o.map(k=>q.freq[k]),all:o.map(k=>q.all[k])};};
 const SQ_SPOT={SRP100A:'100BB 싱글레이즈',SRP50A:'50BB 싱글레이즈',SRP25A:'25BB 싱글레이즈','3BP100A':'100BB 3벳팟'};
 function sqLineText(q){const pos=p=>p==='oop'?'BB':'BTN';const steps=q.line==='root'?[]:q.line.split('>');let pot=q.pot,who='oop';const out=[];
  steps.forEach(a=>{const nm=svActName(a,pot,q.stack);out.push(`${pos(who)} ${nm}`);const n=+(a.split(' ')[1]||0);if(n)pot+=n;who=who==='oop'?'ip':'oop';});
  return {txt:out.length?out.join(' → '):'플랍 첫 액션',me:pos(q.p)};}
-function sqExplain(q,pick){const i=q.acts.indexOf(pick),f=q.freq,best=f.indexOf(Math.max(...f));const nm=q.acts.map(a=>svActName(a,q.pot,q.stack));
+function sqExplain(q,pick){q=sqSorted(q);const i=q.acts.indexOf(pick),f=q.freq,best=f.indexOf(Math.max(...f));const nm=q.acts.map(a=>svActName(a,q.pot,q.stack));
  const hole=q.hole.map(c=>({r:c[0],s:c[1]})),board=svCards(q.board);let hn='';try{hn=huHandName(hole,board);}catch(e){}
  const mixed=f.filter(x=>x>=20).length>=2;const X=[];
  X.push(`<div class="h">🃏 내 패: ${esc(hn)}</div>솔버는 이 패(${q.cls})로 ${q.acts.map((a,k)=>`<b>${nm[k]} ${f[k]}%</b>`).filter((x,k)=>f[k]>0).join(' · ')}`);
@@ -2342,7 +2346,7 @@ G.push({k:'solverq',cat:'홀덤',e:'🧮',n:'솔버 퀴즈',d:'플랍 액션 고
   const hd=`<div class="gst"><span>${Math.min(this.i+(this.res?0:1),10)} / 10</span><span>점수 <b>${this.sc}</b> / ${this.i*100}</span></div>`;
   const R=this.res;let fb='';
   if(R){const q=R.q;fb=`<div class="card" style="border-color:${R.pts>=50?'#3a9d3f':R.pts>=20?'#b8860b':'#d33b3b'}"><div class="t" style="font-size:16px">${R.pts>=50?'👍 좋은 선택':R.pts>=20?'🙂 섞는 선택':'⚠️ 솔버가 거의 안 쓰는 선택'} · +${R.pts}점</div>
-   <div style="display:flex;gap:4px;margin:8px 0">${q.acts.map((a,k)=>`<div style="flex:${Math.max(q.freq[k],3)};background:${a===R.pick?'#1f5fae':['#7a8a99','#2e9d4b','#d98c1a','#c62828','#6a1b9a'][k%5]};color:#fff;border-radius:6px;padding:4px 2px;text-align:center;font-size:12px;font-weight:800;overflow:hidden;white-space:nowrap">${svActName(a,q.pot,q.stack)} ${q.freq[k]}%</div>`).join('')}</div>
+   <div style="display:flex;gap:4px;margin:8px 0">${sqOrder(q).map(k=>{const a=q.acts[k];return `<div style="flex:${Math.max(q.freq[k],3)};background:${a===R.pick?'#1f5fae':['#7a8a99','#2e9d4b','#d98c1a','#c62828','#6a1b9a'][k%5]};color:#fff;border-radius:6px;padding:4px 2px;text-align:center;font-size:12px;font-weight:800;overflow:hidden;white-space:nowrap">${svActName(a,q.pot,q.stack)} ${q.freq[k]}%</div>`;}).join('')}</div>
    <div class="xp">${sqExplain(q,R.pick)}</div></div>${typeof askBox==='function'?askBox(this):''}`;}
   if(this.over)return tabs+hd+fb+`<div class="gbig">${this.sc}점</div><div class="card" style="text-align:center">10문제 · 만점 1000 · 고른 액션의 솔버 빈도가 점수예요<br><span class="m">내 최고 ${Math.max(myBest('solverq')||0,this.sc)}점</span></div><button class="btn full" onclick="CUR.start()">다시 하기</button>`;
   if(R)return tabs+hd+fb+`<button class="btn full g" style="font-size:17px;padding:13px;margin-top:8px" onclick="CUR.next()">다음 문제 (${this.i+1}/10)</button>`;
@@ -2353,9 +2357,9 @@ G.push({k:'solverq',cat:'홀덤',e:'🧮',n:'솔버 퀴즈',d:'플랍 액션 고
    <div class="lbl">플랍</div>${cardsHtml(svCards(q.board))}<div style="font-size:15px;margin:8px 0 2px">${esc(L.txt)}</div>
    <div style="font-size:19px;font-weight:900;color:var(--blue)">내 차례: ${L.me} ${q.p==='oop'?'(OOP · 먼저 행동)':'(IP · 포지션)'}</div>
    <div class="lbl" style="margin-top:6px">내 패</div>${cardsHtml(hole)}</div>
-   <div style="display:grid;grid-template-columns:repeat(${Math.min(q.acts.length,4)},1fr);gap:6px">${q.acts.map((a,k)=>`<button class="btn ${a==='FOLD'?'gr':a==='CHECK'||a==='CALL'?'b2':''}" style="font-size:16px;padding:13px 2px" onclick="CUR.ans(${k})">${svActName(a,q.pot,q.stack)}</button>`).join('')}</div>
+   <div style="display:grid;grid-template-columns:repeat(${Math.min(q.acts.length,4)},1fr);gap:6px">${sqOrder(q).map(k=>{const a=q.acts[k];return `<button class="btn ${a==='FOLD'?'gr':a==='CHECK'||a==='CALL'?'b2':''}" style="font-size:16px;padding:13px 2px" onclick="CUR.ans(${k})">${svActName(a,q.pot,q.stack)}</button>`;}).join('')}</div>
    <div class="m" style="text-align:center;margin-top:8px">빅앤티 헤즈업 · TexasSolver로 직접 푼 결과 · 점수 = 고른 액션의 솔버 빈도 (섞는 패는 부분 점수)</div>`;}});
-function sqSum(q,pick){const L=sqLineText(q);return [`🧮 [솔버 퀴즈] ${q.name}`,`플랍 ${svCards(q.board).map(c=>rkCh(c.r)+SU[c.s]).join(' ')} · ${L.txt} · 내 차례 ${L.me}`,`내 패 ${q.hole.map(c=>rkCh(c[0])+SU[c[1]]).join(' ')} (${q.cls})`,
+function sqSum(q,pick){q=sqSorted(q);const L=sqLineText(q);return [`🧮 [솔버 퀴즈] ${q.name}`,`플랍 ${svCards(q.board).map(c=>rkCh(c.r)+SU[c.s]).join(' ')} · ${L.txt} · 내 차례 ${L.me}`,`내 패 ${q.hole.map(c=>rkCh(c[0])+SU[c[1]]).join(' ')} (${q.cls})`,
  `솔버: ${q.acts.map((a,k)=>svActName(a,q.pot,q.stack)+' '+q.freq[k]+'%').join(' · ')}`,pick?`내 선택: ${svActName(pick,q.pot,q.stack)}`:'','❓ 여러분이라면?'].filter(Boolean).join('\n');}
 // ===== 🕹️ 아케이드 =====
 function cvSetup(game,w,h,extra){show(`<div class="gst"><span>점수 <b id="csc">0</b></span><span>내 최고 ${(myBest(game.k)||0).toLocaleString()}</span></div><canvas id="cv" class="cv" width="${w}" height="${h}"></canvas>${extra||''}<div id="cmsg" class="m" style="text-align:center;margin-top:8px"></div>`);
