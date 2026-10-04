@@ -1278,7 +1278,7 @@ G.push({k:'hustudy',cat:'홀덤',e:'🎓',n:'헤즈업 공부',d:'스택별 헤�
  // 현재 차례 사람이 할 수 있는 액션 목록 [{t,amt,lab}]
  opts(p){const h=this.h,tc=this.toCall(p),st=h.st[p],pot=h.pot,ch=huCh(this.S),o=[];
   if(tc>0)o.push({t:'fold',lab:'폴드'});
-  if(tc===0)o.push({t:'check',lab:'체크'});else o.push({t:'call',amt:Math.min(tc,st),lab:(tc>=st?'콜 (올인) ':'콜 ')+Math.min(tc,st).toFixed(1)});
+  if(tc===0)o.push({t:'check',lab:'체크'});else o.push({t:'call',amt:Math.min(tc,st),lab:(tc>=st?'콜 (올인) ':h.street===0&&h.raises===1&&p==='BTN'?'림프 ':'콜 ')+Math.min(tc,st).toFixed(1)});
   if(st>tc&&h.st[this.opp(p)]>0){
    if(h.street===0){const cur=h.inv[this.opp(p)];let to=0;
     if(h.raises===1&&p==='BTN')to=ch.osz;else if(h.raises===1)to=4;else if(h.raises===2)to=ch.tsz?cur*ch.tsz:0;else if(h.raises===3)to=ch.fsz?cur*ch.fsz:0;
@@ -1399,14 +1399,15 @@ G.push({k:'hustudy',cat:'홀덤',e:'🎓',n:'헤즈업 공부',d:'스택별 헤�
    ${x.rf?`<div class="m">내 레인지 전체(${x.pos}): 공격 ${Math.round(x.rf.ag*100)}% · 체크/콜 ${Math.round(x.rf.pa*100)}%${x.rf.fo>.005?' · 폴드 '+Math.round(x.rf.fo*100)+'%':''}</div>`:''}
    <div style="font-size:13px;line-height:1.55;margin-top:6px">${x.why.filter(Boolean).map(w=>'· '+w).join('<br>')}</div></div>`;},
  view(){if(this.shared)return this.sharedView();const h=this.h;
-  if(!h){const t=this.tot;return `<div class="card"><div class="t">🎓 헤즈업 공부</div><div class="m" style="line-height:1.6;margin-top:4px">1:1 노리밋 홀덤 한 핸드씩 진행돼요. 프리플랍·플랍·턴·리버에서 액션을 고를 때마다 <b>솔버(프리플랍·플랍)·근사 GTO(턴·리버) 빈도</b>와 이유를 알려줘요.<br>승패보다 <b>결정의 질</b>을 보는 공부용이에요.</div></div>
+  if(!h){const t=this.tot;return `<div class="card" style="font-size:16px;line-height:1.65"><div class="t" style="font-size:20px">🎓 헤즈업 공부</div>1:1 노리밋 홀덤을 한 핸드씩 쳐요. 고를 때는 <b>판정(🟢🟠🔴)</b>만, 핸드가 끝나면 <b>거리별 해설</b>이 나와요. 승패가 아니라 <b>결정의 질</b>을 보는 공부예요.
+   <div style="margin-top:10px;padding:10px 12px;border-radius:10px;background:#fff4e0;border:1px solid #f0c27a;font-size:15.5px;line-height:1.7"><b>⚠️ 채점 기준</b><br>· <b>프리플랍</b>: 헤즈업 프리플랍 솔버 (스택별)<br>· <b>플랍</b>: 직접 돌린 솔버 DB (해설에 🧮 표시)<br>· <b>턴·리버·그 밖의 상황은 근사치</b>: 솔버 결과가 아니라 레인지 승률·넛 비율·보드·팟 오즈로 계산한 경향이에요. <b>큰 방향만</b> 익히세요.</div></div>
    <div class="sec">스택 (유효 스택)</div><div class="g3b" style="margin-top:0;grid-template-columns:repeat(5,1fr)">${[...HU_STACKS,'랜덤'].map(v=>`<button class="btn ${this.Ssel===v?'':'gr'}" style="padding:10px 2px;font-size:14px" onclick="CUR.setS(${typeof v==='number'?v:"'랜덤'"})">${v}${typeof v==='number'?'':''}</button>`).join('')}</div>
    <div class="card m" style="margin-top:10px;line-height:1.6">💡 <b>블라인드</b>: 헤즈업은 <b>버튼(BTN)이 스몰블라인드 0.5BB</b>를 내고, <b>BB는 1BB + 빅앤티 1BB</b>를 내요 (시작 팟 2.5BB).<br>프리플랍은 BTN이 먼저, 플랍부터는 BB가 먼저 행동해요 (BTN이 포지션).</div>
    <div class="sec">연습 방식</div><div class="g3b" style="margin-top:0">${[['all','전체 (프리~리버)'],['pf','프리플랍만'],['post','플랍~리버']].map(([v,n])=>`<button class="btn ${this.mode===v?'':'gr'}" style="font-size:14px;padding:10px 2px" onclick="CUR.setM('${v}')">${n}</button>`).join('')}</div>
    <div class="sec">내 포지션</div><div class="g3b" style="margin-top:0">${['BTN','BB','랜덤'].map(v=>`<button class="btn ${this.pos===v?'':'gr'}" onclick="CUR.setP('${v}')">${v==='BTN'?'BTN (SB·IP)':v==='BB'?'BB (OOP)':'랜덤'}</button>`).join('')}</div>
    <button class="btn full g" style="margin-top:14px" onclick="CUR.deal()">핸드 시작</button>
    ${t[0]?`<div class="m" style="text-align:center;margin-top:10px">누적 결정 ${t[0]}개 · 좋은 선택 ${Math.round(t[1]/t[0]*100)}%</div>`:''}
-   <div class="card m" style="margin-top:14px;line-height:1.6">🧮 <b>프리플랍</b>은 헤즈업 프리플랍 솔버(스택별), <b>플랍</b>(싱글레이즈·3벳팟)은 직접 돌린 <b>솔버 DB</b>로 채점해요 (피드백에 🧮 표시). ⚠️ 턴·리버와 그 밖의 상황은 <b>근사치</b>예요. 솔버 결과를 그대로 쓰는 게 아니라, 레인지 에퀴티·넛 비율·보드 성격·팟 오즈로 계산한 <b>솔버 경향 요약</b>이에요. 큰 방향(누가 많이 베팅하나, 어떤 패가 콜/폴드하나)을 익히는 용도로 쓰세요.</div>`;}
+`;}
   const H=h.hero,V=h.vil,show=!!h.over;const last=this.fbAll[this.fbAll.length-1];
   let res='';if(h.over&&h.over.why==='pf')res=`<div class="gok">✅ 프리플랍 끝 · 플랍으로 가요 (팟 ${h.pot.toFixed(1)}BB) · 프리플랍 연습 모드</div>`;else if(h.over){const w=h.over.win;res=`<div class="gok">${w==='tie'?'🤝 무승부 (스플릿)':w===H?'🎉 이겼어요':'😢 졌어요'} · 팟 ${h.pot.toFixed(1)}BB${h.over.why==='sd'?` · 나 ${catName(H==='BTN'?h.over.ha:h.over.hb)} vs 상대 ${catName(H==='BTN'?h.over.hb:h.over.ha)}`:''}</div>`;}
   const g=this.fbAll.filter(x=>x.grade===2).length;
@@ -2288,7 +2289,7 @@ function svMapActs(acts,opts,stack){const isAll=a=>{const n=+(a.split(' ')[1]||0
   if(a.startsWith('BET')){const i=sBets.indexOf(a);const o=oBets[Math.min(i,oBets.length-1)]||oAll;return o?'bet:'+o.lab:null;}
   const o=oRz[0]||oAll;return o?'raise:'+o.lab:null;});}
 (function(){const HUS=G.find(g=>g.k==='hustudy');if(!HUS)return;
- HUS.solFetch=function(done){const h=this.h;h.sol=null;h.solLine=[];const pt=h.pfRaises===2&&h.pfAgg==='BTN'?'srp':h.pfRaises===3&&h.pfAgg==='BB'?'3bp':null;
+ HUS.solFetch=function(done){const h=this.h;h.sol=null;h.solLine=[];const pt=h.pfRaises===2&&h.pfAgg==='BTN'?'srp':h.pfRaises===3&&h.pfAgg==='BB'?'3bp':h.pfRaises===1&&!h.pfAgg?'lmp':null;
   if(!pt||!API){done();return;}let fin=false;const go=()=>{if(fin)return;fin=true;done();};setTimeout(go,2500);
   const q=`stack=${this.S}&pot=${pt}&board=${h.board.slice(0,3).map(svCard).join(',')}&h1=${h.C[h.hero].map(svCard).join(',')}&h2=${h.C[h.vil].map(svCard).join(',')}`;
   fetch(API+'/api/solver/hand?'+q,{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{if(r.ok&&this.h===h){r.clsOf={[h.hero]:r.cls[0],[h.vil]:r.cls[1]};h.sol=r;}go();}).catch(go);};
@@ -2346,7 +2347,7 @@ function huPfLoad(S,cb){if(HU_PF[S]||!API){cb&&cb();return;}if(HU_PF_WAIT[S]){HU
    if(!post){this.step();if(this.h.over&&!this.fbAll.length&&k<59)continue;return;}
    // 플랍~리버 연습: 프리플랍은 두 사람 다 솔버대로 자동 진행 → 싱글레이즈팟/3벳팟으로 플랍에 간 핸드만
    this._auto=true;this._pfDone=false;try{this.step();}finally{this._auto=false;}
-   const h=this.h;if(!h.over&&this._pfDone&&(k>=60||(h.pfRaises===2&&h.pfAgg==='BTN')||(h.pfRaises===3&&h.pfAgg==='BB'))){h.log.push('— 프리플랍은 자동 진행 (솔버) —');this.nextStreet();return;}}
+   const h=this.h;if(!h.over&&this._pfDone&&(k>=60||(h.pfRaises===2&&h.pfAgg==='BTN')||(h.pfRaises===3&&h.pfAgg==='BB')||(h.pfRaises===1&&!h.pfAgg))){h.log.push('— 프리플랍은 자동 진행 (솔버) —');this.nextStreet();return;}}
   this.step();};
 })();
 // ===== 🕹️ 아케이드 =====
