@@ -1161,7 +1161,10 @@ const HU_ANC={25:{open:.78,osz:2,tb:.17,call:.62,tsz:0,fb:0,f3call:.30,fsz:0,vs4
  40:{open:.85,osz:2,tb:.13,call:.70,tsz:3.3,fb:.07,f3call:.25,fsz:0,vs4:.07},60:{open:.88,osz:2.2,tb:.12,call:.74,tsz:3.4,fb:.06,f3call:.30,fsz:0,vs4:.05},
  100:{open:.90,osz:2.5,tb:.13,call:.78,tsz:3.6,fb:.05,f3call:.35,fsz:2.3,vs4:.035},150:{open:.89,osz:2.5,tb:.12,call:.77,tsz:4,fb:.045,f3call:.37,fsz:2.3,vs4:.03},
  200:{open:.88,osz:2.5,tb:.11,call:.76,tsz:4,fb:.04,f3call:.38,fsz:2.3,vs4:.028}};
-function huCh(S){const ks=Object.keys(HU_ANC).map(Number);let a=ks[0],b=ks[ks.length-1];for(const k of ks){if(k<=S)a=k;if(k>=S){b=k;break;}}
+// 스택별 오픈사이즈전략 표 기준 사이즈 (프리플랍 솔버 hu_preflop.py 의 ANC 와 같아야 함)
+const HU_SZ={25:[2,3.5,2],30:[2,4,2],40:[2.1,4.25,2],50:[2.1,4.75,2],60:[2.2,5,2],80:[2.3,5,2.1],100:[2.5,5.25,2.2],150:[2.5,5.25,2.6],200:[2.6,5.25,3]};
+function huCh(S){const o={...huCh0(S)},z=HU_SZ[S];if(z){o.osz=z[0];o.tsz=z[1];o.fsz=z[2];}return o;}
+function huCh0(S){const ks=Object.keys(HU_ANC).map(Number);let a=ks[0],b=ks[ks.length-1];for(const k of ks){if(k<=S)a=k;if(k>=S){b=k;break;}}
  if(a===b)return HU_ANC[a];const t=(S-a)/(b-a),A=HU_ANC[a],B=HU_ANC[b],o={};
  for(const k in A)o[k]=['osz','tsz','fsz'].includes(k)?(t<.5?A[k]:B[k]):A[k]+(B[k]-A[k])*t;return o;}
 const HU_STACKS=[25,30,40,50,60,80,100,150,200];
@@ -1202,12 +1205,13 @@ function huHandName(hole,board){const h=best([...hole,...board]);const pp=hole[0
  if(board.length<5){const d=huDraw(hole,board);const ds=[];if(d.fd&&h[0]<5)ds.push('플러시 드로우');if(d.st===2&&h[0]<4)ds.push('양방 스트레이트 드로우');else if(d.st===1&&h[0]<4)ds.push('거트샷');if(ds.length)n+=' + '+ds.join('·');}
  return n;}
 function huTex(b){const rs=[...new Set(b.map(c=>c.r))].sort((x,y)=>y-x);const sc=[0,1,2,3].map(s=>b.filter(c=>c.s===s).length);const mx=Math.max(...sc);let conn=false;for(let k=0;k+2<rs.length;k++)if(rs[k]-rs[k+2]<=4)conn=true;
- const pair=rs.length<b.length,hi=rs[0];const mono=mx>=3,two=!mono&&b.length===3&&mx===2;return {hi,conn,pair,mono,two,low:hi<=9,high:hi>=12,wet:conn||mono||two};}
+ const pair=rs.length<b.length,hi=rs[0];const mono=mx>=3,two=!mono&&b.length<5&&mx===2;return {hi,conn,pair,mono,two,low:hi<=9,high:hi>=12,wet:conn||mono||two};}
 // 체크/베팅 빈도 (베팅할 차례, 앞에 베팅 없음)
 function huBetF(cls,street,ctx){const s=street,a=ctx.adv||0;let f={nut:[.75,.85,.9],strong:[.75,.75,.65],medium:[.4,.25,.1],weak:[.15,.1,.05],combo:[.85,.8,.3],draw:[.65,.55,.25],gut:[.5,.35,.25],air:[.45,.25,.2]}[cls][s-1];
  if(s===1&&cls==='nut'&&!ctx.wet)f=.6; // 드라이 보드 넛은 슬로우플레이 섞기
  if(['medium','air','gut','weak'].includes(cls))f*=1+a*1.6;
  if(ctx.donk)f*=cls==='nut'?.4:.2;
+ if(ctx.tt&&['medium','weak'].includes(cls))f*=.4;
  return Math.max(0,Math.min(.95,f));}
 // 베팅 마주했을 때 [폴드, 콜, 레이즈]
 function huFace(cls,street,s,raised){if(raised){return ({nut:[0,.35,.65],strong:[.35,.65,0],combo:[.25,.6,.15],draw:[street===1?.55:.8,street===1?.45:.2,0],medium:[.8,.2,0]}[cls])||[.97,.03,0];}
@@ -1279,9 +1283,9 @@ G.push({k:'hustudy',cat:'홀덤',e:'🎓',n:'헤즈업 공부',d:'스택별 헤�
    if(h.street===0){const cur=h.inv[this.opp(p)];let to=0;
     if(h.raises===1&&p==='BTN')to=ch.osz;else if(h.raises===1)to=4;else if(h.raises===2)to=ch.tsz?cur*ch.tsz:0;else if(h.raises===3)to=ch.fsz?cur*ch.fsz:0;
     if(to&&to-h.inv[p]<st*.6)o.push({t:'raise',amt:to-h.inv[p],lab:(h.raises===1?'레이즈 ':h.raises===2?'3벳 ':'4벳 ')+to.toFixed(1)+'BB'});
-    o.push({t:'allin',amt:st,lab:'올인 '+(st+h.inv[p]).toFixed(1)});}
-   else if(tc===0){[[1/3,'1/3팟'],[.75,'3/4팟']].forEach(([f,l])=>{const a=+(pot*f).toFixed(1);if(a<st*.7)o.push({t:'bet',amt:a,lab:'베팅 '+l+' '+a});});o.push({t:'allin',amt:st,lab:'올인 '+st.toFixed(1)});}
-   else{const to=h.inv[this.opp(p)]*3;if(h.raises<2&&to-h.inv[p]<st*.7)o.push({t:'raise',amt:to-h.inv[p],lab:'레이즈 '+to.toFixed(1)});o.push({t:'allin',amt:st,lab:'올인 '+st.toFixed(1)});}}
+    if(!o.some(x=>x.t==='raise')||(this.pfAllinOK?this.pfAllinOK(p):(this.S<=25||(h.raises===2&&this.S<=30)||(h.raises===3&&this.S<=60)||h.raises>=4)))o.push({t:'allin',amt:st,lab:'올인 '+(st+h.inv[p]).toFixed(1)});}
+   else if(tc===0){[[1/3,'1/3팟'],[.75,'3/4팟'],...(h.street>=2?[[1,'팟']]:[])].forEach(([f,l])=>{const a=+(pot*f).toFixed(1);if(a<st*.7)o.push({t:'bet',amt:a,lab:'베팅 '+l+' '+a});});if(st<=pot*1.5||!o.some(x=>x.t==='bet'))o.push({t:'allin',amt:st,lab:'올인 '+st.toFixed(1)});}
+   else{const to=h.inv[this.opp(p)]*3;if(h.raises<2&&to-h.inv[p]<st*.7)o.push({t:'raise',amt:to-h.inv[p],lab:'레이즈 '+to.toFixed(1)});if(st<=(pot+tc)*1.5||!o.some(x=>x.t==='raise'))o.push({t:'allin',amt:st,lab:'올인 '+st.toFixed(1)});}}
   return o;},
  // ---- 전략 (근사) : 특정 콤보가 각 액션을 고를 확률 ----
  pfStrat(p,cl,opts){if(this.pfSolver){const sv=this.pfSolver(p,cl,opts);if(sv)return sv;}const h=this.h,ch=huCh(this.S),q=HU.PCT[cl]??.5;const has=t=>opts.find(o=>o.t===t);const r={};
@@ -1296,10 +1300,10 @@ G.push({k:'hustudy',cat:'홀덤',e:'🎓',n:'헤즈업 공부',d:'스택별 헤�
   if(!has('raise')&&!has('allin')&&r.raise){r.call=(r.call||0)+r.raise;delete r.raise;}
   return r;},
  ctxFor(p){const h=this.h,st=h.stat[h.street]||{};const tx=huTex(h.board);const me=p==='BTN'?st.eqBTN:1-st.eqBTN;const adv=Math.max(-.4,Math.min(.4,((me??.5)-.5)*2.5+((p==='BTN'?st.nBTN-st.nBB:st.nBB-st.nBTN)||0)*3));
-  const donk=p==='BB'&&h.lastAgg==='BTN'&&!h.acted.BTN&&this.toCall(p)===0;return {adv,wet:tx.wet,donk};},
+  const donk=p==='BB'&&h.lastAgg==='BTN'&&!h.acted.BTN&&this.toCall(p)===0;return {adv,wet:tx.wet,donk,tt:h.street===2&&tx.two};},
  postStrat(p,hole,opts){const h=this.h;this._solUsed=false;if(h.street===1&&this.solMix){const sm=this.solMix(p,hole,opts);if(sm)return sm;}if(h.street===1&&p==='BB'&&h.pfAgg==='BTN'&&!h.acts.some(x=>x.st===1)&&opts.find(o=>o.t==='check'))return [{check:1},huClass(hole,h.board),null];const cls=huClass(hole,h.board),tc=this.toCall(p);const has=t=>opts.find(o=>o.t===t);const r={};
-  if(tc===0){const f=huBetF(cls,h.street,this.ctxFor(p));const tx=huTex(h.board);const big=h.street>1||tx.wet;const bets=opts.filter(o=>o.t==='bet');
-   const pickBet=bets.length?(big?bets[bets.length-1]:bets[0]):opts.find(o=>o.t==='allin');r.check=1-f;r['bet:'+(pickBet?pickBet.lab:'')]=f;return [r,cls,pickBet];}
+  if(tc===0){const f=huBetF(cls,h.street,this.ctxFor(p));const tx=huTex(h.board);const big=h.street>1||tx.wet;const bets=opts.filter(o=>o.t==='bet');const want=h.street===2&&tx.two?'팟':big?'3/4팟':'1/3팟';
+   const pickBet=bets.length?(bets.find(o=>o.lab.split(' ')[1]===want)||bets[bets.length-1]):opts.find(o=>o.t==='allin');r.check=1-f;r['bet:'+(pickBet?pickBet.lab:'')]=f;return [r,cls,pickBet];}
   const s=tc/(h.pot-tc>0?h.pot-tc:1);const [fo,ca,ra]=huFace(cls,h.street,s,h.raises>=2);r.fold=fo;r.call=ca;const rz=has('raise')||has('allin');if(rz)r['raise:'+rz.lab]=ra;else r.call+=ra;return [r,cls,rz];},
  // 레인지 좁히기: 어떤 액션을 했으면 그 액션을 할 확률로 가중
  narrow(p,act,opts){const h=this.h,R=h.rng[p];const key=act.t;
@@ -1351,38 +1355,31 @@ G.push({k:'hustudy',cat:'홀덤',e:'🎓',n:'헤즈업 공부',d:'스택별 헤�
   if(h.street===0){const hi=hole[0].r>=hole[1].r?hole[0]:hole[1],lo=hi===hole[0]?hole[1]:hole[0];const cl='AKQJT98765432'[14-hi.r]+'AKQJT98765432'[14-lo.r]+(hi.r===lo.r?'':hi.s===lo.s?'s':'o');
    const q=HU.PCT[cl];this._pfUsed=false;mix=this.pfStrat(p,cl,opts);const ch=huCh(this.S);const PFS=this._pfUsed;if(PFS){this._fbSol=this.pfText();why.push(this._fbSol);}
    why.push(`${cl} = 상위 ${Math.round(q*100)}% 핸드`);
-   if(typeof handFeat==='function')handFeat(cl).slice(0,3).forEach(f=>why.push(f));
-   why.push(p==='BTN'?'BTN(SB)은 플랍부터 <b>마지막에 행동</b>해서 상대 행동을 보고 결정할 수 있어요 → 같은 패라도 더 넓게 참여해요.':'BB는 플랍부터 <b>먼저 행동</b>해서 정보가 불리하지만, 이미 1BB+앤티를 냈기 때문에 싸게 콜할 수 있어 넓게 지켜요.');
-   if(h.raises===1&&p==='BTN')why.push(`${this.S}BB 헤즈업 BTN은 상위 ${Math.round(ch.open*100)}% 정도를 오픈해요 (BB가 포지션 불리라 아주 넓게)`);
-   else if(h.raises===2&&p==='BB')why.push(`BB 방어: 약 ${Math.round(ch.tb*100)}% 3벳${ch.tsz?' (밸류 상위 '+Math.round(ch.tb*60)+'% + 수딧 핸드 일부 블러프)':' (올인)'} · 상위 ${Math.round(ch.call*100)}%까지 콜 · 1BB+앤티가 이미 팟에 있어 팟 오즈가 좋아서 넓게 지켜요`);
+   if(PFS){}else if(h.raises===1&&p==='BTN')why.push(`${this.S}BB 헤즈업 BTN은 상위 ${Math.round(ch.open*100)}% 정도를 오픈해요 (BB가 포지션 불리라 아주 넓게)`);
+   else if(h.raises===2&&p==='BB')why.push(`BB 방어: 약 ${Math.round(ch.tb*100)}% 3벳${ch.tsz?'':' (올인)'} · 상위 ${Math.round(ch.call*100)}%까지 콜`);
    else if(h.raises===3&&p==='BTN')why.push(`3벳 받은 BTN: 상위 ${Math.round((ch.fb||0)*100)}% 4벳 · ${Math.round(ch.f3call*100)}%까지 콜`);
-   else if(h.raises===1&&p==='BB')why.push('림프 받은 BB: 상위 25% 정도는 레이즈로 팟을 키워요');
+   else if(h.raises===1&&p==='BB')why.push('림프 받은 BB: 상위 25% 정도 레이즈');
    if(!PFS&&tc>0&&tc>=h.st[p]*.6){eq=huEq(hole,h.rng[this.opp(p)],h.board,500);need=Math.min(tc,h.st[p])/(h.pot+Math.min(tc,h.st[p]));mix={fold:eq<need-.03?1:eq<need+.03?.5:0,call:eq>need+.03?1:eq>need-.03?.5:0};
     why.push(`올인 콜 판단: 상대 레인지 상대로 내 승률 ${Math.round(eq*100)}% · 필요 승률 ${Math.round(need*100)}%`);}}
   else{let rz;this._boost=false;[mix,cls,rz]=this.postStrat(p,hole,opts);this._fbSol=this._solUsed?this._solTxt:null;const SOL=this._fbSol;eq=huEq(hole,h.rng[this.opp(p)],h.board,500);
    const st=h.stat[h.street],tx=huTex(h.board),me=p==='BTN'?st.eqBTN:1-st.eqBTN,nm=p==='BTN'?st.nBTN:st.nBB,no=p==='BTN'?st.nBB:st.nBTN;
    const fl3=[0,1,2,3].some(su=>h.board.filter(c=>c.s===su).length>=3),pairB=tx.pair;
-   why.push(`<b>내 패: ${huHandName(hole,h.board)}</b> (${HU_KO[cls]})`);
-   why.push(`보드: ${fl3?(h.board.length===3?'한 무늬 3장(플러시 완성 가능)':'같은 무늬 3장↑ → 플러시 가능'):tx.two?'같은 무늬 2장(플러시 드로우 가능)':'무늬 흩어짐'}${tx.conn?' · 숫자가 이어져 스트레이트 가능':''}${pairB?' · 페어 보드(풀하우스 가능)':''}`);
+   const sc2=[0,1,2,3].filter(su=>h.board.filter(c=>c.s===su).length===2).length;
+   why.push(`<b>내 패: ${huHandName(hole,h.board)}</b> (${HU_KO[cls]}) · 보드: ${fl3?'플러시 가능':tx.two?(sc2>=2?'투톤 2개(플러시 드로우 2개)':'투톤(플러시 드로우)'):'레인보우'}${tx.conn?' · 스트레이트 가능':''}${pairB?' · 페어 보드':''}`);
    if(SOL)why.push(SOL);
    if(tc>0){need=tc/(h.pot+tc);
     this._eqAdj=null;if(!SOL&&['medium','weak','strong'].includes(cls)){if(eq<need-.07){mix={fold:.85,call:.15};this._eqAdj='fold';}else if(eq>need+.12&&cls!=='strong'){mix={fold:.1,call:.9};this._eqAdj='call';}}
     if(rz&&!SOL){if(h.street<3&&eq>.8&&['nut','strong','combo'].includes(cls))mix={call:.5,['raise:'+rz.lab]:.5};else if(h.street===3&&cls==='nut'&&eq>.85)mix={call:.4,['raise:'+rz.lab]:.6};}
-    why.push(`상대가 ${tc.toFixed(1)}BB를 걸었어요. 내가 ${tc.toFixed(1)}BB를 내고 ${(h.pot+tc).toFixed(1)}BB 팟을 다투는 거라 <b>${Math.round(need*100)}%만 이기면 본전</b>이에요 (팟 오즈).`);
-    why.push(`상대가 여기서 이렇게 베팅할 만한 패들(지금까지 액션으로 추린 범위) 상대로 내 승률은 <b>약 ${Math.round(eq*100)}%</b> → ${eq>=need+.05?'콜은 확실히 이득':eq>=need-.03?'콜과 폴드가 비슷':'콜하면 손해 쪽'}.`);
-    if(rz&&h.street===3&&cls!=='nut'&&eq>need)why.push(`그럼 레이즈(올인)는? 리버 레이즈는 <b>나보다 약한 패가 콜해줄 때만</b> 이득이에요. 상대는 블러프면 폴드하고, 콜하는 건 대부분 나를 이기는 패${fl3?'(플러시 등)':''}라서 → 레이즈보다 <b>콜로 받는 게 기본</b>이에요.`);
-    if(rz&&cls==='nut')why.push(`거의 최고 패라 레이즈하면 상대의 강한 패(나보다 약한)에게서 칩을 더 받을 수 있어요. 일부는 콜로 숨겨 상대 블러프도 받아요.`);
-    if(['draw','combo','gut'].includes(cls)&&h.street<3)why.push('드로우는 지금 승률 + 완성됐을 때 더 받을 칩(임플라이드)까지 생각해요.');}
-   else{why.push(`지금까지 액션으로 추린 상대 패 범위 대비 내 승률 약 ${Math.round(eq*100)}%.`);const k=Object.keys(mix).find(x=>x.startsWith('bet'));const thr=h.street===3?.72:.62,cap=this.ctxFor(p).donk?.3:.8;const up=Math.max(0,Math.min(1,(eq-thr)/.22))*cap;
-    if(!SOL&&k&&up>0&&['medium','weak','strong'].includes(cls)){const f0=mix[k];const f1=f0+(1-f0)*up;if(f1-f0>.08){mix={check:1-f1,[k]:f1};this._boost=true;why.push(`상대 레인지(지금까지 액션으로 좁혀진) 대비 승률 ${Math.round(eq*100)}%라 얇은 밸류 베팅 빈도를 올려요.`);}}
-    if(h.street===3&&['air','draw','gut'].includes(cls))why.push('리버 블러프는 쇼다운으로 못 이기는 패 중에서, 상대 콜 레인지를 막는 카드(블로커)가 있을 때 고르면 좋아요.');}
-   why.push(`전체 그림: 서로 가능한 모든 패로 보면 내 쪽 승률 ${Math.round(me*100)}% · 강한 패(투페어 이상) 비율 나 ${(nm*100).toFixed(1)}% vs 상대 ${(no*100).toFixed(1)}%`);
-   why.push(`왜 이게 중요할까: 평균 승률(레인지 우위)이 높으면 <b>작게 자주</b> 베팅해도 상대 대부분을 이기고 있고, 강한 패 비율(넛 우위)이 높으면 상대가 레이즈로 맞서기 어려워 <b>크게</b> 베팅할 수 있어요. 지금은 ${me>.55?'레인지 우위가 나에게':me<.45?'레인지 우위가 상대에게':'레인지가 팽팽'} · ${nm-no>.015?'넛 우위도 나에게':no-nm>.015?'넛 우위는 상대에게':'넛은 비슷'}.`);
-   why.push(this.reason(cls,p,tc>0,tx,me,nm-no));}
+    why.push(`필요 승률 ${Math.round(need*100)}% · 상대 베팅 레인지 대비 내 승률 <b>${Math.round(eq*100)}%</b> → ${eq>=need+.05?'콜 이득':eq>=need-.03?'콜·폴드 비슷':'콜 손해'}`);
+    if(rz&&h.street===3&&cls!=='nut'&&eq>need)why.push('리버 레이즈는 더 약한 패가 콜해 주지 않아서 콜로 받는 게 기본');}
+   else{why.push(`상대 레인지 대비 내 승률 <b>${Math.round(eq*100)}%</b>`);const k=Object.keys(mix).find(x=>x.startsWith('bet'));const thr=h.street===3?.72:.62,cap=this.ctxFor(p).donk?.3:.8;const up=Math.max(0,Math.min(1,(eq-thr)/.22))*cap;
+    if(!SOL&&k&&up>0&&['medium','weak','strong'].includes(cls)){const f0=mix[k];const f1=f0+(1-f0)*up;if(f1-f0>.08){mix={check:1-f1,[k]:f1};this._boost=true;}}}
+   why.push(`레인지 승률 나 ${Math.round(me*100)}% · 투페어+ 나 ${(nm*100).toFixed(1)}% vs 상대 ${(no*100).toFixed(1)}% → ${me>.55?'레인지 우위 나':me<.45?'레인지 우위 상대':'레인지 팽팽'} · ${nm-no>.015?'넛 우위 나':no-nm>.015?'넛 우위 상대':'넛 비슷'}`);
+   const rs=this.reason(cls,p,tc>0,tx,me,nm-no);if(rs)why.push('→ '+rs);}
   // 이번 선택의 빈도
-  const catOf=k=>{const t=k.split(':')[0];return t==='fold'?'fold':(t==='call'||t==='check')?'pass':'agg';};const myc=catOf(a.t);let f=0,szTip='';
+  const catOf=k=>{const t=k.split(':')[0];return t==='fold'?'fold':(t==='call'||t==='check')?'pass':(h.street===0&&t==='allin')?'allin':'agg';};const myc=catOf(a.t);let f=0,szTip='';
   Object.entries(mix).forEach(([k,v])=>{if(catOf(k)===myc)f+=v;});
-  if(myc==='agg'&&h.street>0){const k=Object.keys(mix).filter(k=>catOf(k)==='agg'&&mix[k]>.05).map(k=>k.split(':')[1]).find(Boolean);if(k&&a.lab&&k!==a.lab)why.push(`사이즈는 '${k}' 쪽이 이 보드의 기본이에요.`);}
+  if(myc==='agg'&&h.street>0){const k=Object.keys(mix).filter(k=>catOf(k)==='agg'&&mix[k]>.05).map(k=>k.split(':')[1]).find(Boolean);if(k&&a.lab&&k!==a.lab)why.push(`사이즈는 '${k}' 추천`);}
   const grade=f>=.35?2:f>=.12?1:0;
   const rf=this._fbSol?null:this.rangeFreq(p,opts);
   const mixTxt=Object.entries(mix).filter(([,v])=>v>.004).sort((x,y)=>y[1]-x[1]).map(([k,v])=>{const [t,l]=k.split(':');return `${l||({fold:'폴드',call:'콜',check:'체크',raise:'레이즈',allin:'올인'})[t]} ${Math.round(v*100)}%`;}).join(' · ');
@@ -1390,20 +1387,17 @@ G.push({k:'hustudy',cat:'홀덤',e:'🎓',n:'헤즈업 공부',d:'스택별 헤�
   return {ctx,street:h.street,board:h.board.slice(),hole,pot:h.pot,lab:a.lab||({fold:'폴드',check:'체크',call:'콜'})[a.t],mixTxt,grade,f,why,rf,pos:p,sol:this._fbSol};},
  reason(cls,p,facing,tx,me,nd){const h=this.h,agg=h.lastAgg===p||h.pfAgg===p,s=h.street;const R=[];
   if(!facing){
-   if(s===1&&agg)R.push(me>.55&&!tx.wet?'레인지 우위 + 드라이 보드 → 작은 사이즈(1/3)로 레인지 대부분 베팅이 기본이에요.':tx.wet||nd<-.02?'상대에게 연결된 패·넛이 더 많은 보드 → 베팅 빈도를 낮추고(체크 많이), 칠 때는 크게(3/4) 쳐요.':'우위가 크지 않은 보드 → 베팅·체크를 섞어요.');
-   else if(s===1&&!agg)R.push(p==='BB'?'프리플랍 공격자 앞에서는 보통 체크로 넘겨요 (돈크벳은 아주 낮은 빈도).':'상대가 체크하면 IP에서 넓게 찔러볼 수 있어요.');
-   if(s===2)R.push('턴은 레인지가 갈라지는 구간: 밸류 + 에퀴티 있는 드로우는 계속 압박, 쇼다운 가치 있는 중간 패는 체크로 팟 조절.');
-   if(s===3)R.push('리버는 양극화: 강한 밸류와 블러프(드로우 실패한 패)만 베팅, 중간 패는 체크해서 쇼다운.');
-   if(this._boost&&['medium','weak'].includes(cls))R.push('보통 이런 패는 체크가 기본이지만, 상대가 약함을 보였으면 더 약한 패(콜 할 패)가 많아 얇은 밸류 베팅이 이득이에요.');else if(cls==='nut'&&this.ctxFor(p).donk)R.push('넛급도 공격자 앞에선 체크 후 체크레이즈로 팟을 키우는 게 기본이에요.');else R.push({nut:'넛급은 팟을 키워야 해요.',strong:'강한 메이드는 더 약한 패에게 콜 받기 좋아 밸류 베팅.',medium:'중간 패는 베팅하면 더 좋은 패만 콜/약한 패는 폴드 → 체크가 기본.',weak:'약한 메이드는 쇼다운 가치를 지키며 체크.',combo:'메이드+드로우는 폴드 에퀴티와 에퀴티가 다 있어 공격적으로.',draw:'강한 드로우는 세미블러프 베팅 후보.',gut:'백도어·거트샷은 블러프 후보 (낮은 빈도).',air:'아무것도 없으면 레인지 우위가 있을 때만 블러프, 아니면 포기.'}[cls]);}
-  else{if(this._eqAdj==='call')R.push('패 등급만 보면 애매하지만, 상대가 이 라인으로 베팅하는 범위엔 블러프·나보다 약한 패가 많아서 콜이 이득이에요.');else if(this._eqAdj==='fold')R.push('패는 괜찮아 보여도 이 가격에선 이기는 경우가 적어서 폴드가 기본이에요.');else R.push({nut:'넛급은 레이즈로 밸류를 키워요 (일부는 콜로 숨기기).',strong:'강한 메이드는 주로 콜 — 레이즈하면 나보다 약한 패는 다 폴드하고 강한 패만 남아요.',medium:'중간 패는 사이즈가 작으면 콜, 크면 폴드 많이.',weak:'약한 메이드는 작은 베팅에만 일부 콜.',combo:'콤보드로우는 레이즈 좋은 후보 (폴드 에퀴티+에퀴티).',draw:'드로우는 팟 오즈·임플라이드가 맞으면 콜, 일부 레이즈.',gut:'거트샷은 싼 가격일 때만.',air:'에어는 대부분 폴드 (낮은 빈도 블러프 레이즈).'}[cls]);
-   R.push(`참고(최소 방어 빈도 MDF): 상대 블러프가 공짜로 먹히지 않으려면 이 사이즈에선 내 전체 패 중 ${Math.round(100/(1+this.toCall(p)/Math.max(.1,h.pot-this.toCall(p))))}% 정도는 콜·레이즈로 지켜야 해요.`);}
-  return R.join(' ');},
- fbHtml(x,full){const G2=['⚠️ 빈도 낮은 선택','🙂 가능한 선택 (혼합)','👍 좋은 선택'];const col=['#c62828','#b8860b','#2e7d32'][x.grade];
+   if(s===1&&agg)R.push(me>.55&&!tx.wet?'레인지 우위 + 드라이 보드 → 작게(1/3) 자주 베팅':nd<-.02?'넛 우위 상대 → 체크 많이, 칠 땐 크게':tx.wet?'젖은 보드 → 베팅 빈도↓, 칠 땐 크게(3/4)':'우위 크지 않음 → 베팅·체크 섞기');
+   if(s===2&&tx.two)R.push('투톤 턴 → 양극화: 중간 패는 체크, 칠 땐 팟');
+   if(this._boost&&['medium','weak'].includes(cls))R.push('승률이 높아 얇은 밸류 베팅');else if(cls==='nut'&&this.ctxFor(p).donk)R.push('넛급도 공격자 앞에선 체크레이즈 노리기');}
+  else{if(this._eqAdj==='call')R.push('상대 베팅 범위에 블러프·약한 패가 많아 콜');else if(this._eqAdj==='fold')R.push('이 가격엔 이기는 경우가 적어 폴드');}
+  return R.join(' · ');},
+ fbHtml(x,full){const G2=['🔴 빈도 낮은 선택','🟠 가능한 선택 (혼합)','🟢 좋은 선택'];const col=['#c62828','#b8860b','#2e7d32'][x.grade];
   return `<div class="card" style="border-color:${col}"><div style="font-size:13px;color:var(--sub);font-weight:700">${HU_ST[x.street]} · ${esc(x.ctx||'')} · 팟 ${x.pot.toFixed(1)}BB</div><div class="t" style="color:${col};font-size:17px">내 선택: ${x.lab} → ${G2[x.grade]}</div>
    ${full?`<div style="display:flex;gap:8px;align-items:center;margin:4px 0">${cardsHtml(x.hole,true)}${x.board.length?cardsHtml(x.board,true):''}</div>`:''}
    <div style="font-size:13.5px;margin:4px 0"><b>${x.sol?'🧮 솔버':'근사 GTO'}:</b> ${x.mixTxt}</div>
    ${x.rf?`<div class="m">내 레인지 전체(${x.pos}): 공격 ${Math.round(x.rf.ag*100)}% · 체크/콜 ${Math.round(x.rf.pa*100)}%${x.rf.fo>.005?' · 폴드 '+Math.round(x.rf.fo*100)+'%':''}</div>`:''}
-   <div style="font-size:13px;line-height:1.55;margin-top:6px">${x.why.map(w=>'· '+w).join('<br>')}</div></div>`;},
+   <div style="font-size:13px;line-height:1.55;margin-top:6px">${x.why.filter(Boolean).map(w=>'· '+w).join('<br>')}</div></div>`;},
  view(){if(this.shared)return this.sharedView();const h=this.h;
   if(!h){const t=this.tot;return `<div class="card"><div class="t">🎓 헤즈업 공부</div><div class="m" style="line-height:1.6;margin-top:4px">1:1 노리밋 홀덤 한 핸드씩 진행돼요. 프리플랍·플랍·턴·리버에서 액션을 고를 때마다 <b>솔버(프리플랍·플랍)·근사 GTO(턴·리버) 빈도</b>와 이유를 알려줘요.<br>승패보다 <b>결정의 질</b>을 보는 공부용이에요.</div></div>
    <div class="sec">스택 (유효 스택)</div><div class="g3b" style="margin-top:0;grid-template-columns:repeat(5,1fr)">${[...HU_STACKS,'랜덤'].map(v=>`<button class="btn ${this.Ssel===v?'':'gr'}" style="padding:10px 2px;font-size:14px" onclick="CUR.setS(${typeof v==='number'?v:"'랜덤'"})">${v}${typeof v==='number'?'':''}</button>`).join('')}</div>
@@ -1433,7 +1427,7 @@ G.push({k:'hustudy',cat:'홀덤',e:'🎓',n:'헤즈업 공부',d:'스택별 헤�
    ${!h.over&&h.toAct===H?`<div class="g2b" style="margin-top:0">${h.opts.map((o,i)=>`<button class="btn ${o.t==='fold'?'gr':o.t==='check'||o.t==='call'?'b2':''}" onclick="CUR.act(${i})">${o.lab}</button>`).join('')}</div>`:''}
    ${h.over?`<div class="g2b"><button class="btn g" onclick="CUR.deal()">다음 핸드</button><button class="btn b2" onclick="CUR.h=null;rr()">설정</button></div>
      <div class="sec">📋 이번 핸드 복기 · 좋은 선택 ${g}/${this.fbAll.length}</div>${this.fbAll.map(x=>this.fbHtml(x,true)).join('')||'<div class="card m">내 결정이 없었어요 (상대가 먼저 폴드)</div>'}${this.fbAll.length?this.askHtml():''}`
-    :(last?'<div class="sec">방금 내 결정</div>'+this.fbHtml(last,false):'')}
+    :(this.fbAll.length?`<div class="card" style="padding:8px 10px;font-size:14px;font-weight:800">내 결정: ${this.fbAll.map(x=>`<span style="margin-right:8px">${HU_ST[x.street]} ${esc(x.lab)} ${['🔴','🟠','🟢'][x.grade]}</span>`).join('')}<div class="m" style="font-weight:600">해설은 핸드가 끝나면 나와요</div></div>`:'')}
    <div class="sec">진행</div><div class="card m" style="font-size:12.5px;line-height:1.6">${h.log.map(esc).join('<br>')||'-'}</div>`;}});
 // ===== 🧩 논리 퍼즐 (자동 생성 · 정답 하나인지 컴퓨터가 검사) =====
 const LG_NAMES=['민수','지영','현우','수아','태호','하은','준서','유나'];
@@ -2312,76 +2306,6 @@ function svMapActs(acts,opts,stack){const isAll=a=>{const n=+(a.split(' ')[1]||0
   this._solUsed=true;this._solTxt=`🧮 <b>솔버 기준</b> (비슷한 보드 ${rep.map(c=>rkCh(c.r)+SU[c.s]).join(' ')} · ${h.sol.name.split('(')[0].trim()} · 내 패는 ${cl}로 계산): ${n.acts.map((a,i)=>`${nm[i]} ${st[i]}%`).filter((x,i)=>st[i]>0).join(' · ')} — 레인지 전체로는 ${n.acts.map((a,i)=>`${nm[i]} ${Math.round(n.all[i])}%`).filter((x,i)=>n.all[i]>=1).join(' · ')}`;
   return [r,huClass(hole,h.board),rz];};})();
 
-// ---------- 🎓 헤즈업 공부 (솔버 DB 문제 · 기존 헤즈업 공부 해설 합침) ----------
-const svJ=w=>{const c=w.charCodeAt(w.length-1);return w+(c>=0xAC00&&c<=0xD7A3&&(c-0xAC00)%28?'을':'를');};
-// 버튼 순서: 폴드 → 체크/콜 → 베팅·레이즈(작은 것부터) → 올인
-function sqOrder(q){const rk=a=>{const [t,n]=a.split(' ');const v=+n||0;if(t==='FOLD')return 0;if(t==='CHECK'||t==='CALL')return 1;if(q.stack&&v>=q.stack*0.9)return 1e9;return 2+v;};
- return q.acts.map((a,k)=>k).sort((x,y)=>rk(q.acts[x])-rk(q.acts[y]));}
-const sqSorted=q=>{const o=sqOrder(q);return {...q,acts:o.map(k=>q.acts[k]),freq:o.map(k=>q.freq[k]),all:o.map(k=>q.all[k])};};
-const SQ_SPOT={SRP100A:'100BB 싱글레이즈',SRP50A:'50BB 싱글레이즈',SRP25A:'25BB 싱글레이즈','3BP100A':'100BB 3벳팟'};
-const bbT=v=>(v/10).toFixed(1).replace(/\.0$/,'')+'BB';
-// 지금까지 플랍 액션 · 현재 팟 · 콜 금액
-function sqLineText(q){const pos=p=>p==='oop'?'BB':'BTN';const steps=q.line==='root'?[]:q.line.split('>');let pot=q.pot,who='oop',bet=0;const out=[];
- steps.forEach(a=>{const nm=svActName(a,pot,q.stack);const n=+(a.split(' ')[1]||0);out.push(`${pos(who)} ${nm}${n?' ('+bbT(n)+')':''}`);if(n){pot+=n;bet=n;}else bet=0;who=who==='oop'?'ip':'oop';});
- return {txt:out.length?out.join(' → '):'플랍 첫 액션',me:pos(q.p),pot,bet,stack:q.stack-bet};}
-const sqRng=m=>HU.ALL.map(x=>m[x[2]]||0);
-function sqCalc(q){const hole=q.hole.map(c=>({r:c[0],s:c[1]})),board=svCards(q.board);const R={};
- try{if(q.rng){const A=sqRng(q.rng.me),B=sqRng(q.rng.op);R.eq=huEq(hole,B,board,600);const st=huRangeStat(A,B,board,400);R.me=st.eq;R.na=st.na;R.nb=st.nb;}}catch(e){}
- try{R.cls=huClass(hole,board);R.hn=huHandName(hole,board);R.tex=huTex(board);}catch(e){}return R;}
-function sqExplain(q0,pick,C){const q=sqSorted(q0);C=C||{};const i=q.acts.indexOf(pick),f=q.freq,best=f.indexOf(Math.max(...f));const nm=q.acts.map(a=>svActName(a,q.pot,q.stack));
- const L=sqLineText(q0),board=svCards(q.board);const mixed=f.filter(x=>x>=20).length>=2;const X=[];const tx=C.tex||{};
- const fl3=[0,1,2,3].some(su=>board.filter(c=>c.s===su).length>=3);
- X.push(`<div class="h">🃏 내 패: ${esc(C.hn||q.cls)}${C.cls?` <span class="m">(${HU_KO[C.cls]})</span>`:''}</div>보드: ${fl3?'한 무늬 3장(플러시 완성 가능)':tx.two?'같은 무늬 2장(플러시 드로우 가능)':'무늬 흩어짐'}${tx.conn?' · 숫자가 이어져 스트레이트 가능':''}${tx.pair?' · 페어 보드':''}`);
- X.push(`<div class="h">${f[i]>=50?'👍':f[i]>=20?'🙂':'⚠️'} 솔버: 이 패(${q.cls})로 ${q.acts.map((a,k)=>`<b>${nm[k]} ${f[k]}%</b>`).filter((x,k)=>f[k]>0).join(' · ')}</div>내 선택 <b>${nm[i]}</b> → ${f[i]}점. `+(mixed?'솔버가 <b>섞어서</b> 쓰는 패예요. 두 액션의 기대값이 거의 같아서 비율을 나눠요 — 어느 쪽을 골라도 큰 손해는 아니에요.':`솔버는 거의 항상 <b>${svJ(nm[best])}</b> 골라요.`));
- if(C.eq!=null){let t=`지금까지 액션으로 좁혀진 상대 패 범위 대비 내 승률 <b>약 ${Math.round(C.eq*100)}%</b>.`;
-  if(L.bet){const need=L.bet/(L.pot+L.bet);t=`상대가 ${bbT(L.bet)}를 걸었어요. ${bbT(L.bet)}를 내고 ${bbT(L.pot+L.bet)} 팟을 다투니 <b>${Math.round(need*100)}%만 이기면 본전</b>이에요 (팟 오즈).<br>`+t+` → ${C.eq>=need+.05?'콜은 이득 쪽':C.eq>=need-.03?'콜과 폴드가 비슷':'승률만으론 부족 — 드로우·임플라이드가 없으면 폴드 쪽'}.`;}
-  X.push(`<div class="h">📈 승률${L.bet?' · 팟 오즈':''}</div>${t}`);}
- X.push(`<div class="h">📊 레인지 전체 전략</div>${q.acts.map((a,k)=>`${nm[k]} ${Math.round(q.all[k])}%`).join(' · ')}`+
-  (q.top?'<br>'+q.acts.map((a,k)=>(q.top[a]||[]).length?`· ${svJ(nm[k])} 주로 쓰는 패: ${q.top[a].slice(0,6).join(' ')}`:'').filter(Boolean).join('<br>'):'')+
-  (C.me!=null?`<br>· 전체 그림: 서로 가능한 모든 패로 보면 내 쪽 승률 ${Math.round(C.me*100)}% · 강한 패 비율 나 ${(C.na*100).toFixed(1)}% vs 상대 ${(C.nb*100).toFixed(1)}% → ${C.me>.55?'레인지 우위가 나에게':C.me<.45?'레인지 우위가 상대에게':'레인지가 팽팽'} · ${C.na-C.nb>.015?'넛 우위도 나에게':C.nb-C.na>.015?'넛 우위는 상대에게':'넛은 비슷'}`:''));
- const allBet=q.acts.reduce((s,a,k)=>s+(a.startsWith('BET')||a.startsWith('RAISE')?q.all[k]:0),0);
- let why=q.line==='root'&&q.p==='oop'?(allBet<25?'BB는 프리플랍에 콜한 쪽이라 보통 <b>체크</b>로 넘겨요. 강한 패도 체크한 뒤 체크레이즈로 키우는 게 기본이에요.':'이 보드는 BB 레인지에 잘 맞아서 먼저 베팅(동크벳)하는 빈도가 꽤 있어요.')
-  :q.line==='CHECK'?(allBet>55?'BB가 체크하면 BTN은 레인지 우위가 커서 <b>넓게 베팅</b>해요 (작은 사이즈로 자주).':'보드가 BB에게도 잘 맞아서 BTN도 체크로 넘기는 비율이 높아요.')
-  :q.line==='root'?'3벳한 BB가 먼저 행동해요. 레인지가 강해서 씨벳을 자주 해요.':'';
- if(L.bet){const mdf=Math.round(100*(L.pot-L.bet)/L.pot);why+=`상대 베팅을 마주한 상황: 블러프가 공짜로 먹히지 않으려면 전체 패 중 약 ${mdf}%는 콜·레이즈로 지켜야 해요(MDF). 솔버는 약한 패부터 폴드해서 레인지 전체 폴드는 ${Math.round(q.all[q.acts.indexOf('FOLD')]||0)}%.`;}
- why+='<br>'+(C.cls?({nut:'넛급은 팟을 키워야 해요 — 다만 상대가 공격자면 체크 후 체크레이즈로 숨기기도 해요.',strong:'강한 메이드는 더 약한 패에게 콜 받기 좋아 밸류 베팅/콜이 기본.',medium:'중간 패는 베팅하면 더 좋은 패만 콜하고 약한 패는 폴드해서 → 체크·콜로 쇼다운 가치를 지키는 게 기본.',weak:'약한 메이드는 싸게 쇼다운 가는 게 목표 — 큰 베팅엔 폴드도 많아요.',combo:'메이드+드로우는 승률이 높아 공격적으로 가도 좋아요.',draw:'강한 드로우는 지금 승률 + 완성 때 받을 칩(임플라이드)까지 생각해서 세미블러프가 좋아요.',gut:'거트샷·백도어는 약한 드로우 — 블러프 후보로 일부만 써요.',air:'아무것도 없는 패는 블러프 후보 — 상대가 폴드할 보드에서만 일부 베팅해요.'})[C.cls]||'':'');
- if(q.spot.startsWith('3BP'))why+=' (3벳팟은 레인지가 좁고 SPR이 낮아 탑페어 이상이면 스택을 넣는 결정이 많아요.)';
- X.push(`<div class="h">💡 왜?</div>${why}`);
- return X.join('');}
-G.push({k:'solverq',study:true,cat:'홀덤',e:'🧮',n:'솔버 퀴즈',d:'(헤즈업 공부로 합침)',
- start(){location.replace('#g=hustudy');return;Object.assign(this,{i:0,sc:0,q:null,res:null,over:false,err:'',spot:lsGet('sq_spot',''),log:[],ai:null});this.load();rr();},
- setSpot(s){this.spot=s;lsSet('sq_spot',s);this.start();},
- load(){this.q=null;this.loading=true;fetch(API+'/api/solver/quiz?spot='+encodeURIComponent(this.spot||''),{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{this.loading=false;if(!r.ok){this.err=r.msg||'솔버 데이터를 못 불러왔어요';rr();return;}this.q=r;this.err='';if(CUR===this)rr();}).catch(()=>{this.loading=false;this.err='서버에 연결이 안 돼요';rr();});},
- ans(k){if(!this.q||this.res)return;const q=this.q,a=q.acts[k],pts=q.freq[k];this.sc+=pts;this.i++;this.res={q,pick:a,pts,C:sqCalc(q)};this.ai=null;this.link=null;this.log.push({cls:q.cls,board:q.board,pts,pick:svActName(a,q.pot,q.stack)});
-  if(this.i>=10){this.over=true;record('solverq',this.sc);}rr();scrollTo(0,0);},
- next(){this.res=null;this.load();rr();},
- xCopy(){const r=this.res;if(!r)return;copy(sqSum(r.q,r.pick));},
- xShareBtn(){const r=this.res;if(!r)return;const t=sqSum(r.q,r.pick);if(navigator.share){navigator.share({text:t}).catch(()=>copy(t));}else copy(t);},
- xAsk(){const r=this.res;if(!r)return;xAskAI('sq',sqSum(r.q,r.pick)+'\n\n[솔버 데이터·앱 해설]\n'+xPlain(sqExplain(r.q,r.pick,r.C)),this);},
- view(){const tabs=`<div class="tabs" style="margin-bottom:8px">${[['','랜덤'],...Object.entries(SQ_SPOT)].map(([k,n])=>`<button class="${(this.spot||'')===k?'on':''}" onclick="CUR.setSpot('${k}')">${n}</button>`).join('')}</div>`;
-  const hd=`<div class="gst"><span>${Math.min(this.i+(this.res?0:1),10)} / 10</span><span>점수 <b>${this.sc}</b> / ${this.i*100}</span></div>`;
-  const R=this.res;let fb='';
-  if(R){const q=sqSorted(R.q);fb=`<div class="card" style="border-color:${R.pts>=50?'#3a9d3f':R.pts>=20?'#b8860b':'#d33b3b'}"><div class="t" style="font-size:17px">${R.pts>=50?'👍 좋은 선택':R.pts>=20?'🙂 섞는 선택':'⚠️ 솔버가 거의 안 쓰는 선택'} · +${R.pts}점</div>
-   <div class="m" style="margin-top:4px">${sqCardsTxt(R.q)}</div>
-   <div style="display:flex;gap:4px;margin:8px 0">${q.acts.map((a,k)=>`<div style="flex:${Math.max(q.freq[k],3)};background:${a===R.pick?'#1f5fae':['#7a8a99','#2e9d4b','#d98c1a','#c62828','#6a1b9a'][k%5]};color:#fff;border-radius:6px;padding:4px 2px;text-align:center;font-size:12px;font-weight:800;overflow:hidden;white-space:nowrap">${svActName(a,q.pot,q.stack)} ${q.freq[k]}%</div>`).join('')}</div>
-   <div class="xp">${sqExplain(R.q,R.pick,R.C)}</div></div>${typeof askBox==='function'?askBox(this):''}`;}
-  if(this.over)return tabs+hd+fb+`<div class="gbig">${this.sc}점</div><div class="card"><div style="text-align:center;margin-bottom:6px">10문제 · 만점 1000 · 고른 액션의 솔버 빈도가 점수<br><span class="m">내 최고 ${Math.max(myBest('solverq')||0,this.sc)}점</span></div>${this.log.map((x,i)=>`<div class="row"><span>${i+1}. ${svCards(x.board).map(c=>rkCh(c.r)+SU[c.s]).join('')} · ${x.cls} · ${x.pick}</span><b style="color:${x.pts>=50?'#2e7d32':x.pts>=20?'#b8860b':'#c62828'}">${x.pts}</b></div>`).join('')}</div><button class="btn full" onclick="CUR.start()">다시 하기</button>`;
-  if(R)return tabs+hd+fb+`<button class="btn full g" style="font-size:17px;padding:13px;margin-top:8px" onclick="CUR.next()">다음 문제 (${this.i+1}/10)</button>`;
-  if(this.err)return tabs+`<div class="card" style="text-align:center;padding:24px">${esc(this.err)}</div><button class="btn full" onclick="CUR.load()">다시 시도</button>`;
-  const q=this.q;if(!q)return tabs+hd+'<div class="gq">문제 불러오는 중…</div>';
-  const L=sqLineText(q),hole=q.hole.map(c=>({r:c[0],s:c[1]}));
-  return tabs+hd+`<div class="card" style="text-align:center">
-   <div style="font-size:19px;font-weight:900">${SQ_SPOT[q.spot]||esc(q.name)}${q.spot.startsWith('3BP')?'':'팟'}</div>
-   <div style="font-size:15px;font-weight:700;color:var(--brown);margin:2px 0 8px">팟 ${bbT(L.pot)} · 남은 스택 ${bbT(L.stack)}</div>
-   ${cardsHtml(svCards(q.board))}
-   <div style="font-size:17px;font-weight:800;margin:10px 0">${esc(L.txt)}</div>
-   ${cardsHtml(hole)}
-   <div style="font-size:21px;font-weight:900;color:var(--blue);margin-top:8px">내 차례 · ${L.me}</div></div>
-   <div style="display:grid;grid-template-columns:repeat(${Math.min(q.acts.length,4)},1fr);gap:6px">${sqOrder(q).map(k=>{const a=q.acts[k];return `<button class="btn ${a==='FOLD'?'gr':a==='CHECK'||a==='CALL'?'b2':''}" style="font-size:16px;padding:13px 2px" onclick="CUR.ans(${k})">${svActName(a,q.pot,q.stack)}${a.startsWith('CALL')&&L.bet?' '+bbT(L.bet):''}</button>`;}).join('')}</div>
-   <div class="m" style="text-align:center;margin-top:8px">빅앤티 헤즈업 · TexasSolver로 직접 푼 결과 · 점수 = 고른 액션의 솔버 빈도</div>`;}});
-function sqCardsTxt(q){const L=sqLineText(q);return `${SQ_SPOT[q.spot]||''} · 플랍 ${svCards(q.board).map(c=>rkCh(c.r)+SU[c.s]).join(' ')} · ${L.txt} · 내 패 ${q.hole.map(c=>rkCh(c[0])+SU[c[1]]).join(' ')} (${L.me})`;}
-function sqSum(q0,pick){const q=sqSorted(q0);const L=sqLineText(q0);return [`🧮 [솔버 퀴즈] ${SQ_SPOT[q.spot]||q.name} · 팟 ${bbT(L.pot)}`,`플랍 ${svCards(q.board).map(c=>rkCh(c.r)+SU[c.s]).join(' ')} · ${L.txt} · 내 차례 ${L.me}`,`내 패 ${q.hole.map(c=>rkCh(c[0])+SU[c[1]]).join(' ')} (${q.cls})`,
- `솔버: ${q.acts.map((a,k)=>svActName(a,q.pot,q.stack)+' '+q.freq[k]+'%').join(' · ')}`,pick?`내 선택: ${svActName(pick,q.pot,q.stack)}`:'','❓ 여러분이라면?'].filter(Boolean).join('\n');}
 // ===================== 🧮 헤즈업 프리플랍 솔버 + 연습 방식 (전체 / 프리플랍만 / 플랍~리버) =====================
 const HU_PF={},HU_PF_WAIT={};
 function huPfLoad(S,cb){if(HU_PF[S]||!API){cb&&cb();return;}if(HU_PF_WAIT[S]){HU_PF_WAIT[S].push(cb);return;}HU_PF_WAIT[S]=[cb];
@@ -2395,6 +2319,12 @@ function huPfLoad(S,cb){if(HU_PF[S]||!API){cb&&cb();return;}if(HU_PF_WAIT[S]){HU
   const tot=Object.values(r).reduce((a,b)=>a+b,0);if(tot<=0)return null;for(const k in r)r[k]/=tot;
   this._pfUsed=true;this._pfInfo={n,v,cl,p,has:{call:has('call')},tc:this.toCall(p),raises:h.raises};
   return r;};
+ // 프리플랍 올인 선택지: 솔버가 이 자리에서 올인을 1% 이상 쓸 때만 (없으면 30BB 미만이거나 3벳 이후만)
+ HUS.pfAllinOK=function(p){const h=this.h,N=HU_PF[this.S],n=N&&N[h.pfHist||''];if(!n||n.p!==p)return this.S<=25||(h.raises===2&&this.S<=30)||(h.raises===3&&this.S<=60)||h.raises>=4;const i=n.a.indexOf('a');if(i<0)return false;
+  let W=0,A=0;Object.entries(n.s).forEach(([k,x])=>{const w=k.length===2?6:k[2]==='s'?4:12;W+=w;A+=(x[i]||0)*w;});return W&&A/W>=1;};
+ // 프리플랍 선택지는 솔버 트리에 있는 액션만 (예: 30BB↑ 림프 없음)
+ const opO=HUS.opts;HUS.opts=function(p){const o=opO.call(this,p),h=this.h;if(!h||h.street!==0)return o;const N=HU_PF[this.S],n=N&&N[h.pfHist||''];if(!n||n.p!==p)return o;
+  const m={fold:'f',call:'c',check:'c',raise:'r',allin:'a'};const f=o.filter(x=>n.a.includes(m[x.t]));return f.length?f:o;};
  HUS.pfText=function(){const I=this._pfInfo;if(!I)return '';const {n,v,cl,p}=I;
   const nm=c=>c==='c'?(I.has.call?(I.tc>0&&I.raises===1&&p==='BTN'?'림프':'콜'):'체크'):c==='r'?(I.raises===1&&p==='BTN'?'오픈':I.raises===1?'레이즈':I.raises===2?'3벳':'4벳'):PF_NM[c];
   const all=n.a.map(()=>0);let W=0;Object.entries(n.s).forEach(([k,x])=>{const w=k.length===2?6:k[2]==='s'?4:12;W+=w;x.forEach((y,i)=>all[i]+=y*w);});
@@ -2409,11 +2339,11 @@ function huPfLoad(S,cb){if(HU_PF[S]||!API){cb&&cb();return;}if(HU_PF_WAIT[S]){HU
  HUS.deal=function(){this.link=null;this.ai=null;this.S=this.Ssel==='랜덤'?pick(HU_STACKS):this.Ssel;
   if(API&&!HU_PF[this.S]&&!this._pfTried){this._pfTried=1;this.h=null;huPfLoad(this.S,()=>{this.deal();this._pfTried=0;});return;}this._pfTried=0;
   const post=this.mode==='post';
-  for(let k=0;k<(post?400:1);k++){const hero=this.pos==='랜덤'?pick(['BTN','BB']):this.pos;const vil=hero==='BTN'?'BB':'BTN';const d=deck();
+  for(let k=0;k<(post?400:60);k++){const hero=this.pos==='랜덤'?pick(['BTN','BB']):this.pos;const vil=hero==='BTN'?'BB':'BTN';const d=deck();
    const C={BTN:[d[0],d[1]],BB:[d[2],d[3]]};const one=()=>new Array(HU.ALL.length).fill(1);
    this.h={hero,vil,C,rest:d.slice(4),board:[],street:0,pot:2.5,st:{BTN:this.S-.5,BB:this.S-2},inv:{BTN:.5,BB:1},acts:[],toAct:'BTN',raises:1,acted:{},lastAgg:'BB',pfAgg:null,rng:{BTN:one(),BB:one()},log:[],fb:null,over:null,stat:{},pfHist:''};
    this.fbAll=[];
-   if(!post){this.step();return;}
+   if(!post){this.step();if(this.h.over&&!this.fbAll.length&&k<59)continue;return;}
    // 플랍~리버 연습: 프리플랍은 두 사람 다 솔버대로 자동 진행 → 싱글레이즈팟/3벳팟으로 플랍에 간 핸드만
    this._auto=true;this._pfDone=false;try{this.step();}finally{this._auto=false;}
    const h=this.h;if(!h.over&&this._pfDone&&(k>=60||(h.pfRaises===2&&h.pfAgg==='BTN')||(h.pfRaises===3&&h.pfAgg==='BB'))){h.log.push('— 프리플랍은 자동 진행 (솔버) —');this.nextStreet();return;}}
