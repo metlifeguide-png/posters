@@ -2360,6 +2360,10 @@ function hvFlopCol(acts){const nb=acts.filter(a=>a.startsWith('BET')||a.startsWi
  return acts.map(a=>a==='FOLD'?HV_COL.f:a==='CHECK'||a==='CALL'?HV_COL.c:P[Math.max(0,Math.min(3,4-nb+(k++)))]);}
 // 범위 문자열 "AA,AKs:0.5,…" → {클래스:가중치}
 function hvRange(s){const o={};(s||'').split(',').forEach(e=>{if(!e)return;const [h,w]=e.split(':');o[h]=w?+w:1;});return o;}
+function hvRankMap(act,rep){const A=[...new Set(act)].sort((a,b)=>b-a),Rr=[...new Set(rep)].sort((a,b)=>b-a);const an=[[15,15],...A.slice(0,Rr.length).map((x,i)=>[x,Rr[i]]),[1,1]];
+ return x=>{for(let k=0;k+1<an.length;k++){const [ah,rh]=an[k],[al,rl]=an[k+1];if(x===ah)return rh;if(al<x&&x<ah){const y=Math.round(rl+(x-al)/(ah-al)*(rh-rl));return rl<y&&y<rh?y:rh-rl>1?rl+1:rl;}if(x===al)return rl;}return x;};}
+function hvMapCls(c,f){const r1=14-HV_RK.indexOf(c[0]),r2=14-HV_RK.indexOf(c[1]);let a=f(r1),b=f(r2);if(r1!==r2&&a===b)b=b>2?b-1:b+1;a=Math.max(2,Math.min(14,a));b=Math.max(2,Math.min(14,b));
+ const hi=Math.max(a,b),lo=Math.min(a,b),t=HV_RK[14-hi]+HV_RK[14-lo];return hi===lo?t:t+(c[2]||'');}
 G.push({k:'huview',cat:'홀덤',e:'📊',n:'헤즈업 레인지 뷰어',d:'솔버 트리 · 핸드별 빈도·EV',
  start(){this.tab=lsGet('hv_tab','pf');this.S=lsGet('hv_S',100);this.path='';this.sel=null;this.fl=null;this.fpath='root';this.spots=null;this.spot=lsGet('hv_spot','SRP100A');this.bin='';
   huPfLoad(this.S,()=>rr());rr();if(this.tab==='flop')this.loadSpots();},
@@ -2402,7 +2406,7 @@ G.push({k:'huview',cat:'홀덤',e:'📊',n:'헤즈업 레인지 뷰어',d:'솔�
  loadSpots(){if(!API)return;fetch(API+'/api/solver/spots',{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{this.spots=r.ok?r.spots:{};if(!this.spots[this.spot])this.spot=Object.keys(this.spots)[0]||'';if(this.spot&&!this.fl)this.loadBoard('');rr();}).catch(()=>{this.spots={};rr();});},
  setSpot(s){this.spot=s;lsSet('hv_spot',s);this.loadBoard(this.fl?this.fl.rep:'');},
  loadBoard(b){if(!API||!this.spot)return;this.loading=true;rr();
-  fetch(API+`/api/solver/board?spot=${this.spot}&board=${encodeURIComponent(b)}`,{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{this.loading=false;if(r.ok){this.fl=r;this.fpath='root';this.sel=null;this.ask=b;}else toast(r.msg||'불러오기 실패');rr();}).catch(()=>{this.loading=false;rr();});},
+  fetch(API+`/api/solver/board?spot=${this.spot}&board=${encodeURIComponent(b)}`,{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{this.loading=false;if(r.ok){this.fl=r;this.fpath='root';this.sel=null;this.inC=b?svCards(b):null;}else toast(r.msg||'불러오기 실패');rr();}).catch(()=>{this.loading=false;rr();});},
  boardIn(){const v=($('hvb')||{}).value||'';const m=v.replace(/[\s,]/g,'').match(/([2-9TJQKA1][0]?[shdc♠♥♦♣])/gi);
   if(!m||m.length<3){toast('예: AsKd7c');return;}const mp={'♠':'s','♥':'h','♦':'d','♣':'c'};
   this.loadBoard(m.slice(0,3).map(x=>{x=x.replace('10','T');return x[0].toUpperCase()+(mp[x[1]]||x[1].toLowerCase());}).join(','));},
@@ -2411,20 +2415,22 @@ G.push({k:'huview',cat:'홀덤',e:'📊',n:'헤즈업 레인지 뷰어',d:'솔�
   const tabs=`<div class="tabs" style="margin-bottom:6px;flex-wrap:wrap">${sp.map(k=>`<button class="${k===this.spot?'on':''}" onclick="CUR.setSpot('${k}')">${esc(this.spots[k].name.split('·')[0].trim())}</button>`).join('')}</div>`;
   const inp=`<div style="display:flex;gap:6px;margin:6px 0"><input id="hvb" placeholder="플랍 입력 예: AsKd7c" value="${esc(this.bin||'')}" oninput="CUR.bin=this.value" style="flex:1;font-size:16px;padding:8px;border-radius:8px;border:1px solid #ccc"><button class="btn" style="padding:8px 12px" onclick="CUR.boardIn()">보기</button><button class="btn b2" style="padding:8px 12px" onclick="CUR.loadBoard('')">랜덤</button></div>`;
   const F=this.fl;if(this.loading||!F)return tabs+inp+'<div class="card m">불러오는 중…</div>';
-  const nd=F.flop[this.fpath];const rep=svCards(F.rep);
+  const nd=F.flop[this.fpath];const rep=svCards(F.rep);const IN=this.inC;
+  const same=!IN||[...IN.map(c=>c.r)].sort().join()===[...rep.map(c=>c.r)].sort().join()&&new Set(IN.map(c=>c.s)).size===new Set(rep.map(c=>c.s)).size;
+  const fm=IN&&!same?hvRankMap(IN.map(c=>c.r),rep.map(c=>c.r)):null;const mc=c=>fm?hvMapCls(c,fm):c;
   const lineArr=this.fpath==='root'?[]:this.fpath.split('>');
   const who=p=>p==='oop'?'BB':'BTN';
-  const crumbs=`<div class="card" style="padding:8px 10px;font-size:15px;line-height:1.9"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${cardsHtml(rep,true)}<span class="m">${esc(F.name)}${F.ask&&F.dist>0?'<br>입력한 보드와 가장 비슷한 대표 보드로 보여줘요':''}</span></div>
+  const crumbs=`<div class="card" style="padding:8px 10px;font-size:15px;line-height:1.9"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${cardsHtml(IN||rep,true)}<span class="m">${esc(F.name)}</span></div>${same?'':`<div style="font-size:13.5px;background:#fff4e0;border-radius:8px;padding:6px 8px;margin:4px 0;line-height:1.5">⚠️ 이 보드는 아직 직접 안 풀었어요. 가장 비슷한 <b>${rep.map(c=>rkCh(c.r)+SU[c.s]).join(' ')}</b> 결과를 숫자만 맞춰 보여줘요${(()=>{const r=IN&&fm?IN.map(c=>c.r).find(x=>fm(x)!==x):null;return r?` (예: 내 패 ${HV_RK[14-r].repeat(2)} → 대표 보드의 ${HV_RK[14-fm(r)].repeat(2)})`:'';})()}.</div>`}
    <a style="cursor:pointer;color:var(--blue);font-weight:800" onclick="CUR.fpath='root';CUR.sel=null;rr()">플랍</a>${lineArr.map((a,k)=>{const key=lineArr.slice(0,k+1).join('>');const pn=F.flop[k?lineArr.slice(0,k).join('>'):'root'];return ` → <a style="cursor:pointer;color:var(--blue);font-weight:800" onclick="CUR.fpath='${key}';CUR.sel=null;rr()">${pn?who(pn.p):''} ${svActName(a,F.pot,F.stack)}</a>`;}).join('')}</div>`;
   if(!nd)return tabs+inp+crumbs+`<div class="card" style="text-align:center;font-size:16px">${/FOLD$/.test(this.fpath)?'폴드로 끝':'턴으로 넘어가요'}<br><button class="btn" style="margin-top:8px" onclick="CUR.fpath=CUR.fpath.split('>').slice(0,-1).join('>')||'root';rr()">↶ 뒤로</button></div>`;
   // 도달 확률: 프리플랍 레인지 가중치 × 이 플레이어가 앞에서 고른 액션 빈도
-  const R=hvRange(nd.p==='oop'?F.oop:F.ip);for(let k=0;k<lineArr.length;k++){const pk=k?lineArr.slice(0,k).join('>'):'root',pn=F.flop[pk];if(!pn||pn.p!==nd.p)continue;const ai=pn.acts.indexOf(lineArr[k]);for(const c in R)R[c]*=((pn.cls[c]||[])[ai]||0)/100;}
+  const R=hvRange(nd.p==='oop'?F.oop:F.ip);for(let k=0;k<lineArr.length;k++){const pk=k?lineArr.slice(0,k).join('>'):'root',pn=F.flop[pk];if(!pn||pn.p!==nd.p)continue;const ai=pn.acts.indexOf(lineArr[k]);for(const c in R)R[c]*=((pn.cls[mc(c)]||[])[ai]||0)/100;}
   const cols=hvFlopCol(nd.acts);
   const acts=`<div class="g2b" style="grid-template-columns:repeat(${Math.min(nd.acts.length,4)},1fr);margin-top:0">${nd.acts.map((a,i)=>`<button class="btn" style="background:${cols[i]};padding:10px 2px;font-size:14px" onclick="CUR.fpath=(CUR.fpath==='root'?'':CUR.fpath+'>')+'${a}';CUR.sel=null;rr()">${svActName(a,F.pot,F.stack)}<br><span style="font-size:13px;opacity:.9">${Math.round(nd.all[i])}%</span></button>`).join('')}</div>`;
-  const grid=this.grid(c=>nd.cls[c],c=>nd.cls[c]?(R[c]||0):0,cols);
-  let det='';const c=this.sel;if(c&&nd.cls[c]){const cx=Object.entries(nd.cx||{}).filter(([k])=>{const a=k.slice(0,2),b=k.slice(2);const ra=HV_RK.indexOf(a[0]),rb=HV_RK.indexOf(b[0]);const hi=ra<=rb?a:b,lo=hi===a?b:a;return (hi[0]+lo[0]+(hi[0]===lo[0]?'':hi[1]===lo[1]?'s':'o'))===c;});
-   det=`<div class="card" style="font-size:15px;line-height:1.7"><b style="font-size:17px">${c}</b> <span class="m">(여기까지 올 확률 ${Math.round((R[c]||0)*100)}%)</span><br>${nd.acts.map((a,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${cols[i]}"></span> ${svActName(a,F.pot,F.stack)} <b>${nd.cls[c][i]}%</b>${nd.ev&&nd.ev[c]?` · EV <b>${nd.ev[c][i].toFixed(2)}</b>BB`:''}`).join('<br>')}
-    ${cx.length?`<div class="m" style="margin-top:6px">무늬별: ${cx.map(([k,v])=>`${rkCh(HV_RK.length+1-HV_RK.indexOf(k[0]))}${SU['shdc'.indexOf(k[1])]}${rkCh(HV_RK.length+1-HV_RK.indexOf(k[2]))}${SU['shdc'.indexOf(k[3])]} ${v.map((x,i)=>x?svActName(nd.acts[i],F.pot,F.stack)+' '+x+'%':'').filter(Boolean).join('·')}`).join('<br>')}</div>`:''}</div>`;}
+  const grid=this.grid(c=>nd.cls[mc(c)],c=>nd.cls[mc(c)]?(R[c]||0):0,cols);
+  let det='';const c=this.sel,m=c?mc(c):null;if(c&&nd.cls[m]){const cx=Object.entries(nd.cx||{}).filter(([k])=>{const a=k.slice(0,2),b=k.slice(2);const ra=HV_RK.indexOf(a[0]),rb=HV_RK.indexOf(b[0]);const hi=ra<=rb?a:b,lo=hi===a?b:a;return (hi[0]+lo[0]+(hi[0]===lo[0]?'':hi[1]===lo[1]?'s':'o'))===m;});
+   det=`<div class="card" style="font-size:15px;line-height:1.7"><b style="font-size:17px">${c}</b>${m!==c?` <span class="m">(대표 보드의 ${m})</span>`:''} <span class="m">(여기까지 올 확률 ${Math.round((R[c]||0)*100)}%)</span><br>${nd.acts.map((a,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${cols[i]}"></span> ${svActName(a,F.pot,F.stack)} <b>${nd.cls[m][i]}%</b>${nd.ev&&nd.ev[m]?` · EV <b>${nd.ev[m][i].toFixed(2)}</b>BB`:''}`).join('<br>')}
+    ${cx.length?`<div class="m" style="margin-top:6px">무늬별${same?'':' (대표 보드 무늬 기준)'}: ${cx.map(([k,v])=>`${rkCh(HV_RK.length+1-HV_RK.indexOf(k[0]))}${SU['shdc'.indexOf(k[1])]}${rkCh(HV_RK.length+1-HV_RK.indexOf(k[2]))}${SU['shdc'.indexOf(k[3])]} ${v.map((x,i)=>x?svActName(nd.acts[i],F.pot,F.stack)+' '+x+'%':'').filter(Boolean).join('·')}`).join('<br>')}</div>`:''}</div>`;}
   return tabs+inp+crumbs+`<div style="font-size:15px;font-weight:800;margin:6px 2px">${who(nd.p)} 차례 · 레인지 전체</div>`+acts+grid+det+
    `<div class="card m" style="font-size:13px;line-height:1.6">대표 보드 ${Object.values(this.spots).reduce((a,s)=>a+s.boards.length,0)}판을 직접 푼 결과예요 (계속 늘어나요). ${nd.ev?'EV = 지금 폴드하는 것(0) 대비 이 액션의 기대 수익(BB). 사이즈끼리 EV가 거의 같으면 솔버가 섞어 쓰는 거라 어느 쪽이든 괜찮아요.':'이 보드는 EV 없음 (새 엔진으로 푼 보드부터 EV가 나와요).'}</div>`;},
  view(){return `<div class="tabs" style="margin-bottom:8px">${[['pf','프리플랍'],['flop','플랍']].map(([k,n])=>`<button class="${this.tab===k?'on':''}" onclick="CUR.setTab('${k}')">${n}</button>`).join('')}</div>`+
