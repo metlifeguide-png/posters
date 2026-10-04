@@ -1205,10 +1205,11 @@ function huHandName(hole,board){const h=best([...hole,...board]);const pp=hole[0
  if(board.length<5){const d=huDraw(hole,board);const ds=[];if(d.fd&&h[0]<5)ds.push('플러시 드로우');if(d.st===2&&h[0]<4)ds.push('양방 스트레이트 드로우');else if(d.st===1&&h[0]<4)ds.push('거트샷');if(ds.length)n+=' + '+ds.join('·');}
  return n;}
 function huTex(b){const rs=[...new Set(b.map(c=>c.r))].sort((x,y)=>y-x);const sc=[0,1,2,3].map(s=>b.filter(c=>c.s===s).length);const mx=Math.max(...sc);let conn=false;for(let k=0;k+2<rs.length;k++)if(rs[k]-rs[k+2]<=4)conn=true;
- const pair=rs.length<b.length,hi=rs[0];const mono=mx>=3,two=!mono&&b.length<5&&mx===2;return {hi,conn,pair,mono,two,low:hi<=9,high:hi>=12,wet:conn||mono||two};}
+ const pair=rs.length<b.length,hi=rs[0];const mono=mx>=3,two=!mono&&b.length<5&&mx===2;return {hi,conn,pair,mono,two,low:hi<=9,high:hi>=12,wet:mono||(conn&&!pair)||(two&&conn)};}
 // 체크/베팅 빈도 (베팅할 차례, 앞에 베팅 없음)
 function huBetF(cls,street,ctx){const s=street,a=ctx.adv||0;let f={nut:[.75,.85,.9],strong:[.75,.75,.65],medium:[.4,.25,.1],weak:[.15,.1,.05],combo:[.85,.8,.3],draw:[.65,.55,.25],gut:[.5,.35,.25],air:[.45,.25,.2]}[cls][s-1];
  if(s===1&&cls==='nut'&&!ctx.wet)f=.6; // 드라이 보드 넛은 슬로우플레이 섞기
+ if(s===1&&cls==='strong'&&!ctx.wet)f=.55;
  if(['medium','air','gut','weak'].includes(cls))f*=1+a*1.6;
  if(ctx.donk)f*=cls==='nut'?.4:.2;
  if(ctx.tt&&['medium','weak'].includes(cls))f*=.4;
@@ -1373,14 +1374,17 @@ G.push({k:'hustudy',cat:'홀덤',e:'🎓',n:'헤즈업 공부',d:'스택별 헤�
     why.push(`필요 승률 ${Math.round(need*100)}% · 상대 베팅 레인지 대비 내 승률 <b>${Math.round(eq*100)}%</b> → ${eq>=need+.05?'콜 이득':eq>=need-.03?'콜·폴드 비슷':'콜 손해'}`);
     if(rz&&h.street===3&&cls!=='nut'&&eq>need)why.push('리버 레이즈는 더 약한 패가 콜해 주지 않아서 콜로 받는 게 기본');}
    else{why.push(`상대 레인지 대비 내 승률 <b>${Math.round(eq*100)}%</b>`);const k=Object.keys(mix).find(x=>x.startsWith('bet'));const thr=h.street===3?.72:.62,cap=this.ctxFor(p).donk?.3:.8;const up=Math.max(0,Math.min(1,(eq-thr)/.22))*cap;
-    if(!SOL&&k&&up>0&&['medium','weak','strong'].includes(cls)){const f0=mix[k];const f1=f0+(1-f0)*up;if(f1-f0>.08){mix={check:1-f1,[k]:f1};this._boost=true;}}}
-   why.push(`레인지 승률 나 ${Math.round(me*100)}% · 투페어+ 나 ${(nm*100).toFixed(1)}% vs 상대 ${(no*100).toFixed(1)}% → ${me>.55?'레인지 우위 나':me<.45?'레인지 우위 상대':'레인지 팽팽'} · ${nm-no>.015?'넛 우위 나':no-nm>.015?'넛 우위 상대':'넛 비슷'}`);
+    if(!SOL&&k&&up>0&&['medium','weak'].includes(cls)){const f0=mix[k];const f1=f0+(1-f0)*up;if(f1-f0>.08){mix={check:1-f1,[k]:f1};this._boost=true;}}}
+   why.push(`레인지 승률 나 ${Math.round(me*100)}% · 넛급 비율 나 ${(nm*100).toFixed(1)}% vs 상대 ${(no*100).toFixed(1)}% → ${me>.55?'레인지 우위 나':me<.45?'레인지 우위 상대':'레인지 팽팽'} · ${nm-no>.015?'넛 우위 나':no-nm>.015?'넛 우위 상대':'넛 비슷'}`);
    const rs=this.reason(cls,p,tc>0,tx,me,nm-no);if(rs)why.push('→ '+rs);}
   // 이번 선택의 빈도
   const catOf=k=>{const t=k.split(':')[0];return t==='fold'?'fold':(t==='call'||t==='check')?'pass':(h.street===0&&t==='allin')?'allin':'agg';};const myc=catOf(a.t);let f=0,szTip='';
   Object.entries(mix).forEach(([k,v])=>{if(catOf(k)===myc)f+=v;});
   if(myc==='agg'&&h.street>0){const k=Object.keys(mix).filter(k=>catOf(k)==='agg'&&mix[k]>.05).map(k=>k.split(':')[1]).find(Boolean);if(k&&a.lab&&k!==a.lab)why.push(`사이즈는 '${k}' 추천`);}
-  const grade=f>=.35?2:f>=.12?1:0;
+  let grade=f>=.35?2:f>=.12?1:0;
+  // 프리플랍 솔버 EV: 내 선택이 최선과 0.05BB 이내면 사실상 같은 선택(🟢), 아니면 손해 크기 표시
+  if(h.street===0&&this._fbSol&&this._pfInfo&&this._pfInfo.n.ev){const I=this._pfInfo,ev=I.n.ev[I.cl];const i=ev?I.n.a.indexOf({fold:'f',call:'c',check:'c',raise:'r',allin:'a'}[a.t]):-1;
+   if(i>=0){const best=Math.max(...ev),d=best-ev[i];if(d<=0.05){if(grade<2)why.push(`EV 차이 ${d.toFixed(2)}BB → 최선과 사실상 같은 선택`);grade=2;}else why.push(`최선 대비 EV -${d.toFixed(2)}BB`);}}
   const rf=this._fbSol?null:this.rangeFreq(p,opts);
   const mixTxt=Object.entries(mix).filter(([,v])=>v>.004).sort((x,y)=>y[1]-x[1]).map(([k,v])=>{const [t,l]=k.split(':');return `${l||({fold:'폴드',call:'콜',check:'체크',raise:'레이즈',allin:'올인'})[t]} ${Math.round(v*100)}%`;}).join(' · ');
   const lv=[...h.acts].reverse().find(a=>!a.me&&a.st===h.street);const ctx=lv?`상대(${lv.p}) ${lv.t}`:(h.street===0?'첫 액션 (블라인드만 있음)':'먼저 행동');
@@ -2354,6 +2358,10 @@ function huPfLoad(S,cb){if(HU_PF[S]||!API){cb&&cb();return;}if(HU_PF_WAIT[S]){HU
 const HV_RK='AKQJT98765432';
 const HV_COL={f:'#9aa5b1',c:'#3a9d3f',r:'#e0663a',a:'#8b1a1a'};
 const hvCls=(i,j)=>i===j?HV_RK[i]+HV_RK[j]:i<j?HV_RK[i]+HV_RK[j]+'s':HV_RK[j]+HV_RK[i]+'o';
+const HV_TOL=0.05;   // EV 차이가 이 안(BB)이면 '사실상 같은 선택'
+const hvClose=ev=>{if(!ev||ev.length<2)return null;const b=Math.max(...ev);const k=ev.filter(x=>x>=b-HV_TOL).length;return k>=2?b:null;};
+const hvEvLines=(acts,ev,nm)=>{if(!ev)return '';const b=Math.max(...ev);const close=hvClose(ev)!=null;
+ return close?`<div style="margin-top:4px;padding:5px 8px;border-radius:8px;background:#eef6ee;font-size:14px">≈ ${acts.map((a,i)=>ev[i]>=b-HV_TOL?nm(a):null).filter(Boolean).join('·')} EV 차이 ${HV_TOL}BB 이내 → <b>사실상 같은 선택</b>이라 어느 쪽이든 괜찮아요</div>`:'';};
 const hvW=c=>c.length===2?6:c[2]==='s'?4:12;
 // 플랍 액션 색: 체크/콜 초록 · 폴드 회색 · 베팅/레이즈 크기 순으로 진해지는 빨강
 function hvFlopCol(acts){const nb=acts.filter(a=>a.startsWith('BET')||a.startsWith('RAISE')).length;let k=0;const P=['#f0a35e','#e0663a','#c0392b','#8b1a1a'];
@@ -2391,16 +2399,16 @@ G.push({k:'huview',cat:'홀덤',e:'📊',n:'헤즈업 레인지 뷰어',d:'솔�
   for(const c in n.s){const w=hvW(c)*R[c];tw+=w;n.s[c].forEach((x,i)=>tot[i]+=w*x/100);}
   const nm=a=>this.pfName(a,n.p,W.raises,path);
   const acts=`<div class="g2b" style="grid-template-columns:repeat(${n.a.length},1fr);margin-top:0">${n.a.map((a,i)=>`<button class="btn" style="background:${HV_COL[a]};padding:10px 2px;font-size:15px" onclick="CUR.path+='${a}';CUR.sel=null;rr()">${nm(a)}<br><span style="font-size:13px;opacity:.9">${tw?Math.round(tot[i]/tw*100):0}%</span></button>`).join('')}</div>`;
-  const grid=this.grid(c=>n.s[c],c=>R[c],n.a.map(a=>HV_COL[a]));
-  let det='';const c=this.sel;if(c&&n.s[c]){const ev=(n.ev||{})[c]||[];det=`<div class="card" style="font-size:15px;line-height:1.7"><b style="font-size:17px">${c}</b> <span class="m">(이 라인까지 올 확률 ${Math.round(R[c]*100)}%)</span><br>${n.a.map((a,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${HV_COL[a]}"></span> ${nm(a)} <b>${n.s[c][i]}%</b>${ev[i]!=null?` · EV <b>${ev[i]>0?'+':''}${ev[i].toFixed(2)}</b>BB`:''}`).join('<br>')}</div>`;}
+  const grid=this.grid(c=>n.s[c],c=>R[c],n.a.map(a=>HV_COL[a]),c=>hvClose((n.ev||{})[c])!=null);
+  let det='';const c=this.sel;if(c&&n.s[c]){const ev=(n.ev||{})[c]||[];det=`<div class="card" style="font-size:15px;line-height:1.7"><b style="font-size:17px">${c}</b> <span class="m">(이 라인까지 올 확률 ${Math.round(R[c]*100)}%)</span><br>${n.a.map((a,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${HV_COL[a]}"></span> ${nm(a)} <b>${n.s[c][i]}%</b>${ev[i]!=null?` · EV <b>${ev[i]>0?'+':''}${ev[i].toFixed(2)}</b>BB`:''}`).join('<br>')}${hvEvLines(n.a,(n.ev||{})[c],nm)}</div>`;}
   return crumbs+`<div style="font-size:15px;font-weight:800;margin:6px 2px">${n.p} 차례 · 레인지 전체</div>`+acts+grid+det+
-   `<div class="card m" style="font-size:13px;line-height:1.6">칸을 누르면 핸드별 빈도와 <b>EV</b>(핸드 시작 대비 기대 손익, BB)가 나와요. 흐린 칸은 앞선 액션 때문에 여기까지 잘 안 오는 핸드예요.</div>`;},
+   `<div class="card m" style="font-size:13px;line-height:1.6">칸을 누르면 핸드별 빈도와 <b>EV</b>(핸드 시작 대비 기대 손익, BB)가 나와요. <b>≈</b> 표시는 액션끼리 EV 차이가 0.05BB 이내라 어느 쪽을 골라도 괜찮은 핸드예요. 흐린 칸은 앞선 액션 때문에 여기까지 잘 안 오는 핸드예요.</div>`;},
  // ---------- 13×13 그리드 ----------
- grid(freqOf,reachOf,cols){let h='<div style="display:grid;grid-template-columns:repeat(13,1fr);gap:1px;background:#ccc;border:1px solid #ccc;border-radius:6px;overflow:hidden;margin:8px 0">';
+ grid(freqOf,reachOf,cols,markOf){let h='<div style="display:grid;grid-template-columns:repeat(13,1fr);gap:1px;background:#ccc;border:1px solid #ccc;border-radius:6px;overflow:hidden;margin:8px 0">';
   for(let i=0;i<13;i++)for(let j=0;j<13;j++){const c=hvCls(i,j),f=freqOf(c),r=reachOf(c);let bg='#eee';
    if(f&&r>0.005){let acc=0;const st=[];f.forEach((x,k)=>{if(x<=0)return;st.push(`${cols[k]} ${acc}% ${acc+x}%`);acc+=x;});if(acc<100)st.push(`#eee ${acc}% 100%`);bg=`linear-gradient(to right,${st.join(',')})`;}
    const op=f&&r>0.005?.25+.75*Math.min(1,r):1;
-   h+=`<div onclick="CUR.sel='${c}';rr()" style="aspect-ratio:1;background:${bg};opacity:${op};display:flex;align-items:center;justify-content:center;font-size:clamp(7px,2.3vw,11px);font-weight:800;color:${f&&r>0.005?'#fff':'#999'};text-shadow:0 0 2px rgba(0,0,0,.6);cursor:pointer;${this.sel===c?'outline:2px solid #111;outline-offset:-2px;':''}">${c}</div>`;}
+   h+=`<div onclick="CUR.sel='${c}';rr()" style="aspect-ratio:1;background:${bg};opacity:${op};display:flex;align-items:center;justify-content:center;font-size:clamp(7px,2.3vw,11px);font-weight:800;color:${f&&r>0.005?'#fff':'#999'};text-shadow:0 0 2px rgba(0,0,0,.6);cursor:pointer;position:relative;${this.sel===c?'outline:2px solid #111;outline-offset:-2px;':''}">${c}${markOf&&f&&r>0.005&&markOf(c)?'<span style="position:absolute;top:0;right:2px;font-size:9px;line-height:1">≈</span>':''}</div>`;}
   return h+'</div>';},
  // ---------- 플랍 ----------
  loadSpots(){if(!API)return;fetch(API+'/api/solver/spots',{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{this.spots=r.ok?r.spots:{};if(!this.spots[this.spot])this.spot=Object.keys(this.spots)[0]||'';if(this.spot&&!this.fl)this.loadBoard('');rr();}).catch(()=>{this.spots={};rr();});},
@@ -2427,9 +2435,9 @@ G.push({k:'huview',cat:'홀덤',e:'📊',n:'헤즈업 레인지 뷰어',d:'솔�
   const R=hvRange(nd.p==='oop'?F.oop:F.ip);for(let k=0;k<lineArr.length;k++){const pk=k?lineArr.slice(0,k).join('>'):'root',pn=F.flop[pk];if(!pn||pn.p!==nd.p)continue;const ai=pn.acts.indexOf(lineArr[k]);for(const c in R)R[c]*=((pn.cls[mc(c)]||[])[ai]||0)/100;}
   const cols=hvFlopCol(nd.acts);
   const acts=`<div class="g2b" style="grid-template-columns:repeat(${Math.min(nd.acts.length,4)},1fr);margin-top:0">${nd.acts.map((a,i)=>`<button class="btn" style="background:${cols[i]};padding:10px 2px;font-size:14px" onclick="CUR.fpath=(CUR.fpath==='root'?'':CUR.fpath+'>')+'${a}';CUR.sel=null;rr()">${svActName(a,F.pot,F.stack)}<br><span style="font-size:13px;opacity:.9">${Math.round(nd.all[i])}%</span></button>`).join('')}</div>`;
-  const grid=this.grid(c=>nd.cls[mc(c)],c=>nd.cls[mc(c)]?(R[c]||0):0,cols);
+  const grid=this.grid(c=>nd.cls[mc(c)],c=>nd.cls[mc(c)]?(R[c]||0):0,cols,c=>hvClose((nd.ev||{})[mc(c)])!=null);
   let det='';const c=this.sel,m=c?mc(c):null;if(c&&nd.cls[m]){const cx=Object.entries(nd.cx||{}).filter(([k])=>{const a=k.slice(0,2),b=k.slice(2);const ra=HV_RK.indexOf(a[0]),rb=HV_RK.indexOf(b[0]);const hi=ra<=rb?a:b,lo=hi===a?b:a;return (hi[0]+lo[0]+(hi[0]===lo[0]?'':hi[1]===lo[1]?'s':'o'))===m;});
-   det=`<div class="card" style="font-size:15px;line-height:1.7"><b style="font-size:17px">${c}</b>${m!==c?` <span class="m">(대표 보드의 ${m})</span>`:''} <span class="m">(여기까지 올 확률 ${Math.round((R[c]||0)*100)}%)</span><br>${nd.acts.map((a,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${cols[i]}"></span> ${svActName(a,F.pot,F.stack)} <b>${nd.cls[m][i]}%</b>${nd.ev&&nd.ev[m]?` · EV <b>${nd.ev[m][i].toFixed(2)}</b>BB`:''}`).join('<br>')}
+   det=`<div class="card" style="font-size:15px;line-height:1.7"><b style="font-size:17px">${c}</b>${m!==c?` <span class="m">(대표 보드의 ${m})</span>`:''} <span class="m">(여기까지 올 확률 ${Math.round((R[c]||0)*100)}%)</span><br>${nd.acts.map((a,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${cols[i]}"></span> ${svActName(a,F.pot,F.stack)} <b>${nd.cls[m][i]}%</b>${nd.ev&&nd.ev[m]?` · EV <b>${nd.ev[m][i].toFixed(2)}</b>BB`:''}`).join('<br>')}${hvEvLines(nd.acts,(nd.ev||{})[m],a=>svActName(a,F.pot,F.stack))}
     ${cx.length?`<div class="m" style="margin-top:6px">무늬별${same?'':' (대표 보드 무늬 기준)'}: ${cx.map(([k,v])=>`${rkCh(HV_RK.length+1-HV_RK.indexOf(k[0]))}${SU['shdc'.indexOf(k[1])]}${rkCh(HV_RK.length+1-HV_RK.indexOf(k[2]))}${SU['shdc'.indexOf(k[3])]} ${v.map((x,i)=>x?svActName(nd.acts[i],F.pot,F.stack)+' '+x+'%':'').filter(Boolean).join('·')}`).join('<br>')}</div>`:''}</div>`;}
   return tabs+inp+crumbs+`<div style="font-size:15px;font-weight:800;margin:6px 2px">${who(nd.p)} 차례 · 레인지 전체</div>`+acts+grid+det+
    `<div class="card m" style="font-size:13px;line-height:1.6">대표 보드 ${Object.values(this.spots).reduce((a,s)=>a+s.boards.length,0)}판을 직접 푼 결과예요 (계속 늘어나요). ${nd.ev?'EV = 지금 폴드하는 것(0) 대비 이 액션의 기대 수익(BB). 사이즈끼리 EV가 거의 같으면 솔버가 섞어 쓰는 거라 어느 쪽이든 괜찮아요.':'이 보드는 EV 없음 (새 엔진으로 푼 보드부터 EV가 나와요).'}</div>`;},
