@@ -2492,7 +2492,8 @@ function missionBox(L0){const L=L0||(MISSIONS||[]).filter(m=>m.state!=='끝'||m.
   <div style="font-size:15px;font-weight:800">${m.period==='weekly'?'📆 주간':'📅 일일'} · ${esc(m.title)} ${m.state!=='진행 중'?`<span class="m">(${m.state})</span>`:''}</div>
   <div style="font-size:14px">🎁 <b style="color:#c62828">${esc(m.reward||'-')}</b> · <span class="m">${cond(m)} · ~${+m.end_d.slice(5,7)}/${+m.end_d.slice(8,10)}</span></div>
   ${m.note?`<div class="m">${esc(m.note)}</div>`:''}
-  <div style="font-size:13.5px;margin-top:2px">${m.winners.length?(m.leader?'👑 현재 1위: ':'🏅 달성: ')+m.winners.map(w=>esc(w.nick)+(w.rec?` (${esc(w.rec)})`:'')+(w.paid?' ✅':'')).join(', '):'<span class="m">아직 달성자 없음 · 첫 주인공이 되어보세요!</span>'}</div>
+  ${m.best&&!(m.leader&&m.winners.length)?`<div style="font-size:13.5px;margin-top:2px">📊 현재 최고기록: <b>${esc(m.best.nick)}</b> (${esc(m.best.rec)})</div>`:''}
+  <div style="font-size:13.5px;margin-top:2px">${m.winners.length?(m.leader?'👑 현재 1위: ':'🏅 달성: ')+m.winners.map(w=>esc(w.nick)+(w.rec?` (${esc(w.rec)})`:'')+(w.paid?' ✅':'')).join(', '):'<span class="m">'+(m.best?'아직 달성자 없음':'아직 달성자 없음 · 첫 주인공이 되어보세요!')+'</span>'}</div>
   ${m.game&&m.state==='진행 중'?`<button class="btn" style="padding:5px 12px;font-size:13.5px;margin-top:5px" onclick="location.hash='g=${m.game}'">도전하기</button>`:''}</div>`).join('')}</div>`;}
 // ☕ 커피이벤트 (운영진 미션) — 진행 중이면 불이 들어온 ON, 아니면 OFF
 function coffeeBox(full){loadMissions();const all=MISSIONS||[];const on=all.filter(m=>m.state==='진행 중'),soon=all.filter(m=>m.state==='예정');const lit=on.length>0;
