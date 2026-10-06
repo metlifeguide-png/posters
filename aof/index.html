@@ -613,51 +613,78 @@ const GAMES={
        bubbles:[{key:"t1",label:"입상 (8위 안 · 1장+)",n:8},{key:"t2",label:"3위 안 (2장+)",n:3}],
        start:10000,ante:0.1,levelMin:5,regLevel:8,tsize:8},
   // 그외 게임: MTT(상금) · 새틀(티켓) 무엇이든 직접 입력
-  etc:{get blinds(){return [Math.max(1,+EC().bb||400)];},times:["00:00"],get name(){return EC().name||"멀티데이";},
-       get desc(){const c=EC();return c.kind==="mtt"?`MTT · ITM ${c.itm}명`:`새틀 · 티켓 ${c.seats}장`;},
+  etc:{get blinds(){return [Math.max(1,+EC().bb||400)];},times:["00:00"],get name(){return EC().name||"그외 게임들";},
+       get desc(){const c=EC();return c.kind==="sat"?`새틀 · 티켓 ${c.seats}장`:c.type==="multi"?`멀티데이 · Day2 ${c.day2}명 · ITM ${c.itm}명`:`원데이 · ITM ${c.itm}명`;},
        pay:()=>etcPay(),
        get bubbles(){const c=EC();if(c.kind==="sat")return [{key:"t1",label:`티켓 (${c.seats}위 안)`,n:+c.seats}];
-         const b=[{key:"t1",label:`ITM (${c.itm}위 안)`,n:+c.itm}];const ft=+c.tsize||9;if(+c.itm>ft)b.push({key:"t2",label:`파이널 테이블 (${ft}명)`,n:ft});return b;},
+         const b=[],mk=(label,n)=>({key:"t"+(b.length+1),label,n}),ft=+c.tsize||9;
+         // 멀티데이는 Day2 진출이 첫 관문 (레지 중·레지 마감 단계에서만 의미 있음)
+         if(c.type==="multi"&&(c.stage==="open"||c.stage==="closed")&&+c.day2>+c.itm) b.push(mk(`Day2 진출 (${c.day2}명 안)`,+c.day2));
+         b.push(mk(`ITM (${c.itm}위 안)`,+c.itm)); if(+c.itm>ft) b.push(mk(`파이널 테이블 (${ft}명)`,ft)); return b;},
        get start(){return +EC().start||10000;},get ante(){return etcAnte();},levelMin:20,get regLevel(){return EC().reg==="open"?1:0;},get tsize(){return +EC().tsize||9;}},
 };
-const ETC_DEF={name:"멀티데이",itmPct:15,itmMode:"pct",kind:"mtt",sb:200,bb:400,anteType:"big",ante:400,start:30000,tsize:9,reg:"closed",itm:15,pool:1000,payList:"",seats:10,val:10};
+const ETC_DEF={name:"",itmPct:15,day2Pct:20,itmMode:"pct",kind:"mtt",sb:200,bb:400,anteType:"big",ante:400,start:30000,tsize:9,reg:"closed",itm:15,pool:1000,payList:"",seats:10,val:10};
 function EC(){ try{ st; }catch(e){ return ETC_DEF; } st.etc=Object.assign({},ETC_DEF,st.etc||{}); const c=st.etc;
-  if(c.name==="그외 게임") c.name="멀티데이";
-  // 💡 멀티데이: ITM 인원 = 전체 엔트리 × ITM 비율 (엔트리를 고치면 ITM 인원도 같이 바뀜)
-  if(c.kind==="mtt"&&c.itmMode==="pct"){ const p=Math.min(60,Math.max(1,+c.itmPct||15)); c.itm=Math.max(1,Math.ceil((+st.entries||0)*p/100)); }
+  if(c.name==="그외 게임"||c.name==="멀티데이") c.name="";
+  // 💡 대회 종류: one(선택형 원데이) · multi(멀티데이) · sat(새틀) / 단계: open(레지 중) · closed(레지 마감) · pre(ITM 전) · post(ITM 후)
+  //    (예전 저장값: kind·reg 로 되어 있으면 한 번 옮겨 담음)
+  if(!c.type) c.type=c.kind==="sat"?"sat":(String(c.payList||"").trim()?"one":"multi");
+  if(!c.stage) c.stage=c.reg==="open"?"open":"closed";
+  if(c.type==="sat"&&(c.stage==="pre"||c.stage==="post")) c.stage="closed";
+  c.kind=c.type==="sat"?"sat":"mtt"; c.reg=c.stage==="open"?"open":"closed";   // 다른 코드가 쓰는 값 (칩EV/ICM 판단)
+  // 💡 ITM 인원 = 전체 엔트리 × ITM 비율 (엔트리를 고치면 ITM 인원도 같이 바뀜). 멀티데이는 항상 비율로만 입력
+  if(c.kind==="mtt"&&(c.type==="multi"||c.itmMode==="pct")){ const p=Math.min(60,Math.max(1,+c.itmPct||15)); c.itm=Math.max(1,Math.ceil((+st.entries||0)*p/100)); }
+  // 💡 멀티데이: Day2 진출 인원 = 전체 엔트리 × Day2 비율 (ITM 인원보다 적을 수는 없음)
+  if(c.type==="multi"){ const d=Math.min(90,Math.max(1,+c.day2Pct||20)); c.day2=Math.max(+c.itm,Math.ceil((+st.entries||0)*d/100)); }
   return c; }
 // 1인당 앤티 (BB 대비) — 빅앤티는 BB가 혼자 내는 금액 ÷ 테이블 인원으로 환산
 function etcAnte(){const c=EC(),bb=Math.max(1,+c.bb||1),t=+c.tsize||9;if(c.anteType==="none")return 0;if(c.anteType==="big")return (+c.ante||bb)/bb/t;return (+c.ante||0)/bb;}
-// 상금표: 직접 입력이 있으면 그대로, 없으면 총상금·ITM 인원으로 표준 MTT 분배(1위 약 20~30%)
-function etcPay(){const c=EC();if(c.kind==="sat")return Array(Math.max(1,+c.seats)).fill(+c.val||1);
-  const L=String(c.payList||"").split(/[,\s/]+/).map(Number).filter(x=>x>0);if(L.length)return L;
-  const n=Math.max(1,+c.itm||1),pool=+c.pool||100,a=n<=10?1.25:n<=30?1.1:1.0;const w=[...Array(n)].map((_,i)=>1/Math.pow(i+1,a));const sw=w.reduce((x,y)=>x+y,0);
+// 상금표 자동 분배(1위 약 20~30%): 총상금·ITM 인원으로 표준 MTT 분배
+function etcAutoPay(n,pool){const a=n<=10?1.25:n<=30?1.1:1.0;const w=[...Array(n)].map((_,i)=>1/Math.pow(i+1,a));const sw=w.reduce((x,y)=>x+y,0);
   return w.map(x=>Math.round(pool*x/sw*10)/10);}
-function etcStage(){const c=EC(),p=+st.players||0;if(c.kind==="sat"){const n=+c.seats;return p>n?(p-n<=Math.max(2,Math.ceil(n*0.2))?`🔥 버블 근처 · 티켓까지 ${p-n}명`:`티켓까지 ${p-n}명`):"✅ 티켓 확정권";}
-  const n=+c.itm,ft=+c.tsize||9;if(p>n)return p-n<=Math.max(2,Math.ceil(n*0.15))?`🔥 버블 근처 · ITM까지 ${p-n}명 (ICM 압박 최대)`:(c.reg==="open"?"레지 중 · 칩 모으기 구간":`ITM까지 ${p-n}명`);
-  if(p>ft)return `💰 ITM 진입 · 파이널 테이블(${ft}명)까지 ${p-ft}명 · 페이점프 구간`;return `🏆 파이널 테이블 · ${p}명 남음 (등수마다 상금 차이 큼)`;}
-function etcRender(id,html){ const eb=$(id); if(!eb) return; const c=EC(); const sig=st.game==="etc"?`${c.kind}|${c.anteType}|${c.reg}|${c.itmMode}`:"";
+// 새틀: 티켓 같은 가치 / 멀티데이: 상금 입력 없이 계산(레지 마감 = Day2 진출자 모두 같은 가치, ITM 전·후 = 표준 분배) / 원데이: 직접 입력이 있으면 그대로, 없으면 자동 분배
+function etcPay(){const c=EC();if(c.kind==="sat")return Array(Math.max(1,+c.seats)).fill(+c.val||1);
+  if(c.type==="multi"){ if(c.stage==="open"||c.stage==="closed") return Array(Math.max(1,+c.day2||1)).fill(1); return etcAutoPay(Math.max(1,+c.itm||1),1000); }
+  const L=String(c.payList||"").split(/[,\s/]+/).map(Number).filter(x=>x>0);if(L.length)return L;
+  return etcAutoPay(Math.max(1,+c.itm||1),+c.pool||100);}
+function etcStage(){const c=EC(),p=+st.players||0,sg=c.stage;
+  if(sg==="open") return "레지 중 · 칩 모으기 구간 (칩EV)";
+  if(c.kind==="sat"){const n=+c.seats;return p>n?(p-n<=Math.max(2,Math.ceil(n*0.2))?`🔥 버블 근처 · 티켓까지 ${p-n}명`:`티켓까지 ${p-n}명`):"✅ 티켓 확정권";}
+  const n=+c.itm,ft=+c.tsize||9;
+  if(c.type==="multi"&&sg==="closed"){const d=+c.day2;return p>d?(p-d<=Math.max(2,Math.ceil(d*0.15))?`🔥 Day2 진출 버블 근처 · 진출까지 ${p-d}명`:`Day2 진출까지 ${p-d}명 (${d}명 진출)`):"✅ Day2 진출권";}
+  const fin=p>ft?`💰 파이널 테이블(${ft}명)까지 ${p-ft}명 · 페이점프 구간`:`🏆 파이널 테이블 · ${p}명 남음 (등수마다 상금 차이 큼)`;
+  if(sg==="post") return `ITM 후 · `+fin+(p>n?` · ⚠️ 아직 ITM 인원(${n}명)보다 많아요`:"");
+  if(p>n)return p-n<=Math.max(2,Math.ceil(n*0.15))?`🔥 버블 근처 · ITM까지 ${p-n}명 (ICM 압박 최대)`:`ITM까지 ${p-n}명`;
+  return `ITM 확정 · `+fin;}
+// ITM·Day2 인원 안내 (엔트리 × 비율)
+function etcItmHint(){const c=EC(),dd=c.type==="multi"&&(c.stage==="open"||c.stage==="closed");
+  return `전체 엔트리 ${st.entries}명 × ${c.itmPct}% = <b>ITM ${c.itm}명</b>`+(c.type==="multi"?` · ${st.entries}명 × ${c.day2Pct}% = <b>Day2 ${c.day2}명</b>`:"")+` · 지금 ${st.players}명 생존 (${dd?`Day2까지 ${Math.max(0,st.players-c.day2)}명 · `:""}ITM까지 ${Math.max(0,st.players-c.itm)}명)`;}
+function etcRender(id,html){ const eb=$(id); if(!eb) return; const c=EC(); const sig=st.game==="etc"?`${c.type}|${c.stage}|${c.anteType}|${c.itmMode}`:"";
   if(eb.dataset.sig!==sig||!eb.firstChild){ eb.innerHTML=html(); eb.dataset.sig=sig; return; }
   if(!sig) return; const pay=etcPay(),avg=Math.round((+st.entries||0)*(+c.start||0)/Math.max(1,+st.players||1));
-  eb.querySelectorAll(".etc-stage").forEach(x=>x.textContent=etcStage()); eb.querySelectorAll(".etc-itm").forEach(x=>x.innerHTML=`전체 엔트리 ${st.entries}명 × ${c.itmPct}% = <b>ITM ${c.itm}명</b> · 지금 ${st.players}명 생존 (ITM까지 ${Math.max(0,st.players-c.itm)}명)`); eb.querySelectorAll(".etc-sum").forEach(x=>x.textContent=etcSum());
+  eb.querySelectorAll(".etc-stage").forEach(x=>x.textContent=etcStage()); eb.querySelectorAll(".etc-itm").forEach(x=>x.innerHTML=etcItmHint()); eb.querySelectorAll(".etc-sum").forEach(x=>x.textContent=etcSum());
   eb.querySelectorAll(".etc-avg").forEach(x=>x.textContent=`${avg.toLocaleString()}칩 (${(avg/Math.max(1,+c.bb)).toFixed(1)}BB)`);
   eb.querySelectorAll(".etc-pay").forEach(x=>x.textContent=`상금표: ${pay.slice(0,9).map((v,i)=>`${i+1}위 ${v}`).join(" · ")}${pay.length>9?` … ${pay.length}위 ${pay[pay.length-1]}`:""}`);
   eb.querySelectorAll("[data-etc]").forEach(x=>{ if(x!==document.activeElement && x.value!==String(c[x.dataset.etc])) x.value=c[x.dataset.etc]; }); }
-function etcSum(){ const c=EC(); return `${c.kind==="mtt"?"MTT":"새틀"} · ${Number(c.sb).toLocaleString()}/${Number(c.bb).toLocaleString()}${c.anteType==="big"?" 빅앤티":c.anteType==="each"?" 앤티 "+c.ante:""} · ${c.kind==="mtt"?`ITM ${c.itm}명 · 상금 ${c.pool}만`:`티켓 ${c.seats}장`} · ${c.reg==="open"?"레지 중":"레지 마감"}`; }
+const ETC_TYPE={one:"선택형 원데이",multi:"멀티데이",sat:"새틀"},ETC_STAGE={open:"레지 중",closed:"레지 마감",pre:"ITM 전",post:"ITM 후"};
+function etcSum(){ const c=EC(); return `${ETC_TYPE[c.type]} · ${Number(c.sb).toLocaleString()}/${Number(c.bb).toLocaleString()}${c.anteType==="big"?" 빅앤티":c.anteType==="each"?" 앤티 "+c.ante:""} · ${c.kind==="sat"?`티켓 ${c.seats}장`:c.type==="multi"?`Day2 ${c.day2}명 · ITM ${c.itm}명`:`ITM ${c.itm}명 · 상금 ${c.pool}만`} · ${ETC_STAGE[c.stage]}`; }
 function etcEasy(){ const sum=etcSum();
   return `<details class="more" id="ezEtcD" ${st.etcOpen!==false?"open":""} style="margin:8px 0"><summary><b>⚙️ 대회 구조</b> · <span class="etc-sum">${sum}</span></summary>${etcForm(true)}</details>`; }
 function etcForm(easy){ if(st.game!=="etc") return ""; const c=EC();
   const inp=(k,lab,type,extra)=>`<label class="f">${lab}<div class="num"><input data-etc="${k}" type="${type}" value="${String(c[k]).replace(/"/g,"&quot;")}" ${extra||""}></div></label>`;
   const seg=(k,opts)=>`<div class="chips" style="margin:4px 0 6px">${opts.map(([v,n])=>`<button type="button" class="chip ${c[k]===v?"on":""}" data-etcv="${k}" data-v="${v}">${n}</button>`).join("")}</div>`;
   const pay=etcPay();const avg=Math.round((+st.entries||0)*(+c.start||0)/Math.max(1,+st.players||1));
-  return `<div class="info" style="margin-top:10px"><b>멀티데이 · 그외 게임</b> · 멀티데이(데이1 플라이트)·MTT·새틀 어떤 대회든 구조를 넣으면 그 구간에 맞춰 차트가 계산돼요<br><b style="color:var(--accent)" class="etc-stage">${etcStage()}</b></div>
-   <h3>대회 종류</h3>${seg("kind",[["mtt","🏆 MTT (등수별 상금)"],["sat","🎫 새틀 (티켓 같은 가치)"]])}
-   <h3>레지</h3>${seg("reg",[["open","레지 중 (칩EV)"],["closed","레지 마감 (ICM)"]])}
+  const stageHint={open:"레지 중: 아직 재입장·인원 증가 구간이라 칩 = 가치예요 (칩EV)",
+    closed:c.kind==="sat"?"레지 마감: 티켓 수가 정해져서 ICM으로 계산해요":c.type==="multi"?"레지 마감: Day2 진출이 목표예요 (진출자는 모두 같은 가치로 ICM 계산)":"레지 마감: ITM을 향해 ICM으로 계산해요",
+    pre:"ITM 전: 버블 구간이에요 (못 들면 0, 들면 상금표대로 ICM)",post:"ITM 후: 이미 상금이 확정돼서 등수별 페이점프를 ICM으로 계산해요"}[c.stage];
+  return `<div class="info" style="margin-top:10px"><b>그외 게임들</b> · 선택형 원데이·멀티데이·새틀 어떤 대회든 구조를 넣으면 그 구간에 맞춰 차트가 계산돼요<br><b style="color:var(--accent)" class="etc-stage">${etcStage()}</b></div>
+   <h3>대회 종류</h3>${seg("type",[["one","선택형 원데이 게임"],["multi","멀티데이 게임"],["sat","새틀"]])}
+   <h3>지금 단계</h3>${seg("stage",c.kind==="sat"?[["open","레지 중"],["closed","레지 마감"]]:[["open","레지 중"],["closed","레지 마감"],["pre","ITM 전"],["post","ITM 후"]])}<div class="hint">${stageHint}</div>
    <h3>블라인드</h3><div class="grid2">${inp("sb","SB","number",'min="1"')}${inp("bb","BB","number",'min="1"')}</div>
    ${seg("anteType",[["big","빅앤티 (BB가 냄)"],["each","1인당 앤티"],["none","앤티 없음"]])}
    ${c.anteType!=="none"?`<div class="grid2">${inp("ante",c.anteType==="big"?"빅앤티 금액 (보통 BB와 같음)":"1인당 앤티 금액","number",'min="0"')}</div>`:""}
-   <h3>구조</h3><div class="grid2">${inp("start","시작 칩 (평균 스택 계산용)","number",'min="1"')}${inp("tsize","테이블 인원","number",'min="2" max="9"')}${inp("name","대회 이름 (선택)","text")}</div>
-   ${c.kind==="mtt"?`<h3>ITM 인원</h3>${seg("itmMode",[["pct","전체 엔트리 × 비율(%)"],["num","인원 직접 입력"]])}<div class="grid2">${c.itmMode==="pct"?inp("itmPct","ITM 비율 (%)","number",'min="1" max="60" step="0.5"'):inp("itm","ITM 인원 (몇 위까지 상금)","number",'min="1"')}${inp("pool","총 상금 (만원)","number",'min="1"')}</div>${c.itmMode==="pct"?`<div class="hint etc-itm">전체 엔트리 ${st.entries}명 × ${c.itmPct}% = <b>ITM ${c.itm}명</b> · 지금 ${st.players}명 생존 (ITM까지 ${Math.max(0,st.players-c.itm)}명)</div>`:""}
+   <h3>구조</h3><div class="grid2">${inp("start","시작 칩 (평균 스택 계산용)","number",'min="1"')}${inp("tsize","테이블 인원","number",'min="2" max="9"')}${inp("name","대회 이름 (선택)","text",'placeholder="그외 게임들"')}</div>
+   ${c.type==="multi"?`<h3>ITM · Day2 비율</h3><div class="grid2">${inp("itmPct","ITM 비율 (%)","number",'min="1" max="60" step="0.5"')}${inp("day2Pct","Day2 비율 (%)","number",'min="1" max="90" step="0.5"')}</div><div class="hint etc-itm">${etcItmHint()}</div>`:c.kind==="mtt"?`<h3>ITM 인원</h3>${seg("itmMode",[["pct","전체 엔트리 × 비율(%)"],["num","인원 직접 입력"]])}<div class="grid2">${c.itmMode==="pct"?inp("itmPct","ITM 비율 (%)","number",'min="1" max="60" step="0.5"'):inp("itm","ITM 인원 (몇 위까지 상금)","number",'min="1"')}${inp("pool","총 상금 (만원)","number",'min="1"')}</div>${c.itmMode==="pct"?`<div class="hint etc-itm">전체 엔트리 ${st.entries}명 × ${c.itmPct}% = <b>ITM ${c.itm}명</b> · 지금 ${st.players}명 생존 (ITM까지 ${Math.max(0,st.players-c.itm)}명)</div>`:""}
      ${inp("payList","등수별 상금 직접 입력 (만원, 쉼표로 · 비우면 자동 분배)","text",'placeholder="예: 300,180,120,90,70,60,50,45,40"')}
      <div class="hint etc-pay">상금표: ${pay.slice(0,9).map((x,i)=>`${i+1}위 ${x}`).join(" · ")}${pay.length>9?` … ${pay.length}위 ${pay[pay.length-1]}`:""}</div>`
     :`<div class="grid2">${inp("seats","티켓 받는 인원","number",'min="1"')}${inp("val","티켓 1장 가치 (만원)","number",'min="0" step="0.1"')}</div>`}
@@ -1522,7 +1549,7 @@ document.addEventListener("click",e=>{ const b=e.target.closest&&e.target.closes
 function etcApply(){ if(st.game!=="etc") return; st.level=1; st.modeManual=false; applyGame(); schedule(); }
 document.addEventListener("toggle",e=>{ if(e.target&&e.target.id==="ezEtcD"){ st.etcOpen=e.target.open; save(); } },true);
 document.addEventListener("change",e=>{ const ek=e.target.dataset&&e.target.dataset.etc; if(ek){ const c=EC(); let v=e.target.value.trim();
-    if(ek==="name"||ek==="payList"){ c[ek]=v; } else { v=parseFloat(v); if(!isFinite(v)||v<0) v=c[ek]; if(["sb","bb","ante","start","tsize","itm","seats"].includes(ek)) v=Math.round(v); if(ek==="tsize") v=Math.min(9,Math.max(2,v)); if(ek==="itmPct") v=Math.min(60,Math.max(1,v)); c[ek]=v;
+    if(ek==="name"||ek==="payList"){ c[ek]=v; } else { v=parseFloat(v); if(!isFinite(v)||v<0) v=c[ek]; if(["sb","bb","ante","start","tsize","itm","seats"].includes(ek)) v=Math.round(v); if(ek==="tsize") v=Math.min(9,Math.max(2,v)); if(ek==="itmPct") v=Math.min(60,Math.max(1,v)); if(ek==="day2Pct") v=Math.min(90,Math.max(1,v)); c[ek]=v;
       if(ek==="bb"){ c.sb=Math.round(v/2); if(c.anteType==="big") c.ante=v; } }
     if(ek==="tsize") st.tsize=c.tsize; etcApply(); return; }
   const s=e.target;
