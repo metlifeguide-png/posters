@@ -2644,7 +2644,7 @@ G.push({k:'reaction',cat:'대전·도구',e:'⚡',n:'반응속도',d:'초록불�
 // 두더지 잡기
 // ===== 목록 · 랭킹 · 오늘의 문제 · 화면 전환 =====
 G.forEach(g=>g.nm=g.n);   // 게임 안에서 this.n 을 숫자로 쓰는 경우가 있어 이름은 따로 보관
-const CATS=['전체','홀덤','카드','퍼즐','대전·도구'];let CATSEL=lsGet('gcat','전체');
+const CATS=['전체','카드','퍼즐','대전·도구'];let CATSEL=lsGet('gcat','전체');   // 홀덤 게임은 '홀덤학습'으로 분리 (#study)
 const RANKED=G.filter(g=>GCFG[g.k]);
 const gName=k=>{const g=G.find(x=>x.k===k);return g?g.e+' '+g.nm:k;};
 const lvTag=n=>{const l=(GD.lv||{})[n];return l?`<span style="font-size:11px;background:var(--blue2);color:var(--blue);border-radius:999px;padding:1px 6px;margin-left:4px;font-weight:800">Lv.${l}</span>`:'';};
@@ -2678,12 +2678,16 @@ function coffeeBox(full){loadMissions();const all=MISSIONS||[];const on=all.filt
    :`<div style="margin-top:8px;font-size:15px;color:#777">새 이벤트를 기다리는 중 ⏳ <b>진행 중일 때만 내용이 있어요.</b></div>`)+`${soon.length?`<div style="margin-top:6px;font-size:14px">⏰ 곧 시작: ${soon.map(m=>`<b>${esc(m.title)}</b> (${+m.start_d.slice(5,7)}/${+m.start_d.slice(8,10)}부터)`).join(', ')}</div>`:''}`;}
  else body=full?missionBox(on):`<div style="margin-top:8px;font-size:15.5px;line-height:1.7">${on.map(m=>`<div ${m.game?`onclick="event.stopPropagation();location.hash='g=${m.game}'" style="cursor:pointer"`:''}>🎮 <b>${esc(m.gname||'')}${m.lv?' '+esc(m.lv):''}</b> · 🎁 <b style="color:#c62828">${esc(m.reward||'-')}</b><br><span class="m">${esc(m.title)}</span></div>`).join('')}</div><div style="margin-top:8px"><span class="btn" style="display:inline-block;padding:8px 16px;font-size:15px">${on.length===1&&on[0].game?'바로 도전하기 ›':'이벤트 보기 ›'}</span></div>`;
  return `<div class="card" style="${full?'':'cursor:pointer;'}padding:16px;border:${lit?'3px solid #f6c344;background:linear-gradient(135deg,#fff8e1,#ffecb3)':'2px dashed #ccc;background:#f7f7f7'}" ${full?'':`onclick="location.hash='${lit&&on.length===1&&on[0].game?'g='+on[0].game:'event'}'"`}>${head}${body}</div>`;}
-function listView(){if(CATSEL==='펫')CATSEL='전체';const L=G.filter(g=>!g.study&&g.cat!=='펫'&&(CATSEL==='전체'||g.cat===CATSEL));
+const tileHTML=g=>`<div class="tile" onclick="location.hash='g='+'${g.k}'"><div class="e">${g.e}</div><div class="n">${g.nm}</div><div class="b">${tileBest(g)}</div></div>`;
+// 🎓 홀덤학습: 홀덤 카테고리 게임만 따로 보여주는 목록 (게임 목록에서는 빠짐)
+function studyView(){const L=G.filter(g=>g.cat==='홀덤'&&!g.study);
+ return `<div class="card"><div class="t">🎓 홀덤학습</div><div class="m">푸시/폴드 · 팟 오즈 · 넛 우위 · 헤즈업 공부 · 레인지 뷰어</div></div><div class="grid">${L.map(tileHTML).join('')}</div>`;}
+function listView(){if(CATSEL==='펫'||CATSEL==='홀덤')CATSEL='전체';const L=G.filter(g=>!g.study&&g.cat!=='펫'&&g.cat!=='홀덤'&&(CATSEL==='전체'||g.cat===CATSEL));
  return `<div class="card"><div class="t" style="margin-bottom:6px">카톡 닉네임 <span class="m">(랭킹·레벨·업적·미션)</span></div><div style="display:flex;gap:6px"><input class="q" id="nk" value="${esc(NICK)}" placeholder="예: 구우"><button class="btn" onclick="setNick($('nk').value);loadMe(rr2)">저장</button></div>${meBar()}</div>
   ${dailyTile()}
   ${coffeeBox()}
-  <div class="tabs">${CATS.map(c=>`<button class="${c===CATSEL?'on':''}" onclick="CATSEL='${c}';lsSet('gcat',CATSEL);render()">${c}</button>`).join('')}<button onclick="location.hash='rank'">🏆 랭킹·업적</button></div>
-  <div class="grid">${L.map(g=>`<div class="tile" onclick="location.hash='g='+'${g.k}'"><div class="e">${g.e}</div><div class="n">${g.nm}</div><div class="b">${tileBest(g)}</div></div>`).join('')}</div>
+  <div class="tabs">${CATS.map(c=>`<button class="${c===CATSEL?'on':''}" onclick="CATSEL='${c}';lsSet('gcat',CATSEL);render()">${c}</button>`).join('')}<button onclick="location.hash='study'">🎓 홀덤학습</button><button onclick="location.hash='rank'">🏆 랭킹·업적</button></div>
+  <div class="grid">${L.map(tileHTML).join('')}</div>
   <div class="m" style="text-align:center;margin-top:14px">주간 1~3위에 들면 📣 자랑하기 버튼이 떠요 · 카톡방에 직접 공유해보세요 🎉</div>`;}
 function rr2(){if(!CUR)render0();}
 function eventView(){const done=(MISSIONS||[]).filter(m=>m.state==='끝'&&m.winners.length).slice(0,5);
@@ -2733,7 +2737,7 @@ setInterval(()=>{if(!document.hidden&&PPAGE)pres();},15000);
 document.addEventListener('visibilitychange',()=>{if(PPAGE)pres(document.hidden);});
 window.addEventListener('pagehide',()=>{if(PPAGE)pres(1);});
 function gvisit(p){presPage(p);if(!API)return;try{fetch(API+'/api/visit',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({p,n:NICK||''})}).catch(()=>{});}catch(e){}}
-function render0(){setTitle('🎮 뚝섬 게임 · '+G.filter(g=>!g.study).length+'종');show(listView());}
+function render0(){setTitle('🎮 뚝섬 게임 · '+G.filter(g=>!g.study&&g.cat!=='홀덤').length+'종');show(listView());}
 // 🔄 새 게임: 같은 난이도·옵션으로 바로 다시 시작
 const NO_NEW=['live','pet','blackjack','hustudy','huview','ladder','roulette'];
 function newBtnSync(){const b=$('newBtn');if(!b)return;const g=CUR;b.style.display=g&&!g.study&&!NO_NEW.includes(g.k)&&!(window.DAILY&&DAILY.k===g.k)?'':'none';}
@@ -2755,6 +2759,7 @@ function render(){const hsh=location.hash.slice(1);if(CUR&&CUR.stop)CUR.stop();S
  CUR=null;back.style.display='none';newBtnSync();
  if(hsh==='rank'){gvisit('게임·랭킹');setTitle('🏆 랭킹·업적');back.style.display='';show(rankView());loadRank(()=>{if(location.hash==='#rank')show(rankView());});if(RTAB==='ach'||RTAB==='level')loadMe(()=>{if(location.hash==='#rank')show(rankView());});return;}
  if(hsh==='daily'){gvisit('게임·오늘의 문제');setTitle('📅 오늘의 문제');back.style.display='';show(dailyView());loadDaily();return;}
+ if(hsh==='study'){gvisit('홀덤학습');setTitle('🎓 홀덤학습');back.style.display='';show(studyView());return;}
  if(hsh==='event'){gvisit('게임·커피이벤트');setTitle('☕ 커피이벤트');back.style.display='';MIS_AT=0;show(eventView());return;}
  render0();if(window.top===window.self)gvisit('게임 목록');else presPage('게임 목록');if(NICK&&!ME)loadMe(()=>{if(!CUR&&!location.hash.slice(1))render0();});}
 addEventListener('hashchange',render);
