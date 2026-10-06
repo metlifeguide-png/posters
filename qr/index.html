@@ -33,10 +33,10 @@ input[type=text],input[type=number],select{background:var(--pn);border:1px solid
 #kp button{height:46px;font-size:19px;border-radius:10px;border:1px solid var(--ln);background:var(--pn);cursor:pointer;padding:0;touch-action:manipulation}
 #kp button:active{background:var(--ln)}
 #kp .p{font-size:12.5px;color:var(--gd);font-weight:700}
-#kp .u{color:var(--bl);font-weight:700}#kp .a{font-weight:700}#kp .e{background:var(--ac);color:#fff;grid-column:1/-1;font-size:17px}
+#kp .u{color:var(--bl);font-weight:700}#kp .a{font-weight:700}#kp .e{background:var(--ac);color:#fff;grid-column:6;grid-row:1/3;height:auto;font-size:20px;font-weight:700;line-height:1.4;white-space:nowrap}
 .k9{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin-bottom:8px}
 .kg{display:grid;grid-template-columns:3fr 5fr;gap:12px}
-.kl{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.kr{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.kl{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.kr{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) minmax(0,2fr);gap:5px}#kp .kr .a,#kp .kr .d{grid-row:3}
 .sv{display:grid;grid-template-columns:1fr 2fr;gap:8px;margin:10px 0 16px}.sv button{padding:14px;font-size:17px}
 .hc{background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:10px;margin-top:8px}
 .hc .t{font-weight:700}.hc .bt{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.hc .bt .btn{padding:7px 10px;font-size:13px}
@@ -88,7 +88,7 @@ const API="https://211-233-211-164.sslip.io",H={"Content-Type":"application/json
 try{U=JSON.parse(localStorage.getItem('qr_sess')||'null')}catch(e){}
 const ck=()=>'hr1_'+U.login.toLowerCase();
 function sv(){if(!U)return;try{localStorage.setItem(ck(),JSON.stringify(D))}catch(e){}clearTimeout(pend);pend=setTimeout(push,800);$('#sst').textContent='저장 중…'}
-async function push(){if(!U)return;try{const r=await fetch(API+'/api/qr/save',{method:'POST',headers:H,body:JSON.stringify({token:U.token,data:D})});
+async function push(){if(!U)return;try{const r=await fetch(API+'/api/qr/data',{method:'PUT',headers:{...H,'X-QR-Token':U.token},body:JSON.stringify({data:D})});
  if(r.status===401){logout(true);return}if(!r.ok)throw 0;$('#sst').textContent='자동 저장'}catch(e){$('#sst').textContent='오프라인 · 기기에 저장됨'}}
 async function authGo(kind){const login=$('#lg').value.trim(),pw=$('#pw').value;$('#am').textContent='';
  try{const r=await fetch(API+'/api/qr/'+kind,{method:'POST',headers:H,body:JSON.stringify({login,pw})}),j=await r.json().catch(()=>({}));
@@ -96,7 +96,7 @@ async function authGo(kind){const login=$('#lg').value.trim(),pw=$('#pw').value;
   U={login:j.login,token:j.token};try{localStorage.setItem('qr_sess',JSON.stringify(U))}catch(e){}$('#pw').value='';await boot()}
  catch(e){$('#am').textContent='서버에 연결할 수 없어요'}}
 async function boot(){let loc=null;try{loc=JSON.parse(localStorage.getItem(ck())||'null')||JSON.parse(localStorage.getItem('hr1')||'null')}catch(e){}
- try{const r=await fetch(API+'/api/qr/load',{method:'POST',headers:H,body:JSON.stringify({token:U.token})});if(r.status===401){logout(true);return}
+ try{const r=await fetch(API+'/api/qr/data',{headers:{...H,'X-QR-Token':U.token}});if(r.status===401){logout(true);return}
   const j=await r.json();D=j.data&&j.data.tours?j.data:{tours:[]};
   if(!D.tours.length&&loc&&loc.tours&&loc.tours.length){D=loc;push()}}
  catch(e){D=loc&&loc.tours?loc:{tours:[]}}
@@ -205,7 +205,7 @@ function cp(t){const ok=()=>toast('복사됨');function fb(){const a=document.cr
 function home(){T=null;$('#app').hidden=true;$('#home').hidden=false;
  const l=[...D.tours].sort((a,b)=>b.ts-a.ts);$('#tlh').hidden=!l.length;
  $('#tl').innerHTML=l.map(t=>`<div class="tc" data-id="${t.id}"><b>${esc(t.name)}</b><span class="mu">${t.hands.length}핸드</span></div>`).join('')}
-function enter(t){T=t;ed=null;$('#home').hidden=true;$('#app').hidden=false;$('#tt').textContent=t.name;ses();setL(t.form||{});aK='stack';upd();hands();window.scrollTo(0,0)}
+function enter(t){try{if(window.top===window&&!(history.state&&history.state.qr==='app'))history.pushState({qr:'app'},'')}catch(e){}T=t;ed=null;$('#home').hidden=true;$('#app').hidden=false;$('#tt').textContent=t.name;ses();setL(t.form||{});aK='stack';upd();hands();window.scrollTo(0,0)}
 function bparse(S){const n=(S.blind||'').match(/\d+(?:\.\d+)?/g)||[];S.sb=+n[0]||0;S.bb=+n[1]||0;S.at=+n[2]||0}
 function ses(){const S=T.S;if(S.blind===undefined)S.blind=S.bb?`${S.sb} ${S.bb} ${S.at}`:'';bparse(S);$('#mx').value=S.max;$('#an').value=S.ante;$('#bi').value=S.blind}
 function mk(){const F=$('#form');F.innerHTML=K.map(k=>`<div class="ln" data-k="${k}"><b>${k}:</b><input data-k="${k}" autocomplete="off" autocapitalize="off" spellcheck="false" ${k==='memo'?'type="text" placeholder="메모"':'type="text" inputmode="none"'}></div>`).join('');
@@ -229,8 +229,8 @@ function key(k){
  chg();if(['f','x','c','jam','?'].includes(k)&&['pre','flop','turn','river'].includes(k0)&&R.done[k0])next()}
 function kp(){const B=(k,c='')=>`<button class="${c}" data-k="${k}">${k}</button>`,
  L=['7','8','9','4','5','6','1','2','3','0','.'].map(k=>B(k)).join('')+B('bb','u'),
- Rr=['A','K','Q','J','T'].map(k=>B(k)).join('')+['♠','♥','♦','♣'].map(k=>`<button data-k="${k}" class="${/[♥♦]/.test(k)?'red':''}">${k}</button>`).join('')+B('⌫')+['f','x','c','jam','?'].map(k=>B(k,'a')).join('');
- $('#kp').innerHTML=`<div class="k9">${PK.map(k=>B(k,'p')).join('')}</div><div class="kg"><div class="kl">${L}</div><div class="kr">${Rr}<button class="e" data-k="↵">↵ 다음 줄</button></div></div>`;
+ Rr=['A','K','Q','J','T'].map(k=>B(k)).join('')+`<button class="e" data-k="↵">↵<br>다음 줄</button>`+['♠','♥','♦','♣'].map(k=>`<button data-k="${k}" class="${/[♥♦]/.test(k)?'red':''}">${k}</button>`).join('')+B('⌫','d')+['f','x','c','jam','?'].map(k=>B(k,'a')).join('');
+ $('#kp').innerHTML=`<div class="k9">${PK.map(k=>B(k,'p')).join('')}</div><div class="kg"><div class="kl">${L}</div><div class="kr">${Rr}</div></div>`;
  $('#kp').addEventListener('mousedown',e=>e.preventDefault());$('#kp').addEventListener('click',e=>{const b=e.target.closest('button');if(b)key(b.dataset.k)})}
 function hands(){const H=T.hands;$('#hh').textContent=`저장한 핸드 (${H.length})`;
  $('#hands').innerHTML=H.length?H.map(h=>{const Q=sim(h.L,h.S),miss=!Q.hp||!Object.keys(Q.st).length||h.d,qs=Q.q.length;
@@ -250,7 +250,7 @@ function init(){mk();kp();
   t.ts=Date.now();sv();$('#tn').value='';enter(t)};
  $('#go').onclick=go;$('#tn').onkeydown=e=>{if(e.key==='Enter')go()};
  $('#tl').onclick=e=>{const c=e.target.closest('.tc');if(c)enter(D.tours.find(t=>t.id===c.dataset.id))};
- $('#back').onclick=home;$('#bi').oninput=e=>{T.S.blind=e.target.value;bparse(T.S);sv();upd()};
+ $('#back').onclick=()=>{if(window.top===window&&history.state&&history.state.qr==='app'){history.back()}else home()};window.__qrBack=()=>{if(!$('#app').hidden){home();return true}return false};addEventListener('popstate',()=>{if(!$('#app').hidden)home()});$('#bi').oninput=e=>{T.S.blind=e.target.value;bparse(T.S);sv();upd()};
  $('#mx').onchange=e=>{T.S.max=+e.target.value;sv();upd()};$('#an').onchange=e=>{T.S.ante=e.target.value;sv();upd()};
  $('#later').onclick=()=>saveH(true);$('#save').onclick=()=>saveH(false);
  $('#exp').onclick=()=>{const hs=T.hands.filter(h=>!h.d&&h.S.bb).reverse(),t=hs.map(ps).join('\n\n\n');if(hs.length<T.hands.filter(h=>!h.d).length)toast('BB를 안 적은 핸드는 빼고 복사했어요');if(!t){toast('내보낼 핸드가 없습니다');return}cp(t);
