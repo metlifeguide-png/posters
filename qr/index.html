@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>빠른 핸드 기록</title>
+<style>
+:root{--bg:#eef2ef;--pn:#fff;--ln:#cfd9d3;--tx:#14201a;--mu:#5d7168;--ac:#0f6b4a;--gd:#9a6a12;--rd:#d23b3b;--bl:#1d6fa5;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1814;--pn:#16251f;--ln:#2a3f36;--tx:#e7efe9;--mu:#8ea79b;--ac:#3fbf8a;--gd:#e6b54a;--rd:#ff6b6b;--bl:#6bb6ea}}
+:root[data-theme="dark"]{--bg:#0e1814;--pn:#16251f;--ln:#2a3f36;--tx:#e7efe9;--mu:#8ea79b;--ac:#3fbf8a;--gd:#e6b54a;--rd:#ff6b6b;--bl:#6bb6ea}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--tx);font:16px/1.45 "Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;background-color:var(--bg)}
+main{max-width:520px;margin:0 auto;padding:12px 12px 40px}
+h1{font-size:26px;margin:18px 0 6px}h2{font-size:17px;margin:0}
+.mu{color:var(--mu);font-size:14px}.red{color:var(--rd)}
+input,select,button{font:inherit;color:var(--tx)}
+input[type=text],input[type=number],select{background:var(--pn);border:1px solid var(--ln);border-radius:10px;padding:10px;width:100%}
+.btn{border:1px solid var(--ln);background:var(--pn);border-radius:10px;padding:10px 14px;cursor:pointer}
+.pri{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}
+.row{display:flex;gap:8px;align-items:center}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.pn{background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:10px;margin-bottom:10px}
+.tc{display:flex;justify-content:space-between;padding:12px;border:1px solid var(--ln);border-radius:12px;background:var(--pn);margin-top:8px;cursor:pointer}
+.ses{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ses label{font-size:12px;color:var(--mu)}
+.lv{display:flex;align-items:center;gap:8px;grid-column:1/-1}.lv b{flex:1;text-align:center}
+.bl3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;grid-column:1/-1}
+.ln{display:flex;align-items:center;gap:6px;padding:3px 0;transition:opacity .2s}
+.ln b{width:54px;color:var(--mu);font-weight:600;font-size:15px}
+.ln input{flex:1;min-width:0;font-size:19px;padding:9px;caret-color:var(--gd)}
+.ln.on input{border-color:var(--ac);box-shadow:0 0 0 2px var(--ac)}
+.ln.dim{opacity:.35}
+.pa .r{padding:5px 0;border-bottom:1px solid var(--ln);font-size:15px}.pa .r:last-child{border:0}
+.pa .r b{display:inline-block;min-width:38px;color:var(--ac)}
+.pa .w{color:var(--rd);font-size:14px}
+#kp button{height:46px;font-size:19px;border-radius:10px;border:1px solid var(--ln);background:var(--pn);cursor:pointer;padding:0;touch-action:manipulation}
+#kp button:active{background:var(--ln)}
+#kp .p{font-size:12.5px;color:var(--gd);font-weight:700}
+#kp .u{color:var(--bl);font-weight:700}#kp .a{font-weight:700}#kp .e{background:var(--ac);color:#fff;grid-column:1/-1;font-size:17px}
+.k9{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin-bottom:8px}
+.kg{display:grid;grid-template-columns:3fr 5fr;gap:12px}
+.kl{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.kr{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.sv{display:grid;grid-template-columns:1fr 2fr;gap:8px;margin:10px 0 16px}.sv button{padding:14px;font-size:17px}
+.hc{background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:10px;margin-top:8px}
+.hc .t{font-weight:700}.hc .bt{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.hc .bt .btn{padding:7px 10px;font-size:13px}
+.tag{display:inline-block;font-size:12px;border:1px solid var(--gd);color:var(--gd);border-radius:20px;padding:0 8px;margin-right:4px}
+#ts{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:8px 16px;border-radius:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+#ts.on{opacity:1}
+[hidden]{display:none!important}
+</style></head><body><main>
+<section id="auth">
+<h1>핸드 기록</h1>
+<p class="mu">아이디와 비밀번호만 있으면 됩니다. 내 기록은 내 아이디로만 볼 수 있어요. 비밀번호를 잊으면 운영자에게 초기화를 요청하세요.</p>
+<input type="text" id="lg" placeholder="아이디" autocomplete="username" autocapitalize="off">
+<input type="password" id="pw" placeholder="비밀번호 (4~20자)" autocomplete="current-password" style="margin-top:8px;background:var(--pn);border:1px solid var(--ln);border-radius:10px;padding:10px;width:100%">
+<div class="row" style="margin-top:8px"><button class="btn pri" id="li" style="flex:1;padding:14px">로그인</button><button class="btn" id="su" style="flex:1;padding:14px">아이디 만들기</button></div>
+<p id="am" class="red" style="min-height:22px"></p>
+</section>
+<section id="home" hidden>
+<div class="top"><span class="mu">👤 <b id="who"></b></span><button class="btn" id="lo" style="font-size:13px;padding:6px 10px">로그아웃</button></div>
+<h1>핸드 기록</h1>
+<p class="mu">대회 이름을 적고 들어가면, 그 안에서 적는 핸드는 이 대회에만 모아서 관리됩니다.</p>
+<input type="text" id="tn" placeholder="대회 이름 (예: 피망 새틀 10/6)" autocomplete="off">
+<button class="btn pri" id="go" style="width:100%;margin-top:8px;padding:14px">들어가기</button>
+<h2 style="margin-top:22px" id="tlh" hidden>내 대회</h2><div id="tl"></div>
+</section>
+<section id="app" hidden>
+<div class="top"><div class="row"><button class="btn" id="back">←</button><div><h2 id="tt"></h2><span class="mu">새 핸드</span></div></div><span class="mu" id="sst">자동 저장</span></div>
+<div class="pn ses"><div><label>테이블</label><select id="mx"><option value="9">9max</option><option value="8">8max</option><option value="7">7max</option><option value="6">6max</option></select></div>
+<div><label>앤티 방식</label><select id="an"><option value="bb">BB앤티</option><option value="all">올앤티</option><option value="none">앤티 없음</option></select></div></div>
+<div class="ln" style="margin-bottom:4px"><b>blind:</b><input id="bi" type="text" inputmode="text" autocomplete="off" placeholder="SB BB 앤티 · 1000 2000 2000"></div>
+<div id="form"></div>
+<div class="pn pa" id="pa" style="margin-top:8px"></div>
+<div id="kp"></div>
+<div class="sv"><button class="btn" id="later">나중에</button><button class="btn pri" id="save">저장</button></div>
+<div class="top"><h2 id="hh">저장한 핸드</h2><button class="btn" id="exp" style="font-size:13px;padding:7px 10px">전체 .txt 복사·내보내기</button></div>
+<div id="hands"></div>
+</section></main><div id="ts"></div>
+<script>
+const $=s=>document.querySelector(s),f=x=>String(+(+x).toFixed(2)),esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const P9=['UTG','UTG+1','UTG+2','LJ','HJ','CO','BTN','SB','BB'],PK=['UTG','U+1','U+2','LJ','HJ','CO','BTN','SB','BB'];
+const AL={U:'UTG',UTG:'UTG',U1:'UTG+1','U+1':'UTG+1','UTG+1':'UTG+1',U2:'UTG+2','U+2':'UTG+2','UTG+2':'UTG+2',LJ:'LJ',HJ:'HJ',CO:'CO',BTN:'BTN',BN:'BTN',SB:'SB',BB:'BB'};
+const SY={'♠':'s','♥':'h','♦':'d','♣':'c'},SR={s:'♠',h:'♥',d:'♦',c:'♣'};
+const pos=t=>AL[String(t).toUpperCase()];
+const cards=s=>{const r=[];String(s).replace(/([2-9TJQKA])([♠♥♦♣shdc])/gi,(m,a,b)=>{r.push(a.toUpperCase()+(SY[b]||b.toLowerCase()))});return r};
+const dc=c=>c[0]+SR[c[1]],cH=a=>a.map(c=>{const x=dc(c);return /[♥♦]/.test(x)?`<span class="red">${x}</span>`:x}).join('');
+const K=['stack','hero','pre','flop','turn','river','show','memo'],NM=['프리','플랍','턴','리버'];
+const _unused=[[100,200],[150,300],[200,400],[300,600],[400,800],[500,1000],[600,1200],[800,1600],[1000,2000],[1500,3000],[2000,4000],[2500,5000],[3000,6000],[4000,8000],[5000,10000]];
+let D={tours:[]},T=null,ed=null,aK='stack',R=null,U=null,pend=null;
+const API="https://211-233-211-164.sslip.io",H={"Content-Type":"application/json","ngrok-skip-browser-warning":"true"};
+try{U=JSON.parse(localStorage.getItem('qr_sess')||'null')}catch(e){}
+const ck=()=>'hr1_'+U.login.toLowerCase();
+function sv(){if(!U)return;try{localStorage.setItem(ck(),JSON.stringify(D))}catch(e){}clearTimeout(pend);pend=setTimeout(push,800);$('#sst').textContent='저장 중…'}
+async function push(){if(!U)return;try{const r=await fetch(API+'/api/qr/save',{method:'POST',headers:H,body:JSON.stringify({token:U.token,data:D})});
+ if(r.status===401){logout(true);return}if(!r.ok)throw 0;$('#sst').textContent='자동 저장'}catch(e){$('#sst').textContent='오프라인 · 기기에 저장됨'}}
+async function authGo(kind){const login=$('#lg').value.trim(),pw=$('#pw').value;$('#am').textContent='';
+ try{const r=await fetch(API+'/api/qr/'+kind,{method:'POST',headers:H,body:JSON.stringify({login,pw})}),j=await r.json().catch(()=>({}));
+  if(!r.ok){$('#am').textContent=j.detail||'실패했어요';return}
+  U={login:j.login,token:j.token};try{localStorage.setItem('qr_sess',JSON.stringify(U))}catch(e){}$('#pw').value='';await boot()}
+ catch(e){$('#am').textContent='서버에 연결할 수 없어요'}}
+async function boot(){let loc=null;try{loc=JSON.parse(localStorage.getItem(ck())||'null')||JSON.parse(localStorage.getItem('hr1')||'null')}catch(e){}
+ try{const r=await fetch(API+'/api/qr/load',{method:'POST',headers:H,body:JSON.stringify({token:U.token})});if(r.status===401){logout(true);return}
+  const j=await r.json();D=j.data&&j.data.tours?j.data:{tours:[]};
+  if(!D.tours.length&&loc&&loc.tours&&loc.tours.length){D=loc;push()}}
+ catch(e){D=loc&&loc.tours?loc:{tours:[]}}
+ $('#auth').hidden=true;$('#who').textContent=U.login;home()}
+function logout(exp){U=null;D={tours:[]};T=null;try{localStorage.removeItem('qr_sess')}catch(e){}$('#app').hidden=true;$('#home').hidden=true;$('#auth').hidden=false;$('#am').textContent=exp?'다시 로그인해 주세요':''}
+function toast(m){const t=$('#ts');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1400)}
+
+/* ---------- 게임 엔진 ---------- */
+function sim(L,S){
+ const W=[],rows=[],ev=[],done={},dim={},q=[],unc={};
+ const order=P9.slice(9-S.max),bbv=1,sbv=S.bb?S.sb/S.bb:.5,at=S.bb?S.at/S.bb:(S.ante==='none'?0:1),st={};
+ (L.stack||'').split(',').forEach(t=>{t=t.trim();if(!t)return;const m=t.match(/^(\S+)\s+([\d.]+)/),p=m&&pos(m[1]);if(!p||!order.includes(p))W.push('stack 해석 불가: '+t);else st[p]=+m[2]});
+ let hp=null,hc=[];const hm=(L.hero||'').trim().match(/^(\S+)\s*(.*)$/);
+ if(hm){hp=pos(hm[1]);if(!hp)W.push('hero 포지션 해석 불가');hc=cards(hm[2])}
+ const rem={...st},alive=new Set(Object.keys(st)),allin=new Set(),used=[...hc];
+ const ante=S.ante==='bb'?at:S.ante==='all'?at*S.max:0;
+ let settled=ante+(st.SB===undefined?sbv:0)+(st.BB===undefined?bbv:0),board=[],ended=null;
+ if(S.ante==='bb'&&st.BB!==undefined)rem.BB-=at;
+ if(S.ante==='all')for(const p in rem)rem[p]-=at;
+ if(st.SB!==undefined)rem.SB-=sbv;if(st.BB!==undefined)rem.BB-=bbv;
+ const keys=['pre','flop','turn','river'];
+ for(let i=0;i<4;i++){
+  const k=keys[i],raw=(L[k]||'').trim();
+  if(ended){dim[k]=true;if(raw)W.push(NM[i]+' 줄: 핸드가 이미 끝났습니다');continue}
+  let left='',right=raw;
+  if(i>0&&raw){const ci=raw.indexOf(':');if(ci>=0){left=raw.slice(0,ci);right=raw.slice(ci+1)}else if(cards(raw.split(/[\s,]/)[0]).length){left=raw;right=''}
+   const nb=cards(left),need=i===1?3:1;if(left&&nb.length!==need)W.push(`${NM[i]} 보드는 ${need}장이어야 합니다`);board.push(...nb);used.push(...nb)}
+  const bt={},sum=()=>Object.values(bt).reduce((a,b)=>a+b,0),acted=new Set();let cur=0,r=0,rq='',acts=[];
+  if(i===0){if(st.SB!==undefined)bt.SB=sbv;if(st.BB!==undefined)bt.BB=bbv;cur=bbv}
+  right.split(',').forEach(tok=>{
+   tok=tok.trim();if(!tok)return;const dq=tok.includes('?');tok=tok.replace(/\?/g,'').trim();
+   const pp=tok.split(/\s+/),p=pos(pp[0]),a=(pp[1]||'').toLowerCase().replace(/bb$/,'');
+   if(!p||!alive.has(p)){W.push(`${NM[i]}: "${tok}" 해석 불가 또는 이미 폴드한 자리`);return}
+   if(allin.has(p)){W.push(`${p}는 이미 올인`);return}
+   const to=bt[p]||0;let add=0,t='';
+   if(a==='f'){alive.delete(p);t='폴드';ev.push({st:i,p,k:'f'})}
+   else if(a==='x'){if(cur-to>1e-9)W.push(`${p} 체크 불가 (콜 필요)`);t='체크';ev.push({st:i,p,k:'x'})}
+   else if(a==='c'){add=Math.min(cur-to,rem[p]);if(add<=1e-9)W.push(`${p} 콜할 금액이 없습니다`);
+    if(p===hp&&add>0)rq=` · 필요 승률 ${Math.round(add/(settled+sum()+add)*100)}%`;t='콜';ev.push({st:i,p,k:'c',add})}
+   else{let total=a==='jam'?to+rem[p]:parseFloat(a);if(isNaN(total)){W.push(`${NM[i]}: "${tok}" 액션을 알 수 없음`);return}
+    add=total-to;const ai=add>=rem[p]-1e-9;if(ai){add=rem[p];total=to+add}
+    if(total<cur-1e-9&&!ai){W.push(`${p} 금액이 현재 베팅(${f(cur)})보다 작습니다`);return}
+    if(total<=cur+1e-9){if(p===hp&&add>0)rq=` · 필요 승률 ${Math.round(add/(settled+sum()+add)*100)}%`;t=ai?'올인 콜':'콜';ev.push({st:i,p,k:'c',add})}
+    else{const n=i===0?['오픈','3벳','4벳','5벳'][Math.min(r,3)]:(r?'레이즈':'벳');t=(ai?'올인 ':'')+n+' '+f(total);ev.push({st:i,p,k:cur?'r':'b',add,to:total,pv:cur});cur=total;r++}}
+   if(add>0){bt[p]=to+add;rem[p]-=add;if(rem[p]<=1e-9){allin.add(p);ev[ev.length-1].ai=true}}
+   acted.add(p);acts.push(`${p} ${t}${dq?' (고민)':''}`);if(dq)q.push(NM[i])});
+  const act=[...alive].filter(p=>!allin.has(p));
+  const comp=acts.length>0&&(alive.size===1||act.every(p=>acted.has(p)&&Math.abs((bt[p]||0)-cur)<1e-9));
+  if(comp){const e=Object.entries(bt).sort((a,b)=>b[1]-a[1]),sec=e[1]?e[1][1]:0;
+   if(e.length&&e[0][1]>sec+1e-9){unc[i]={p:e[0][0],amt:e[0][1]-sec};bt[e[0][0]]-=unc[i].amt}}
+  settled+=sum();done[k]=comp;
+  if(raw)rows.push({s:NM[i],board:i>0?board.slice(i===1?0:i+1).map(dc).join(' '):'',t:acts.join(' → '),pot:settled,rq});
+  if(comp){if(alive.size===1)ended='fold';else if(act.length<=1)ended='allin'}
+ }
+ const sh={};(L.show||'').split(',').forEach(t=>{t=t.trim();if(!t)return;const m=t.match(/^(\S+)\s+(.+)$/);let p=m&&pos(m[1]),c=m&&p?cards(m[2]):cards(t);
+  if(!p){const o=[...alive].filter(x=>x!==hp);p=o.length===1?o[0]:null;if(!p){W.push('show: 포지션이 필요합니다');return}}sh[p]=c;used.push(...c)});
+ if(ended==='fold')dim.show=true;
+ const dup=used.filter((c,i)=>used.indexOf(c)!==i);if(dup.length)W.push('중복 카드: '+[...new Set(dup)].map(dc).join(' '));
+ let vil=[...alive].filter(p=>p!==hp);
+ if(!vil.length){const o=ev.map(e=>e.p).filter(p=>p!==hp);if(o.length)vil=[o[o.length-1]]}
+ const es=hp&&st[hp]!=null?Math.min(st[hp],vil.length?Math.max(...vil.map(v=>st[v]||0)):st[hp]):null;
+ return{rows,W,ev,done,dim,q:[...new Set(q)],board,hp,hc,st,sh,alive,pot:settled,unc,order,ended,vil,es,bbv,sbv,at,ante};
+}
+
+/* ---------- 내보내기 ---------- */
+const rom=n=>{let r='';[[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']].forEach(([v,s])=>{while(n>=v){r+=s;n-=v}});return r};
+const hash=s=>{let h=7;for(const c of s)h=(h*31+c.charCodeAt(0))%900000000;return 100000000+h};
+function ps(h){
+ const S=h.S,Q=sim(h.L,S),c=x=>Math.round(x*S.bb),hs=Q.hp&&Q.st[Q.hp]!=null?Q.st[Q.hp]:100,nm=p=>p===Q.hp?'Hero':p.replace('+',''),stk=p=>Q.st[p]!=null?Q.st[p]:hs;
+ const d=new Date(h.ts),z=n=>String(n).padStart(2,'0'),tid=hash(T.name);
+ const ts=`${d.getFullYear()}/${z(d.getMonth()+1)}/${z(d.getDate())} ${z(d.getHours())}:${z(d.getMinutes())}:${z(d.getSeconds())}`;
+ const o=[`PokerStars Hand #${h.hid}: Tournament #${tid}, $0+$0 USD Hold'em No Limit - Level ${rom(S.lv||1)} (${S.sb}/${S.bb}) - ${ts} ET`,
+  `Table '${tid} 1' ${S.max}-max Seat #${Q.order.indexOf('BTN')+1} is the button`];
+ Q.order.forEach((p,i)=>o.push(`Seat ${i+1}: ${nm(p)} (${c(stk(p))} in chips)`));
+ if(Q.ante){if(S.ante==='bb')o.push(`${nm('BB')}: posts the ante ${c(Q.at)}`);else Q.order.forEach(p=>o.push(`${nm(p)}: posts the ante ${c(Q.at)}`))}
+ o.push(`${nm('SB')}: posts small blind ${c(Q.sbv)}`,`${nm('BB')}: posts big blind ${S.bb}`,'*** HOLE CARDS ***');
+ if(Q.hp)o.push(`Dealt to Hero [${Q.hc.join(' ')}]`);
+ const line=e=>{const n=nm(e.p),a=e.ai?' and is all-in':'';
+  return e.k==='f'?`${n}: folds`:e.k==='x'?`${n}: checks`:e.k==='c'?`${n}: calls ${c(e.add)}${a}`:e.k==='b'?`${n}: bets ${c(e.add)}${a}`:`${n}: raises ${c(e.to)-c(e.pv)} to ${c(e.to)}${a}`};
+ const hd=['','','*** FLOP ***','*** TURN ***','*** RIVER ***'],B=Q.board.map(x=>x);
+ for(let i=0;i<4;i++){
+  if(i>0){const need=i===1?3:i+2;if(B.length<need)break;
+   o.push(i===1?`*** FLOP *** [${B.slice(0,3).join(' ')}]`:`${hd[i+1]} [${B.slice(0,need-1).join(' ')}] [${B[need-1]}]`)}
+  const es=Q.ev.filter(e=>e.st===i);
+  if(i===0){const seen=new Set(),fold=p=>{if(!seen.has(p)&&Q.st[p]===undefined&&p!=='SB'&&p!=='BB'){seen.add(p);o.push(`${nm(p)}: folds`)}};
+   es.forEach(e=>{Q.order.slice(0,Q.order.indexOf(e.p)).forEach(fold);o.push(line(e))});Q.order.forEach(fold)}
+  else es.forEach(e=>o.push(line(e)));
+  if(Q.unc[i])o.push(`Uncalled bet (${c(Q.unc[i].amt)}) returned to ${nm(Q.unc[i].p)}`)}
+ const shw=Object.keys(Q.sh);
+ if(Q.ended!=='fold'&&shw.length){o.push('*** SHOW DOWN ***');if(Q.hp)o.push(`Hero: shows [${Q.hc.join(' ')}]`);shw.forEach(p=>o.push(`${nm(p)}: shows [${Q.sh[p].join(' ')}]`))}
+ if(Q.ended==='fold')o.push(`${nm([...Q.alive][0])}: collected ${c(Q.pot)} from pot`);
+ o.push('*** SUMMARY ***',`Total pot ${c(Q.pot)} | Rake 0`);if(B.length)o.push(`Board [${B.join(' ')}]`);
+ return o.join('\n');
+}
+function cl(h){
+ const Q=sim(h.L,h.S),S=h.S,L=h.L;
+ let o=`[대회] ${T.name} · 블라인드(SB BB 앤티) ${S.blind||'미입력'} · ${S.max}max\n스택: ${Object.entries(Q.st).map(([p,v])=>p+' '+f(v)+'bb').join(', ')}\n히어로: ${L.hero}\n`;
+ Q.rows.forEach(r=>o+=`${r.s}${r.board?' '+r.board:''}: ${r.t} (팟 ${f(r.pot)}bb)${r.rq}\n`);
+ if(Q.q.length)o+=`고민 지점: ${Q.q.join(', ')}\n`;if(L.show)o+=`공개 패: ${L.show}\n`;if(L.memo)o+=`메모: ${L.memo}\n`;
+ return o+'\n이 핸드의 판단을 GTO 관점에서 복기해줘.';
+}
+function cp(t){const ok=()=>toast('복사됨');function fb(){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){toast('복사 실패')}a.remove()}
+ if(navigator.clipboard)navigator.clipboard.writeText(t).then(ok,fb);else fb()}
+
+/* ---------- 화면 ---------- */
+function home(){T=null;$('#app').hidden=true;$('#home').hidden=false;
+ const l=[...D.tours].sort((a,b)=>b.ts-a.ts);$('#tlh').hidden=!l.length;
+ $('#tl').innerHTML=l.map(t=>`<div class="tc" data-id="${t.id}"><b>${esc(t.name)}</b><span class="mu">${t.hands.length}핸드</span></div>`).join('')}
+function enter(t){T=t;ed=null;$('#home').hidden=true;$('#app').hidden=false;$('#tt').textContent=t.name;ses();setL(t.form||{});aK='stack';upd();hands();window.scrollTo(0,0)}
+function bparse(S){const n=(S.blind||'').match(/\d+(?:\.\d+)?/g)||[];S.sb=+n[0]||0;S.bb=+n[1]||0;S.at=+n[2]||0}
+function ses(){const S=T.S;if(S.blind===undefined)S.blind=S.bb?`${S.sb} ${S.bb} ${S.at}`:'';bparse(S);$('#mx').value=S.max;$('#an').value=S.ante;$('#bi').value=S.blind}
+function mk(){const F=$('#form');F.innerHTML=K.map(k=>`<div class="ln" data-k="${k}"><b>${k}:</b><input data-k="${k}" autocomplete="off" autocapitalize="off" spellcheck="false" ${k==='memo'?'type="text" placeholder="메모"':'type="text" inputmode="none"'}></div>`).join('');
+ F.addEventListener('focusin',e=>{if(K.includes(e.target.dataset.k)){aK=e.target.dataset.k;mark()}});F.addEventListener('input',chg)}
+const el=k=>$(`#form input[data-k="${k}"]`),getL=()=>Object.fromEntries(K.map(k=>[k,el(k).value]));
+function setL(L){K.forEach(k=>el(k).value=L[k]||'')}
+function mark(){document.querySelectorAll('.ln').forEach(n=>n.classList.toggle('on',n.dataset.k===aK))}
+function chg(){T.form=getL();sv();upd()}
+function upd(){R=sim(getL(),T.S);
+ $('#pa').innerHTML=(R.rows.length?R.rows.map(r=>`<div class="r"><b>${r.s}</b>${r.board?cH(cards(r.board))+' ':''}${esc(r.t)} · 팟 ${f(r.pot)}bb${r.rq}</div>`).join(''):'<span class="mu">입력하면 여기에 해석이 나옵니다</span>')+R.W.map(w=>`<div class="w">⚠ ${esc(w)}</div>`).join('');
+ document.querySelectorAll('.ln').forEach(n=>n.classList.toggle('dim',!!R.dim[n.dataset.k]));mark()}
+function next(){const i=K.indexOf(aK);let j=i+1;while(j<K.length-1&&R.dim[K[j]])j++;aK=K[Math.min(j,K.length-1)];el(aK).focus();mark()}
+function key(k){
+ const e=el(aK);if(!e)return;e.focus();const k0=aK,s=e.selectionStart==null?e.value.length:e.selectionStart,en=e.selectionEnd==null?s:e.selectionEnd,v=e.value,b=v.slice(0,s).trimEnd();
+ const put=t=>e.setRangeText(t,s,en,'end');
+ if(k==='↵'){next();return}
+ if(k==='⌫'){if(s!==en)e.setRangeText('',s,en,'end');else if(s>0)e.setRangeText('',s-1,s,'end')}
+ else if(PK.includes(k)){let p='';if(b&&k0!=='hero'){p=(k0==='flop'||k0==='turn'||k0==='river')&&!v.includes(':')?': ':/[:,]$/.test(b)?' ':', '}put(p+k+' ')}
+ else if(['f','x','c','jam','?'].includes(k))put((!v.slice(0,s)||/\s$/.test(v.slice(0,s))?'':' ')+k);
+ else if(SY[k])put(k);else put(k);
+ chg();if(['f','x','c','jam','?'].includes(k)&&['pre','flop','turn','river'].includes(k0)&&R.done[k0])next()}
+function kp(){const B=(k,c='')=>`<button class="${c}" data-k="${k}">${k}</button>`,
+ L=['7','8','9','4','5','6','1','2','3','0','.'].map(k=>B(k)).join('')+B('bb','u'),
+ Rr=['A','K','Q','J','T'].map(k=>B(k)).join('')+['♠','♥','♦','♣'].map(k=>`<button data-k="${k}" class="${/[♥♦]/.test(k)?'red':''}">${k}</button>`).join('')+B('⌫')+['f','x','c','jam','?'].map(k=>B(k,'a')).join('');
+ $('#kp').innerHTML=`<div class="k9">${PK.map(k=>B(k,'p')).join('')}</div><div class="kg"><div class="kl">${L}</div><div class="kr">${Rr}<button class="e" data-k="↵">↵ 다음 줄</button></div></div>`;
+ $('#kp').addEventListener('mousedown',e=>e.preventDefault());$('#kp').addEventListener('click',e=>{const b=e.target.closest('button');if(b)key(b.dataset.k)})}
+function hands(){const H=T.hands;$('#hh').textContent=`저장한 핸드 (${H.length})`;
+ $('#hands').innerHTML=H.length?H.map(h=>{const Q=sim(h.L,h.S),miss=!Q.hp||!Object.keys(Q.st).length||h.d,qs=Q.q.length;
+  return `<div class="hc" data-id="${h.id}"><div class="t">${Q.hp||'?'} vs ${Q.vil.join(', ')||'?'} ${h.S.blind?'· '+esc(h.S.blind):''}</div>
+  <div>${cH(Q.hc)} ${Q.board.length?'· '+cH(Q.board):''}</div>
+  <div class="mu">${Q.es!=null?'유효 스택 '+f(Q.es)+'bb':''} ${qs?`<span class="tag">고민: ${Q.q.join('·')}</span>`:''}${miss?'<span class="tag">입력 누락</span>':''}</div>
+  ${h.L.memo?`<div class="mu">${esc(h.L.memo)}</div>`:''}
+  <div class="bt"><button class="btn" data-a="gto">GTO Wizard 복사</button><button class="btn" data-a="cl">Claude 복기용 복사</button><button class="btn" data-a="ed">${h.d?'이어서 쓰기':'수정'}</button><button class="btn" data-a="del">삭제</button></div></div>`}).join(''):'<p class="mu">아직 저장한 핸드가 없습니다. 위에서 기록하고 [저장]을 눌러 보세요.</p>'}
+function saveH(d){const L=getL();if(!K.some(k=>L[k].trim())){toast('입력된 내용이 없습니다');return}
+ const old=ed&&T.hands.find(h=>h.id===ed),h={id:ed||'h'+Date.now(),hid:old?old.hid:String(Date.now()).slice(-9)+Math.floor(Math.random()*90+10),ts:old?old.ts:Date.now(),L,S:{...T.S},d};
+ if(old)T.hands[T.hands.indexOf(old)]=h;else T.hands.unshift(h);
+ ed=null;T.form={};setL({});aK='stack';sv();upd();hands();toast(d?'나중에 이어 쓰기로 저장':'저장됨');el('stack').focus()}
+function init(){mk();kp();
+ const go=()=>{const n=$('#tn').value.trim();if(!n){toast('대회 이름을 적어 주세요');return}
+  let t=D.tours.find(x=>x.name.toLowerCase()===n.toLowerCase());
+  if(!t){t={id:'t'+Date.now(),name:n,ts:Date.now(),S:{max:9,ante:'bb',blind:'',sb:0,bb:0,at:0},hands:[],form:{}};D.tours.push(t)}
+  t.ts=Date.now();sv();$('#tn').value='';enter(t)};
+ $('#go').onclick=go;$('#tn').onkeydown=e=>{if(e.key==='Enter')go()};
+ $('#tl').onclick=e=>{const c=e.target.closest('.tc');if(c)enter(D.tours.find(t=>t.id===c.dataset.id))};
+ $('#back').onclick=home;$('#bi').oninput=e=>{T.S.blind=e.target.value;bparse(T.S);sv();upd()};
+ $('#mx').onchange=e=>{T.S.max=+e.target.value;sv();upd()};$('#an').onchange=e=>{T.S.ante=e.target.value;sv();upd()};
+ $('#later').onclick=()=>saveH(true);$('#save').onclick=()=>saveH(false);
+ $('#exp').onclick=()=>{const hs=T.hands.filter(h=>!h.d&&h.S.bb).reverse(),t=hs.map(ps).join('\n\n\n');if(hs.length<T.hands.filter(h=>!h.d).length)toast('BB를 안 적은 핸드는 빼고 복사했어요');if(!t){toast('내보낼 핸드가 없습니다');return}cp(t);
+  try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));a.download=T.name+'.txt';a.click()}catch(e){}};
+ $('#hands').onclick=e=>{const b=e.target.closest('button[data-a]');if(!b)return;const id=b.closest('.hc').dataset.id,h=T.hands.find(x=>x.id===id),a=b.dataset.a;
+  if(a==='gto'){if(!h.S.bb){toast('blind 줄에 BB를 입력하면 GTO Wizard 복사가 돼요');return}cp(ps(h))}else if(a==='cl')cp(cl(h));
+  else if(a==='ed'){ed=id;T.S={...h.S};T.form=h.L;ses();setL(h.L);sv();upd();window.scrollTo(0,0);toast('불러왔습니다. 저장하면 덮어씁니다')}
+  else if(a==='del'&&confirm('이 핸드를 삭제할까요?')){T.hands=T.hands.filter(x=>x.id!==id);sv();hands()}};
+ $('#li').onclick=()=>authGo('login');$('#su').onclick=()=>authGo('signup');$('#lo').onclick=()=>logout(false);
+ $('#pw').onkeydown=e=>{if(e.key==='Enter')authGo('login')};
+ if(U)boot()}
+init();
+</script></body></html>
