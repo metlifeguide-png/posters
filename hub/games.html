@@ -88,7 +88,7 @@ function record(k,score,lv){if(window.DAILY&&DAILY.k===k&&!DAILY.sent){dailySubm
   const key='best_'+k+(lv?'_'+lv:'');const b=lsGet(key,null);const better=b==null||(lowerBetter(k)?score<b:score>b);if(better)lsSet(key,score);
   if(!NICK){toast((better?'🏆 내 최고 기록! ':'')+'닉네임을 넣으면 랭킹·레벨·업적이 쌓여요',2400);return;}
   fetch(API+'/api/game/record',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({nick:NICK,game:k,score,detail:lv||''})})
-   .then(r=>r.json()).then(r=>{if(r&&r.ok){toast((r.best?('🏆 개인 최고 기록!'+(r.rank?` 주간 ${r.rank}위`:'')):'기록했어요')+' · +'+(r.best?25:10)+'xp');xpToast(r);if(r.missions&&r.missions.length){const m=r.missions[0];setTimeout(()=>{toast(`🎯 미션 달성! ${m[0]} · 보상: ${m[1]} (운영진 확인 후 지급)`,4500);bragOffer(k,score,lv,r.rank||0,`🎯 미션 달성 · ${m[0]}`);},1300);if(typeof MIS_AT!=='undefined')MIS_AT=0;}else if(r.best&&r.rank&&r.rank<=3)setTimeout(()=>bragOffer(k,score,lv,r.rank),900);}}).catch(()=>{if(better)toast('🏆 내 최고 기록! (서버 연결 안 돼서 랭킹엔 못 올렸어요)',2400);});}
+   .then(r=>r.json()).then(r=>{if(r&&r.ok){loadRank();toast((r.best?('🏆 개인 최고 기록!'+(r.rank?` 주간 ${r.rank}위`:'')):'기록했어요')+' · +'+(r.best?25:10)+'xp');xpToast(r);if(r.missions&&r.missions.length){const m=r.missions[0];setTimeout(()=>{toast(`🎯 미션 달성! ${m[0]} · 보상: ${m[1]} (운영진 확인 후 지급)`,4500);bragOffer(k,score,lv,r.rank||0,`🎯 미션 달성 · ${m[0]}`);},1300);if(typeof MIS_AT!=='undefined')MIS_AT=0;}else if(r.best&&r.rank&&r.rank<=3)setTimeout(()=>bragOffer(k,score,lv,r.rank),900);}}).catch(()=>{if(better)toast('🏆 내 최고 기록! (서버 연결 안 돼서 랭킹엔 못 올렸어요)',2400);});}
 // 📣 자랑하기: 주간 랭킹 1~3위에 들면 카톡에 붙여넣을 문구·링크를 바로 만들어줘요 (자동으로 방에 보내지 않음)
 function hubLink(h){try{return $('homeBtn').href.split('#')[0].split('?')[0]+'?home#'+(h||'game');}catch(e){return '';}}
 function bragOffer(k,score,lv,rank,extra){const nm=(GCFG[k]||[])[0]||k;const md=extra||{1:'🥇 주간 1위',2:'🥈 주간 2위',3:'🥉 주간 3위'}[rank]||'';
@@ -111,7 +111,7 @@ function dailyBegin(){const d=kstDay(),[k,lv]=dailyType(d);if(!NICK){toast('먼�
 function dailyEnd(){window.DAILY=null;Math.random=RAND0;}
 function dailySubmit(score,detail){const D=window.DAILY;if(!D||D.sent)return;D.sent=true;Math.random=RAND0;lsSet('daily_done_'+D.d,{score,detail});
  fetch(API+'/api/daily/submit',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({nick:NICK,score,detail,d:D.d,game:D.k})})
-  .then(r=>r.json()).then(r=>{if(r.ok){toast(`📅 오늘의 문제 제출! 현재 ${r.rank}위 / ${r.total}명 · +50xp${r.streak>1?` · ${r.streak}일 연속`:''}`,3200);xpToast(r);if(r.rank===1)setTimeout(()=>bragOffer(D.k,score,'',1,'📅 오늘의 문제 1등'),1200);}else toast(r.msg||'제출 실패',2600);})
+  .then(r=>r.json()).then(r=>{if(r.ok){loadDaily();loadRank();toast(`📅 오늘의 문제 제출! 현재 ${r.rank}위 / ${r.total}명 · +50xp${r.streak>1?` · ${r.streak}일 연속`:''}`,3200);xpToast(r);if(r.rank===1)setTimeout(()=>bragOffer(D.k,score,'',1,'📅 오늘의 문제 1등'),1200);}else toast(r.msg||'제출 실패',2600);})
   .catch(()=>toast('서버 연결이 안 돼서 제출 못 했어요',2600));}
 // ---------- 카드 · 족보 ----------
 const RK='23456789TJQKA',SU='♠♥♦♣';
