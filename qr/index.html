@@ -8,7 +8,8 @@
 :root[data-theme="dark"]{--bg:#0e1814;--pn:#16251f;--ln:#2a3f36;--tx:#e7efe9;--mu:#8ea79b;--ac:#3fbf8a;--gd:#e6b54a;--rd:#ff6b6b;--bl:#6bb6ea}
 *{box-sizing:border-box}html,body{margin:0}
 body{background:var(--bg);color:var(--tx);font:16px/1.45 "Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;background-color:var(--bg)}
-main{max-width:520px;margin:0 auto;padding:12px 12px 40px}
+html{scroll-padding-bottom:var(--kh,0px)}
+main{max-width:520px;margin:0 auto;padding:12px 12px calc(40px + var(--kh,0px))}
 h1{font-size:26px;margin:18px 0 6px}h2{font-size:17px;margin:0}
 .mu{color:var(--mu);font-size:14px}.red{color:var(--rd)}
 input,select,button{font:inherit;color:var(--tx)}
@@ -23,14 +24,15 @@ input[type=text],input[type=number],select{background:var(--pn);border:1px solid
 .lv{display:flex;align-items:center;gap:8px;grid-column:1/-1}.lv b{flex:1;text-align:center}
 .bl3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;grid-column:1/-1}
 .ln{display:flex;align-items:center;gap:6px;padding:3px 0;transition:opacity .2s}
-.ln b{width:54px;color:var(--mu);font-weight:600;font-size:15px}
+.ln b{width:92px;flex:none;color:var(--mu);font-weight:600;font-size:14px;white-space:nowrap}
 .ln input{flex:1;min-width:0;font-size:19px;padding:9px;caret-color:var(--gd)}
+.ln input::placeholder{font-size:12.5px;color:var(--mu);opacity:.55}
 .ln.on input{border-color:var(--ac);box-shadow:0 0 0 2px var(--ac)}
 .ln.dim{opacity:.35}
 .pa .r{padding:5px 0;border-bottom:1px solid var(--ln);font-size:15px}.pa .r:last-child{border:0}
 .pa .r b{display:inline-block;min-width:38px;color:var(--ac)}
 .pa .w{color:var(--rd);font-size:14px}
-#kp button{height:46px;font-size:19px;border-radius:10px;border:1px solid var(--ln);background:var(--pn);cursor:pointer;padding:0;touch-action:manipulation}
+#kp button{height:42px;font-size:19px;border-radius:10px;border:1px solid var(--ln);background:var(--pn);cursor:pointer;padding:0;touch-action:manipulation}
 #kp button:active{background:var(--ln)}
 #kp .p{font-size:12.5px;color:var(--gd);font-weight:700}
 #kp .u{color:var(--bl);font-weight:700}#kp .a{font-weight:700}#kp .e{background:var(--ac);color:#fff;grid-column:6;grid-row:1/4;height:auto;font-size:20px;font-weight:700;line-height:1.4;white-space:nowrap}
@@ -41,8 +43,13 @@ input[type=text],input[type=number],select{background:var(--pn);border:1px solid
 .hc{background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:10px;margin-top:8px}
 .hc .t{font-weight:700}.hc .bt{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.hc .bt .btn{padding:7px 10px;font-size:13px}
 .tag{display:inline-block;font-size:12px;border:1px solid var(--gd);color:var(--gd);border-radius:20px;padding:0 8px;margin-right:4px}
-#ts{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--tx);color:var(--bg);padding:8px 16px;border-radius:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+#ts{position:fixed;left:50%;bottom:calc(var(--kh,0px) + 20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:30;background:var(--tx);color:var(--bg);padding:8px 16px;border-radius:20px;opacity:0;pointer-events:none;transition:opacity .2s}
 #ts.on{opacity:1}
+#kw{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--bg);border-top:1px solid var(--ln);box-shadow:0 -4px 16px rgba(0,0,0,.2);padding:6px 8px calc(8px + env(safe-area-inset-bottom,0px))}
+#kw>div{max-width:520px;margin-left:auto;margin-right:auto}
+#kh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:0 2px 6px;font-size:12.5px;color:var(--mu);line-height:1.3}
+#kh b{color:var(--ac)}#kx{flex:none;font-size:12.5px;padding:4px 10px}
+#kt{position:fixed;right:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:20;box-shadow:0 2px 10px rgba(0,0,0,.25);padding:12px 16px;font-weight:700}
 [hidden]{display:none!important}
 </style></head><body><main>
 <section id="auth">
@@ -65,14 +72,13 @@ input[type=text],input[type=number],select{background:var(--pn);border:1px solid
 <div class="top"><div class="row"><button class="btn" id="back">←</button><div><h2 id="tt"></h2><span class="mu">새 핸드</span></div></div><span class="mu" id="sst">자동 저장</span></div>
 <div class="pn ses"><div><label>테이블</label><select id="mx"><option value="9">9max</option><option value="8">8max</option><option value="7">7max</option><option value="6">6max</option></select></div>
 <div><label>앤티 방식</label><select id="an"><option value="bb">BB앤티</option><option value="all">올앤티</option><option value="none">앤티 없음</option></select></div></div>
-<div class="ln" style="margin-bottom:4px"><b>blind:</b><input id="bi" type="text" inputmode="text" autocomplete="off" placeholder="SB BB 앤티 · 1000 2000 2000"></div>
+<div class="ln" style="margin-bottom:4px"><b>blind:</b><input id="bi" type="text" inputmode="text" autocomplete="off" placeholder="SB BB 앤티 예) 1000 2000 2000"></div>
 <div id="form"></div>
 <div class="pn pa" id="pa" style="margin-top:8px"></div>
-<div id="kp"></div>
 <div class="sv"><button class="btn" id="later">나중에</button><button class="btn pri" id="save">저장</button></div>
 <div class="top"><h2 id="hh">저장한 핸드</h2><button class="btn" id="exp" style="font-size:13px;padding:7px 10px">전체 .txt 복사·내보내기</button></div>
 <div id="hands"></div>
-</section></main><div id="ts"></div>
+</section></main><div id="kw" hidden><div id="kh"><span id="kl"></span><button class="btn" id="kx">▼ 접기</button></div><div id="kp"></div></div><button class="btn pri" id="kt" hidden>⌨ 키패드</button><div id="ts"></div>
 <script>
 const $=s=>document.querySelector(s),f=x=>String(+(+x).toFixed(2)),esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const P9=['UTG','UTG+1','UTG+2','LJ','HJ','CO','BTN','SB','BB'],PK=['UTG','U+1','U+2','LJ','HJ','CO','BTN','SB','BB'];
@@ -81,7 +87,24 @@ const SY={'♠':'s','♥':'h','♦':'d','♣':'c'},SR={s:'♠',h:'♥',d:'♦',c
 const pos=t=>AL[String(t).toUpperCase()];
 const cards=s=>{const r=[];String(s).replace(/([2-9TJQKA])([♠♥♦♣shdc])/gi,(m,a,b)=>{r.push(a.toUpperCase()+(SY[b]||b.toLowerCase()))});return r};
 const dc=c=>c[0]+SR[c[1]],cH=a=>a.map(c=>{const x=dc(c);return /[♥♦]/.test(x)?`<span class="red">${x}</span>`:x}).join('');
-const K=['stack','hero','pre','flop','turn','river','show','memo'],NM=['프리','플랍','턴','리버'];
+const FD=[
+ {k:'stack',lb:'stack',ph:'포지션 스택 예) BTN 40, BB 25',hint:'포지션 + 스택(bb), 쉼표로 구분. 예) BTN 40, BB 25'},
+ {k:'card',lb:'card',ph:'포지션 카드 예) BTN AsKd',hint:'내 포지션 + 내 카드. 예) BTN AsKd'},
+ {k:'pre',lb:'pre action',ph:'액션 예) CO 2.2, BTN c, BB c',hint:'프리플랍 액션: 포지션 + 금액/f/c/x/jam. 예) CO 2.2, BTN c, BB c'},
+ {k:'flopb',lb:'flop board',ph:'보드 3장 예) Ks7d2c',hint:'플랍 보드 3장. 예) Ks7d2c'},
+ {k:'flop',lb:'flop action',ph:'액션 예) BB x, CO 3, BB c',hint:'플랍 액션. 예) BB x, CO 3, BB c'},
+ {k:'turnb',lb:'turn board',ph:'보드 1장 예) Qh',hint:'턴 카드 1장. 예) Qh'},
+ {k:'turn',lb:'turn action',ph:'액션 예) BB x, CO 8, BB c',hint:'턴 액션. 예) BB x, CO 8, BB c'},
+ {k:'riverb',lb:'river board',ph:'보드 1장 예) 2s',hint:'리버 카드 1장. 예) 2s'},
+ {k:'river',lb:'river action',ph:'액션 예) BB x, CO 20, BB c',hint:'리버 액션. 예) BB x, CO 20, BB c'},
+ {k:'show',lb:'show',ph:'쇼다운 카드 예) BB AhKh (멀티=쉼표)',hint:'쇼다운된 상대 카드. 멀티면 쉼표로. 예) BB AhKh, SB QdQc'},
+ {k:'memo',lb:'memo',ph:'메모 (일반 키보드)',hint:'자유 메모 · 일반 키보드로 입력'}
+],K=FD.map(d=>d.k),BK=['flopb','turnb','riverb'],NM=['프리','플랍','턴','리버'];
+/* 예전 저장 형식(hero, 'Ks7d2c: BTN x' 한 줄)을 새 형식으로 변환 */
+function norm(L){L={...L};if(L.card===undefined&&L.hero!==undefined)L.card=L.hero;
+ ['flop','turn','river'].forEach(s=>{if(L[s+'b']===undefined){const raw=(L[s]||'').trim();let l='',r=raw;
+  if(raw){const ci=raw.indexOf(':');if(ci>=0){l=raw.slice(0,ci);r=raw.slice(ci+1)}else if(cards(raw.split(/[\s,]/)[0]).length){l=raw;r=''}}
+  L[s+'b']=l.trim();L[s]=r.trim()}});return L}
 const _unused=[[100,200],[150,300],[200,400],[300,600],[400,800],[500,1000],[600,1200],[800,1600],[1000,2000],[1500,3000],[2000,4000],[2500,5000],[3000,6000],[4000,8000],[5000,10000]];
 let D={tours:[]},T=null,ed=null,aK='stack',R=null,U=null,pend=null;
 const API="https://211-233-211-164.sslip.io",H={"Content-Type":"application/json","ngrok-skip-browser-warning":"true"};
@@ -101,16 +124,16 @@ async function boot(){let loc=null;try{loc=JSON.parse(localStorage.getItem(ck())
   if(!D.tours.length&&loc&&loc.tours&&loc.tours.length){D=loc;push()}}
  catch(e){D=loc&&loc.tours?loc:{tours:[]}}
  $('#auth').hidden=true;$('#who').textContent=U.login;home()}
-function logout(exp){U=null;D={tours:[]};T=null;try{localStorage.removeItem('qr_sess')}catch(e){}$('#app').hidden=true;$('#home').hidden=true;$('#auth').hidden=false;$('#am').textContent=exp?'다시 로그인해 주세요':''}
+function logout(exp){U=null;D={tours:[]};T=null;try{localStorage.removeItem('qr_sess')}catch(e){}$('#app').hidden=true;$('#home').hidden=true;$('#auth').hidden=false;sync();$('#am').textContent=exp?'다시 로그인해 주세요':''}
 function toast(m){const t=$('#ts');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1400)}
 
 /* ---------- 게임 엔진 ---------- */
 function sim(L,S){
- const W=[],rows=[],ev=[],done={},dim={},q=[],unc={};
+ L=norm(L);const W=[],rows=[],ev=[],done={},dim={},q=[],unc={};
  const order=P9.slice(9-S.max),bbv=1,sbv=S.bb?S.sb/S.bb:.5,at=S.bb?S.at/S.bb:(S.ante==='none'?0:1),st={};
  (L.stack||'').split(',').forEach(t=>{t=t.trim();if(!t)return;const m=t.match(/^(\S+)\s+([\d.]+)/),p=m&&pos(m[1]);if(!p||!order.includes(p))W.push('stack 해석 불가: '+t);else st[p]=+m[2]});
- let hp=null,hc=[];const hm=(L.hero||'').trim().match(/^(\S+)\s*(.*)$/);
- if(hm){hp=pos(hm[1]);if(!hp)W.push('hero 포지션 해석 불가');hc=cards(hm[2])}
+ let hp=null,hc=[];const hm=(L.card||'').trim().match(/^(\S+)\s*(.*)$/);
+ if(hm){hp=pos(hm[1]);if(!hp)W.push('card 포지션 해석 불가');hc=cards(hm[2])}
  const rem={...st},alive=new Set(Object.keys(st)),allin=new Set(),used=[...hc];
  const ante=S.ante==='bb'?at:S.ante==='all'?at*S.max:0;
  let settled=ante+(st.SB===undefined?sbv:0)+(st.BB===undefined?bbv:0),board=[],ended=null;
@@ -120,10 +143,11 @@ function sim(L,S){
  const keys=['pre','flop','turn','river'];
  for(let i=0;i<4;i++){
   const k=keys[i],raw=(L[k]||'').trim();
-  if(ended){dim[k]=true;if(raw)W.push(NM[i]+' 줄: 핸드가 이미 끝났습니다');continue}
-  let left='',right=raw;
-  if(i>0&&raw){const ci=raw.indexOf(':');if(ci>=0){left=raw.slice(0,ci);right=raw.slice(ci+1)}else if(cards(raw.split(/[\s,]/)[0]).length){left=raw;right=''}
-   const nb=cards(left),need=i===1?3:1;if(left&&nb.length!==need)W.push(`${NM[i]} 보드는 ${need}장이어야 합니다`);board.push(...nb);used.push(...nb)}
+  const bl=i>0?(L[k+'b']||'').trim():'',need=i===1?3:1,rb=()=>{const nb=cards(bl);if(bl&&nb.length!==need)W.push(`${NM[i]} 보드는 ${need}장이어야 합니다`);board.push(...nb);used.push(...nb)};
+  if(ended){dim[k]=true;if(raw)W.push(NM[i]+' 액션: 핸드가 이미 끝났습니다');
+   if(i>0){if(ended==='allin'){rb();if(bl)rows.push({s:NM[i],board:board.slice(i===1?0:i+1).map(dc).join(' '),t:'(올인 런아웃)',pot:settled,rq:''})}else{dim[k+'b']=true;if(bl)W.push(NM[i]+' 보드: 핸드가 이미 끝났습니다')}}
+   continue}
+  const right=raw;if(i>0)rb();
   const bt={},sum=()=>Object.values(bt).reduce((a,b)=>a+b,0),acted=new Set();let cur=0,r=0,rq='',acts=[];
   if(i===0){if(st.SB!==undefined)bt.SB=sbv;if(st.BB!==undefined)bt.BB=bbv;cur=bbv}
   right.split(',').forEach(tok=>{
@@ -148,7 +172,7 @@ function sim(L,S){
   if(comp){const e=Object.entries(bt).sort((a,b)=>b[1]-a[1]),sec=e[1]?e[1][1]:0;
    if(e.length&&e[0][1]>sec+1e-9){unc[i]={p:e[0][0],amt:e[0][1]-sec};bt[e[0][0]]-=unc[i].amt}}
   settled+=sum();done[k]=comp;
-  if(raw)rows.push({s:NM[i],board:i>0?board.slice(i===1?0:i+1).map(dc).join(' '):'',t:acts.join(' → '),pot:settled,rq});
+  if(raw||bl)rows.push({s:NM[i],board:i>0?board.slice(i===1?0:i+1).map(dc).join(' '):'',t:acts.join(' → '),pot:settled,rq});
   if(comp){if(alive.size===1)ended='fold';else if(act.length<=1)ended='allin'}
  }
  const sh={};(L.show||'').split(',').forEach(t=>{t=t.trim();if(!t)return;const m=t.match(/^(\S+)\s+(.+)$/);let p=m&&pos(m[1]),c=m&&p?cards(m[2]):cards(t);
@@ -192,8 +216,8 @@ function ps(h){
  return o.join('\n');
 }
 function cl(h){
- const Q=sim(h.L,h.S),S=h.S,L=h.L;
- let o=`[대회] ${T.name} · 블라인드(SB BB 앤티) ${S.blind||'미입력'} · ${S.max}max\n스택: ${Object.entries(Q.st).map(([p,v])=>p+' '+f(v)+'bb').join(', ')}\n히어로: ${L.hero}\n`;
+ const Q=sim(h.L,h.S),S=h.S,L=norm(h.L);
+ let o=`[대회] ${T.name} · 블라인드(SB BB 앤티) ${S.blind||'미입력'} · ${S.max}max\n스택: ${Object.entries(Q.st).map(([p,v])=>p+' '+f(v)+'bb').join(', ')}\n히어로: ${L.card}\n`;
  Q.rows.forEach(r=>o+=`${r.s}${r.board?' '+r.board:''}: ${r.t} (팟 ${f(r.pot)}bb)${r.rq}\n`);
  if(Q.q.length)o+=`고민 지점: ${Q.q.join(', ')}\n`;if(L.show)o+=`공개 패: ${L.show}\n`;if(L.memo)o+=`메모: ${L.memo}\n`;
  return o+'\n이 핸드의 판단을 GTO 관점에서 복기해줘.';
@@ -202,17 +226,20 @@ function cp(t){const ok=()=>toast('복사됨');function fb(){const a=document.cr
  if(navigator.clipboard)navigator.clipboard.writeText(t).then(ok,fb);else fb()}
 
 /* ---------- 화면 ---------- */
-function home(){T=null;$('#app').hidden=true;$('#home').hidden=false;
+function home(){T=null;$('#app').hidden=true;$('#home').hidden=false;sync();
  const l=[...D.tours].sort((a,b)=>b.ts-a.ts);$('#tlh').hidden=!l.length;
  $('#tl').innerHTML=l.map(t=>`<div class="tc" data-id="${t.id}"><b>${esc(t.name)}</b><span class="mu">${t.hands.length}핸드</span></div>`).join('')}
-function enter(t){try{if(window.top===window&&!(history.state&&history.state.qr==='app'))history.pushState({qr:'app'},'')}catch(e){}T=t;ed=null;$('#home').hidden=true;$('#app').hidden=false;$('#tt').textContent=t.name;ses();setL(t.form||{});aK='stack';upd();hands();window.scrollTo(0,0)}
+function enter(t){try{if(window.top===window&&!(history.state&&history.state.qr==='app'))history.pushState({qr:'app'},'')}catch(e){}T=t;ed=null;$('#home').hidden=true;$('#app').hidden=false;kOn=true;sync();$('#tt').textContent=t.name;ses();setL(t.form||{});aK='stack';upd();hands();window.scrollTo(0,0)}
 function bparse(S){const n=(S.blind||'').match(/\d+(?:\.\d+)?/g)||[];S.sb=+n[0]||0;S.bb=+n[1]||0;S.at=+n[2]||0}
 function ses(){const S=T.S;if(S.blind===undefined)S.blind=S.bb?`${S.sb} ${S.bb} ${S.at}`:'';bparse(S);$('#mx').value=S.max;$('#an').value=S.ante;$('#bi').value=S.blind}
-function mk(){const F=$('#form');F.innerHTML=K.map(k=>`<div class="ln" data-k="${k}"><b>${k}:</b><input data-k="${k}" autocomplete="off" autocapitalize="off" spellcheck="false" ${k==='memo'?'type="text" placeholder="메모"':'type="text" inputmode="none"'}></div>`).join('');
- F.addEventListener('focusin',e=>{if(K.includes(e.target.dataset.k)){aK=e.target.dataset.k;mark()}});F.addEventListener('input',chg)}
+function mk(){const F=$('#form');F.innerHTML=FD.map(d=>`<div class="ln" data-k="${d.k}"><b>${d.lb}:</b><input data-k="${d.k}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${d.ph}" ${d.k==='memo'?'type="text"':'type="text" inputmode="none"'}></div>`).join('');
+ F.addEventListener('focusin',e=>{const k=e.target.dataset.k;if(K.includes(k)){aK=k;mark();setKb(k!=='memo');if(k!=='memo')setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}});F.addEventListener('input',chg)}
+let kOn=true;
+function sync(){const a=!$('#app').hidden;$('#kw').hidden=!(a&&kOn);$('#kt').hidden=!(a&&!kOn);document.documentElement.style.setProperty('--kh',(a&&kOn?$('#kw').offsetHeight:0)+'px')}
+function setKb(v){kOn=v;sync()}
 const el=k=>$(`#form input[data-k="${k}"]`),getL=()=>Object.fromEntries(K.map(k=>[k,el(k).value]));
-function setL(L){K.forEach(k=>el(k).value=L[k]||'')}
-function mark(){document.querySelectorAll('.ln').forEach(n=>n.classList.toggle('on',n.dataset.k===aK))}
+function setL(L){L=norm(L);K.forEach(k=>el(k).value=L[k]||'')}
+function mark(){document.querySelectorAll('.ln').forEach(n=>n.classList.toggle('on',n.dataset.k===aK));const d=FD.find(x=>x.k===aK);if(d)$('#kl').innerHTML=`<span><b>${d.lb}:</b> ${d.hint}</span>`}
 function chg(){T.form=getL();sv();upd()}
 function upd(){R=sim(getL(),T.S);
  $('#pa').innerHTML=(R.rows.length?R.rows.map(r=>`<div class="r"><b>${r.s}</b>${r.board?cH(cards(r.board))+' ':''}${esc(r.t)} · 팟 ${f(r.pot)}bb${r.rq}</div>`).join(''):'<span class="mu">입력하면 여기에 해석이 나옵니다</span>')+R.W.map(w=>`<div class="w">⚠ ${esc(w)}</div>`).join('');
@@ -220,13 +247,16 @@ function upd(){R=sim(getL(),T.S);
 function next(){const i=K.indexOf(aK);let j=i+1;while(j<K.length-1&&R.dim[K[j]])j++;aK=K[Math.min(j,K.length-1)];el(aK).focus();mark()}
 function key(k){
  const e=el(aK);if(!e)return;e.focus();const k0=aK,s=e.selectionStart==null?e.value.length:e.selectionStart,en=e.selectionEnd==null?s:e.selectionEnd,v=e.value,b=v.slice(0,s).trimEnd();
- const put=t=>e.setRangeText(t,s,en,'end');
+ const put=t=>e.setRangeText(t,s,en,'end'),isB=BK.includes(k0);
  if(k==='↵'){next();return}
  if(k==='⌫'){if(s!==en)e.setRangeText('',s,en,'end');else if(s>0)e.setRangeText('',s-1,s,'end')}
- else if(PK.includes(k)){let p='';if(b&&k0!=='hero'){p=(k0==='flop'||k0==='turn'||k0==='river')&&!v.includes(':')?': ':/[:,]$/.test(b)?' ':', '}put(p+k+' ')}
+ else if(PK.includes(k)){let p='';if(b&&k0!=='card'&&!isB)p=/,$/.test(b)?' ':', ';put(p+k+' ')}
  else if(['f','x','c','jam','?'].includes(k))put((!v.slice(0,s)||/\s$/.test(v.slice(0,s))?'':' ')+k);
- else if(SY[k])put(k);else put(k);
- chg();if(['f','x','c','jam','?'].includes(k)&&['pre','flop','turn','river'].includes(k0)&&R.done[k0])next()}
+ else if(isB&&/^[2-9TJQKA]$/.test(k)&&/[♠♥♦♣]$/.test(v.slice(0,s)))put(' '+k);
+ else put(k);
+ chg();
+ if(['f','x','c','jam','?'].includes(k)&&['pre','flop','turn','river'].includes(k0)&&R.done[k0])next();
+ else if(isB&&cards(el(k0).value).length>=(k0==='flopb'?3:1))next();}
 function kp(){const B=(k,c='')=>`<button class="${c}" data-k="${k}">${k}</button>`,
  L=['7','8','9','4','5','6','1','2','3','0','.'].map(k=>B(k)).join('')+B('bb','u'),
  Rr=['A','K','Q','J','T'].map(k=>B(k)).join('')+`<button class="e" data-k="↵">↵<br>다음 줄</button>`+['♠','♥','♦','♣'].map(k=>`<button data-k="${k}" class="${/[♥♦]/.test(k)?'red':''}">${k}</button>`).join('')+B('⌫','d')+['f','x','c','jam','?'].map(k=>B(k,'a')).join('');
@@ -252,6 +282,7 @@ function init(){mk();kp();
  $('#tl').onclick=e=>{const c=e.target.closest('.tc');if(c)enter(D.tours.find(t=>t.id===c.dataset.id))};
  $('#back').onclick=()=>{if(window.top===window&&history.state&&history.state.qr==='app'){history.back()}else home()};window.__qrBack=()=>{if(!$('#app').hidden){home();return true}return false};addEventListener('popstate',()=>{if(!$('#app').hidden)home()});$('#bi').oninput=e=>{T.S.blind=e.target.value;bparse(T.S);sv();upd()};
  $('#mx').onchange=e=>{T.S.max=+e.target.value;sv();upd()};$('#an').onchange=e=>{T.S.ante=e.target.value;sv();upd()};
+ $('#kx').onclick=()=>setKb(false);$('#kt').onclick=()=>{el(aK==='memo'?'show':aK).focus();setKb(true)};$('#bi').addEventListener('focus',()=>setKb(false));addEventListener('resize',sync);
  $('#later').onclick=()=>saveH(true);$('#save').onclick=()=>saveH(false);
  $('#exp').onclick=()=>{const hs=T.hands.filter(h=>!h.d&&h.S.bb).reverse(),t=hs.map(ps).join('\n\n\n');if(hs.length<T.hands.filter(h=>!h.d).length)toast('BB를 안 적은 핸드는 빼고 복사했어요');if(!t){toast('내보낼 핸드가 없습니다');return}cp(t);
   try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));a.download=T.name+'.txt';a.click()}catch(e){}};
