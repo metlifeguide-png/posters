@@ -32,20 +32,20 @@ input[type=text],input[type=number],select{background:var(--pn);border:1px solid
 .pa .r{padding:5px 0;border-bottom:1px solid var(--ln);font-size:15px}.pa .r:last-child{border:0}
 .pa .r b{display:inline-block;min-width:38px;color:var(--ac)}
 .pa .w{color:var(--rd);font-size:14px}
-#kp button{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;height:42px;font-size:19px;border-radius:10px;border:1px solid var(--ln);background:var(--pn);cursor:pointer;padding:0;touch-action:manipulation}
+#kp button{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;height:46px;font-size:19px;border-radius:10px;border:1px solid var(--ln);background:var(--pn);cursor:pointer;padding:0;touch-action:manipulation}
 #kp button:active{background:var(--ln)}
 #kp .p{font-size:12.5px;color:var(--gd);font-weight:700}
-#kp .u{color:var(--bl);font-weight:700}#kp .a{font-weight:700}#kp .bk{background:var(--pn);border:2px solid var(--rd);color:var(--rd);grid-column:6;grid-row:3/5;height:auto;font-size:20px;font-weight:700;line-height:1.4;white-space:nowrap}#kp .e{background:var(--ac);color:#fff;grid-column:6;grid-row:1/3;height:auto;font-size:20px;font-weight:700;line-height:1.4;white-space:nowrap}
-.k9{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin-bottom:8px}
-.kg{display:grid;grid-template-columns:3fr 5fr;gap:12px}
-.kl{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.kr{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) minmax(0,2fr);gap:5px;grid-template-rows:repeat(4,42px)}#kp .kr .a{grid-row:3}#kp .kr .d{grid-row:2;grid-column:5}
+#kp .u{color:var(--bl);font-weight:700}#kp .a{font-weight:700;font-size:15px}#kp .e b,#kp .d b{font-size:24px}#kp .e{background:var(--ac);color:#fff;grid-column:6;grid-row:3/5;height:auto;font-size:13px;font-weight:700;line-height:1.4;white-space:nowrap}
+.k9{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;margin-bottom:12px}
+.kg{display:grid;grid-template-columns:1fr 1.85fr;gap:8px}
+.kl{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 6px}.kr{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) minmax(0,1.6fr);gap:10px 6px;grid-template-rows:repeat(4,46px)}#kp .kr .a{grid-row:3}#kp .kr .d{grid-row:1/3;grid-column:6;height:auto;font-size:13px;font-weight:700;line-height:1.4;white-space:nowrap}
 .sv{display:grid;grid-template-columns:1fr 1fr 2fr;gap:8px;margin:10px 0 16px}.sv button{padding:14px;font-size:17px}
 .hc{background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:10px;margin-top:8px}
 .hc .t{font-weight:700}.hc .bt{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.hc .bt .btn{padding:7px 10px;font-size:13px}
 .tag{display:inline-block;font-size:12px;border:1px solid var(--gd);color:var(--gd);border-radius:20px;padding:0 8px;margin-right:4px}
 #ts{position:fixed;left:50%;bottom:calc(var(--kh,0px) + 20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:30;background:var(--tx);color:var(--bg);padding:8px 16px;border-radius:20px;opacity:0;pointer-events:none;transition:opacity .2s}
 #ts.on{opacity:1}
-#kw{position:fixed;left:50%;top:30%;transform:translateX(-50%);width:min(520px,calc(100% - 12px));z-index:20;background:var(--bg);border:1px solid var(--ln);border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.35);padding:6px 8px 8px}
+#kw{position:fixed;left:50%;top:30%;transform:translateX(-50%);width:min(520px,calc(100% - 12px));z-index:20;background:var(--bg);border:1px solid var(--ln);border-radius:14px;box-shadow:0 6px 24px rgba(0,0,0,.35);padding:6px 6px 8px}
 #kw>div{max-width:520px;margin-left:auto;margin-right:auto}
 #kh{display:flex;align-items:center;gap:8px;padding:2px 2px 6px;font-size:12.5px;color:var(--mu);line-height:1.3;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}#kg{flex:none;font-size:18px;color:var(--mu)}#kl{flex:1;min-width:0}
 #kh b{color:var(--ac)}#kx{flex:none;font-size:12.5px;padding:4px 10px}
@@ -258,7 +258,6 @@ function next(){const i=K.indexOf(aK);let j=i+1;while(j<K.length-1&&R.dim[K[j]])
 function key(k){
  const e=el(aK);if(!e)return;e.focus();const k0=aK,s=e.selectionStart==null?e.value.length:e.selectionStart,en=e.selectionEnd==null?s:e.selectionEnd,v=e.value,b=v.slice(0,s).trimEnd();
  const put=t=>e.setRangeText(t,s,en,'end'),isB=BK.includes(k0);
- if(k==='back'){$('#back').onclick();return}
  if(k==='↵'){next();return}
  if(k==='⌫'){if(s!==en)e.setRangeText('',s,en,'end');else if(s>0)e.setRangeText('',s-1,s,'end')}
  else if(PK.includes(k)){let p='';if(b&&k0!=='card'&&!isB)p=/,$/.test(b)?' ':', ';put(p+k+' ')}
@@ -270,7 +269,7 @@ function key(k){
  else if(isB&&cards(el(k0).value).length>=(k0==='flopb'?3:1))next();}
 function kp(){const B=(k,c='')=>`<button class="${c}" data-k="${k}">${k}</button>`,
  L=['7','8','9','4','5','6','1','2','3','.','0'].map(k=>B(k)).join('')+B('00','u'),
- Rr=['A','K','Q','J','T'].map(k=>B(k)).join('')+`<button class="e" data-k="↵">↵<br>다음 줄</button><button class="bk" data-k="back">←<br>뒤로</button>`+['♠','♥','♦','♣'].map(k=>`<button data-k="${k}" class="${/[♥♦]/.test(k)?'red':''}">${k}</button>`).join('')+B('⌫','d')+['f','x','c','jam','?'].map(k=>B(k,'a')).join('');
+ Rr=['A','K','Q','J','T'].map(k=>B(k)).join('')+`<button class="e" data-k="↵"><b>↵</b><br>다음 줄</button>`+['♠','♥','♦','♣'].map(k=>`<button data-k="${k}" class="${/[♥♦]/.test(k)?'red':''}">${k}</button>`).join('')+`<button class="d" data-k="⌫"><b>⌫</b><br>지우기</button>`+['f','x','c','jam','?'].map(k=>B(k,'a')).join('');
  $('#kp').innerHTML=`<div class="k9">${PK.map(k=>B(k,'p')).join('')}</div><div class="kg"><div class="kl">${L}</div><div class="kr">${Rr}</div></div>`;
  $('#kp').addEventListener('mousedown',e=>e.preventDefault());$('#kp').addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b.dataset.k!=='⌫')key(b.dataset.k)});
  $('#kp').addEventListener('contextmenu',e=>e.preventDefault());
