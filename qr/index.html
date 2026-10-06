@@ -35,10 +35,10 @@ input[type=text],input[type=number],select{background:var(--pn);border:1px solid
 #kp button{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;height:42px;font-size:19px;border-radius:10px;border:1px solid var(--ln);background:var(--pn);cursor:pointer;padding:0;touch-action:manipulation}
 #kp button:active{background:var(--ln)}
 #kp .p{font-size:12.5px;color:var(--gd);font-weight:700}
-#kp .u{color:var(--bl);font-weight:700}#kp .a{font-weight:700}#kp .e{background:var(--ac);color:#fff;grid-column:6;grid-row:1/4;height:auto;font-size:20px;font-weight:700;line-height:1.4;white-space:nowrap}
+#kp .u{color:var(--bl);font-weight:700}#kp .a{font-weight:700}#kp .bk{background:var(--pn);border:2px solid var(--rd);color:var(--rd);grid-column:6;grid-row:3/5;height:auto;font-size:20px;font-weight:700;line-height:1.4;white-space:nowrap}#kp .e{background:var(--ac);color:#fff;grid-column:6;grid-row:1/3;height:auto;font-size:20px;font-weight:700;line-height:1.4;white-space:nowrap}
 .k9{display:grid;grid-template-columns:repeat(9,1fr);gap:4px;margin-bottom:8px}
 .kg{display:grid;grid-template-columns:3fr 5fr;gap:12px}
-.kl{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.kr{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) minmax(0,2fr);gap:5px}#kp .kr .a{grid-row:3}#kp .kr .d{grid-row:2;grid-column:5}
+.kl{display:grid;grid-template-columns:repeat(3,1fr);gap:5px}.kr{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) minmax(0,2fr);gap:5px;grid-template-rows:repeat(4,42px)}#kp .kr .a{grid-row:3}#kp .kr .d{grid-row:2;grid-column:5}
 .sv{display:grid;grid-template-columns:1fr 1fr 2fr;gap:8px;margin:10px 0 16px}.sv button{padding:14px;font-size:17px}
 .hc{background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:10px;margin-top:8px}
 .hc .t{font-weight:700}.hc .bt{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.hc .bt .btn{padding:7px 10px;font-size:13px}
@@ -69,10 +69,10 @@ input[type=text],input[type=number],select{background:var(--pn);border:1px solid
 <h2 style="margin-top:22px" id="tlh" hidden>내 대회</h2><div id="tl"></div>
 </section>
 <section id="app" hidden>
-<div class="top"><div class="row"><button class="btn" id="back">←</button><div><h2 id="tt"></h2><span class="mu">새 핸드</span></div></div><span class="mu" id="sst">자동 저장</span></div>
+<div class="top"><div class="row"><button class="btn" id="back" style="padding:10px 18px;font-size:22px">←</button><div><h2 id="tt"></h2><span class="mu">새 핸드</span></div></div><span class="mu" id="sst">자동 저장</span></div>
 <div class="pn ses"><div><label>테이블</label><select id="mx"><option value="9">9max</option><option value="8">8max</option><option value="7">7max</option><option value="6">6max</option></select></div>
 <div><label>앤티 방식</label><select id="an"><option value="bb">BB앤티</option><option value="all">올앤티</option><option value="none">앤티 없음</option></select></div></div>
-<div class="ln" style="margin-bottom:4px"><b>blind:</b><input id="bi" type="text" inputmode="text" autocomplete="off" placeholder="SB BB 앤티 예) 1000 2000 2000"></div>
+<div class="ln" style="margin-bottom:4px"><b>blind:</b><input id="bi" type="text" inputmode="text" autocomplete="off" placeholder="SB BB 앤티 예) 500 1000 1000"></div>
 <div id="form"></div>
 <div class="pn pa" id="pa" style="margin-top:8px"></div>
 <div class="sv"><button class="btn" id="later">나중에</button><button class="btn" id="fresh">새로쓰기</button><button class="btn pri" id="save">저장</button></div>
@@ -88,15 +88,15 @@ const pos=t=>AL[String(t).toUpperCase()];
 const cards=s=>{const r=[];String(s).replace(/([2-9TJQKA])([♠♥♦♣shdc])/gi,(m,a,b)=>{r.push(a.toUpperCase()+(SY[b]||b.toLowerCase()))});return r};
 const dc=c=>c[0]+SR[c[1]],cH=a=>a.map(c=>{const x=dc(c);return /[♥♦]/.test(x)?`<span class="red">${x}</span>`:x}).join('');
 const FD=[
- {k:'stack',lb:'stack',ph:'포지션 스택 예) BTN 40, BB 25',hint:'포지션 + 스택(bb), 쉼표로 구분. 예) BTN 40, BB 25'},
+ {k:'stack',lb:'stack',ph:'포지션 스택 예) BTN 40000, BB 25000',hint:'포지션 + 스택(칩 그대로), 쉼표로 구분. 예) BTN 40000, BB 25000'},
  {k:'card',lb:'card',ph:'포지션 카드 예) BTN AsKd',hint:'내 포지션 + 내 카드. 예) BTN AsKd'},
- {k:'pre',lb:'pre action',ph:'액션 예) CO 2.2, BTN c, BB c',hint:'프리플랍 액션: 포지션 + 금액/f/c/x/jam. 예) CO 2.2, BTN c, BB c'},
+ {k:'pre',lb:'pre action',ph:'액션 예) CO 2500, BTN c, BB c',hint:'프리플랍 액션: 포지션 + 칩 금액/f/c/x/jam. 예) CO 2500, BTN c, BB c'},
  {k:'flopb',lb:'flop board',ph:'보드 3장 예) Ks7d2c',hint:'플랍 보드 3장. 예) Ks7d2c'},
- {k:'flop',lb:'flop action',ph:'액션 예) BB x, CO 3, BB c',hint:'플랍 액션. 예) BB x, CO 3, BB c'},
+ {k:'flop',lb:'flop action',ph:'액션 예) BB x, CO 3000, BB c',hint:'플랍 액션. 예) BB x, CO 3000, BB c'},
  {k:'turnb',lb:'turn board',ph:'보드 1장 예) Qh',hint:'턴 카드 1장. 예) Qh'},
- {k:'turn',lb:'turn action',ph:'액션 예) BB x, CO 8, BB c',hint:'턴 액션. 예) BB x, CO 8, BB c'},
+ {k:'turn',lb:'turn action',ph:'액션 예) BB x, CO 8000, BB c',hint:'턴 액션. 예) BB x, CO 8000, BB c'},
  {k:'riverb',lb:'river board',ph:'보드 1장 예) 2s',hint:'리버 카드 1장. 예) 2s'},
- {k:'river',lb:'river action',ph:'액션 예) BB x, CO 20, BB c',hint:'리버 액션. 예) BB x, CO 20, BB c'},
+ {k:'river',lb:'river action',ph:'액션 예) BB x, CO 20000, BB c',hint:'리버 액션. 예) BB x, CO 20000, BB c'},
  {k:'show',lb:'show',ph:'쇼다운 카드 예) BB AhKh (멀티=쉼표)',hint:'쇼다운된 상대 카드. 멀티면 쉼표로. 예) BB AhKh, SB QdQc'},
  {k:'memo',lb:'memo',ph:'메모 (일반 키보드)',hint:'자유 메모 · 일반 키보드로 입력'}
 ],K=FD.map(d=>d.k),BK=['flopb','turnb','riverb'],NM=['프리','플랍','턴','리버'];
@@ -134,8 +134,9 @@ function toast(m){const t=$('#ts');t.textContent=m;t.classList.add('on');setTime
 /* ---------- 게임 엔진 ---------- */
 function sim(L,S){
  L=norm(L);const W=[],rows=[],ev=[],done={},dim={},q=[],unc={};
- const order=P9.slice(9-S.max),bbv=1,sbv=S.bb?S.sb/S.bb:.5,at=S.bb?S.at/S.bb:(S.ante==='none'?0:1),st={};
- (L.stack||'').split(',').forEach(t=>{t=t.trim();if(!t)return;const m=t.match(/^(\S+)\s+([\d.]+)/),p=m&&pos(m[1]);if(!p||!order.includes(p))W.push('stack 해석 불가: '+t);else st[p]=+m[2]});
+ const u=S.bb>0?S.bb:1,pu=S.v===2?u:1,order=P9.slice(9-S.max),bbv=1,sbv=S.bb?S.sb/S.bb:.5,at=S.bb?S.at/S.bb:(S.ante==='none'?0:1),st={};
+ (L.stack||'').split(',').forEach(t=>{t=t.trim();if(!t)return;const m=t.match(/^(\S+)\s+([\d.]+)/),p=m&&pos(m[1]);if(!p||!order.includes(p))W.push('stack 해석 불가: '+t);else st[p]=+m[2]/pu});
+ if(S.v===2&&!(S.bb>0)&&['stack','pre','flop','turn','river'].some(k=>/\s\d/.test(L[k]||'')))W.push('blind 줄에 SB BB 앤티를 먼저 적어 주세요 (칩 → BB 환산에 필요)');
  let hp=null,hc=[];const hm=(L.card||'').trim().match(/^(\S+)\s*(.*)$/);
  if(hm){hp=pos(hm[1]);if(!hp)W.push('card 포지션 해석 불가');hc=cards(hm[2])}
  const rem={...st},alive=new Set(Object.keys(st)),allin=new Set(),used=[...hc];
@@ -156,7 +157,7 @@ function sim(L,S){
   if(i===0){if(st.SB!==undefined)bt.SB=sbv;if(st.BB!==undefined)bt.BB=bbv;cur=bbv}
   right.split(',').forEach(tok=>{
    tok=tok.trim();if(!tok)return;const dq=tok.includes('?');tok=tok.replace(/\?/g,'').trim();
-   const pp=tok.split(/\s+/),p=pos(pp[0]),a=(pp[1]||'').toLowerCase().replace(/bb$/,'');
+   const pp=tok.split(/\s+/),p=pos(pp[0]),a=(pp[1]||'').toLowerCase();
    if(!p||!alive.has(p)){W.push(`${NM[i]}: "${tok}" 해석 불가 또는 이미 폴드한 자리`);return}
    if(allin.has(p)){W.push(`${p}는 이미 올인`);return}
    const to=bt[p]||0;let add=0,t='';
@@ -164,11 +165,11 @@ function sim(L,S){
    else if(a==='x'){if(cur-to>1e-9)W.push(`${p} 체크 불가 (콜 필요)`);t='체크';ev.push({st:i,p,k:'x'})}
    else if(a==='c'){add=Math.min(cur-to,rem[p]);if(add<=1e-9)W.push(`${p} 콜할 금액이 없습니다`);
     if(p===hp&&add>0)rq=` · 필요 승률 ${Math.round(add/(settled+sum()+add)*100)}%`;t='콜';ev.push({st:i,p,k:'c',add})}
-   else{let total=a==='jam'?to+rem[p]:parseFloat(a);if(isNaN(total)){W.push(`${NM[i]}: "${tok}" 액션을 알 수 없음`);return}
+   else{let total=a==='jam'?to+rem[p]:parseFloat(a)/pu;if(isNaN(total)){W.push(`${NM[i]}: "${tok}" 액션을 알 수 없음`);return}
     add=total-to;const ai=add>=rem[p]-1e-9;if(ai){add=rem[p];total=to+add}
-    if(total<cur-1e-9&&!ai){W.push(`${p} 금액이 현재 베팅(${f(cur)})보다 작습니다`);return}
+    if(total<cur-1e-9&&!ai){W.push(`${p} 금액이 현재 베팅(${f(cur*u)})보다 작습니다`);return}
     if(total<=cur+1e-9){if(p===hp&&add>0)rq=` · 필요 승률 ${Math.round(add/(settled+sum()+add)*100)}%`;t=ai?'올인 콜':'콜';ev.push({st:i,p,k:'c',add})}
-    else{const n=i===0?['오픈','3벳','4벳','5벳'][Math.min(r,3)]:(r?'레이즈':'벳');t=(ai?'올인 ':'')+n+' '+f(total);ev.push({st:i,p,k:cur?'r':'b',add,to:total,pv:cur});cur=total;r++}}
+    else{const n=i===0?['오픈','3벳','4벳','5벳'][Math.min(r,3)]:(r?'레이즈':'벳');t=(ai?'올인 ':'')+n+' '+f(total*u);ev.push({st:i,p,k:cur?'r':'b',add,to:total,pv:cur});cur=total;r++}}
    if(add>0){bt[p]=to+add;rem[p]-=add;if(rem[p]<=1e-9){allin.add(p);ev[ev.length-1].ai=true}}
    acted.add(p);acts.push(`${p} ${t}${dq?' (고민)':''}`);if(dq)q.push(NM[i])});
   const act=[...alive].filter(p=>!allin.has(p));
@@ -186,7 +187,7 @@ function sim(L,S){
  let vil=[...alive].filter(p=>p!==hp);
  if(!vil.length){const o=ev.map(e=>e.p).filter(p=>p!==hp);if(o.length)vil=[o[o.length-1]]}
  const es=hp&&st[hp]!=null?Math.min(st[hp],vil.length?Math.max(...vil.map(v=>st[v]||0)):st[hp]):null;
- return{rows,W,ev,done,dim,q:[...new Set(q)],board,hp,hc,st,sh,alive,pot:settled,unc,order,ended,vil,es,bbv,sbv,at,ante};
+ return{u,rows,W,ev,done,dim,q:[...new Set(q)],board,hp,hc,st,sh,alive,pot:settled,unc,order,ended,vil,es,bbv,sbv,at,ante};
 }
 
 /* ---------- 내보내기 ---------- */
@@ -233,28 +234,31 @@ function cp(t){const ok=()=>toast('복사됨');function fb(){const a=document.cr
 function home(){flush();T=null;$('#app').hidden=true;$('#home').hidden=false;sync();
  const l=[...D.tours].sort((a,b)=>b.ts-a.ts);$('#tlh').hidden=!l.length;
  $('#tl').innerHTML=l.map(t=>`<div class="tc" data-id="${t.id}"><b>${esc(t.name)}</b><span class="mu">${t.hands.length}핸드</span></div>`).join('')}
-function enter(t){try{if(window.top===window&&!(history.state&&history.state.qr==='app'))history.pushState({qr:'app'},'')}catch(e){}T=t;ed=null;$('#home').hidden=true;$('#app').hidden=false;kOn=true;sync();$('#tt').textContent=t.name;ses();setL(t.form||{});aK='stack';upd();hands();window.scrollTo(0,0)}
+function conv(L,bb){L={...L};['stack','pre','flop','turn','river'].forEach(k=>{if(L[k])L[k]=L[k].split(',').map(x=>x.replace(/^(\s*\S+\s+)(\d+(?:\.\d+)?)(bb)?/i,(m,a,n)=>a+f(n*bb))).join(',')});return L}
+function enter(t){if(t.S.v!==2){if(t.S.bb>0&&t.form)t.form=conv(norm(t.form),t.S.bb);t.S.v=2}try{if(window.top===window&&!(history.state&&history.state.qr==='app'))history.pushState({qr:'app'},'')}catch(e){}T=t;ed=null;$('#home').hidden=true;$('#app').hidden=false;kOn=true;sync();$('#tt').textContent=t.name;ses();setL(t.form||{});aK='stack';upd();hands();window.scrollTo(0,0)}
 function bparse(S){const n=(S.blind||'').match(/\d+(?:\.\d+)?/g)||[];S.sb=+n[0]||0;S.bb=+n[1]||0;S.at=+n[2]||0}
 function ses(){const S=T.S;if(S.blind===undefined)S.blind=S.bb?`${S.sb} ${S.bb} ${S.at}`:'';bparse(S);$('#mx').value=S.max;$('#an').value=S.ante;$('#bi').value=S.blind}
 function mk(){const F=$('#form');F.innerHTML=FD.map(d=>`<div class="ln" data-k="${d.k}"><b>${d.lb}:</b><input data-k="${d.k}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${d.ph}" ${d.k==='memo'?'type="text"':'type="text" inputmode="none"'}></div>`).join('');
- F.addEventListener('focusin',e=>{const k=e.target.dataset.k;if(K.includes(k)){aK=k;mark();setKb(k!=='memo');if(k!=='memo')setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}});F.addEventListener('input',chg);F.addEventListener('click',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k&&K.includes(k)&&k!=='memo'&&!kOn){aK=k;mark();setKb(true);setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}})}
+ F.addEventListener('focusin',e=>{const k=e.target.dataset.k;if(K.includes(k)){aK=k;mark();setKb(k!=='memo');if(k!=='memo')setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}});F.addEventListener('input',chg);F.addEventListener('keydown',e=>{if(PC&&e.key==='Enter'&&e.target.dataset&&e.target.dataset.k){e.preventDefault();next()}});F.addEventListener('click',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k&&K.includes(k)&&k!=='memo'&&!kOn){aK=k;mark();setKb(true);setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}})}
 let kOn=true;
+const PC=matchMedia('(hover:hover) and (pointer:fine)').matches; /* PC(마우스+키보드)에서는 플로팅 키패드 없이 실제 키보드로 입력 */
 let ky=null;try{ky=JSON.parse(localStorage.getItem('qr_ky')||'null')}catch(e){}
 function yClamp(y,h){return Math.min(Math.max(4,innerHeight-h-70),Math.max(4,y))}
 function placeKb(){const w=$('#kw');if(w.hidden)return;const h=w.offsetHeight;w.style.top=yClamp(ky==null?(innerHeight-h)/2:ky*innerHeight,h)+'px'}
-function sync(){const a=!$('#app').hidden;$('#kw').hidden=!(a&&kOn);$('#kt').hidden=!(a&&!kOn);placeKb();document.documentElement.style.setProperty('--kh',(a&&kOn?Math.max(0,innerHeight-$('#kw').getBoundingClientRect().top):0)+'px')}
+function sync(){const a=!$('#app').hidden&&!PC;$('#kw').hidden=!(a&&kOn);$('#kt').hidden=!(a&&!kOn);placeKb();document.documentElement.style.setProperty('--kh',(a&&kOn?Math.max(0,innerHeight-$('#kw').getBoundingClientRect().top):0)+'px')}
 function setKb(v){kOn=v;sync()}
 const el=k=>$(`#form input[data-k="${k}"]`),getL=()=>Object.fromEntries(K.map(k=>[k,el(k).value]));
 function setL(L){L=norm(L);K.forEach(k=>el(k).value=L[k]||'')}
 function mark(){document.querySelectorAll('.ln').forEach(n=>n.classList.toggle('on',n.dataset.k===aK));const d=FD.find(x=>x.k===aK);if(d)$('#kl').innerHTML=`<span><b>${d.lb}:</b> ${d.hint}</span>`}
 function chg(){T.form=getL();sv();upd()}
 function upd(){R=sim(getL(),T.S);
- $('#pa').innerHTML=(R.rows.length?R.rows.map(r=>`<div class="r"><b>${r.s}</b>${r.board?cH(cards(r.board))+' ':''}${esc(r.t)} · 팟 ${f(r.pot)}bb${r.rq}</div>`).join(''):'<span class="mu">입력하면 여기에 해석이 나옵니다</span>')+R.W.map(w=>`<div class="w">⚠ ${esc(w)}</div>`).join('');
+ $('#pa').innerHTML=(R.rows.length?R.rows.map(r=>`<div class="r"><b>${r.s}</b>${r.board?cH(cards(r.board))+' ':''}${esc(r.t)} · 팟 ${f(r.pot*R.u)}${r.rq}</div>`).join(''):'<span class="mu">입력하면 여기에 해석이 나옵니다</span>')+R.W.map(w=>`<div class="w">⚠ ${esc(w)}</div>`).join('');
  document.querySelectorAll('.ln').forEach(n=>n.classList.toggle('dim',!!R.dim[n.dataset.k]));mark()}
 function next(){const i=K.indexOf(aK);let j=i+1;while(j<K.length-1&&R.dim[K[j]])j++;aK=K[Math.min(j,K.length-1)];el(aK).focus();mark()}
 function key(k){
  const e=el(aK);if(!e)return;e.focus();const k0=aK,s=e.selectionStart==null?e.value.length:e.selectionStart,en=e.selectionEnd==null?s:e.selectionEnd,v=e.value,b=v.slice(0,s).trimEnd();
  const put=t=>e.setRangeText(t,s,en,'end'),isB=BK.includes(k0);
+ if(k==='back'){$('#back').onclick();return}
  if(k==='↵'){next();return}
  if(k==='⌫'){if(s!==en)e.setRangeText('',s,en,'end');else if(s>0)e.setRangeText('',s-1,s,'end')}
  else if(PK.includes(k)){let p='';if(b&&k0!=='card'&&!isB)p=/,$/.test(b)?' ':', ';put(p+k+' ')}
@@ -265,8 +269,8 @@ function key(k){
  if(['f','x','c','jam','?'].includes(k)&&['pre','flop','turn','river'].includes(k0)&&R.done[k0])next();
  else if(isB&&cards(el(k0).value).length>=(k0==='flopb'?3:1))next();}
 function kp(){const B=(k,c='')=>`<button class="${c}" data-k="${k}">${k}</button>`,
- L=['7','8','9','4','5','6','1','2','3','0','.'].map(k=>B(k)).join('')+B('bb','u'),
- Rr=['A','K','Q','J','T'].map(k=>B(k)).join('')+`<button class="e" data-k="↵">↵<br>다음 줄</button>`+['♠','♥','♦','♣'].map(k=>`<button data-k="${k}" class="${/[♥♦]/.test(k)?'red':''}">${k}</button>`).join('')+B('⌫','d')+['f','x','c','jam','?'].map(k=>B(k,'a')).join('');
+ L=['7','8','9','4','5','6','1','2','3','.','0'].map(k=>B(k)).join('')+B('00','u'),
+ Rr=['A','K','Q','J','T'].map(k=>B(k)).join('')+`<button class="e" data-k="↵">↵<br>다음 줄</button><button class="bk" data-k="back">←<br>뒤로</button>`+['♠','♥','♦','♣'].map(k=>`<button data-k="${k}" class="${/[♥♦]/.test(k)?'red':''}">${k}</button>`).join('')+B('⌫','d')+['f','x','c','jam','?'].map(k=>B(k,'a')).join('');
  $('#kp').innerHTML=`<div class="k9">${PK.map(k=>B(k,'p')).join('')}</div><div class="kg"><div class="kl">${L}</div><div class="kr">${Rr}</div></div>`;
  $('#kp').addEventListener('mousedown',e=>e.preventDefault());$('#kp').addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b.dataset.k!=='⌫')key(b.dataset.k)});
  $('#kp').addEventListener('contextmenu',e=>e.preventDefault());
@@ -277,7 +281,7 @@ function hands(){const H=T.hands;$('#hh').textContent=`저장한 핸드 (${H.len
  $('#hands').innerHTML=H.length?H.map(h=>{const Q=sim(h.L,h.S),miss=!Q.hp||!Object.keys(Q.st).length||h.d,qs=Q.q.length;
   return `<div class="hc" data-id="${h.id}"><div class="t">${Q.hp||'?'} vs ${Q.vil.join(', ')||'?'} ${h.S.blind?'· '+esc(h.S.blind):''}</div>
   <div>${cH(Q.hc)} ${Q.board.length?'· '+cH(Q.board):''}</div>
-  <div class="mu">${Q.es!=null?'유효 스택 '+f(Q.es)+'bb':''} ${qs?`<span class="tag">고민: ${Q.q.join('·')}</span>`:''}${miss?'<span class="tag">입력 누락</span>':''}</div>
+  <div class="mu">${Q.es!=null?'유효 스택 '+f(Q.es*Q.u)+' ('+f(Q.es)+'bb)':''} ${qs?`<span class="tag">고민: ${Q.q.join('·')}</span>`:''}${miss?'<span class="tag">입력 누락</span>':''}</div>
   ${h.L.memo?`<div class="mu">${esc(h.L.memo)}</div>`:''}
   <div class="bt"><button class="btn" data-a="gto">GTO Wizard 복사</button><button class="btn" data-a="cl">Claude 복기용 복사</button><button class="btn" data-a="ed">${h.d?'이어서 쓰기':'수정'}</button><button class="btn" data-a="del">삭제</button></div></div>`}).join(''):'<p class="mu">아직 저장한 핸드가 없습니다. 위에서 기록하고 [저장]을 눌러 보세요.</p>'}
 function saveH(d){const L=getL();if(!K.some(k=>L[k].trim())){toast('입력된 내용이 없습니다');return}
@@ -287,7 +291,7 @@ function saveH(d){const L=getL();if(!K.some(k=>L[k].trim())){toast('입력된 �
 function init(){mk();kp();
  const go=()=>{const n=$('#tn').value.trim();if(!n){toast('대회 이름을 적어 주세요');return}
   let t=D.tours.find(x=>x.name.toLowerCase()===n.toLowerCase());
-  if(!t){t={id:'t'+Date.now(),name:n,ts:Date.now(),S:{max:9,ante:'bb',blind:'',sb:0,bb:0,at:0},hands:[],form:{}};D.tours.push(t)}
+  if(!t){t={id:'t'+Date.now(),name:n,ts:Date.now(),S:{v:2,max:9,ante:'bb',blind:'',sb:0,bb:0,at:0},hands:[],form:{}};D.tours.push(t)}
   t.ts=Date.now();sv();$('#tn').value='';enter(t)};
  $('#go').onclick=go;$('#tn').onkeydown=e=>{if(e.key==='Enter')go()};
  $('#tl').onclick=e=>{const c=e.target.closest('.tc');if(c)enter(D.tours.find(t=>t.id===c.dataset.id))};
@@ -306,7 +310,7 @@ function init(){mk();kp();
   try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));a.download=T.name+'.txt';a.click()}catch(e){}};
  $('#hands').onclick=e=>{const b=e.target.closest('button[data-a]');if(!b)return;const id=b.closest('.hc').dataset.id,h=T.hands.find(x=>x.id===id),a=b.dataset.a;
   if(a==='gto'){if(!h.S.bb){toast('blind 줄에 BB를 입력하면 GTO Wizard 복사가 돼요');return}cp(ps(h))}else if(a==='cl')cp(cl(h));
-  else if(a==='ed'){ed=id;T.S={...h.S};T.form=h.L;ses();setL(h.L);sv();upd();window.scrollTo(0,0);toast('불러왔습니다. 저장하면 덮어씁니다')}
+  else if(a==='ed'){ed=id;T.S={...h.S};let L2=h.L;if(T.S.v!==2){if(T.S.bb>0)L2=conv(norm(h.L),T.S.bb);T.S.v=2}T.form=L2;ses();setL(L2);sv();upd();window.scrollTo(0,0);toast('불러왔습니다. 저장하면 덮어씁니다')}
   else if(a==='del'&&confirm('이 핸드를 삭제할까요?')){T.hands=T.hands.filter(x=>x.id!==id);sv();hands()}};
  $('#li').onclick=()=>authGo('login');$('#su').onclick=()=>authGo('signup');$('#lo').onclick=()=>logout(false);
  $('#pw').onkeydown=e=>{if(e.key==='Enter')authGo('login')};
