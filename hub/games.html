@@ -608,27 +608,78 @@ G.push({k:'sudoku',cat:'퍼즐',e:'🔢',n:'스도쿠',d:'쉬움·보통·어려
     return `<div onclick="CUR.sl(${i})" style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:min(5vw,20px);font-weight:700;background:${bg};color:${col};border-right:${c%3===2&&c<8?'2px solid #333':'.5px solid #ccc'};border-bottom:${r%3===2&&r<8?'2px solid #333':'.5px solid #ccc'}">${v||''}</div>`;}).join('')}</div>
    ${this.done?`<div class="g2b"><button class="btn" onclick="CUR.go('${this.lv}')">새 문제</button><button class="btn b2" onclick="CUR.lv=null;rr()">난이도</button></div>`
    :`<div class="np">${[1,2,3,4,5,6,7,8,9].map(n=>`<button onclick="CUR.num(${n})">${n}</button>`).join('')}<button onclick="CUR.num(0)">⌫</button></div>`}`;}});
-// 오목 (AI / 친구와)
+// 오목 (AI / 친구와) — 렌주룰
+// 흑: 정확히 5목만 승리, 3-3 · 4-4 · 장목(6목 이상) 금지 / 백: 5목 이상이면 승리
+// (금수 자리에 두면 반칙패 대신 "둘 수 없음"으로 막고 ✕로 미리 보여줌. 5목이 되는 자리는 금수가 아님)
 const ON=15;
+const OM_D=[[1,0],[0,1],[1,1],[1,-1]];
 function omLine(b,p,c,dx,dy){let n=1,open=0;for(const s of[1,-1]){let x=p%ON,y=Math.floor(p/ON);while(true){x+=dx*s;y+=dy*s;if(x<0||y<0||x>=ON||y>=ON)break;const v=b[y*ON+x];if(v===c)n++;else{if(v===0)open++;break;}}}return [n,open];}
-function omWin(b,p){const c=b[p];return [[1,0],[0,1],[1,1],[1,-1]].some(([dx,dy])=>omLine(b,p,c,dx,dy)[0]>=5);}
-function omScore(b,p,c){let s=0;for(const[dx,dy]of[[1,0],[0,1],[1,1],[1,-1]]){b[p]=c;const[n,o]=omLine(b,p,c,dx,dy);b[p]=0;s+=n>=5?1e6:n===4?(o===2?5e4:o===1?6e3:0):n===3?(o===2?3e3:o===1?300:0):n===2?(o===2?120:o===1?20:0):o;}return s;}
-const vsPick=fn=>lvPick(fn,`<button class="btn g" onclick="${fn}('친구')">👥 친구와 (폰 하나로 둘이)</button>`);
-G.push({k:'omok',cat:'대전·도구',e:'⚫',n:'오목',d:'AI 대전 · 친구와 2인',
+const omAt=(b,x,y)=>x<0||y<0||x>=ON||y>=ON?-1:b[y*ON+x];
+// (x0,y0)에 놓인 돌 기준, 같은 색 연속 길이
+function omRunLen(b,x0,y0,dx,dy){const c=b[y0*ON+x0];let n=1;for(const s of[1,-1]){let x=x0+dx*s,y=y0+dy*s;while(omAt(b,x,y)===c){n++;x+=dx*s;y+=dy*s;}}return n;}
+// 기준점(t=0)에서 t칸 떨어진 빈 칸에 흑을 놓았을 때의 연속 구간 [lo,hi] (t 좌표)
+function omSpan(b,x0,y0,dx,dy,t){let lo=t,hi=t;while(omAt(b,x0+dx*(lo-1),y0+dy*(lo-1))===1)lo--;while(omAt(b,x0+dx*(hi+1),y0+dy*(hi+1))===1)hi++;return [lo,hi];}
+// 그 방향에서 만들어지는 "4"의 개수 (같은 돌 4개로 양쪽 끝이 모두 5목이 되는 열린 4는 1개로 센다)
+function omFours(b,x0,y0,dx,dy){const seen=new Set();
+  for(let t=-4;t<=4;t++){if(!t)continue;const x=x0+dx*t,y=y0+dy*t;if(omAt(b,x,y)!==0)continue;
+    const q=y*ON+x;b[q]=1;const[lo,hi]=omSpan(b,x0,y0,dx,dy,t);b[q]=0;
+    if(hi-lo===4&&lo<=0&&0<=hi){const k=[];for(let u=lo;u<=hi;u++)if(u!==t)k.push(u);seen.add(k.join());}}
+  return seen.size;}
+// t칸 자리에 흑을 놓으면 정확히 5목이 되는가
+function omExact5(b,x0,y0,dx,dy,t){const q=(y0+dy*t)*ON+(x0+dx*t);b[q]=1;const[lo,hi]=omSpan(b,x0,y0,dx,dy,t);b[q]=0;return hi-lo===4;}
+// 그 방향이 "열린 3"인가: 한 수로 양끝이 모두 5목이 되는 열린 4를 만들 수 있고, 그 한 수 자체가 금수가 아니어야 진짜 3
+function omThree(b,x0,y0,dx,dy,depth){
+  for(let t=-4;t<=4;t++){if(!t)continue;const x=x0+dx*t,y=y0+dy*t;if(omAt(b,x,y)!==0)continue;
+    const q=y*ON+x;b[q]=1;const[lo,hi]=omSpan(b,x0,y0,dx,dy,t);let open=false;   // q를 둔 상태에서 열린 4인지 확인
+    if(hi-lo===3&&lo<=0&&0<=hi&&omAt(b,x0+dx*(lo-1),y0+dy*(lo-1))===0&&omAt(b,x0+dx*(hi+1),y0+dy*(hi+1))===0)open=omExact5(b,x0,y0,dx,dy,lo-1)&&omExact5(b,x0,y0,dx,dy,hi+1);
+    b[q]=0;
+    if(open&&(depth>=3||!omForbid(b,q,depth+1)))return true;}
+  return false;}
+// 흑이 p에 둔다고 가정했을 때: ''(가능) | '장목' | '4-4' | '3-3'
+function omForbid(b,p,depth){depth=depth||0;if(b[p])return '';b[p]=1;
+  try{const x0=p%ON,y0=(p/ON)|0;let over6=false;
+    for(const[dx,dy]of OM_D){const n=omRunLen(b,x0,y0,dx,dy);if(n===5)return '';if(n>5)over6=true;}   // 정확히 5목이면 금수보다 승리가 우선
+    if(over6)return '장목';
+    let f=0;for(const[dx,dy]of OM_D)f+=omFours(b,x0,y0,dx,dy);
+    if(f>=2)return '4-4';
+    let t3=0;for(const[dx,dy]of OM_D)if(omThree(b,x0,y0,dx,dy,depth)&&++t3>=2)return '3-3';
+    return '';
+  }finally{b[p]=0;}}
+// p에 놓인 돌로 승리했는가 (흑은 정확히 5목, 백은 5목 이상)
+function omWin(b,p){const c=b[p],x0=p%ON,y0=(p/ON)|0;return OM_D.some(([dx,dy])=>{const n=omRunLen(b,x0,y0,dx,dy);return c===1?n===5:n>=5;});}
+function omScore(b,p,c){let s=0;for(const[dx,dy]of OM_D){b[p]=c;const[n,o]=omLine(b,p,c,dx,dy);b[p]=0;s+=n>=5?1e6:n===4?(o===2?5e4:o===1?6e3:0):n===3?(o===2?3e3:o===1?300:0):n===2?(o===2?120:o===1?20:0):o;}return s;}
+const vsPick=fn=>lvPick(fn,`<button class="btn g" onclick="${fn}('친구')">👥 친구와 (폰 하나로 둘이)</button>${typeof OLA!=='undefined'&&CUR&&OLA[CUR.k]?'<button class="btn" onclick="olOpen()">🌐 온라인 대전 (방 만들기 · 관전)</button>':''}`);
+G.push({k:'omok',cat:'대전·도구',e:'⚫',n:'오목',d:'렌주룰 · AI 대전 · 친구와 2인',
  start(){this.lv=null;rr();},
- go(lv){Object.assign(this,{lv,b:Array(ON*ON).fill(0),over:0,last:-1,turn:1,streak:lsGet('om_'+lv,0)});rr();},
+ go(lv){Object.assign(this,{lv,b:Array(ON*ON).fill(0),over:0,last:-1,mine:-1,turn:1,busy:false,gid:(this.gid||0)+1,streak:lsGet('om_'+lv,0)});rr();},
  ai(){const b=this.b,c=[];for(let p=0;p<ON*ON;p++){if(b[p])continue;let near=false;const x=p%ON,y=Math.floor(p/ON);
    for(let dy=-2;dy<=2&&!near;dy++)for(let dx=-2;dx<=2;dx++){const X=x+dx,Y=y+dy;if(X>=0&&Y>=0&&X<ON&&Y<ON&&b[Y*ON+X]){near=true;break;}}
-   if(!near)continue;const w=this.lv==='쉬움'?[1,.6]:this.lv==='보통'?[1,.95]:[1.1,1];let s=omScore(b,p,2)*w[0]+omScore(b,p,1)*w[1];if(this.lv==='쉬움')s*=.5+Math.random();c.push([s,p]);}
+   if(!near)continue;const w=this.lv==='쉬움'?[1,.6]:this.lv==='보통'?[1,.95]:[1.1,1];
+   const bk=omForbid(b,p)?0:omScore(b,p,1);   // 흑이 둘 수 없는 금수 자리는 막을 필요 없음
+   let s=omScore(b,p,2)*w[0]+bk*w[1];if(this.lv==='쉬움')s*=.5+Math.random();c.push([s,p]);}
   c.sort((a,b)=>b[0]-a[0]);if(!c.length)return 112;if(this.lv==='쉬움'&&c.length>2&&Math.random()<.35)return c[1+R(2)][1];return c[0][1];},
- tap(p){if(this.over||this.b[p])return;const pvp=this.lv==='친구';this.b[p]=pvp?this.turn:1;this.last=p;if(omWin(this.b,p))return this.end(pvp?this.turn:1);
-  if(pvp){this.turn=3-this.turn;}else{const a=this.ai();this.b[a]=2;this.last=a;if(omWin(this.b,a))return this.end(2);}if(!this.b.includes(0))return this.end(3);rr();},
- end(w){this.over=w;if(this.lv!=='친구'){if(w===1){this.streak++;lsSet('om_'+this.lv,this.streak);record('omok',this.streak,this.lv);}else{this.streak=0;lsSet('om_'+this.lv,0);}}rr();},
- view(){if(!this.lv)return vsPick('CUR.go');const pvp=this.lv==='친구';
-  const msg=this.over===3?'무승부':this.over?(pvp?(this.over===1?'⚫ 흑 승리!':'⚪ 백 승리!'):(this.over===1?`🎉 승리! ${this.lv} ${this.streak}연승`:'😵 AI 승리 · 연승 끝')):(pvp?(this.turn===1?'⚫ 흑 차례':'⚪ 백 차례'):'내 차례 (흑)');
-  return `<div class="gst"><span>${pvp?'👥 친구와':this.lv+' · 연승 <b>'+this.streak+'</b>'}</span><span>${msg}</span></div>
-   <div style="display:grid;grid-template-columns:repeat(15,minmax(0,1fr));aspect-ratio:1;background:#dcb35c;border-radius:6px;padding:3px">${this.b.map((v,p)=>`<i onclick="CUR.tap(${p})" style="position:relative;aspect-ratio:1;border:.5px solid rgba(0,0,0,.25);${p===this.last?'outline:2px solid #e33;outline-offset:-2px;':''}">${v?`<b style="position:absolute;inset:8%;border-radius:50%;background:${v===1?'#111':'#fafafa'};${v===2?'box-shadow:inset 0 0 0 1px #999':''}"></b>`:''}</i>`).join('')}</div>
-   ${this.over?`<div class="g2b"><button class="btn" onclick="CUR.go('${this.lv}')">한 판 더</button><button class="btn b2" onclick="CUR.lv=null;rr()">모드 바꾸기</button></div>`:''}`;}});
+ // 지금 흑이 둘 차례일 때 금수 자리 {칸:이유}
+ fmap(){const m={};if(this.over||this.busy||(this.lv==='친구'&&this.turn!==1))return m;const b=this.b;
+  for(let p=0;p<ON*ON;p++){if(b[p])continue;const x=p%ON,y=(p/ON)|0;let near=false;
+   for(let dy=-3;dy<=3&&!near;dy++)for(let dx=-3;dx<=3;dx++){if(omAt(b,x+dx,y+dy)===1){near=true;break;}}
+   if(!near)continue;const f=omForbid(b,p);if(f)m[p]=f;}
+  return m;},
+ tap(p){if(this.over||this.busy||this.b[p])return;const pvp=this.lv==='친구',me=pvp?this.turn:1;
+  if(me===1){const f=omForbid(this.b,p);if(f){toast('🚫 금수예요 ('+f+') · 흑은 3-3 · 4-4 · 6목 이상을 둘 수 없어요',2200);return;}}
+  this.b[p]=me;this.last=p;this.mine=pvp?-1:p;
+  if(omWin(this.b,p))return this.end(me);
+  if(!this.b.includes(0))return this.end(3);
+  if(pvp){this.turn=3-me;rr();return;}
+  this.busy=true;rr();const gid=this.gid;
+  setTimeout(()=>{if(gid!==this.gid||!this.busy)return;this.busy=false;const a=this.ai();this.b[a]=2;this.last=a;
+   if(omWin(this.b,a))return this.end(2);if(!this.b.includes(0))return this.end(3);rr();},AI_DELAY);},
+ end(w){this.busy=false;this.over=w;if(this.lv!=='친구'){if(w===1){this.streak++;lsSet('om_'+this.lv,this.streak);record('omok',this.streak,this.lv);}else{this.streak=0;lsSet('om_'+this.lv,0);}}rr();},
+ view(){if(!this.lv)return vsPick('CUR.go');const pvp=this.lv==='친구';const fm=this.fmap();
+  const msg=this.over===3?'무승부':this.over?(pvp?(this.over===1?'⚫ 흑 승리!':'⚪ 백 승리!'):(this.over===1?`🎉 승리! ${this.lv} ${this.streak}연승`:'😵 AI 승리 · 연승 끝')):(pvp?(this.turn===1?'⚫ 흑 차례':'⚪ 백 차례'):(this.busy?'AI 생각 중…':'내 차례 (흑)'));
+  return `<div class="gst"><span>${pvp?'👥 친구와':this.lv+' · 연승 <b>'+this.streak+'</b>'} · 렌주룰</span><span>${msg}</span></div>
+   <div style="display:grid;grid-template-columns:repeat(15,minmax(0,1fr));aspect-ratio:1;background:#dcb35c;border-radius:6px;padding:3px">${this.b.map((v,p)=>{const box=pvp?(p===this.last?'outline:2px solid #e33;outline-offset:-2px;':''):(p===this.mine?(typeof MINE_BOX==='string'?MINE_BOX:'box-shadow:inset 0 0 0 3px #e02424;'):'');
+    return `<i onclick="CUR.tap(${p})" style="position:relative;aspect-ratio:1;border:.5px solid rgba(0,0,0,.25);${box}">${v?`<b style="position:absolute;inset:8%;border-radius:50%;background:${v===1?'#111':'#fafafa'};${v===2?'box-shadow:inset 0 0 0 1px #999':''}"></b>`:''}${!pvp&&v===2&&p===this.last?'<u style="position:absolute;left:50%;top:50%;width:22%;height:22%;margin:-11% 0 0 -11%;border-radius:50%;background:#e02424"></u>':''}${fm[p]?'<s style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:min(3.6vw,16px);font-weight:900;line-height:1;color:#c0262d;text-decoration:none;pointer-events:none">✕</s>':''}</i>`;}).join('')}</div>
+   ${this.over?`<div class="g2b"><button class="btn" onclick="CUR.go('${this.lv}')">한 판 더</button><button class="btn b2" onclick="CUR.lv=null;rr()">모드 바꾸기</button></div>`:`<div class="m" style="text-align:center;margin-top:6px">🚫 렌주룰: 흑은 3-3 · 4-4 · 6목 이상 금지(✕ 표시), 정확히 5목만 승리 · 백은 5목 이상이면 승리</div>`}`;}});
 // 오델로 (AI / 친구와)
 const DIRS=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
 const OW=[100,-20,10,5,5,10,-20,100,-20,-50,-2,-2,-2,-2,-50,-20,10,-2,1,1,1,1,-2,10,5,-2,1,0,0,1,-2,5,5,-2,1,0,0,1,-2,5,10,-2,1,1,1,1,-2,10,-20,-50,-2,-2,-2,-2,-50,-20,100,-20,10,5,5,10,-20,100];
@@ -641,19 +692,19 @@ function otMM(b,d,c,al,be){const ms=otMoves(b,c);if(d===0||(!ms.length&&!otMoves
  let v=1e9;for(const[p,f]of ms){v=Math.min(v,otMM(otPlay(b,p,f,1),d-1,2,al,be));be=Math.min(be,v);if(al>=be)break;}return v;}
 G.push({k:'othello',cat:'대전·도구',e:'⚪',n:'오델로',d:'AI 대전 · 친구와 2인',
  start(){this.lv=null;rr();},
- go(lv){const b=Array(64).fill(0);b[27]=b[36]=2;b[28]=b[35]=1;Object.assign(this,{lv,b,over:0,turn:1,streak:lsGet('ot_'+lv,0),msg:''});rr();},
+ go(lv){const b=Array(64).fill(0);b[27]=b[36]=2;b[28]=b[35]=1;Object.assign(this,{lv,b,over:0,turn:1,streak:lsGet('ot_'+lv,0),msg:'',mine:-1,busy:false,gid:(this.gid||0)+1});rr();},
  ai(){const ms=otMoves(this.b,2);if(!ms.length)return null;if(this.lv==='쉬움'&&Math.random()<.5)return pick(ms);const d=this.lv==='쉬움'?1:this.lv==='보통'?2:4;let best_=null,bv=-1e9;
   for(const m of ms){const v=otMM(otPlay(this.b,m[0],m[1],2),d-1,1,-1e9,1e9);if(v>bv){bv=v;best_=m;}}return best_;},
  cnt(){let k=0,w=0;this.b.forEach(v=>{if(v===1)k++;else if(v===2)w++;});return [k,w];},
- tap(p){if(this.over)return;const pvp=this.lv==='친구',me=pvp?this.turn:1;const f=otFlips(this.b,p,me);if(!f.length)return;this.b=otPlay(this.b,p,f,me);this.msg='';
+ tap(p){if(this.over||this.busy)return;const pvp=this.lv==='친구',me=pvp?this.turn:1;const f=otFlips(this.b,p,me);if(!f.length)return;this.b=otPlay(this.b,p,f,me);this.msg='';if(!pvp)this.mine=p;
   if(pvp){const nx=3-me;if(otMoves(this.b,nx).length)this.turn=nx;else if(otMoves(this.b,me).length)this.msg=(nx===1?'흑':'백')+'은 둘 곳이 없어 넘어가요';else return this.end();rr();return;}
-  rr();setTimeout(()=>this.aiTurn(),250);},
+  this.busy=true;rr();const gid=this.gid;setTimeout(()=>{if(gid!==this.gid)return;this.busy=false;this.aiTurn();},AI_DELAY);},
  aiTurn(){for(let g=0;g<70;g++){const a=this.ai();if(a)this.b=otPlay(this.b,a[0],a[1],2);const my=otMoves(this.b,1).length,ai=otMoves(this.b,2).length;if(!my&&!ai)return this.end();if(my)break;this.msg='둘 곳이 없어서 AI가 한 번 더 둬요';}rr();},
  end(){const[k,w]=this.cnt();this.over=k>w?1:k<w?2:3;if(this.lv!=='친구'){if(this.over===1){this.streak++;lsSet('ot_'+this.lv,this.streak);record('othello',this.streak,this.lv);}else{this.streak=0;lsSet('ot_'+this.lv,0);}}rr();},
- view(){if(!this.lv)return vsPick('CUR.go');const pvp=this.lv==='친구';const[k,w]=this.cnt();const me=pvp?this.turn:1;const mv=this.over?[]:otMoves(this.b,me).map(m=>m[0]);
-  const msg=this.over===3?'무승부':this.over?(pvp?(this.over===1?'⚫ 흑 승리!':'⚪ 백 승리!'):(this.over===1?`🎉 승리! ${this.lv} ${this.streak}연승`:'😵 AI 승리 · 연승 끝')):(this.msg||(pvp?(this.turn===1?'⚫ 흑 차례':'⚪ 백 차례'):'내 차례 (흑)'));
+ view(){if(!this.lv)return vsPick('CUR.go');const pvp=this.lv==='친구';const[k,w]=this.cnt();const me=pvp?this.turn:1;const mv=this.over||this.busy||(this.ol&&this.ol.tok&&(this.ol.you<0||this.ol.you!==this.turn-1))?[]:otMoves(this.b,me).map(m=>m[0]);
+  const msg=this.over===3?'무승부':this.over?(pvp?(this.over===1?'⚫ 흑 승리!':'⚪ 백 승리!'):(this.over===1?`🎉 승리! ${this.lv} ${this.streak}연승`:'😵 AI 승리 · 연승 끝')):(this.msg||(pvp?(this.turn===1?'⚫ 흑 차례':'⚪ 백 차례'):(this.busy?'AI 생각 중…':'내 차례 (흑)')));
   return `<div class="gst"><span>⚫ ${k} : ${w} ⚪${pvp?'':' · 연승 <b>'+this.streak+'</b>'}</span><span>${msg}</span></div>
-   <div style="display:grid;grid-template-columns:repeat(8,minmax(0,1fr));aspect-ratio:1;background:#2e8b57;border-radius:8px;padding:3px;gap:2px">${this.b.map((v,p)=>`<i onclick="CUR.tap(${p})" style="background:#3a9d64;display:flex;align-items:center;justify-content:center">${v?`<b style="width:82%;height:82%;border-radius:50%;background:${v===1?'#111':'#f5f5f5'}"></b>`:mv.includes(p)?'<s style="width:22%;height:22%;border-radius:50%;background:rgba(0,0,0,.25)"></s>':''}</i>`).join('')}</div>
+   <div style="display:grid;grid-template-columns:repeat(8,minmax(0,1fr));aspect-ratio:1;background:#2e8b57;border-radius:8px;padding:3px;gap:2px">${this.b.map((v,p)=>`<i onclick="CUR.tap(${p})" style="${!pvp&&p===this.mine?MINE_BOX:''}background:#3a9d64;display:flex;align-items:center;justify-content:center">${v?`<b style="width:82%;height:82%;border-radius:50%;background:${v===1?'#111':'#f5f5f5'}"></b>`:mv.includes(p)?'<s style="width:22%;height:22%;border-radius:50%;background:rgba(0,0,0,.25)"></s>':''}</i>`).join('')}</div>
    ${this.over?`<div class="g2b"><button class="btn" onclick="CUR.go('${this.lv}')">한 판 더</button><button class="btn b2" onclick="CUR.lv=null;rr()">모드 바꾸기</button></div>`:''}`;}});
 // 틱택토
 function tttWin(b){const L=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];for(const[a,c,d]of L)if(b[a]&&b[a]===b[c]&&b[a]===b[d])return b[a];return b.includes(0)?0:3;}
@@ -1032,6 +1083,96 @@ G.push({k:'janggi',cat:'대전·도구',e:'🀄',n:'장기',d:'AI 대전 · 친�
   return `<div class="gst"><span>${this.lv==='친구'?'👥 친구와':this.lv+' · 연승 <b>'+this.streak+'</b>'}</span><span>${msg}</span></div>
    <div style="position:relative;aspect-ratio:${JW}/${JH};background:#e8c98a;border-radius:8px">${svg}<div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat(${JW},1fr);grid-template-rows:repeat(${JH},1fr)">${cells}</div></div>
    ${this.over?`<div class="g2b"><button class="btn" onclick="CUR.go('${this.lv}')">한 판 더</button><button class="btn b2" onclick="CUR.lv=null;rr()">모드 바꾸기</button></div>`:`<div class="m" style="text-align:center;margin-top:6px">궁을 잡으면 이겨요 · 장군을 무시하면 바로 잡혀요</div>`}`;}});
+// ===== 🌐 온라인 대전 (방 만들기 · 입장 · 관전 · 재대결) — 서버 rooms.py /api/room/* =====
+// 규칙 판정은 각 클라이언트가 같은 코드로 하고, 서버는 수(mv)만 순서대로 중계. 온라인 대전은 연승·XP·기록에 반영하지 않음
+const OL_SIDE={omok:['⚫ 흑','⚪ 백'],othello:['⚫ 흑','⚪ 백'],baduk:['⚫ 흑','⚪ 백'],chess:['⚪ 백','⚫ 흑'],janggi:['🟢 초','🔴 한']};
+const olE=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const olH={'Content-Type':'application/json','ngrok-skip-browser-warning':'1'};
+const olPost=(p,b)=>fetch(API+'/api/room/'+p,{method:'POST',headers:olH,body:JSON.stringify(Object.assign({nick:NICK},b))}).then(r=>r.json());
+const olGet=(p,q)=>fetch(API+'/api/room/'+p+'?'+new URLSearchParams(Object.assign({nick:NICK},q)),{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json());
+const olSv=(c,t,k)=>{try{localStorage.setItem('olroom',JSON.stringify({nick:NICK,code:c,tok:t,k}));}catch(e){}};
+const olLd=()=>{try{const s=JSON.parse(localStorage.getItem('olroom')||'null');return s&&s.nick===NICK?s:null;}catch(e){return null;}};
+const olRm=()=>{try{localStorage.removeItem('olroom');}catch(e){}};
+// 게임별 어댑터: seat(지금 둘 자리) · tap(탭→수, 불가면 null) · ap(수 적용 → [다음 자리, 끝났으면 승자 자리|-1|null])
+const OLA={
+ omok:{seat:g=>g.turn-1,
+  tap(g,p){if(g.b[p])return null;if(g.turn===1){const f=omForbid(g.b,p);if(f){toast('🚫 금수예요 ('+f+')',1800);return null;}}return p;},
+  ap(g,p){const s=g.turn;g.b[p]=s;g.last=p;if(omWin(g.b,p))g.over=s;else if(!g.b.includes(0))g.over=3;else g.turn=3-s;return [g.turn-1,g.over?(g.over===3?-1:g.over-1):null];}},
+ othello:{seat:g=>g.turn-1,
+  tap(g,p){return otFlips(g.b,p,g.turn).length?p:null;},
+  ap(g,p){const s=g.turn,f=otFlips(g.b,p,s);g.b=otPlay(g.b,p,f,s);g.msg='';const nx=3-s;
+   if(otMoves(g.b,nx).length)g.turn=nx;else if(otMoves(g.b,s).length)g.msg=(nx===1?'흑':'백')+'은 둘 곳이 없어 넘어가요';else g.end();
+   return [g.turn-1,g.over?(g.over===3?-1:g.over-1):null];}},
+ chess:{seat:g=>g.w?0:1,
+  tap(g,s){if(g.sel>=0){const mv=chLegal(g.b,g.w,g.cs).find(m=>m[0]===g.sel&&m[1]===s);if(mv){g.sel=-1;return mv;}}const p=g.b[s];g.sel=p&&isW(p)===g.w?s:-1;rr();return null;},
+  ap(g,mv){g.sel=-1;g.upd(mv);return [g.w?0:1,g.over?(g.over==='D'?-1:g.over==='W'?0:1):null];}},
+ baduk:{seat:g=>g.turn-1,
+  tap(g,i){if(g.b[i])return null;const r=bdPlay(g.b,i,g.turn);if(!r||r[0].join('')===g.prev){toast('둘 수 없는 자리예요 (자충·패)',900);return null;}return i;},
+  ap(g,m){g.msg='';if(m===-1)g.pass0();else g.put(m,g.turn);return [g.turn-1,g.over?(g.over.win===1?0:1):null];}},
+ janggi:{seat:g=>g.turn-1,
+  tap(g,i){const p=g.b[i];if(g.sel>=0){const mv=jMoves(g.b,g.turn).find(m=>m[0]===g.sel&&m[1]===i);if(mv){g.sel=-1;return mv;}}g.sel=p&&p.s===g.turn?i:-1;rr();return null;},
+  ap(g,mv){g.sel=-1;g.move(mv);return [g.turn-1,g.over?g.over-1:null];}}};
+function olWrap(g){const v0=g.view,go0=g.go,st0=g.start,t0=g.tap,p0=g.pass;g.go0=go0;g.pass0=p0;
+ g.view=function(){return this.ol?olView(this,v0):v0.call(this);};
+ g.start=function(){olStop(this);this.ol=null;st0.call(this);};
+ g.go=function(lv){olStop(this);this.ol=null;go0.call(this,lv);};
+ g.stop=function(){olStop(this);};
+ g.tap=function(p){return this.ol&&this.ol.tok?olTap(this,p):t0.call(this,p);};
+ if(p0)g.pass=function(){return this.ol&&this.ol.tok?olTap(this,-1):p0.call(this);};}
+function olStop(g){const o=g&&g.ol;if(o){clearInterval(o.iv);clearInterval(o.liv);o.iv=o.liv=0;}}
+function olOut(g,msg){olStop(g);olRm();g.ol=null;g.lv=null;if(msg)toast(msg);rr();}
+function olOpen(){const g=CUR;olStop(g);g.ol={side:'random',pub:true,code:'',tok:'',lh:''};rr();olList(g);g.ol.liv=setInterval(()=>olList(g),4000);}
+function olList(g){const o=g.ol;if(!o||o.tok)return;olGet('list',{game:g.k}).then(r=>{if(g.ol!==o||o.tok)return;const L=(r&&r.rooms)||[];
+ o.lh=L.length?L.map(x=>`<div style="display:flex;gap:6px;align-items:center;justify-content:space-between;padding:6px 0;border-top:1px solid rgba(128,128,128,.25)"><span><b>${x.code}</b> · ${olE(x.host)} · ${x.status==='wait'?'대기 중':'대국 중'}${x.nspec?' · 👀'+x.nspec:''}</span><span style="display:flex;gap:6px">${x.status==='wait'?`<button class="btn" onclick="olJoin('${x.code}',0)">입장</button>`:''}<button class="btn b2" onclick="olJoin('${x.code}',1)">관전</button></span></div>`).join(''):'열려 있는 공개 방이 없어요. 방을 만들어 보세요!';
+ const e=$('olList');if(e)e.innerHTML=o.lh;}).catch(()=>{});}
+function olCreate(){const g=CUR,o=g.ol;if(!NICK){toast('닉네임을 먼저 넣어 주세요');return;}
+ olPost('create',{game:g.k,public:o.pub,side:o.side}).then(v=>{if(v.dup&&v.code){toast(v.msg);olJoin(v.code,0);return;}olIn(g,v);}).catch(()=>toast('연결에 실패했어요'));}
+function olJoin(code,spec){const g=CUR;if(!NICK){toast('닉네임을 먼저 넣어 주세요');return;}const s=olLd();
+ olPost('join',{code,tok:s&&s.code===code?s.tok:'',spectate:!!spec}).then(v=>olIn(g,v)).catch(()=>toast('연결에 실패했어요'));}
+function olJoinCode(spec){olJoin((($('olcode')||{}).value||'').trim(),spec);}
+function olIn(g,v){if(!v||!v.ok){toast((v&&v.msg)||'입장하지 못했어요');return;}
+ if(v.game!==g.k){toast('이 방은 '+v.gname+' 방이에요');if(v.you<0)olPost('leave',{code:v.code,tok:v.tok});return;}
+ const o=g.ol;clearInterval(o.liv);Object.assign(o,{tok:v.tok,code:v.code,gen:v.gen,n:0,over:null,sending:false,sg:''});olSv(v.code,v.tok,g.k);
+ g.go0('친구');g.mine=-1;olApplyView(g,v);clearInterval(o.iv);o.iv=setInterval(()=>olPoll(g),1200);}
+function olPoll(g){const o=g.ol;if(!o||!o.tok||o.pl)return;o.pl=1;
+ olGet('state',{code:o.code,tok:o.tok,since:o.n,gen:o.gen}).then(v=>{o.pl=0;if(g.ol===o)olApplyView(g,v);}).catch(()=>{o.pl=0;});}
+function olApplyView(g,v){const o=g.ol;if(!o)return;
+ if(!v||!v.ok){if(v&&(v.gone||v.auth===false))olOut(g,v.msg||'방이 닫혔어요');return;}
+ let ch=0;if(v.reset){g.go0('친구');g.mine=-1;o.n=0;ch=1;}o.gen=v.gen;
+ for(const m of v.moves||[]){if(m.n<o.n)continue;if(m.n>o.n){o.gen=-1;return;}OLA[g.k].ap(g,m.mv);o.n++;ch=1;}
+ const sg=JSON.stringify([v.status,v.seats,v.over,v.rm,v.specs,v.claim,v.you,v.host]);if(sg!==o.sg){o.sg=sg;ch=1;}
+ Object.assign(o,{status:v.status,seats:v.seats,you:v.you,over:v.over,rm:v.rm,specs:v.specs,claim:v.claim,gname:v.gname});if(ch)rr();}
+function olTap(g,p){const o=g.ol;if(!o.tok||o.you<0||o.status!=='play'||o.over||g.over||o.sending)return;const A=OLA[g.k];if(A.seat(g)!==o.you)return;
+ const mv=p===-1?-1:A.tap(g,p);if(mv==null)return;const [nxt,end]=A.ap(g,mv);o.n++;o.sending=true;rr();
+ olPost('move',{code:o.code,tok:o.tok,n:o.n-1,mv,nxt,end:end==null?null:end}).then(r=>{o.sending=false;if(!r.ok){toast(r.msg||'둘 수 없었어요');o.gen=-1;}olPoll(g);}).catch(()=>{o.sending=false;toast('네트워크 오류 · 다시 불러와요');o.gen=-1;});}
+function olResign(){const g=CUR,o=g.ol;if(!confirm('항복할까요?'))return;olPost('resign',{code:o.code,tok:o.tok}).then(r=>{if(!r.ok)toast(r.msg);olPoll(g);});}
+function olRematch(){const g=CUR,o=g.ol;olPost('rematch',{code:o.code,tok:o.tok}).then(r=>{if(!r.ok)toast(r.msg);olPoll(g);});}
+function olClaim(){const g=CUR,o=g.ol;olPost('claim',{code:o.code,tok:o.tok}).then(r=>{if(!r.ok)toast(r.msg);olPoll(g);});}
+function olLeave(){const g=CUR,o=g.ol;if(o.status==='play'&&!o.over&&o.you>=0&&!confirm('지금 나가면 기권패예요. 나갈까요?'))return;olPost('leave',{code:o.code,tok:o.tok}).catch(()=>{});olOut(g,'나갔어요');}
+function olWhy(o){const ov=o.over,me=o.you,w=ov.w,win=me>=0&&w===me;if(ov.why==='end')return w===-1?'🤝 무승부':me<0?'🏁 대국이 끝났어요':win?'🎉 승리!':'😵 패배';
+ const t={resign:win?'상대가 항복했어요':'항복했어요',leave:win?'상대가 나갔어요':'나갔어요',timeout:win?'상대 연결이 끊겼어요':'연결이 끊겼어요'}[ov.why]||'';return (win?'🎉 승리 · ':me>=0?'😵 패배 · ':'🏁 ')+t;}
+function olLobby(g){const o=g.ol,s=olLd(),S=OL_SIDE[g.k];
+ const head=`<div class="gst"><span>🌐 ${olE(g.n)} 온라인 대전</span><span>${NICK?'👤 '+olE(NICK):''}</span></div>`;
+ const back=`<button class="btn b2 full" style="margin-top:10px" onclick="olOut(CUR,'')">← 모드 선택</button>`;
+ if(!NICK)return head+`<div class="card"><div class="gq">닉네임을 먼저 정해요</div><input id="olnick" maxlength="20" placeholder="닉네임" style="width:100%;box-sizing:border-box;padding:10px;font-size:16px"><button class="btn full" style="margin-top:8px" onclick="setNick($('olnick').value);rr()">저장</button></div>${back}`;
+ const sb=(v,t)=>`<button class="btn ${o.side===v?'':'b2'}" onclick="CUR.ol.side='${v}';rr()">${t}</button>`;
+ return head+`${s&&s.k===g.k?`<button class="btn g full" style="margin-bottom:8px" onclick="olJoin('${s.code}',0)">↩ 방 ${s.code} 다시 들어가기</button>`:''}
+  <div class="card"><div class="gq">방 만들기</div><div class="g2b">${sb('first','선공 '+S[0].slice(0,1))}${sb('second','후공 '+S[1].slice(0,1))}${sb('random','랜덤')}</div>
+  <div class="g2b" style="margin-top:8px"><button class="btn ${o.pub?'':'b2'}" onclick="CUR.ol.pub=true;rr()">공개</button><button class="btn ${o.pub?'b2':''}" onclick="CUR.ol.pub=false;rr()">비공개 (번호로만)</button></div>
+  <button class="btn full" style="margin-top:8px" onclick="olCreate()">방 만들기</button></div>
+  <div class="card"><div class="gq">방 번호로 들어가기</div><input id="olcode" inputmode="numeric" maxlength="5" placeholder="방 번호 5자리" value="${olE(o.code)}" oninput="CUR.ol.code=this.value" style="width:100%;box-sizing:border-box;padding:10px;font-size:16px">
+  <div class="g2b" style="margin-top:8px"><button class="btn" onclick="olJoinCode(0)">입장</button><button class="btn b2" onclick="olJoinCode(1)">👀 관전</button></div></div>
+  <div class="card"><div class="gq">열린 방</div><div id="olList" class="m">${o.lh||'불러오는 중…'}</div></div>${back}`;}
+function olView(g,v0){const o=g.ol;if(!o.tok)return olLobby(g);const S=OL_SIDE[g.k],me=o.you,pl=me>=0,ov=o.over;
+ const seats=[0,1].map(i=>{const s=(o.seats||[])[i];return `${S[i]} ${s?olE(s.nick)+(s.on?'':' (끊김)'):'<span style="opacity:.6">대기 중…</span>'}${i===me?' <b>(나)</b>':''}`;}).join(' &nbsp;vs&nbsp; ');
+ const line=o.status==='wait'&&!ov?'⏳ 상대를 기다리는 중 · 방 번호 <b>'+o.code+'</b>':ov?olWhy(o):!pl?'👀 관전 중':OLA[g.k].seat(g)===me?'🔔 내 차례':'상대 차례를 기다리는 중';
+ let f='';if(pl&&o.status==='play'&&!ov)f+=`<button class="btn b2" onclick="olResign()">🏳 항복</button>`;
+ if(pl&&ov)f+=`<button class="btn" onclick="olRematch()">${o.rm&&o.rm[me]?'⏳ 상대 수락 대기…':o.rm&&o.rm[1-me]?'🔁 상대가 재대결을 원해요 · 수락':'🔁 재대결 (선후공 교체)'}</button>`;
+ if(o.claim&&!ov)f=`<button class="btn g" onclick="olClaim()">⏱ 상대 연결이 끊겼어요 · 승리 선언</button>`+f;
+ f+=`<button class="btn b2" onclick="olLeave()">${pl?'🚪 방 나가기':'🚪 관전 끝내기'}</button>`;
+ const bd=v0.call(g).replace(/<div class="g2b">[\s\S]*?<\/div>/,'').replace('👥 친구와','🌐 온라인');
+ return `<div class="card m" style="text-align:center;margin-bottom:8px">방 <b>${o.code}</b> · ${olE(o.gname||g.n)}${o.specs&&o.specs.length?' · 👀 '+o.specs.length:''}<br>${seats}<br><b>${line}</b></div>${bd}<div style="display:grid;gap:8px;margin-top:10px">${f}</div>`;}
+['omok','othello','chess','baduk','janggi'].forEach(k=>{const g=G.find(x=>x.k===k);if(g)olWrap(g);});
 // ===== 🎓 헤즈업 공부 (근사 GTO 피드백 · 게임 목록엔 안 보임) =====
 // 스택별 헤즈업 프리플랍 근사 차트 (빅앤티 1BB · 상위 % 기준) · 사이 스택은 선형 보간
 // 오픈·4벳: 스택별 오픈사이즈전략 표 · 3벳: 헤즈업 기준 (프리플랍 솔버 hu_preflop.py 의 ANC 와 같아야 함)
