@@ -722,7 +722,7 @@ function omScore(b,p,c){let s=0;for(const[dx,dy]of OM_D){b[p]=c;const[n,o]=omLin
 const vsPick=fn=>lvPick(fn,`<button class="btn g" onclick="${fn}('친구')">👥 친구와 (폰 하나로 둘이)</button>${typeof OLA!=='undefined'&&CUR&&OLA[CUR.k]?'<button class="btn" onclick="olOpen()">🌐 온라인 대전 (방 만들기 · 관전)</button>':''}`);
 G.push({k:'omok',cat:'대전·도구',e:'⚫',n:'오목',d:'렌주룰 · AI 대전 · 친구와 2인',
  start(){this.lv=null;rr();},
- go(lv){Object.assign(this,{lv,b:Array(ON*ON).fill(0),over:0,last:-1,mine:-1,turn:1,busy:false,gid:(this.gid||0)+1,streak:lsGet('om_'+lv,0)});rr();},
+ go(lv){Object.assign(this,{lv,b:Array(ON*ON).fill(0),over:0,last:-1,mine:-1,pv:-1,turn:1,busy:false,gid:(this.gid||0)+1,streak:lsGet('om_'+lv,0)});rr();},
  ai(){const b=this.b,c=[];for(let p=0;p<ON*ON;p++){if(b[p])continue;let near=false;const x=p%ON,y=Math.floor(p/ON);
    for(let dy=-2;dy<=2&&!near;dy++)for(let dx=-2;dx<=2;dx++){const X=x+dx,Y=y+dy;if(X>=0&&Y>=0&&X<ON&&Y<ON&&b[Y*ON+X]){near=true;break;}}
    if(!near)continue;const w=this.lv==='쉬움'?[1,.6]:this.lv==='보통'?[1,.95]:[1.1,1];
@@ -735,7 +735,15 @@ G.push({k:'omok',cat:'대전·도구',e:'⚫',n:'오목',d:'렌주룰 · AI 대�
    for(let dy=-3;dy<=3&&!near;dy++)for(let dx=-3;dx<=3;dx++){if(omAt(b,x+dx,y+dy)===1){near=true;break;}}
    if(!near)continue;const f=omForbid(b,p);if(f)m[p]=f;}
   return m;},
- tap(p){if(this.over||this.busy||this.b[p])return;const pvp=this.lv==='친구',me=pvp?this.turn:1;
+ // 2단계 착수: 첫 탭=미리보기, 같은 칸 한 번 더=확정 (칸이 작아 생기는 터치 미스 방지)
+ pick(p){const o=this.ol,on=!!(o&&o.tok);
+  if(this.over||this.busy||this.b[p]){this.pv=-1;return;}
+  if(on&&(o.you<0||o.status!=='play'||o.over||OLA.omok.seat(this)!==o.you))return;   // 온라인: 내 차례가 아니면 무시
+  const pvp=this.lv==='친구',mover=(pvp||on)?this.turn:1;
+  if(mover===1){const f=omForbid(this.b,p);if(f){this.pv=-1;toast('🚫 금수예요 ('+f+') · 흑은 3-3 · 4-4 · 6목 이상을 둘 수 없어요',2200);rr();return;}}
+  if(this.pv===p){this.pv=-1;return this.tap(p);}
+  this.pv=p;rr();},
+ tap(p){this.pv=-1;if(this.over||this.busy||this.b[p])return;const pvp=this.lv==='친구',me=pvp?this.turn:1;
   if(me===1){const f=omForbid(this.b,p);if(f){toast('🚫 금수예요 ('+f+') · 흑은 3-3 · 4-4 · 6목 이상을 둘 수 없어요',2200);return;}}
   this.b[p]=me;this.last=p;this.mine=pvp?-1:p;
   if(omWin(this.b,p))return this.end(me);
@@ -745,12 +753,12 @@ G.push({k:'omok',cat:'대전·도구',e:'⚫',n:'오목',d:'렌주룰 · AI 대�
   setTimeout(()=>{if(gid!==this.gid||!this.busy)return;this.busy=false;const a=this.ai();this.b[a]=2;this.last=a;
    if(omWin(this.b,a))return this.end(2);if(!this.b.includes(0))return this.end(3);rr();},AI_DELAY);},
  end(w){this.busy=false;this.over=w;if(this.lv!=='친구'){if(w===1){this.streak++;lsSet('om_'+this.lv,this.streak);record('omok',this.streak,this.lv);}else{this.streak=0;lsSet('om_'+this.lv,0);}}rr();},
- view(){if(!this.lv)return vsPick('CUR.go');const pvp=this.lv==='친구';const fm=this.fmap();
+ view(){if(!this.lv)return vsPick('CUR.go');const pvp=this.lv==='친구';const fm=this.fmap();const pv=(this.pv>=0&&!this.b[this.pv])?this.pv:-1,gc=(pvp||this.ol)?this.turn:1;
   const msg=this.over===3?'무승부':this.over?(pvp?(this.over===1?'⚫ 흑 승리!':'⚪ 백 승리!'):(this.over===1?`🎉 승리! ${this.lv} ${this.streak}연승`:'😵 AI 승리 · 연승 끝')):(pvp?(this.turn===1?'⚫ 흑 차례':'⚪ 백 차례'):(this.busy?'AI 생각 중…':'내 차례 (흑)'));
   return `<div class="gst"><span>${pvp?'👥 친구와':this.lv+' · 연승 <b>'+this.streak+'</b>'} · 렌주룰</span><span>${msg}</span></div>
    <div style="display:grid;grid-template-columns:repeat(15,minmax(0,1fr));aspect-ratio:1;background:#dcb35c;border-radius:6px;padding:3px">${this.b.map((v,p)=>{const box=pvp?(p===this.last?'outline:2px solid #e33;outline-offset:-2px;':''):(p===this.mine?(typeof MINE_BOX==='string'?MINE_BOX:'box-shadow:inset 0 0 0 3px #e02424;'):'');
-    return `<i onclick="CUR.tap(${p})" style="position:relative;aspect-ratio:1;border:.5px solid rgba(0,0,0,.25);${box}">${v?`<b style="position:absolute;inset:8%;border-radius:50%;background:${v===1?'#111':'#fafafa'};${v===2?'box-shadow:inset 0 0 0 1px #999':''}"></b>`:''}${!pvp&&v===2&&p===this.last?'<u style="position:absolute;left:50%;top:50%;width:22%;height:22%;margin:-11% 0 0 -11%;border-radius:50%;background:#e02424"></u>':''}${fm[p]?'<s style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:min(3.6vw,16px);font-weight:900;line-height:1;color:#c0262d;text-decoration:none;pointer-events:none">✕</s>':''}</i>`;}).join('')}</div>
-   ${this.over?`<div class="g2b"><button class="btn" onclick="CUR.go('${this.lv}')">한 판 더</button><button class="btn b2" onclick="CUR.lv=null;rr()">모드 바꾸기</button></div>`:`<div class="m" style="text-align:center;margin-top:6px">🚫 렌주룰: 흑은 3-3 · 4-4 · 6목 이상 금지(✕ 표시), 정확히 5목만 승리 · 백은 5목 이상이면 승리</div>`}`;}});
+    return `<i onclick="CUR.pick(${p})" style="position:relative;aspect-ratio:1;border:.5px solid rgba(0,0,0,.25);${box}${p===pv?'background:rgba(47,128,237,.22);outline:2px solid #2f80ed;outline-offset:-2px;z-index:1;':''}">${p===pv?`<b style="position:absolute;inset:8%;border-radius:50%;opacity:.55;background:${gc===1?'#111':'#fafafa'};box-shadow:inset 0 0 0 1px #888;pointer-events:none"></b>`:''}${v?`<b style="position:absolute;inset:8%;border-radius:50%;background:${v===1?'#111':'#fafafa'};${v===2?'box-shadow:inset 0 0 0 1px #999':''}"></b>`:''}${!pvp&&v===2&&p===this.last?'<u style="position:absolute;left:50%;top:50%;width:22%;height:22%;margin:-11% 0 0 -11%;border-radius:50%;background:#e02424"></u>':''}${fm[p]?'<s style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:min(3.6vw,16px);font-weight:900;line-height:1;color:#c0262d;text-decoration:none;pointer-events:none">✕</s>':''}</i>`;}).join('')}</div>
+   ${this.over?`<div class="g2b"><button class="btn" onclick="CUR.go('${this.lv}')">한 판 더</button><button class="btn b2" onclick="CUR.lv=null;rr()">모드 바꾸기</button></div>`:`<div class="m" style="text-align:center;margin-top:6px;font-weight:700;color:#2f80ed">${pv>=0?'👆 같은 자리를 한 번 더 누르면 놓여요 (다른 칸을 누르면 옮겨져요)':'👆 칸을 눌러 확인 → 같은 자리를 한 번 더 눌러 착수'}</div><div class="m" style="text-align:center;margin-top:6px">🚫 렌주룰: 흑은 3-3 · 4-4 · 6목 이상 금지(✕ 표시), 정확히 5목만 승리 · 백은 5목 이상이면 승리</div>`}`;}});
 // 오델로 (AI / 친구와)
 const DIRS=[[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]];
 const OW=[100,-20,10,5,5,10,-20,100,-20,-50,-2,-2,-2,-2,-50,-20,10,-2,1,1,1,1,-2,10,5,-2,1,0,0,1,-2,5,5,-2,1,0,0,1,-2,5,10,-2,1,1,1,1,-2,10,-20,-50,-2,-2,-2,-2,-50,-20,100,-20,10,5,5,10,-20,100];
