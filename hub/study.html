@@ -73,6 +73,8 @@ function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 const R=n=>Math.floor(Math.random()*n),pick=a=>a[R(a.length)],shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=R(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;};
 function copy(t){(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('복사했어요')).catch(()=>{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');toast('복사했어요');}catch(e){}a.remove();});}
 let NICK=lsGet('nick2','')||(()=>{try{return localStorage.getItem('nick')||'';}catch(e){return '';}})();
+function setNick(v){NICK=String(v||'').trim().slice(0,20);lsSet('nick2',NICK);try{localStorage.setItem('nick',NICK);}catch(e){}toast(NICK?'저장했어요':'닉네임을 지웠어요');}
+function bragShare(t){if(navigator.share){navigator.share({text:t}).catch(()=>{});}else copy(t);}
 const GCFG=(GD.games||{});
 const lowerBetter=k=>!!(GCFG[k]&&GCFG[k][1]);
 function fmtScore(k,v,lv){const u=(GCFG[k]||[])[2]||'pt';v=Math.round(v);
@@ -782,11 +784,22 @@ function hvRankMap(act,rep){const A=[...new Set(act)].sort((a,b)=>b-a),Rr=[...ne
  return x=>{for(let k=0;k+1<an.length;k++){const [ah,rh]=an[k],[al,rl]=an[k+1];if(x===ah)return rh;if(al<x&&x<ah){const y=Math.round(rl+(x-al)/(ah-al)*(rh-rl));return rl<y&&y<rh?y:rh-rl>1?rl+1:rl;}if(x===al)return rl;}return x;};}
 function hvMapCls(c,f){const r1=14-HV_RK.indexOf(c[0]),r2=14-HV_RK.indexOf(c[1]);let a=f(r1),b=f(r2);if(r1!==r2&&a===b)b=b>2?b-1:b+1;a=Math.max(2,Math.min(14,a));b=Math.max(2,Math.min(14,b));
  const hi=Math.max(a,b),lo=Math.min(a,b),t=HV_RK[14-hi]+HV_RK[14-lo];return hi===lo?t:t+(c[2]||'');}
-G.push({k:'huview',cat:'홀덤',e:'📊',n:'헤즈업 레인지 뷰어',d:'솔버 트리 · 핸드별 빈도·EV',
- start(){this.tab=lsGet('hv_tab','pf');this.S=lsGet('hv_S',100);this.path='';this.sel=null;this.fl=null;this.fpath='root';this.spots=null;this.spot=lsGet('hv_spot','SRP100A');this.bin='';
-  huPfLoad(this.S,()=>rr());rr();if(this.tab==='flop')this.loadSpots();},
- setTab(t){this.tab=t;lsSet('hv_tab',t);this.sel=null;if(t==='flop'&&!this.spots)this.loadSpots();rr();},
- setS(S){this.S=S;lsSet('hv_S',S);this.path='';this.sel=null;huPfLoad(S,()=>rr());rr();},
+const HV_PT=[['SRP','싱글레이즈'],['3BP','3벳팟'],['4BP','4벳팟'],['LMP','림프팟']];
+const hvSpotKey=k=>{const m=/^(SRP|3BP|4BP|LMP)(\d+)/.exec(k||'');return m?{t:m[1],s:+m[2]}:null;};
+const HV_TN={SRP:'싱글레이즈팟','3BP':'3벳팟','4BP':'4벳팟',LMP:'림프팟'};
+// 프리플랍 경로 → 플랍으로 가는 팟 종류 (BTN 오픈→BB 콜 = 싱글레이즈, +3벳 = 3벳팟 …)
+const HV_TP={SRP:'rc','3BP':'rrc','4BP':'rrrc',LMP:'cc'};
+function hvPotType(p){if(!p||p.slice(-1)!=='c'||p.includes('a')||p.includes('f'))return null;if(p==='cc')return 'LMP';if(p[0]==='c')return null;
+ const r=(p.match(/r/g)||[]).length;return r===1?'SRP':r===2?'3BP':r===3?'4BP':null;}
+G.push({k:'huview',cat:'홀덤',e:'📊',n:'헤즈업 레인지 뷰어',d:'프리플랍 액션 → 플랍 솔버 자동 연동 · 핸드별 빈도·EV',
+ start(){this.S=lsGet('hv_S',100);this.path='';this.sel=null;this.fl=null;this.fpath='root';this.spots=null;this.spot='';this.bin='';this.userB='';this.showList=false;this.pend=null;this.failed=null;
+  huPfLoad(this.S,()=>rr());rr();this.loadSpots();},
+ setS(S){this.S=S;lsSet('hv_S',S);this.sel=null;rr();huPfLoad(S,()=>{const N=HU_PF[S];if(!(N&&this.pathOK(N,this.path)))this.path='';rr();});},
+ pathOK(N,p){for(let k=0;k<p.length;k++){const n=N[p.slice(0,k)];if(!n||!n.a.includes(p[k]))return false;}return true;},
+ // 스택별 풀이 가능 목록에서 눌렀을 때: 그 스택 + 그 팟 종류로 가는 프리플랍 경로로 바로 이동
+ jumpTo(s,t){this.S=s;lsSet('hv_S',s);this.showList=false;this.sel=null;const p=HV_TP[t];
+  huPfLoad(s,()=>{const N=HU_PF[s];if(N&&this.pathOK(N,p))this.path=p;else{this.path='';toast(`${s}BB 프리플랍 솔버에는 ${HV_TN[t]} 경로가 없어요`);}rr();});rr();},
+ spotInfo(){const sp=this.spots||{},by={};Object.keys(sp).forEach(k=>{const q=hvSpotKey(k);if(!q)return;(by[q.s]=by[q.s]||{})[q.t]=by[q.s][q.t]||k;});return by;},
  // ---------- 프리플랍 ----------
  pfWalk(path){const S=this.S,ch=huCh(S),E=S-1;const inv={BTN:.5,BB:1};let raises=1,p='BTN';const steps=[];
   for(const c of path){const o=p==='BTN'?'BB':'BTN';const nm=this.pfName(c,p,raises,path.slice(0,steps.length));let amt=0;
@@ -800,11 +813,29 @@ G.push({k:'huview',cat:'홀덤',e:'📊',n:'헤즈업 레인지 뷰어',d:'솔�
   for(let i=0;i<13;i++)for(let j=0;j<13;j++)R[hvCls(i,j)]=1;
   for(let k=0;k<path.length;k++){const n=N[path.slice(0,k)];if(!n||n.p!==me)continue;const ai=n.a.indexOf(path[k]);for(const c in R)R[c]*=((n.s[c]||[])[ai]||0)/100;}
   return R;},
+ // 프리플랍이 끝난 뒤: 팟 종류에 맞는 플랍 솔버를 자동으로 보여주거나, 없으면 이유 안내
+ termView(path){const t=hvPotType(path),S=this.S,last=path.slice(-1);
+  const reset=`<button class="btn" style="margin-top:8px" onclick="CUR.path='';CUR.sel=null;rr()">처음부터</button>`;
+  if(last==='f')return `<div class="card" style="text-align:center;font-size:16px">폴드로 끝 — 플랍 없음<br>${reset}</div>`;
+  if(path.includes('a'))return `<div class="card" style="text-align:center;font-size:16px">올인 → 보드를 다 깔고 쇼다운이라 플랍 솔버 화면이 없어요<br>${reset}</div>`;
+  if(!t)return `<div class="card" style="text-align:center;font-size:15px;line-height:1.6">이 프리플랍 라인(림프 후 레이즈 · 5벳 이상 등)은 플랍 솔버풀이 대상이 아니에요.<br>풀이가 있는 라인: 싱글레이즈(오픈→콜) · 3벳팟 · 4벳팟 · 림프팟<br>${reset}</div>`;
+  if(!API)return '<div class="card m">서버 연결이 없어요</div>';
+  if(!this.spots)return '<div class="card m">플랍 솔버 목록 불러오는 중…</div>';
+  const by=this.spotInfo(),key=(by[S]||{})[t];
+  if(!key){const atS=HV_PT.filter(([x])=>(by[S]||{})[x]),stk=Object.keys(by).map(Number).filter(s=>by[s][t]).sort((a,b)=>a-b);
+   return `<div class="card" style="font-size:15px;line-height:1.7"><b>📭 ${S}BB ${HV_TN[t]} — 플랍 솔버풀이 자료가 없어요.</b><br>`
+    +(atS.length?`이 스택은 <b>${atS.map(x=>x[1]).join(' · ')}</b>만 플랍 풀이가 있어요.`:'이 스택은 플랍 솔버풀이가 아직 없어요.')
+    +(stk.length?`<br>${HV_TN[t]} 풀이가 있는 스택: <b>${stk.join(' · ')}BB</b>`:'')
+    +`<div class="tabs" style="margin-top:8px;flex-wrap:wrap">${atS.map(([x,n])=>`<button onclick="CUR.jumpTo(${S},'${x}')">${S}BB ${n} 보기</button>`).join('')}${stk.map(s=>`<button onclick="CUR.jumpTo(${s},'${t}')">${s}BB ${HV_TN[t]} 보기</button>`).join('')}</div></div>`;}
+  this.ensureFlop(key);
+  return this.flBody(key,t);},
+ ensureFlop(key){if(this.loading||this.pend===key||this.failed===key||(this.fl&&this.fl.spot===key))return;this.pend=key;
+  setTimeout(()=>{this.pend=null;if(CUR===this)this.loadBoard(this.userB||(this.fl?this.fl.rep:''),key);},0);},
  pfView(){const N=HU_PF[this.S];if(!N)return `<div class="card m">${API?'불러오는 중…':'서버 연결이 없어요'}</div>`;
   const path=this.path,n=N[path],W=this.pfWalk(path);
   const crumbs=`<div class="card" style="padding:8px 10px;font-size:15px;line-height:1.9"><b>${this.S}BB</b> · <span class="m">BTN 0.5 · BB 1+앤티1</span>${W.steps.map((s,k)=>` → <a style="cursor:pointer;color:var(--blue);font-weight:800" onclick="CUR.path='${path.slice(0,k+1)}';CUR.sel=null;rr()">${s.p} ${s.nm}${s.amt?' '+(+s.amt.toFixed(1)):''}</a>`).join('')}
    ${path?` <button class="btn gr" style="padding:3px 10px;font-size:13px;margin-left:6px" onclick="CUR.path=CUR.path.slice(0,-1);CUR.sel=null;rr()">↶ 뒤로</button>`:''}</div>`;
-  if(!n){const last=path.slice(-1);return crumbs+`<div class="card" style="text-align:center;font-size:16px">${last==='f'?'폴드로 끝':last==='c'||path.endsWith('a')?'플랍으로 가요 (또는 올인 쇼다운)':'끝'}<br><button class="btn" style="margin-top:8px" onclick="CUR.path='';CUR.sel=null;rr()">처음부터</button></div>`;}
+  if(!n)return crumbs+this.termView(path);
   const R=this.pfReach(path);let tw=0;const tot=n.a.map(()=>0);
   for(const c in n.s){const w=hvW(c)*R[c];tw+=w;n.s[c].forEach((x,i)=>tot[i]+=w*x/100);}
   const nm=a=>this.pfName(a,n.p,W.raises,path);
@@ -812,7 +843,7 @@ G.push({k:'huview',cat:'홀덤',e:'📊',n:'헤즈업 레인지 뷰어',d:'솔�
   const grid=this.grid(c=>n.s[c],c=>R[c],n.a.map(a=>HV_COL[a]),c=>hvClose((n.ev||{})[c])!=null);
   let det='';const c=this.sel;if(c&&n.s[c]){const ev=(n.ev||{})[c]||[];det=`<div class="card" style="font-size:15px;line-height:1.7"><b style="font-size:17px">${c}</b> <span class="m">(이 라인까지 올 확률 ${Math.round(R[c]*100)}%)</span><br>${n.a.map((a,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${HV_COL[a]}"></span> ${nm(a)} <b>${n.s[c][i]}%</b>${ev[i]!=null?` · EV <b>${ev[i]>0?'+':''}${ev[i].toFixed(2)}</b>BB`:''}`).join('<br>')}${hvEvLines(n.a,(n.ev||{})[c],nm)}</div>`;}
   return crumbs+`<div style="font-size:15px;font-weight:800;margin:6px 2px">${n.p} 차례 · 레인지 전체</div>`+acts+grid+det+
-   `<div class="card m" style="font-size:13px;line-height:1.6">칸을 누르면 핸드별 빈도와 <b>EV</b>(핸드 시작 대비 기대 손익, BB)가 나와요. <b>≈</b> 표시는 액션끼리 EV 차이가 0.05BB 이내라 어느 쪽을 골라도 괜찮은 핸드예요. 흐린 칸은 앞선 액션 때문에 여기까지 잘 안 오는 핸드예요.</div>`;},
+   `<div class="card m" style="font-size:13px;line-height:1.6">프리플랍에서 <b>콜 → 싱글레이즈팟</b>, <b>3벳 후 콜 → 3벳팟</b>, <b>4벳 후 콜 → 4벳팟</b> 플랍이 자동으로 이어져요. 칸을 누르면 핸드별 빈도와 <b>EV</b>(BB)가 나와요. <b>≈</b>는 액션끼리 EV 차이가 0.05BB 이내인 핸드예요. 흐린 칸은 앞선 액션 때문에 여기까지 잘 안 오는 핸드예요.</div>`;},
  // ---------- 13×13 그리드 ----------
  grid(freqOf,reachOf,cols,markOf){let h='<div style="display:grid;grid-template-columns:repeat(13,1fr);gap:1px;background:#ccc;border:1px solid #ccc;border-radius:6px;overflow:hidden;margin:8px 0">';
   for(let i=0;i<13;i++)for(let j=0;j<13;j++){const c=hvCls(i,j),f=freqOf(c),r=reachOf(c);let bg='#eee';
@@ -821,27 +852,25 @@ G.push({k:'huview',cat:'홀덤',e:'📊',n:'헤즈업 레인지 뷰어',d:'솔�
    h+=`<div onclick="CUR.sel='${c}';rr()" style="aspect-ratio:1;background:${bg};opacity:${op};display:flex;align-items:center;justify-content:center;font-size:clamp(7px,2.3vw,11px);font-weight:800;color:${f&&r>0.005?'#fff':'#999'};text-shadow:0 0 2px rgba(0,0,0,.6);cursor:pointer;position:relative;${this.sel===c?'outline:2px solid #111;outline-offset:-2px;':''}">${c}${markOf&&f&&r>0.005&&markOf(c)?'<span style="position:absolute;top:0;right:2px;font-size:9px;line-height:1">≈</span>':''}</div>`;}
   return h+'</div>';},
  // ---------- 플랍 ----------
- loadSpots(){if(!API)return;fetch(API+'/api/solver/spots',{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{this.spots=r.ok?r.spots:{};if(!this.spots[this.spot])this.spot=Object.keys(this.spots)[0]||'';if(this.spot&&!this.fl)this.loadBoard('');rr();}).catch(()=>{this.spots={};rr();});},
- setSpot(s){this.spot=s;lsSet('hv_spot',s);this.loadBoard(this.fl?this.fl.rep:'');},
- loadBoard(b){if(!API||!this.spot)return;this.loading=true;rr();
-  fetch(API+`/api/solver/board?spot=${this.spot}&board=${encodeURIComponent(b)}`,{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{this.loading=false;if(r.ok){this.fl=r;this.fpath='root';this.sel=null;this.inC=b?svCards(b):null;}else toast(r.msg||'불러오기 실패');rr();}).catch(()=>{this.loading=false;rr();});},
+ loadSpots(){if(!API){this.spots={};return;}fetch(API+'/api/solver/spots',{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{this.spots=r.ok?r.spots:{};rr();}).catch(()=>{this.spots={};rr();});},
+ loadBoard(b,spot){spot=spot||this.spot;if(!API||!spot)return;this.loading=true;this.spot=spot;rr();
+  fetch(API+`/api/solver/board?spot=${spot}&board=${encodeURIComponent(b)}`,{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{this.loading=false;if(r.ok){this.fl=r;this.fpath='root';this.sel=null;this.inC=b?svCards(b):null;this.failed=null;}else{this.failed=spot;toast(r.msg||'불러오기 실패');}rr();}).catch(()=>{this.loading=false;this.failed=spot;rr();});},
  boardIn(){const v=($('hvb')||{}).value||'';const m=v.replace(/[\s,]/g,'').match(/([2-9TJQKA1][0]?[shdc♠♥♦♣])/gi);
   if(!m||m.length<3){toast('예: AsKd7c');return;}const mp={'♠':'s','♥':'h','♦':'d','♣':'c'};
-  this.loadBoard(m.slice(0,3).map(x=>{x=x.replace('10','T');return x[0].toUpperCase()+(mp[x[1]]||x[1].toLowerCase());}).join(','));},
- flView(){if(!API)return '<div class="card m">서버 연결이 없어요</div>';if(!this.spots)return '<div class="card m">불러오는 중…</div>';
-  const sp=Object.keys(this.spots);if(!sp.length)return '<div class="card m">아직 솔버 DB가 없어요</div>';
-  const tabs=`<div class="tabs" style="margin-bottom:6px;flex-wrap:wrap">${sp.map(k=>`<button class="${k===this.spot?'on':''}" onclick="CUR.setSpot('${k}')">${esc(this.spots[k].name.split('·')[0].trim())}</button>`).join('')}</div>`;
-  const inp=`<div style="display:flex;gap:6px;margin:6px 0"><input id="hvb" placeholder="플랍 입력 예: AsKd7c" value="${esc(this.bin||'')}" oninput="CUR.bin=this.value" style="flex:1;font-size:16px;padding:8px;border-radius:8px;border:1px solid #ccc"><button class="btn" style="padding:8px 12px" onclick="CUR.boardIn()">보기</button><button class="btn b2" style="padding:8px 12px" onclick="CUR.loadBoard('')">랜덤</button></div>`;
-  const F=this.fl;if(this.loading||!F)return tabs+inp+'<div class="card m">불러오는 중…</div>';
+  this.userB=m.slice(0,3).map(x=>{x=x.replace('10','T');return x[0].toUpperCase()+(mp[x[1]]||x[1].toLowerCase());}).join(',');this.loadBoard(this.userB,this.spot);},
+ randBoard(){this.userB='';this.bin='';this.loadBoard('',this.spot);},
+ flBody(key,t){const sps=this.spots[key]||{},potBB=(sps.pot||0)/10,stBB=(sps.stack||0)/10;
+  const hdr=`<div style="margin:12px 2px 4px;font-size:16px;font-weight:900;color:var(--blue)">▼ 플랍 · ${HV_TN[t]} · ${this.S}BB</div><div class="m" style="font-size:13px;margin-bottom:6px">${esc(((sps.name||'').match(/\(([^)]*)\)/)||[])[1]||'')}${potBB?` 팟 ${+potBB.toFixed(1)}BB · 남은 스택 ${+stBB.toFixed(1)}BB (SPR ${(stBB/potBB).toFixed(1)})`:''}</div>`;
+  const inp=`<div style="display:flex;gap:6px;margin:6px 0"><input id="hvb" placeholder="플랍 입력 예: AsKd7c" value="${esc(this.bin||'')}" oninput="CUR.bin=this.value" style="flex:1;font-size:16px;padding:8px;border-radius:8px;border:1px solid #ccc"><button class="btn" style="padding:8px 12px" onclick="CUR.boardIn()">보기</button><button class="btn b2" style="padding:8px 12px" onclick="CUR.randBoard()">랜덤</button></div>`;
+  const F=this.fl;if(this.loading||!F||F.spot!==key)return hdr+inp+`<div class="card m">${this.failed===key?'플랍 데이터를 불러오지 못했어요':'플랍 불러오는 중…'}</div>`;
   const nd=F.flop[this.fpath];const rep=svCards(F.rep);const IN=this.inC;
   const same=!IN||[...IN.map(c=>c.r)].sort().join()===[...rep.map(c=>c.r)].sort().join()&&new Set(IN.map(c=>c.s)).size===new Set(rep.map(c=>c.s)).size;
   const fm=IN&&!same?hvRankMap(IN.map(c=>c.r),rep.map(c=>c.r)):null;const mc=c=>fm?hvMapCls(c,fm):c;
   const lineArr=this.fpath==='root'?[]:this.fpath.split('>');
   const who=p=>p==='oop'?'BB':'BTN';
   const crumbs=`<div class="card" style="padding:8px 10px;font-size:15px;line-height:1.9"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${cardsHtml(IN||rep,true)}<span class="m">${esc(F.name)}</span></div>${same?'':`<div style="font-size:13.5px;background:#fff4e0;border-radius:8px;padding:6px 8px;margin:4px 0;line-height:1.5">⚠️ 이 보드는 아직 직접 안 풀었어요. 가장 비슷한 <b>${rep.map(c=>rkCh(c.r)+SU[c.s]).join(' ')}</b> 결과를 숫자만 맞춰 보여줘요${(()=>{const r=IN&&fm?IN.map(c=>c.r).find(x=>fm(x)!==x):null;return r?` (예: 내 패 ${HV_RK[14-r].repeat(2)} → 대표 보드의 ${HV_RK[14-fm(r)].repeat(2)})`:'';})()}.</div>`}
-   <a style="cursor:pointer;color:var(--blue);font-weight:800" onclick="CUR.fpath='root';CUR.sel=null;rr()">플랍</a>${lineArr.map((a,k)=>{const key=lineArr.slice(0,k+1).join('>');const pn=F.flop[k?lineArr.slice(0,k).join('>'):'root'];return ` → <a style="cursor:pointer;color:var(--blue);font-weight:800" onclick="CUR.fpath='${key}';CUR.sel=null;rr()">${pn?who(pn.p):''} ${svActName(a,F.pot,F.stack)}</a>`;}).join('')}</div>`;
-  if(!nd)return tabs+inp+crumbs+`<div class="card" style="text-align:center;font-size:16px">${/FOLD$/.test(this.fpath)?'폴드로 끝':'턴으로 넘어가요'}<br><button class="btn" style="margin-top:8px" onclick="CUR.fpath=CUR.fpath.split('>').slice(0,-1).join('>')||'root';rr()">↶ 뒤로</button></div>`;
-  // 도달 확률: 프리플랍 레인지 가중치 × 이 플레이어가 앞에서 고른 액션 빈도
+   <a style="cursor:pointer;color:var(--blue);font-weight:800" onclick="CUR.fpath='root';CUR.sel=null;rr()">플랍</a>${lineArr.map((a,k)=>{const kk=lineArr.slice(0,k+1).join('>');const pn=F.flop[k?lineArr.slice(0,k).join('>'):'root'];return ` → <a style="cursor:pointer;color:var(--blue);font-weight:800" onclick="CUR.fpath='${kk}';CUR.sel=null;rr()">${pn?who(pn.p):''} ${svActName(a,F.pot,F.stack)}</a>`;}).join('')}</div>`;
+  if(!nd)return hdr+inp+crumbs+`<div class="card" style="text-align:center;font-size:16px">${/FOLD$/.test(this.fpath)?'폴드로 끝':'턴으로 넘어가요'}<br><button class="btn" style="margin-top:8px" onclick="CUR.fpath=CUR.fpath.split('>').slice(0,-1).join('>')||'root';rr()">↶ 뒤로</button></div>`;
   const R=hvRange(nd.p==='oop'?F.oop:F.ip);for(let k=0;k<lineArr.length;k++){const pk=k?lineArr.slice(0,k).join('>'):'root',pn=F.flop[pk];if(!pn||pn.p!==nd.p)continue;const ai=pn.acts.indexOf(lineArr[k]);for(const c in R)R[c]*=((pn.cls[mc(c)]||[])[ai]||0)/100;}
   const cols=hvFlopCol(nd.acts);
   const acts=`<div class="g2b" style="grid-template-columns:repeat(${Math.min(nd.acts.length,4)},1fr);margin-top:0">${nd.acts.map((a,i)=>`<button class="btn" style="background:${cols[i]};padding:10px 2px;font-size:14px" onclick="CUR.fpath=(CUR.fpath==='root'?'':CUR.fpath+'>')+'${a}';CUR.sel=null;rr()">${svActName(a,F.pot,F.stack)}<br><span style="font-size:13px;opacity:.9">${Math.round(nd.all[i])}%</span></button>`).join('')}</div>`;
@@ -849,10 +878,19 @@ G.push({k:'huview',cat:'홀덤',e:'📊',n:'헤즈업 레인지 뷰어',d:'솔�
   let det='';const c=this.sel,m=c?mc(c):null;if(c&&nd.cls[m]){const cx=Object.entries(nd.cx||{}).filter(([k])=>{const a=k.slice(0,2),b=k.slice(2);const ra=HV_RK.indexOf(a[0]),rb=HV_RK.indexOf(b[0]);const hi=ra<=rb?a:b,lo=hi===a?b:a;return (hi[0]+lo[0]+(hi[0]===lo[0]?'':hi[1]===lo[1]?'s':'o'))===m;});
    det=`<div class="card" style="font-size:15px;line-height:1.7"><b style="font-size:17px">${c}</b>${m!==c?` <span class="m">(대표 보드의 ${m})</span>`:''} <span class="m">(여기까지 올 확률 ${Math.round((R[c]||0)*100)}%)</span><br>${nd.acts.map((a,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${cols[i]}"></span> ${svActName(a,F.pot,F.stack)} <b>${nd.cls[m][i]}%</b>${nd.ev&&nd.ev[m]?` · EV <b>${nd.ev[m][i].toFixed(2)}</b>BB`:''}`).join('<br>')}${hvEvLines(nd.acts,(nd.ev||{})[m],a=>svActName(a,F.pot,F.stack))}
     ${cx.length?hvSuitGrid(cx,m,nd,cols,F,same):''}</div>`;}
-  return tabs+inp+crumbs+`<div style="font-size:15px;font-weight:800;margin:6px 2px">${who(nd.p)} 차례 · 레인지 전체</div>`+acts+grid+det+
-   `<div class="card m" style="font-size:13px;line-height:1.6">대표 보드 ${Object.values(this.spots).reduce((a,s)=>a+s.boards.length,0)}판을 직접 푼 결과예요 (계속 늘어나요). ${nd.ev?'EV = 지금 폴드하는 것(0) 대비 이 액션의 기대 수익(BB). 사이즈끼리 EV가 거의 같으면 솔버가 섞어 쓰는 거라 어느 쪽이든 괜찮아요.':'이 보드는 EV 없음 (새 엔진으로 푼 보드부터 EV가 나와요).'}</div>`;},
- view(){return `<div class="tabs" style="margin-bottom:8px">${[['pf','프리플랍'],['flop','플랍']].map(([k,n])=>`<button class="${this.tab===k?'on':''}" onclick="CUR.setTab('${k}')">${n}</button>`).join('')}</div>`+
-  (this.tab==='pf'?`<div class="g3b" style="margin-top:0;grid-template-columns:repeat(5,1fr)">${HU_STACKS.map(v=>`<button class="btn ${this.S===v?'':'gr'}" style="padding:8px 2px;font-size:14px" onclick="CUR.setS(${v})">${v}</button>`).join('')}</div>`+this.pfView():this.flView());}});
+  return hdr+inp+crumbs+`<div style="font-size:15px;font-weight:800;margin:6px 2px">${who(nd.p)} 차례 · 레인지 전체</div>`+acts+grid+det+
+   `<div class="card m" style="font-size:13px;line-height:1.6">이 스팟은 대표 보드 ${(this.spots[key]||{boards:[]}).boards.length}판을 직접 푼 결과예요 (전체 ${Object.values(this.spots).reduce((a,s)=>a+s.boards.length,0)}판 · 계속 늘어나요). 플랍 시작 레인지는 솔버 스팟의 프리플랍 레인지를 써요. ${nd.ev?'EV = 지금 폴드하는 것(0) 대비 이 액션의 기대 수익(BB). 사이즈끼리 EV가 거의 같으면 어느 쪽이든 괜찮아요.':'이 보드는 EV 없음 (새 엔진으로 푼 보드부터 EV가 나와요).'}</div>`;},
+ // ---------- 스택별 플랍 풀이 가능 목록 ----------
+ listView(){if(!this.spots)return '<div class="card m">불러오는 중…</div>';const by=this.spotInfo(),ss=Object.keys(by).map(Number).sort((a,b)=>a-b);
+  if(!ss.length)return '<div class="card m">아직 플랍 솔버 DB가 없어요</div>';
+  return `<div class="card"><div class="t" style="margin-bottom:6px">📋 플랍 풀이 가능한 상황 (스택별)</div><div class="m" style="margin-bottom:6px">누르면 그 스택의 프리플랍 라인과 플랍이 바로 열려요</div>
+   ${ss.map(s=>`<div class="row" style="align-items:center"><b>${s}BB</b><span style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">${HV_PT.filter(([t])=>by[s][t]).map(([t,n])=>`<button class="btn" style="padding:5px 10px;font-size:13px" onclick="CUR.jumpTo(${s},'${t}')">${n} <span style="font-weight:600;opacity:.85">${(this.spots[by[s][t]].boards||[]).length}판</span></button>`).join('')}</span></div>`).join('')}
+   <div class="m" style="margin-top:6px;font-size:12.5px">목록에 없는 스택·팟 종류는 플랍 솔버풀이가 없어서 프리플랍 화면만 볼 수 있어요.</div></div>`;},
+ view(){const by=this.spots?this.spotInfo():{};
+  return `<div style="display:flex;gap:6px;align-items:stretch"><div class="g3b" style="margin-top:0;flex:1;grid-template-columns:repeat(5,1fr)">${HU_STACKS.map(v=>`<button class="btn ${this.S===v?'':'gr'}" style="padding:8px 2px;font-size:14px" onclick="CUR.setS(${v})">${v}${by[v]?'<sup style="font-size:9px">●</sup>':''}</button>`).join('')}</div>
+   <button class="btn ${this.showList?'':'b2'}" style="padding:4px 8px;font-size:12.5px;line-height:1.25;margin-top:12px" onclick="CUR.showList=!CUR.showList;rr()">플랍풀이<br>스택별</button></div>
+   <div class="m" style="font-size:12px;margin:2px 2px 6px">● = 플랍 솔버풀이가 있는 스택</div>`
+  +(this.showList?this.listView():'')+this.pfView();}});
 const PSID=(()=>{try{let v=localStorage.getItem('psid');if(!v){v=Math.random().toString(36).slice(2,10);localStorage.setItem('psid',v);}return v;}catch(e){return Math.random().toString(36).slice(2,10);}})();
 let PPAGE='';
 function pres(off){if(!API)return;let n='';try{n=localStorage.getItem('nick')||'';}catch(e){}
