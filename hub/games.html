@@ -1100,31 +1100,44 @@ G.push({k:'chess',cat:'대전·도구',e:'♟️',n:'체스',d:'AI 대전 · 친
    <div style="display:grid;grid-template-columns:repeat(8,minmax(0,1fr));aspect-ratio:1;border-radius:6px;overflow:hidden;border:2px solid #6b4a2a">${this.b.map((p,s)=>{const dark=((s%8)+(s>>3))%2;const L=this.last&&(this.last[0]===s||this.last[1]===s);
     return `<div onclick="CUR.tap(${s})" style="${s===this.mine?MINE_BOX:''}aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:min(8.5vw,40px);line-height:1;position:relative;background:${s===this.sel?'#9fd18b':L?(dark?'#c9b458':'#e8d88a'):(dark?'#b58863':'#f0d9b5')};color:${p&&isW(p)?'#fff':'#111'};${p&&isW(p)?'text-shadow:0 0 2px #000,0 0 1px #000':''}">${p?CHU[p.toLowerCase()]:''}${tg.includes(s)?`<i style="position:absolute;width:28%;height:28%;border-radius:50%;background:rgba(0,0,0,.28)"></i>`:''}</div>`;}).join('')}</div>
    ${this.over?`<div class="g2b"><button class="btn" onclick="CUR.go('${this.lv}')">한 판 더</button><button class="btn b2" onclick="CUR.lv=null;rr()">모드 바꾸기</button></div>`:`<div class="m" style="text-align:center;margin-top:6px">말을 누르면 갈 수 있는 곳이 점으로 보여요 · 폰은 끝에 가면 퀸으로</div>`}`;}});
-// ===== ⚫ 바둑 (9줄) =====
-const BN=9;
+// ===== ⚫ 바둑 (19줄) =====
+const BN=19;
+const BD_STAR=BN===19?[3,9,15]:BN===13?[3,6,9]:[2,4,6];   // 화점 좌표(가로·세로 조합)
 function bdNb(i){const x=i%BN,y=Math.floor(i/BN),o=[];if(x>0)o.push(i-1);if(x<BN-1)o.push(i+1);if(y>0)o.push(i-BN);if(y<BN-1)o.push(i+BN);return o;}
 function bdGroup(b,i){const c=b[i],g=[i],seen=new Set([i]);let lib=new Set();for(let k=0;k<g.length;k++)bdNb(g[k]).forEach(j=>{if(b[j]===0)lib.add(j);else if(b[j]===c&&!seen.has(j)){seen.add(j);g.push(j);}});return [g,lib];}
 function bdPlay(b,i,c){if(b[i])return null;const n=b.slice();n[i]=c;let cap=0;bdNb(i).forEach(j=>{if(n[j]===3-c){const [g,l]=bdGroup(n,j);if(!l.size){g.forEach(k=>n[k]=0);cap+=g.length;}}});const [g,l]=bdGroup(n,i);if(!l.size)return null;return [n,cap];}
 function bdScore(b){let s=[0,0,0];const seen=new Set();for(let i=0;i<BN*BN;i++){if(b[i]){s[b[i]]++;continue;}if(seen.has(i))continue;const reg=[i],own=new Set();seen.add(i);
   for(let k=0;k<reg.length;k++)bdNb(reg[k]).forEach(j=>{if(b[j])own.add(b[j]);else if(!seen.has(j)){seen.add(j);reg.push(j);}});if(own.size===1)s[[...own][0]]+=reg.length;}return s;}
-G.push({k:'baduk',cat:'대전·도구',e:'⚫',n:'바둑 (9줄)',d:'AI 대전 · 친구와 2인 · 계가 자동',
+G.push({k:'baduk',cat:'대전·도구',e:'⚫',n:'바둑 (19줄)',d:'AI 대전 · 친구와 2인 · 계가 자동',
  start(){this.lv=null;rr();},
- go(lv){Object.assign(this,{lv,b:Array(BN*BN).fill(0),turn:1,prev:'',passes:0,cap:[0,0,0],over:null,last:-1,mine:-1,msg:'',streak:lsGet('bd_'+lv,0)});rr();},
+ go(lv){Object.assign(this,{lv,b:Array(BN*BN).fill(0),pv:-1,turn:1,prev:'',passes:0,cap:[0,0,0],over:null,last:-1,mine:-1,msg:'',streak:lsGet('bd_'+lv,0)});rr();},
  put(i,c){const r=bdPlay(this.b,i,c);if(!r)return false;const key=r[0].join('');if(key===this.prev)return false;this.prev=this.b.join('');this.b=r[0];this.cap[c]+=r[1];this.last=i;this.passes=0;this.turn=3-c;return true;},
- tap(i){if(this.over||(this.lv!=='친구'&&this.turn!==1))return;if(!this.put(i,this.turn)){toast('둘 수 없는 자리예요 (자충·패)',900);return;}this.msg='';this.mine=this.lv!=='친구'?i:-1;rr();if(this.lv!=='친구')setTimeout(()=>this.ai(),AI_DELAY);},
- pass(){if(this.over)return;this.passes++;this.prev=this.b.join('');this.msg=(this.turn===1?'흑':'백')+' 패스';this.turn=3-this.turn;if(this.passes>=2)return this.end();rr();if(this.lv!=='친구'&&this.turn===2)setTimeout(()=>this.ai(),AI_DELAY);},
+ // 2단계 착수: 첫 탭=미리보기(십자선+반투명 돌), 같은 교차점 한 번 더=확정 (19줄은 칸이 작아 터치 미스 방지)
+ pick(i){const o=this.ol,on=!!(o&&o.tok);
+  if(this.over||this.b[i]){this.pv=-1;return;}
+  if(on){if(o.you<0||o.status!=='play'||o.over||OLA.baduk.seat(this)!==o.you)return;}
+  else if(this.lv!=='친구'&&this.turn!==1)return;
+  if(this.pv===i){this.pv=-1;return this.tap(i);}
+  const r=bdPlay(this.b,i,this.turn);if(!r||r[0].join('')===this.prev){this.pv=-1;toast('둘 수 없는 자리예요 (자충·패)',900);rr();return;}
+  this.pv=i;rr();},
+ tap(i){this.pv=-1;if(this.over||(this.lv!=='친구'&&this.turn!==1))return;if(!this.put(i,this.turn)){toast('둘 수 없는 자리예요 (자충·패)',900);return;}this.msg='';this.mine=this.lv!=='친구'?i:-1;rr();if(this.lv!=='친구')setTimeout(()=>this.ai(),AI_DELAY);},
+ pass(){this.pv=-1;if(this.over)return;this.passes++;this.prev=this.b.join('');this.msg=(this.turn===1?'흑':'백')+' 패스';this.turn=3-this.turn;if(this.passes>=2)return this.end();rr();if(this.lv!=='친구'&&this.turn===2)setTimeout(()=>this.ai(),AI_DELAY);},
  ai(){if(this.over||this.turn!==2)return;let best_=-1,bv=-1e9;const noise={'쉬움':40,'보통':12,'어려움':3}[this.lv];
   for(let i=0;i<BN*BN;i++){if(this.b[i])continue;const r=bdPlay(this.b,i,2);if(!r||r[0].join('')===this.prev)continue;const n=r[0];let s=r[1]*30;const [,lib]=bdGroup(n,i);if(lib.size===1)s-=40;else s+=lib.size*2;
    const nb=bdNb(i);if(nb.every(j=>this.b[j]===2))s-=60;nb.forEach(j=>{if(this.b[j]===1){const [,l]=bdGroup(n,j);if(l.size===1)s+=15;else if(l.size===2)s+=5;}if(this.b[j]===2){const [,l0]=bdGroup(this.b,j);if(l0.size===1)s+=25;}});
-   const x=i%BN,y=Math.floor(i/BN);if(x===0||y===0||x===BN-1||y===BN-1)s-=6;if((x===2||x===6)&&(y===2||y===6))s+=4;s+=Math.random()*noise;if(s>bv){bv=s;best_=i;}}
+   const x=i%BN,y=Math.floor(i/BN);if(x===0||y===0||x===BN-1||y===BN-1)s-=6;if(BD_STAR.includes(x)&&BD_STAR.includes(y))s+=4;const e=Math.min(x,y,BN-1-x,BN-1-y);if(e===2||e===3)s+=2;
+    let nr=false;for(let dy=-2;dy<=2&&!nr;dy++)for(let dx=-2;dx<=2;dx++){const X=x+dx,Y=y+dy;if(X>=0&&Y>=0&&X<BN&&Y<BN&&this.b[Y*BN+X]){nr=true;break;}}if(nr)s+=5;   // 19줄: 돌 근처 우선(흩어져 두지 않게)
+    s+=Math.random()*noise;if(s>bv){bv=s;best_=i;}}
   if(best_<0||(bv<-20&&this.passes>0)){this.pass();return;}this.put(best_,2);rr();},
  end(){const s=bdScore(this.b);const bk=s[1],wt=s[2]+6.5;this.over={bk,wt,win:bk>wt?1:2};if(this.lv!=='친구'){if(this.over.win===1){this.streak++;lsSet('bd_'+this.lv,this.streak);record('baduk',this.streak,this.lv);}else{this.streak=0;lsSet('bd_'+this.lv,0);}}rr();},
  view(){if(!this.lv)return vsPick('CUR.go');const o=this.over;const msg=o?`${o.win===1?'⚫ 흑':'⚪ 백'} 승 (흑 ${o.bk} : 백 ${o.wt})`:(this.msg||(this.turn===1?'⚫ 흑 차례':(this.lv==='친구'?'⚪ 백 차례':'AI 생각 중…')));
-  let h=`<div style="position:relative;aspect-ratio:1;background:#dcb35c;border-radius:6px;padding:5.5%">`;
-  h+=`<svg viewBox="0 0 ${BN-1} ${BN-1}" style="position:absolute;inset:5.5%;width:89%;height:89%" preserveAspectRatio="none">${[...Array(BN).keys()].map(k=>`<line x1="0" y1="${k}" x2="${BN-1}" y2="${k}" stroke="#5a3d17" stroke-width=".03"/><line x1="${k}" y1="0" x2="${k}" y2="${BN-1}" stroke="#5a3d17" stroke-width=".03"/>`).join('')}${[[2,2],[6,2],[4,4],[2,6],[6,6]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r=".09" fill="#5a3d17"/>`).join('')}</svg>`;
-  h+=`<div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat(${BN},1fr);padding:0">${this.b.map((v,i)=>`<div onclick="CUR.tap(${i})" style="display:flex;align-items:center;justify-content:center;position:relative">${v?`<b style="width:86%;height:86%;border-radius:50%;background:${v===1?'radial-gradient(circle at 35% 35%,#555,#000)':'radial-gradient(circle at 35% 35%,#fff,#ccc)'};box-shadow:0 1px 2px rgba(0,0,0,.4);${i===this.last&&i!==this.mine?'outline:2px solid #2f80ed;outline-offset:-3px':''}"></b>`:''}${i===this.mine?'<i style="position:absolute;width:92%;height:92%;border:3px solid #e02424;border-radius:2px;pointer-events:none"></i>':''}</div>`).join('')}</div></div>`;
+  const P=+(50/BN).toFixed(3),W=+(100-2*P).toFixed(3),pv=(this.pv>=0&&!this.b[this.pv])?this.pv:-1,gc=(this.lv==='친구'||this.ol)?this.turn:1;
+  let h=`<div style="position:relative;aspect-ratio:1;background:#dcb35c;border-radius:6px;padding:${P}%">`;
+  h+=`<svg viewBox="0 0 ${BN-1} ${BN-1}" style="position:absolute;inset:${P}%;width:${W}%;height:${W}%" preserveAspectRatio="none">${[...Array(BN).keys()].map(k=>`<line x1="0" y1="${k}" x2="${BN-1}" y2="${k}" stroke="#5a3d17" stroke-width="${BN>13?.06:.03}"/><line x1="${k}" y1="0" x2="${k}" y2="${BN-1}" stroke="#5a3d17" stroke-width="${BN>13?.06:.03}"/>`).join('')}${BD_STAR.flatMap(x=>BD_STAR.map(y=>`<circle cx="${x}" cy="${y}" r="${BN>13?.16:.09}" fill="#5a3d17"/>`)).join('')}${pv>=0?`<line x1="0" y1="${(pv/BN)|0}" x2="${BN-1}" y2="${(pv/BN)|0}" stroke="#1b9e4b" stroke-width=".07" opacity=".75"/><line x1="${pv%BN}" y1="0" x2="${pv%BN}" y2="${BN-1}" stroke="#1b9e4b" stroke-width=".07" opacity=".75"/>`:''}</svg>`;
+  h+=`<div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat(${BN},1fr);padding:0">${this.b.map((v,i)=>`<div onclick="CUR.pick(${i})" style="display:flex;align-items:center;justify-content:center;position:relative">${i===pv?`<b style="width:86%;height:86%;border-radius:50%;opacity:.6;background:${gc===1?'#111':'#fafafa'};box-shadow:0 0 0 2px #1b9e4b;pointer-events:none"></b>`:''}${v?`<b style="width:86%;height:86%;border-radius:50%;background:${v===1?'radial-gradient(circle at 35% 35%,#555,#000)':'radial-gradient(circle at 35% 35%,#fff,#ccc)'};box-shadow:0 1px 2px rgba(0,0,0,.4);${i===this.last&&i!==this.mine?'outline:2px solid #2f80ed;outline-offset:-3px':''}"></b>`:''}${i===this.mine?'<i style="position:absolute;width:92%;height:92%;border:3px solid #e02424;border-radius:2px;pointer-events:none"></i>':''}</div>`).join('')}</div></div>`;
   return `<div class="gst"><span>${this.lv==='친구'?'👥 친구와':this.lv+' · 연승 <b>'+this.streak+'</b>'} · 잡은 돌 ⚫${this.cap[1]} ⚪${this.cap[2]}</span><span>${msg}</span></div>${h}
    ${o?`<div class="g2b"><button class="btn" onclick="CUR.go('${this.lv}')">한 판 더</button><button class="btn b2" onclick="CUR.lv=null;rr()">모드 바꾸기</button></div>`:`<button class="btn full gr" style="margin-top:10px" onclick="CUR.pass()">패스 (둘 다 패스하면 계가)</button>`}
+   <div class="m" style="text-align:center;margin-top:6px;font-weight:700;color:#1b9e4b">${(this.pv>=0&&!this.b[this.pv])?'👆 같은 자리를 한 번 더 누르면 놓여요 (다른 곳을 누르면 옮겨져요)':'👆 교차점을 눌러 확인 → 같은 자리를 한 번 더 눌러 착수'}</div>
    <div class="m" style="text-align:center;margin-top:6px">중국식 계가(돌+집) · 백 덤 6.5집 · 죽은 돌은 끝까지 잡아내고 패스하세요</div>`;}});
 // ===== 장기 =====
 const JW=9,JH=10;
