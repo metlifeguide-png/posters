@@ -156,6 +156,7 @@ function lvPick(fn,extra){return `<div class="gq">난이도</div><div style="dis
 function overHtml(big,sub,again){return `<div class="gbig">${big}</div><div class="card m" style="text-align:center">${sub}</div><button class="btn full" onclick="${again||'CUR.start()'}">다시 하기</button>`;}
 function timer(sec,onEnd){const t0=Date.now();const iv=setInterval(()=>{const left=Math.max(0,sec-(Date.now()-t0)/1000);const e=$('tleft');if(e)e.textContent=Math.ceil(left)+'초';if(left<=0){clearInterval(iv);onEnd();}},200);return ()=>clearInterval(iv);}
 const G=[];
+function clock(get){clearInterval(clock.iv);clock.iv=setInterval(()=>{const e=$('clk');if(!e){clearInterval(clock.iv);return;}const v=get();if(v!=null)e.textContent=fmtScore('memory',v);},1000);}
 // ===================== 🎰 뚝섬 라이브 카지노 (모두 같은 판 · 15초 베팅 · 일일 칩 랭킹) =====================
 (function(){const s=document.createElement('style');s.textContent=`
 .lvw{display:flex;justify-content:space-between;align-items:center;background:#1b1f2a;color:#fff;border-radius:14px;padding:9px 12px;margin-bottom:8px}
@@ -527,7 +528,6 @@ let SWH=null;function swipe(fn){SWH=fn;}
  addEventListener('keydown',e=>{if(!SWH)return;const m={ArrowLeft:'L',ArrowRight:'R',ArrowUp:'U',ArrowDown:'D'}[e.key];if(m){e.preventDefault();SWH(m);}});})();
 // ===== 🧩 퍼즐 =====
 const secs=t0=>Math.round((Date.now()-t0)/1000);
-function clock(get){clearInterval(clock.iv);clock.iv=setInterval(()=>{const e=$('clk');if(!e){clearInterval(clock.iv);return;}const v=get();if(v!=null)e.textContent=fmtScore('memory',v);},1000);}
 // 지뢰찾기
 G.push({k:'mines',cat:'퍼즐',e:'💣',n:'지뢰찾기',d:'쉬움·보통·어려움 · 시간 기록',
  start(){this.lv=null;rr();},
