@@ -265,6 +265,38 @@ const lvC=(c,sm)=>cardHtml(c?{r:c[0]===1?14:c[0],s:c[1]}:null,sm);
 const lvO=c=>({r:c[0]===1?14:c[0],s:c[1]});
 const lvN=v=>v>=10000?(v%10000?(v/10000).toFixed(1):v/10000)+'만':v.toLocaleString();
 function lvApi(path,body){return fetch(API+path,body?{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(body)}:{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json());}
+// ===== 🎴 바카라 그림판 (빅로드·파생 3종·구슬판) — 백업(games_html.bak)에서 복구 =====
+// 그림판 배치: 같은 쪽 연속은 아래로, 6칸 넘거나 막히면 오른쪽으로 꺾임(드래곤 테일)
+function bacPlace(seq){const G={},out=[];let last=null,sc=-1,c=0,r=0;
+ seq.forEach((x,i)=>{const w=x.w;if(last===w){if(r+1<6&&!G[c+','+(r+1)])r++;else c++;}else{sc++;c=sc;r=0;while(G[c+','+r])c++;sc=c;}G[c+','+r]=1;out.push({...x,c,r});last=w;});return out;}
+// 파생 그림판 (k=1 빅아이보이, 2 스몰로드, 3 바퀴벌레) · 빨강=규칙적 · 파랑=불규칙
+function bacDerived(bp,k){const lens=[];let lw=null;const pos=[];bp.forEach(w=>{if(w===lw)lens[lens.length-1]++;else{lens.push(1);lw=w;}pos.push([lens.length-1,lens[lens.length-1]-1]);});
+ const out=[];pos.forEach(([ci,ri])=>{if(!(ci>k||(ci===k&&ri>=1)))return;let red;
+  if(ri===0)red=lens[ci-1]===lens[ci-1-k];else{const L=lens[ci-k];red=L>=ri+1?true:(L===ri?false:true);}out.push({w:red?'R':'B'});});return out;}
+const BAC_COL={B:'#d32f2f',P:'#1565c0',T:'#2e7d32',R:'#d32f2f'};
+function bacGrid(cells,sz,cell,minCols){const nc=Math.max(minCols||12,(cells.length?Math.max(...cells.map(x=>x.c)):0)+2);
+ return `<div class="bacsc" style="overflow-x:auto;background:#fff;border-radius:8px;border:1px solid var(--line);padding:3px"><div style="min-width:100%;width:max-content;display:grid;grid-template-columns:repeat(${nc},${sz}px);grid-template-rows:repeat(6,${sz}px);gap:1px;background-image:linear-gradient(#eee 1px,transparent 1px),linear-gradient(90deg,#eee 1px,transparent 1px);background-size:${sz+1}px ${sz+1}px">${cells.map(cell).join('')}</div></div>`;}
+function bacRoadsHtml(H,ask){
+ const bp=H.filter(x=>x.w!=='T');let pend=0;const bpx=[];H.forEach(x=>{if(x.w==='T'){if(bpx.length)bpx[bpx.length-1].t=(bpx[bpx.length-1].t||0)+1;else pend++;}else bpx.push({...x,t:pend?pend:0}),pend=0;});
+ const big=bacPlace(bpx);
+ const dot=(x,sz)=>`${x.bp?`<i style="position:absolute;left:-1px;top:-1px;width:${sz/3}px;height:${sz/3}px;border-radius:50%;background:#d32f2f;border:1px solid #fff"></i>`:''}${x.pp?`<i style="position:absolute;right:-1px;bottom:-1px;width:${sz/3}px;height:${sz/3}px;border-radius:50%;background:#1565c0;border:1px solid #fff"></i>`:''}`;
+ const bigC=x=>`<div style="grid-column:${x.c+1};grid-row:${x.r+1};width:15px;height:15px;border-radius:50%;border:3px solid ${BAC_COL[x.w]};box-sizing:border-box;position:relative;margin:1px">${x.t?`<i style="position:absolute;left:-2px;top:4px;width:15px;height:2px;background:#2e7d32;transform:rotate(-45deg)"></i>${x.t>1?`<b style="position:absolute;right:-5px;top:-7px;font-size:8px;color:#2e7d32">${x.t}</b>`:''}`:''}${dot(x,15)}</div>`;
+ const beadCells=H.map((x,i)=>({...x,c:Math.floor(i/6),r:i%6}));
+ const beadC=x=>`<div style="grid-column:${x.c+1};grid-row:${x.r+1};width:19px;height:19px;border-radius:50%;background:${BAC_COL[x.w]};color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;position:relative;margin:1px">${({B:'B',P:'P',T:'T'})[x.w]}${dot(x,19)}</div>`;
+ const seq=bp.map(x=>x.w);const der=k=>bacPlace(bacDerived(seq,k));
+ const eyeC=x=>`<div style="grid-column:${x.c+1};grid-row:${x.r+1};width:8px;height:8px;border-radius:50%;border:2px solid ${BAC_COL[x.w]};box-sizing:border-box;margin:1px"></div>`;
+ const smC=x=>`<div style="grid-column:${x.c+1};grid-row:${x.r+1};width:8px;height:8px;border-radius:50%;background:${BAC_COL[x.w]};margin:1px"></div>`;
+ const crC=x=>`<div style="grid-column:${x.c+1};grid-row:${x.r+1};width:10px;height:10px;position:relative"><i style="position:absolute;left:0;top:4px;width:10px;height:2px;background:${BAC_COL[x.w]};transform:rotate(-45deg)"></i></div>`;
+ // 다음 예측 (뱅커/플레이어가 나오면 파생 그림판에 무엇이 찍히나)
+ const askOne=w=>[1,2,3].map(k=>{const a=bacDerived(seq,k),b=bacDerived([...seq,w],k);return b.length>a.length?b[b.length-1].w:null;});
+ const askH=w=>{const r=askOne(w);const sym=[(c)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid ${BAC_COL[c]}"></span>`,(c)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${BAC_COL[c]}"></span>`,(c)=>`<span style="display:inline-block;width:12px;height:2px;background:${BAC_COL[c]};transform:rotate(-45deg);vertical-align:middle"></span>`];
+  return `<span style="font-weight:900;color:${BAC_COL[w]}">${w==='B'?'뱅커':'플레이어'} 다음</span> ${r.map((c,i)=>c?sym[i](c):'<span class="m">-</span>').join(' ')}`;};
+ const L=(t,h)=>`<div class="lbl" style="text-align:left;margin:5px 0 2px">${t}</div>${h}`;
+ return `${L('빅로드',bacGrid(big,17,bigC,16))}
+  <div style="display:grid;grid-template-columns:1fr;gap:0">${[['빅아이보이',1,eyeC],['스몰로드',2,smC],['바퀴벌레',3,crC]].map(([t,k,f])=>{const d=der(k);return L(t+(d.length?'':` <span style="color:var(--blue)">· 아직 시작 전 (빅로드 ${k+1}번째 줄 둘째 칸부터 찍혀요)</span>`),bacGrid(d,10,f,30));}).join('')}</div>
+  ${L('구슬판(본매)',bacGrid(beadCells,21,beadC,12))}
+  <div class="card" style="margin-top:6px;padding:6px 8px;font-size:12.5px;display:flex;justify-content:space-around">${askH('B')}${askH('P')}</div>
+  <div class="m" style="font-size:12.5px;line-height:1.6;margin-top:4px">파생 그림판: 빨강 = 흐름이 규칙적 · 파랑 = 흐름이 불규칙 · 빅아이보이는 빅로드 2번째 줄, 스몰로드는 3번째 줄, 바퀴벌레는 4번째 줄부터 시작해요 (실제 카지노와 같아요) · 다음 예측의 '-'는 아직 시작 전이라는 뜻 · 재미용 지표예요, 결과 확률엔 영향 없어요</div>`;}
 G.push({k:'live',cat:'카드',e:'🎰',n:'라이브 카지노',d:'블랙잭 · 바카라',
  start(){Object.assign(this,{tab:lsGet('lv_tab','bac'),chip:lsGet('lv_chip',5000),S:null,off:0,want:null,wantDirty:0,sendAt:0,rank:null,sig:'',busy:0,err:'',got:{},act0:Date.now(),paused:false});
   clearInterval(this.iv2);this.iv2=setInterval(()=>{if(CUR!==this){clearInterval(this.iv2);return;}this.tick();},200);this.loadRank();if(this.tab!=='rank')this.fetch();rr();},
