@@ -625,14 +625,15 @@ G.push({k:'baseball',cat:'퍼즐',e:'⚾',n:'숫자야구',d:'겹치지 않는 3
 function sdOk(g,r,c,v){for(let k=0;k<9;k++){if(g[r*9+k]===v||g[k*9+c]===v)return false;}const br=r-r%3,bc=c-c%3;for(let y=0;y<3;y++)for(let x=0;x<3;x++)if(g[(br+y)*9+bc+x]===v)return false;return true;}
 function sdSolve(g,cnt){const i=g.indexOf(0);if(i<0)return cnt+1;const r=Math.floor(i/9),c=i%9;for(let v=1;v<=9&&cnt<2;v++){if(sdOk(g,r,c,v)){g[i]=v;cnt=sdSolve(g,cnt);g[i]=0;}}return cnt;}
 function sdFill(g){const i=g.indexOf(0);if(i<0)return true;const r=Math.floor(i/9),c=i%9;for(const v of shuf([1,2,3,4,5,6,7,8,9])){if(sdOk(g,r,c,v)){g[i]=v;if(sdFill(g))return true;g[i]=0;}}return false;}
+function sdSolveF(g,cnt){let bi=-1,bc=null,bn=10;for(let i=0;i<81;i++){if(g[i])continue;const r=(i/9)|0,c=i%9;const cs=[];for(let v=1;v<=9;v++)if(sdOk(g,r,c,v))cs.push(v);if(cs.length<bn){bn=cs.length;bi=i;bc=cs;if(bn<=1)break;}}if(bi<0)return cnt+1;for(const v of bc){if(cnt>=2)break;g[bi]=v;cnt=sdSolveF(g,cnt);g[bi]=0;}return cnt;}
 G.push({k:'sudoku',cat:'퍼즐',e:'🔢',n:'스도쿠',d:'쉬움·보통·어려움 · 시간 기록',
  start(){this.lv=null;rr();},
- go(lv){const sol=Array(81).fill(0);sdFill(sol);const puz=sol.slice();const target={'쉬움':40,'보통':32,'어려움':26}[lv];let clues=81;
-  for(const i of shuf([...Array(81).keys()])){if(clues<=target)break;const v=puz[i];puz[i]=0;if(sdSolve(puz.slice(),0)!==1)puz[i]=v;else clues--;}
+ go(lv){const sol=Array(81).fill(0);sdFill(sol);const puz=sol.slice();const target={'쉬움':40,'보통':32,'어려움':26,'극악':22}[lv];const T0=Date.now(),SV=lv==='극악'?sdSolveF:sdSolve;let clues=81;
+  for(const i of shuf([...Array(81).keys()])){if(clues<=target)break;if(lv==='극악'&&Date.now()-T0>2500)break;const v=puz[i];puz[i]=0;if(SV(puz.slice(),0)!==1)puz[i]=v;else clues--;}
   Object.assign(this,{lv,sol,fix:puz.map(v=>v>0),g:puz,sel:-1,t0:Date.now(),done:false,miss:0});clock(()=>this.done?null:secs(this.t0));rr();},
  sl(i){if(this.done||this.fix[i])return;this.sel=i;rr();},
  num(v){if(this.done||this.sel<0)return;this.g[this.sel]=v;if(v&&v!==this.sol[this.sel])this.miss++;if(this.g.every((x,i)=>x===this.sol[i])){this.done=true;this.time=secs(this.t0);record('sudoku',this.time,this.lv);}rr();},
- view(){if(!this.lv)return lvPick('CUR.go');const sel=this.sel,sr=sel>=0?Math.floor(sel/9):-1,sc=sel>=0?sel%9:-1,sv=sel>=0?this.g[sel]:0;
+ view(){if(!this.lv)return lvPick('CUR.go','<button class="btn" onclick="CUR.go(\'극악\')">극악</button>');const sel=this.sel,sr=sel>=0?Math.floor(sel/9):-1,sc=sel>=0?sel%9:-1,sv=sel>=0?this.g[sel]:0;
   return `<div class="gst"><span>${this.lv} · 실수 ${this.miss}</span><span>⏱ <b id="clk">${fmtScore('memory',this.done?this.time:secs(this.t0))}</b></span></div>${this.done?`<div class="gok">🎉 완성! ${fmtScore('memory',this.time)}</div>`:''}
    <div style="display:grid;grid-template-columns:repeat(9,minmax(0,1fr));border:2px solid #333;background:#fff">${this.g.map((v,i)=>{const r=Math.floor(i/9),c=i%9;
     const bg=i===sel?'#bcd3f2':(v&&v===sv?'#d9e6f7':((r===sr||c===sc)?'#eef3fa':'#fff'));const col=this.fix[i]?'#222':(v&&v!==this.sol[i]?'#d33':'var(--blue)');
