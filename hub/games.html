@@ -53,6 +53,13 @@ input.q{width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius
 .ctl{display:grid;grid-template-columns:repeat(3,64px);grid-template-rows:repeat(2,48px);gap:6px;justify-content:center;margin-top:10px}
 .ctl button{font-size:22px;border-radius:12px;border:1.5px solid var(--line);background:#fff}
 @keyframes cfblink{50%{opacity:.35}}@keyframes pgin{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}#app{animation:pgin .22s ease-out}
+.lvb{display:inline-block;letter-spacing:-2px;margin-right:5px;vertical-align:-1px;white-space:nowrap}
+.lvb.t3{filter:drop-shadow(0 0 3px #ffd54a)}
+.lvb.t4{filter:drop-shadow(0 0 4px #4fc3f7) drop-shadow(0 0 2px #ffd54a)}
+.lvb.t5{filter:drop-shadow(0 0 5px #ffb300) drop-shadow(0 0 3px #ff7043);animation:lvbs 2.4s ease-in-out infinite}
+.lvb.t6{filter:drop-shadow(0 0 6px #ff4081) drop-shadow(0 0 4px #ffd54a);animation:lvbs 1.4s ease-in-out infinite}
+@keyframes lvbs{50%{transform:scale(1.14);filter:brightness(1.35) drop-shadow(0 0 8px #ffd54a)}}
+.lvnm5{font-weight:900;background:linear-gradient(90deg,#c98a10,#f6c344,#c98a10);-webkit-background-clip:text;background-clip:text;color:transparent}
 </style>
 </head>
 <body>
@@ -82,7 +89,7 @@ function fmtScore(k,v,lv){const u=(GCFG[k]||[])[2]||'pt';v=Math.round(v);
   return ({x5:v+'/5',x10:v+'/10',streak:v+'연속',pt:v.toLocaleString()+'점',chip:v.toLocaleString()+'칩',sec:Math.floor(v/60)+'분 '+String(v%60).padStart(2,'0')+'초',moves:v+'수',tries:v+'번',ms:v+'ms',msec:(v/1000).toFixed(2)+'초',pct:v+'%',win:v+'연승'})[u]||String(v);}
 function myBest(k,lv){return lsGet('best_'+k+(lv?'_'+lv:''),null);}
 // 기록: 이 폰 최고 기록 + (닉네임 있으면) 서버 랭킹 · 경험치·업적
-function xpToast(r){if(!r)return;const L=[];const pl=lsGet('mylv',null);if(r.level&&pl!=null&&r.level>pl)L.push(`⬆️ 레벨 업! Lv.${r.level} ${r.title}`);if(r.level)lsSet('mylv',r.level);
+function xpToast(r){if(!r)return;const L=[];const pl=lsGet('mylv',null);if(r.level&&pl!=null&&r.level>pl)L.push(`⬆️ 레벨 업! ${lvBadge(r.level)} Lv.${r.level} ${r.title}`);if(r.level)lsSet('mylv',r.level);
  (r.new||[]).forEach(a=>L.push(`🏅 업적 달성: ${a[0]} ${a[1]}`));if(L.length)setTimeout(()=>toast(L.join(' · '),3200),1800);}
 function record(k,score,lv){if(window.DAILY&&DAILY.k===k&&!DAILY.sent){dailySubmit(score,fmtScore(k,score,lv));return;}
   const key='best_'+k+(lv?'_'+lv:'');const b=lsGet(key,null);const better=b==null||(lowerBetter(k)?score<b:score>b);if(better)lsSet(key,score);
@@ -1919,12 +1926,16 @@ const CATS=['전체','카드','퍼즐','대전·도구'];let CATSEL=lsGet('gcat'
 const STUDY_E={pushfold:'🔥',potodds:'💰',nutadv:'🧭'};
 const RANKED=Object.keys(GCFG).map(k=>G.find(g=>g.k===k)||{k,e:STUDY_E[k]||'🃏',nm:(GCFG[k]||[])[0]||k}).filter(g=>GCFG[g.k]);
 const gName=k=>{const g=G.find(x=>x.k===k);return g?g.e+' '+g.nm:(STUDY_E[k]?STUDY_E[k]+' ':'')+((GCFG[k]||[])[0]||k);};
+const LVB=[[50,'🔱👑💎🏅✨',6],[30,'👑💎🏅✨',5],[20,'💎🏅✨',4],[15,'🏅✨',3],[10,'🏅',2],[5,'🎖️',1],[1,'🌱',0]];
+function lvBadge(l){l=+l||0;if(l<1)return '';const t=LVB.find(x=>l>=x[0]);return `<span class="lvb t${t[2]}" title="Lv.${l}">${t[1]}</span>`;}
+function lvNext(l){l=+l||1;const n=LVB.slice().reverse().find(x=>x[0]>l);return n?{lv:n[0],ico:n[1]}:null;}
+const lvIco=n=>{let l=(GD.lv||{})[n];if(typeof ME!=='undefined'&&ME&&n===NICK)l=ME.level;return lvBadge(l);};
 const lvTag=n=>{const l=(GD.lv||{})[n];return l?`<span style="font-size:11px;background:var(--blue2);color:var(--blue);border-radius:999px;padding:1px 6px;margin-left:4px;font-weight:800">Lv.${l}</span>`:'';};
 let ME=null;
 function loadMe(cb){if(!NICK){ME=null;cb&&cb();return;}fetch(API+'/api/game/me?nick='+encodeURIComponent(NICK),{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{ME=r.ok?r:null;if(ME)lsSet('mylv',ME.level);cb&&cb();}).catch(()=>cb&&cb());}
 function meBar(){if(!NICK)return '';if(!ME)return `<div class="m" style="margin-top:6px">레벨 불러오는 중…</div>`;const p=Math.round((ME.xp-ME.prev)/Math.max(1,ME.next-ME.prev)*100);
- return `<div style="margin-top:8px"><div class="row"><b>Lv.${ME.level} ${ME.title}</b><span class="m">${ME.xp.toLocaleString()} xp · 업적 ${ME.ach.filter(a=>a[4]).length}/${ME.ach.length}</span></div>
-  <div style="height:8px;background:#e6e1d4;border-radius:99px;overflow:hidden;margin-top:4px"><div style="height:100%;width:${p}%;background:linear-gradient(90deg,#2f80ed,#6fcf97)"></div></div><div class="m" style="font-size:11px;margin-top:2px">다음 레벨까지 ${(ME.next-ME.xp).toLocaleString()} xp · 게임 기록 +10 · 최고 기록 +25 · 오늘의 문제 +50 · 업적 +30</div></div>`;}
+ return `<div style="margin-top:8px"><div class="row"><b>${lvBadge(ME.level)}Lv.${ME.level} ${ME.title}</b><span class="m">${ME.xp.toLocaleString()} xp · 업적 ${ME.ach.filter(a=>a[4]).length}/${ME.ach.length}</span></div>
+  <div style="height:8px;background:#e6e1d4;border-radius:99px;overflow:hidden;margin-top:4px"><div style="height:100%;width:${p}%;background:linear-gradient(90deg,#2f80ed,#6fcf97)"></div></div><div class="m" style="font-size:11px;margin-top:2px">다음 레벨까지 ${(ME.next-ME.xp).toLocaleString()} xp${(()=>{const n=lvNext(ME.level);return n?` · 다음 배지 ${n.ico} (Lv.${n.lv})`:' · 최고 배지 달성 🎉';})()} · 게임 기록 +10 · 최고 기록 +25 · 오늘의 문제 +50 · 업적 +30</div></div>`;}
 function tileBest(g){const c=GCFG[g.k];if(!c)return '';if(c[3]){const b=(c[4]||['쉬움','보통','어려움']).slice().reverse().map(l=>myBest(g.k,l)).find(v=>v!=null)??null;return b==null?'':'내 기록 '+fmtScore(g.k,b);}const b=myBest(g.k);return b==null?'':'내 최고 '+fmtScore(g.k,b);}
 function dailyTile(){const d=kstDay(),[k]=dailyType(d);const done=lsGet('daily_done_'+d,null);
  return `<div class="card" style="cursor:pointer;border-color:var(--blue);background:var(--blue2)" onclick="location.hash='daily'"><div class="row"><b style="font-size:16px">📅 오늘의 문제 · ${gName(k)}</b><span class="m">${done?'✅ 제출함':'하루 1번'}</span></div><div class="m">모두 같은 문제 · 오늘 순위 · +50xp</div></div>`;}
@@ -1969,7 +1980,7 @@ function dailyView(){const d=kstDay(),[k,lv]=dailyType(d);const g=G.find(x=>x.k=
  return `<div class="card" style="text-align:center"><div class="m">${d} · 모두 같은 문제 · 하루 1번</div><div style="font-size:26px;margin:6px 0">${g?g.e:''}</div><div class="t" style="font-size:19px">${g?g.nm:k}</div><div class="m">${rule}</div></div>
   ${!NICK?`<div class="card"><div class="t">닉네임을 먼저 저장해요</div><div style="display:flex;gap:6px;margin-top:6px"><input class="q" id="nk" placeholder="예: 구우"><button class="btn" onclick="setNick($('nk').value);render()">저장</button></div></div>`:''}
   ${done?`<div class="gok">✅ 오늘 제출 완료 · 내 기록 <b>${esc(done.detail||'')}</b></div>`:started?`<div class="card m">오늘 문제는 이미 시작했어요. 하루 1번이라 다시 할 수 없어요.</div>`:NICK?`<button class="btn full g" style="font-size:18px;padding:14px" onclick="dailyBegin()">도전하기 (한 번뿐이에요!)</button>`:''}
-  <div class="sec">🏆 오늘 순위 ${B.length?`(${B.length}명)`:''}</div><div class="card">${B.length?B.map((x,i)=>`<div class="row"${x[0]===NICK?' style="background:var(--blue2);border-radius:8px"':''}><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${esc(x[0])}${lvTag(x[0])}</span><span class="m">${fmt(x)}</span></div>`).join(''):'<span class="m">아직 아무도 안 풀었어요. 첫 1등이 되어보세요!</span>'}</div>
+  <div class="sec">🏆 오늘 순위 ${B.length?`(${B.length}명)`:''}</div><div class="card">${B.length?B.map((x,i)=>`<div class="row"${x[0]===NICK?' style="background:var(--blue2);border-radius:8px"':''}><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${lvIco(x[0])}${esc(x[0])}${lvTag(x[0])}</span><span class="m">${fmt(x)}</span></div>`).join(''):'<span class="m">아직 아무도 안 풀었어요. 첫 1등이 되어보세요!</span>'}</div>
   ${DLIVE&&DLIVE.y&&DLIVE.y.board.length?`<div class="sec">어제의 TOP 3 · ${gName(DLIVE.y.game)}</div><div class="card">${DLIVE.y.board.map((x,i)=>`<div class="row"><span>${['🥇','🥈','🥉'][i]} ${esc(x[0])}</span><span class="m">${esc(x[2]||String(x[1]))}</span></div>`).join('')}</div>`:''}
   <div class="m" style="text-align:center">7일 연속 참여하면 📆 개근상 업적</div>`;}
 function loadDaily(){fetch(API+'/api/daily?nick='+encodeURIComponent(NICK||''),{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{if(r.ok){DLIVE=r;if(r.mine&&!lsGet('daily_done_'+r.d,null))lsSet('daily_done_'+r.d,{score:r.mine[0],detail:r.mine[1]});if(location.hash==='#daily')show(dailyView());}}).catch(()=>{});}
@@ -1981,13 +1992,13 @@ function rankView(){const tabs=[['week','🏆 순위'],['today','⏰ 오늘'],['
  let h=`<div class="tabs">${tabs.map(([k,n])=>`<button class="${RTAB===k?'on':''}" onclick="RTAB='${k}';lsSet('rtab',RTAB);show(rankView());if(RTAB==='ach'||RTAB==='level')loadMe(()=>show(rankView()))">${n}</button>`).join('')}</div>`;
  if(RTAB==='week'){const B=GD.boards||{};let any=false;h+='<div class="sec">순위 (누적 · 전체 기간 최고 기록)</div>';
   for(const g of RANKED){const c=GCFG[g.k];const keys=c[3]?(c[4]||['쉬움','보통','어려움']).slice().reverse().map(l=>[g.k+'_'+l,l]).filter(([k])=>B[k]):(B[g.k]?[[g.k,'']]:[]);
-   for(const [key,lv] of keys){any=true;h+=`<div class="card"><div class="t">${g.e} ${g.nm}${lv?' · '+lv:''}</div>${B[key].map((x,i)=>`<div class="row"><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${esc(x[0])}${lvTag(x[0])}</span><span class="m">${fmtScore(g.k,x[1])}</span></div>`).join('')}</div>`;}}
+   for(const [key,lv] of keys){any=true;h+=`<div class="card"><div class="t">${g.e} ${g.nm}${lv?' · '+lv:''}</div>${B[key].map((x,i)=>`<div class="row"><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${lvIco(x[0])}${esc(x[0])}${lvTag(x[0])}</span><span class="m">${fmtScore(g.k,x[1])}</span></div>`).join('')}</div>`;}}
   if(!any)h+='<div class="card m">아직 이번 주 기록이 없어요. 첫 1위의 주인공이 되어보세요!</div>';}
  if(RTAB==='today'){const T=GD.tbest||{};const ks=Object.keys(T);h+=`<div class="sec">오늘의 최고 기록 (${GD.d||''})</div>`;
-  h+=ks.length?`<div class="card">${ks.map(k=>`<div class="row"><span>${gName(k)}${T[k][2]?' · '+esc(T[k][2]):''}</span><span><b>${esc(T[k][0])}</b>${lvTag(T[k][0])} <span class="m">${fmtScore(k,T[k][1])}</span></span></div>`).join('')}</div>`:'<div class="card m">오늘은 아직 기록이 없어요</div>';}
+  h+=ks.length?`<div class="card">${ks.map(k=>`<div class="row"><span>${gName(k)}${T[k][2]?' · '+esc(T[k][2]):''}</span><span>${lvIco(T[k][0])}<b>${esc(T[k][0])}</b>${lvTag(T[k][0])} <span class="m">${fmtScore(k,T[k][1])}</span></span></div>`).join('')}</div>`:'<div class="card m">오늘은 아직 기록이 없어요</div>';}
  if(RTAB==='level'){const X=GD.xtop||[];h+=NICK?`<div class="card"><div class="t">내 레벨</div>${meBar()}</div>`:'';h+='<div class="sec">레벨 랭킹</div>';
-  h+=X.length?`<div class="card">${X.map((x,i)=>`<div class="row"><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} <b>${esc(x[0])}</b> <span class="m">Lv.${x[1]} ${x[2]}</span></span><span class="m">🏅${x[4]} · ${x[3].toLocaleString()}xp</span></div>`).join('')}</div>`:'<div class="card m">아직 레벨 기록이 없어요</div>';
-  h+='<div class="card m" style="font-size:12.5px;line-height:1.6">레벨 칭호: Lv.1 새싹 · 5 루키 · 10 단골 · 15 고수 · 20 달인 · 30 전설 · 50 신</div>';}
+  h+=X.length?`<div class="card">${X.map((x,i)=>`<div class="row"><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${lvBadge(x[1])}<b>${esc(x[0])}</b> <span class="m">Lv.${x[1]} ${x[2]}</span></span><span class="m">🏅${x[4]} · ${x[3].toLocaleString()}xp</span></div>`).join('')}</div>`:'<div class="card m">아직 레벨 기록이 없어요</div>';
+  h+=`<div class="card" style="font-size:13.5px;line-height:2"><div class="t" style="margin-bottom:2px">🎖️ 레벨 배지 · 올릴수록 화려해져요</div>${[[1,'새싹'],[5,'루키'],[10,'단골'],[15,'고수'],[20,'달인'],[30,'전설'],[50,'신']].map(([l,t])=>`<div class="row"><span>${lvBadge(l)} <b>${t}</b></span><span class="m">Lv.${l}~</span></div>`).join('')}<div class="m" style="font-size:12px;margin-top:4px">게임 기록 +10xp · 개인 최고 +25xp · 오늘의 문제 +50xp · 업적 달성 +30xp</div></div>`;}
  if(RTAB==='ach'){if(!NICK)h+='<div class="card m">닉네임을 저장하면 업적이 쌓여요</div>';else if(!ME)h+='<div class="gq">불러오는 중…</div>';
   else{h+=`<div class="card"><div class="t">${esc(NICK)}</div>${meBar()}<div class="m" style="margin-top:6px">기록 남긴 게임 ${ME.played.length}/${ME.total_games}</div></div>`;
    const got=ME.ach.filter(a=>a[4]),no=ME.ach.filter(a=>!a[4]);
