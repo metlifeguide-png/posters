@@ -626,14 +626,37 @@ function sdOk(g,r,c,v){for(let k=0;k<9;k++){if(g[r*9+k]===v||g[k*9+c]===v)return
 function sdSolve(g,cnt){const i=g.indexOf(0);if(i<0)return cnt+1;const r=Math.floor(i/9),c=i%9;for(let v=1;v<=9&&cnt<2;v++){if(sdOk(g,r,c,v)){g[i]=v;cnt=sdSolve(g,cnt);g[i]=0;}}return cnt;}
 function sdFill(g){const i=g.indexOf(0);if(i<0)return true;const r=Math.floor(i/9),c=i%9;for(const v of shuf([1,2,3,4,5,6,7,8,9])){if(sdOk(g,r,c,v)){g[i]=v;if(sdFill(g))return true;g[i]=0;}}return false;}
 function sdSolveF(g,cnt){let bi=-1,bc=null,bn=10;for(let i=0;i<81;i++){if(g[i])continue;const r=(i/9)|0,c=i%9;const cs=[];for(let v=1;v<=9;v++)if(sdOk(g,r,c,v))cs.push(v);if(cs.length<bn){bn=cs.length;bi=i;bc=cs;if(bn<=1)break;}}if(bi<0)return cnt+1;for(const v of bc){if(cnt>=2)break;g[bi]=v;cnt=sdSolveF(g,cnt);g[bi]=0;}return cnt;}
+function sd16Cnt(g,lim){const row=new Array(16).fill(0),col=new Array(16).fill(0),box=new Array(16).fill(0);
+ for(let i=0;i<256;i++){const v=g[i];if(v){const b=1<<(v-1),r=i>>4,c=i&15;row[r]|=b;col[c]|=b;box[(r>>2)*4+(c>>2)]|=b;}}
+ let nodes=0,cnt=0;
+ const go=()=>{if(cnt>=2||nodes>lim)return;nodes++;let bi=-1,bm=0,bn=17;
+  for(let i=0;i<256;i++){if(g[i])continue;const r=i>>4,c=i&15,m=~(row[r]|col[c]|box[(r>>2)*4+(c>>2)])&0xFFFF;let n=0,t=m;while(t){t&=t-1;n++;}
+   if(n<bn){bn=n;bi=i;bm=m;if(n<=1)break;}}
+  if(bi<0){cnt++;return;}
+  const r=bi>>4,c=bi&15,x=(r>>2)*4+(c>>2);
+  for(let v=0;v<16&&cnt<2;v++){const b=1<<v;if(bm&b){g[bi]=v+1;row[r]|=b;col[c]|=b;box[x]|=b;go();row[r]&=~b;col[c]&=~b;box[x]&=~b;g[bi]=0;}}};
+ go();return nodes>lim?2:cnt;}
 G.push({k:'sudoku',cat:'퍼즐',e:'🔢',n:'스도쿠',d:'쉬움·보통·어려움 · 시간 기록',
  start(){this.lv=null;rr();},
- go(lv){const sol=Array(81).fill(0);sdFill(sol);const puz=sol.slice();const target={'쉬움':40,'보통':32,'어려움':26,'극악':22}[lv];const T0=Date.now(),SV=lv==='극악'?sdSolveF:sdSolve;let clues=81;
+ go16(){const R=()=>{const o=[];for(const b of shuf([0,1,2,3]))for(const k of shuf([0,1,2,3]))o.push(b*4+k);return o;};
+  const RR=R(),CC=R(),D=shuf([...Array(16).keys()]),sol=Array(256);
+  for(let r=0;r<16;r++)for(let c=0;c<16;c++)sol[r*16+c]=D[(4*(RR[r]%4)+((RR[r]/4)|0)+CC[c])%16]+1;
+  const puz=sol.slice(),T0=Date.now();let clues=256;
+  for(const i of shuf([...Array(256).keys()])){if(clues<=96||Date.now()-T0>3000)break;const v=puz[i];puz[i]=0;if(sd16Cnt(puz.slice(),2000)!==1)puz[i]=v;else clues--;}
+  Object.assign(this,{lv:'극악',N:16,sol,fix:puz.map(v=>v>0),g:puz,sel:-1,t0:Date.now(),done:false,miss:0});clock(()=>this.done?null:secs(this.t0));rr();},
+ view16(){const sel=this.sel,sr=sel>=0?sel>>4:-1,sc=sel>=0?sel&15:-1,sv=sel>=0?this.g[sel]:0;
+  return `<div class="gst"><span>${this.lv} · 16×16 · 실수 ${this.miss}</span><span>⏱ <b id="clk">${fmtScore('memory',this.done?this.time:secs(this.t0))}</b></span></div>${this.done?`<div class="gok">🎉 완성! ${fmtScore('memory',this.time)}</div>`:''}
+   <div style="display:grid;grid-template-columns:repeat(16,minmax(0,1fr));border:2px solid #333;background:#fff">${this.g.map((v,i)=>{const r=i>>4,c=i&15;
+    const bg=i===sel?'#bcd3f2':(v&&v===sv?'#d9e6f7':((r===sr||c===sc)?'#eef3fa':'#fff'));const col=this.fix[i]?'#222':(v&&v!==this.sol[i]?'#d33':'var(--blue)');
+    return `<div onclick="CUR.sl(${i})" style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:min(2.8vw,12px);font-weight:700;background:${bg};color:${col};border-right:${c%4===3&&c<15?'2px solid #333':'.5px solid #ccc'};border-bottom:${r%4===3&&r<15?'2px solid #333':'.5px solid #ccc'}">${v||''}</div>`;}).join('')}</div>
+   ${this.done?`<div class="g2b"><button class="btn" onclick="CUR.go('극악')">새 문제</button><button class="btn b2" onclick="CUR.lv=null;rr()">난이도</button></div>`
+   :`<div class="np" style="display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:4px">${Array.from({length:16},(_,k)=>k+1).map(n=>`<button style="min-width:0;width:100%" onclick="CUR.num(${n})">${n}</button>`).join('')}<button style="min-width:0;width:100%" onclick="CUR.num(0)">⌫</button></div>`}`;},
+ go(lv){if(lv==='극악')return this.go16();this.N=9;const sol=Array(81).fill(0);sdFill(sol);const puz=sol.slice();const target={'쉬움':40,'보통':32,'어려움':26,'극악':22}[lv];const T0=Date.now(),SV=lv==='극악'?sdSolveF:sdSolve;let clues=81;
   for(const i of shuf([...Array(81).keys()])){if(clues<=target)break;if(lv==='극악'&&Date.now()-T0>2500)break;const v=puz[i];puz[i]=0;if(SV(puz.slice(),0)!==1)puz[i]=v;else clues--;}
   Object.assign(this,{lv,sol,fix:puz.map(v=>v>0),g:puz,sel:-1,t0:Date.now(),done:false,miss:0});clock(()=>this.done?null:secs(this.t0));rr();},
  sl(i){if(this.done||this.fix[i])return;this.sel=i;rr();},
  num(v){if(this.done||this.sel<0)return;this.g[this.sel]=v;if(v&&v!==this.sol[this.sel])this.miss++;if(this.g.every((x,i)=>x===this.sol[i])){this.done=true;this.time=secs(this.t0);record('sudoku',this.time,this.lv);}rr();},
- view(){if(!this.lv)return lvPick('CUR.go','<button class="btn" onclick="CUR.go(\'극악\')">극악</button>');const sel=this.sel,sr=sel>=0?Math.floor(sel/9):-1,sc=sel>=0?sel%9:-1,sv=sel>=0?this.g[sel]:0;
+ view(){if(this.N===16&&this.lv)return this.view16();if(!this.lv)return lvPick('CUR.go','<button class="btn" onclick="CUR.go(\'극악\')">극악</button>');const sel=this.sel,sr=sel>=0?Math.floor(sel/9):-1,sc=sel>=0?sel%9:-1,sv=sel>=0?this.g[sel]:0;
   return `<div class="gst"><span>${this.lv} · 실수 ${this.miss}</span><span>⏱ <b id="clk">${fmtScore('memory',this.done?this.time:secs(this.t0))}</b></span></div>${this.done?`<div class="gok">🎉 완성! ${fmtScore('memory',this.time)}</div>`:''}
    <div style="display:grid;grid-template-columns:repeat(9,minmax(0,1fr));border:2px solid #333;background:#fff">${this.g.map((v,i)=>{const r=Math.floor(i/9),c=i%9;
     const bg=i===sel?'#bcd3f2':(v&&v===sv?'#d9e6f7':((r===sr||c===sc)?'#eef3fa':'#fff'));const col=this.fix[i]?'#222':(v&&v!==this.sol[i]?'#d33':'var(--blue)');
