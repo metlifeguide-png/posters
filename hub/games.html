@@ -895,13 +895,14 @@ function nerdOk(s){if(s.length!==8||(s.match(/=/g)||[]).length!==1)return false;
    :`<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-top:8px">${keys.map(k=>`<button onclick="CUR.key('${k}')" style="padding:12px 0;font-size:18px;font-weight:800;border-radius:9px;border:1.5px solid var(--line);background:${kbg(k)};color:${this.kc[k]?'#fff':'var(--ink)'};${k==='↵'?'grid-column:span 2':''}">${k==='↵'?'제출':k}</button>`).join('')}</div>
     <div class="m" style="text-align:center;margin-top:6px">초록 = 자리까지 맞음 · 노랑 = 있지만 자리 다름 · 곱셈·나눗셈 먼저 계산</div>`}`;}});
 // 1 to 50
-G.push({k:'speed50',cat:'대전·도구',e:'🔟',n:'1 to 50',d:'1부터 50까지 빠르게 · 0.01초',
- start(){this.g=shuf([...Array(25).keys()].map(x=>x+1));this.nx=shuf([...Array(25).keys()].map(x=>x+26));this.n=1;this.t0=0;this.done=false;rr();},
- tap(i){if(this.done)return;const v=this.g[i];if(v!==this.n){toast('✋',300);return;}if(this.n===1)this.t0=performance.now();this.g[i]=this.nx.length?this.nx.pop():0;this.n++;
-  if(this.n>50){this.done=true;this.ms=Math.round(performance.now()-this.t0);record('speed50',this.ms);}rr();if(!this.done&&!this.iv){this.iv=setInterval(()=>{const e=$('s50');if(!e||this.done||!this.t0){clearInterval(this.iv);this.iv=null;return;}e.textContent=((performance.now()-this.t0)/1000).toFixed(2)+'초';},50);}},
+G.push({k:'speed50',cat:'대전·도구',e:'🔟',n:'1 to 50',d:'1부터 50까지 빠르게 · 틀리면 +1초',
+ start(){this.g=shuf([...Array(25).keys()].map(x=>x+1));this.nx=shuf([...Array(25).keys()].map(x=>x+26));this.n=1;this.t0=0;this.done=false;this.miss=0;rr();},
+ // 틀린 숫자를 누르면 1회당 +1초 감점 (시작 전 탭은 감점 없음)
+ tap(i){if(this.done)return;const v=this.g[i];if(v!==this.n){if(this.t0){this.miss++;toast('❌ 틀렸어요! +1초 감점 ('+this.miss+'번)',700);try{navigator.vibrate&&navigator.vibrate(40);}catch(e){}const m=$('s50m');if(m)m.textContent=this.miss?'감점 +'+this.miss+'초':'';}else toast('✋',300);return;}if(this.n===1)this.t0=performance.now();this.g[i]=this.nx.length?this.nx.pop():0;this.n++;
+  if(this.n>50){this.done=true;this.raw=Math.round(performance.now()-this.t0);this.ms=this.raw+this.miss*1000;record('speed50',this.ms);}rr();if(!this.done&&!this.iv){this.iv=setInterval(()=>{const e=$('s50');if(!e||this.done||!this.t0){clearInterval(this.iv);this.iv=null;return;}e.textContent=((performance.now()-this.t0+this.miss*1000)/1000).toFixed(2)+'초';},50);}},
  stop(){clearInterval(this.iv);this.iv=null;},
- view(){return `<div class="gst"><span>다음 <b>${this.done?'-':this.n}</b></span><span>⏱ <b id="s50">${this.done?(this.ms/1000).toFixed(2)+'초':'0.00초'}</b></span></div>
-  ${this.done?`<div class="gok">🎉 ${(this.ms/1000).toFixed(2)}초 · 내 최고 ${((myBest('speed50')||this.ms)/1000).toFixed(2)}초</div><button class="btn full" style="margin-bottom:10px" onclick="CUR.start()">다시 하기</button>`:''}
+ view(){return `<div class="gst"><span>다음 <b>${this.done?'-':this.n}</b> <span id="s50m" style="color:var(--red);font-weight:800">${this.miss?'감점 +'+this.miss+'초':''}</span></span><span>⏱ <b id="s50">${this.done?(this.ms/1000).toFixed(2)+'초':'0.00초'}</b></span></div>
+  ${this.done?`<div class="gok">🎉 ${(this.ms/1000).toFixed(2)}초${this.miss?` <span class="m">(기록 ${(this.raw/1000).toFixed(2)}초 + 감점 ${this.miss}초)</span>`:''} · 내 최고 ${((myBest('speed50')||this.ms)/1000).toFixed(2)}초</div><button class="btn full" style="margin-bottom:10px" onclick="CUR.start()">다시 하기</button>`:''}
   <div class="board" style="grid-template-columns:repeat(5,1fr);max-width:340px">${this.g.map((v,i)=>`<div onpointerdown="CUR.tap(${i})" style="aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;user-select:none;background:${v?(v>25?'#2f80ed':'#fff'):'transparent'};color:${v>25?'#fff':'var(--ink)'};border:${v?'1.5px solid var(--line)':'none'}">${v||''}</div>`).join('')}</div>`;}});
 // ===== ♟️ 체스 =====
 const AI_DELAY=1000;   // 내가 둔 뒤 AI가 두기까지 텀(ms)
