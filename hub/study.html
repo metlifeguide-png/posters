@@ -156,6 +156,7 @@ function lvPick(fn,extra){return `<div class="gq">난이도</div><div style="dis
 function overHtml(big,sub,again){return `<div class="gbig">${big}</div><div class="card m" style="text-align:center">${sub}</div><button class="btn full" onclick="${again||'CUR.start()'}">다시 하기</button>`;}
 function timer(sec,onEnd){const t0=Date.now();const iv=setInterval(()=>{const left=Math.max(0,sec-(Date.now()-t0)/1000);const e=$('tleft');if(e)e.textContent=Math.ceil(left)+'초';if(left<=0){clearInterval(iv);onEnd();}},200);return ()=>clearInterval(iv);}
 const G=[];
+function clock(get){clearInterval(clock.iv);clock.iv=setInterval(()=>{const e=$('clk');if(!e){clearInterval(clock.iv);return;}const v=get();if(v!=null)e.textContent=fmtScore('memory',v);},1000);}
 // ===== 🃏 홀덤 =====
 // 1) 오늘의 챌린지
 // 푸시/폴드 트레이너 (9인 · 빅앤티: BB가 1BB 앤티 · 칩 기준 내시)
