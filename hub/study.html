@@ -1038,6 +1038,96 @@ G.push({k:'huview',cat:'홀덤',e:'📊',n:'헤즈업 레인지 뷰어',d:'프�
    <button class="btn ${this.showList?'':'b2'}" style="padding:4px 8px;font-size:12.5px;line-height:1.25;margin-top:12px" onclick="CUR.showList=!CUR.showList;rr()">플랍풀이<br>스택별</button></div>
    <div class="m" style="font-size:12px;margin:2px 2px 6px">● = 플랍 솔버풀이가 있는 스택</div>`
   +(this.showList?this.listView():'')+this.pfView();}});
+;(function(){
+// ===== 📐 팟 지오메트리 (SPR · 베팅 사이즈 · 올인 라인) =====
+// Lv.1 3스트리트 몇 %? / Lv.2 올인 라인 판단 / Lv.3 2스트리트 몇 %? / Lv.4 3벳 팟 SPR
+// 점수·랭킹 없음(record 안 보냄). studyLog('geom', 유형태그, 레벨, 정오, ms, 파라미터) 로 기록 → 오답노트 가능
+const FR=[.25,1/3,.5,2/3,.75,1],FP=[25,33,50,67,75,100],LB=['1/4팟','1/3팟','1/2팟','2/3팟','3/4팟','1배(팟)'],ST=['플랍','턴','리버'];
+const LV=[{id:1,n:'3스트리트 몇 %?',d:'SPR → 매 스트리트 베팅 %',tag:'pg_size3'},
+ {id:2,n:'올인 라인 판단',d:'이 베팅 라인이면 스택이 다 들어갈까?',tag:'pg_allin'},
+ {id:3,n:'2스트리트 몇 %?',d:'플랍·턴 두 번에 올인',tag:'pg_size2'},
+ {id:4,n:'3벳 팟 SPR',d:'오픈·3벳 사이즈 → 플랍 SPR',tag:'pg_3bet'}];
+const N=n=>Math.round(+n).toLocaleString();
+// 필요 SPR: 매 스트리트 팟의 f 를 베팅하고 콜될 때 s스트리트 만에 스택이 다 들어가는 SPR
+const nd=(f,s)=>{let t=0,pot=1;for(let i=0;i<s;i++){t+=f*pot;pot+=2*f*pot;}return t;};
+function sim(P,fl){let pot=P,cum=0;return fl.map((fi,i)=>{const b=FR[fi]*pot;cum+=b;const r={st:ST[i],pot,b,cum,fi};pot+=2*b;return r;});}
+const rows=(P,fl)=>sim(P,fl).map(x=>`${x.st}: 팟 ${N(x.pot)} → ${LB[x.fi]} 베팅 ${N(x.b)} (누적 ${N(x.cum)})`).join('<br>');
+function optsPct(a,mis){const o=[a],why={};
+ (mis||[]).forEach(([v,w])=>{if(v!==a&&!o.includes(v)&&o.length<4){o.push(v);why[v]=w;}});
+ const idx=FP.indexOf(a);FP.map((v,i)=>[Math.abs(i-idx),v]).sort((x,y)=>x[0]-y[0]).forEach(x=>{if(o.length<4&&!o.includes(x[1]))o.push(x[1]);});
+ return {opts:o.sort((x,y)=>x-y),why};}
+function optsNum(a,mis){const o=[a],why={};
+ (mis||[]).forEach(([v,w])=>{v=+(+v).toFixed(1);if(v>0&&Math.abs(v-a)>=0.15&&!o.some(x=>Math.abs(x-v)<0.15)&&o.length<4){o.push(v);why[v]=w;}});
+ [-.8,.8,-1.4,1.4,-2.2,2.2,3,-3].forEach(d=>{const v=+(a+d).toFixed(1);if(o.length<4&&v>0&&!o.some(x=>Math.abs(x-v)<0.15))o.push(v);});
+ return {opts:o.sort((x,y)=>x-y),why};}
+const LN=[[2,2,2],[1,2,4],[4,4,4],[2,4,5],[0,0,0],[3,3,3],[2,2],[4,4],[5,5],[2,4],[1,2],[3,3]];
+function mk(lv,p){p=Object.assign({},p||{});p.lv=lv;let q;
+ if(lv===1||lv===3){const s=lv===1?3:2;const P=p.P||(1+R(6))*300,fi=p.fi!=null?p.fi:R(6),S=p.S||Math.round(nd(FR[fi],s)*P/50)*50;p.P=P;p.fi=fi;p.S=S;
+  const spr=S/P,a=FP[fi],f=FR[fi],g=1+2*f,need=nd(f,s),nv=FP.reduce((b,v)=>Math.abs(v-spr/s*100)<Math.abs(b-spr/s*100)?v:b);
+  const r=optsPct(a,[[nv,'스택을 '+s+'으로 나누기만 했어요 — 베팅할수록 팟이 커지는 걸 놓쳤어요']]);
+  const fl=Array(s).fill(fi),sum=sim(P,fl)[s-1].cum;
+  const calc=s===3?`${LB[fi]} 기준: f × (1 + (1+2f) + (1+2f)²) = ${f.toFixed(2)} × (1 + ${g.toFixed(2)} + ${(g*g).toFixed(2)}) ≈ ${need.toFixed(1)}`:`${LB[fi]} 기준: f × (1 + (1+2f)) = ${f.toFixed(2)} × (1 + ${g.toFixed(2)}) ≈ ${need.toFixed(1)}`;
+  q={a,...r,kind:'pct',fmt:v=>v+'%',
+   show:`플랍 팟 <b>${N(P)}</b> · 유효 스택 <b>${N(S)}</b> (SPR <b>${spr.toFixed(1)}</b>)<br>플랍${s===3?'·턴·리버':'·턴'} 매번 같은 % 베팅이 콜된다면,<br>스택이 정확히 다 들어가려면 팟의 몇 %씩 베팅?`,
+   sum:`팟 ${N(P)} · 스택 ${N(S)} · ${s}스트리트`,
+   expl:`베팅이 콜되면 팟이 (1+2f)배씩 커져요.<br>${rows(P,fl)}<br>합계 ≈ ${N(sum)} ≈ 스택 ${N(S)} → <b>${LB[fi]} (${a}%)</b><br><span class="m">${calc} = SPR ${spr.toFixed(1)}</span>`,
+   rule:`가정: 상대는 매번 콜 · 매 스트리트 같은 팟 비율 · ${s===3?'리버':'턴'} 베팅으로 스택이 다 들어감`};}
+ else if(lv===2){let P=p.P,S=p.S,l=p.l;
+  if(!l){l=pick(LN);P=(1+R(6))*300;let ok=false;for(let n=0;n<60&&!ok;n++){const spr=pick([1.5,2,3,4,5,6,8,10]);S=Math.round(spr*P/50)*50;const c=sim(P,l)[l.length-1].cum;ok=Math.abs(c-S)>=0.35*P;}
+   if(!(Math.abs(sim(P,l)[l.length-1].cum-S)>=0.35*P))S=Math.round((sim(P,l)[l.length-1].cum/P+.8)*P/50)*50;}
+  p.P=P;p.S=S;p.l=l;
+  const sm=sim(P,l),cum=sm[sm.length-1].cum,a=cum>=S?1:0,spr=S/P,line=l.map((fi,i)=>`${ST[i]} ${LB[fi]}`).join(' → ');
+  const first=sm.findIndex(x=>x.cum>=S);const why={};why[1-a]=a?'팟이 매 스트리트 커져서 마지막 베팅이 훨씬 커요 — 단순히 더하면 모자라 보여요':'베팅 금액을 실제로 더해 보세요 — 합이 스택에 못 미쳐요';
+  q={a,opts:[0,1],why,kind:'yn',fmt:v=>v?'네':'아니요',
+   show:`플랍 팟 <b>${N(P)}</b> · 유효 스택 <b>${N(S)}</b> (SPR <b>${spr.toFixed(1)}</b>)<br>라인: <b>${line}</b><br>모두 콜되면 스택이 전부 들어갈까?`,
+   sum:`SPR ${spr.toFixed(1)} · ${line}`,
+   expl:`${rows(P,l)}<br>총 투입 ${N(cum)} vs 스택 ${N(S)} → ${a?`<b>네</b> — ${sm[first].st} 베팅에서 스택이 바닥나요 (올인)`:`<b>아니요</b> — 라인이 끝나도 스택이 ${N(S-cum)} 남아요`}<br><span class="m">이 라인의 필요 SPR ≈ ${(cum/P).toFixed(1)} · 내 SPR ${spr.toFixed(1)}</span>`,
+   rule:'가정: 상대는 매번 콜 · 스택이 모자라면 그 베팅이 올인'};}
+ else{const o=p.o||pick([2,2.5,3]),y=p.y||Math.round(o*pick([3,3.5,4])*2)/2;p.o=o;p.y=y;
+  const pot=2*y+1.5,eff=100-y,a=+(eff/pot).toFixed(1),spr=eff/pot;
+  const r=optsNum(a,[[eff/(2*y),'블라인드(SB 0.5 + BB 1)가 판에 남긴 1.5BB를 빼먹었어요'],[100/pot,'스택에서 3벳으로 낸 금액을 안 뺐어요 (남은 스택 = 100 − 3벳)'],[eff/(y+o+1.5),'오픈한 사람이 3벳을 콜한 금액을 팟에 안 더했어요']]);
+  const t=FR.map(f=>nd(f,3));let hint;
+  if(spr<t[0])hint='3스트리트 1/4팟 라인(필요 1.2)보다도 낮아요 — 한두 번 베팅으로 올인이 되는 팟이에요';
+  else if(spr>=t[5])hint='팟 베팅 3스트리트(필요 13)보다 깊어요';
+  else{let i=0;while(i<4&&spr>=t[i+1])i++;hint=`3스트리트 기준 ${LB[i]}(필요 ${t[i].toFixed(1)})과 ${LB[i+1]}(필요 ${t[i+1].toFixed(1)}) 사이예요 — 그 정도 크기로 베팅이 이어지면 스택이 들어가요`;}
+  q={a,...r,kind:'num',fmt:v=>(+v).toFixed(1),
+   show:`100BB 스택 · 오픈 <b>${o}BB</b> → 3벳 <b>${y}BB</b> → 오픈한 사람 콜<br>블라인드(SB 0.5 + BB 1)는 폴드 · 앤티 없음<br>플랍 SPR은?`,
+   sum:`오픈 ${o} → 3벳 ${y}`,
+   expl:`플랍 팟 = ${y} + ${y} + 1.5 = <b>${pot}BB</b><br>남은 스택 = 100 − ${y} = <b>${eff}BB</b><br>SPR = ${eff} ÷ ${pot} = <b>${a.toFixed(1)}</b><br><span class="m">${hint}</span>`,
+   rule:'가정: 양쪽 100BB · 블라인드 2명은 폴드 · 3벳을 오프너가 콜'};}
+ const L=LV[lv-1];q.lv=lv;q.p=p;q.tag=L.tag;return q;}
+G.push({k:'geom',cat:'홀덤',e:'📐',n:'팟 지오메트리',d:'SPR · 베팅 사이즈 · 올인 라인 레벨 1~4',
+ start(){this.lv=null;this.fb=null;this.over=false;rr();},
+ stop(){},
+ go(lv){let n=10,queue=null;
+  if(lv==='W'){const wn=lsGet('wn_geom',[]);queue=[];for(const x of shuf(wn)){try{const p=JSON.parse(x.k);if(p&&p.lv>=1&&p.lv<=4)queue.push(p);}catch(e){}if(queue.length>=10)break;}
+   if(!queue.length){toast('오답노트가 비어 있어요');return;}n=queue.length;}
+  Object.assign(this,{lv,N:n,queue,i:0,ok:0,tsum:0,over:false,fb:null,log:[]});this.nq();rr();},
+ nq(){const qp=this.queue&&this.queue[this.i];this.q=qp?mk(qp.lv,qp):mk(this.lv);this.t0=Date.now();},
+ ans(o){if(this.over||this.fb)return;const q=this.q,t=(Date.now()-this.t0)/1000,ok=o===q.a;
+  this.i++;this.tsum+=t;if(ok)this.ok++;const L={q,o,ok,t};this.log.push(L);this.fb=L;
+  studyLog('geom',q.tag,q.lv,ok,Math.round(t*1000),q.p);
+  if(this.i>=this.N)this.over=true;rr();},
+ next(){this.fb=null;this.nq();rr();},
+ fx(L){const q=L.q;return q.expl+(!L.ok&&q.why[L.o]!=null?`<br><span style="color:var(--red)">내 선택 ${q.fmt(L.o)} → ${q.why[L.o]}</span>`:'');},
+ menu(){const st=lsGet('st_geom',{}),wn=lsGet('wn_geom',[]).length;
+  return `<div class="card"><div class="t">📐 팟 지오메트리</div><div class="m" style="margin-top:4px;line-height:1.6">스택이 몇 번의 베팅에 다 들어가는지(SPR)를 계산으로 익혀요. 한 판 10문제 · 정답 확인 후 바로 다음 문제 · 점수·랭킹 없이 정답률 중심이에요.</div></div>
+  <div style="display:grid;gap:8px">${LV.map(l=>{const s=st[l.tag],pc=s&&s[1]?Math.round(s[0]/s[1]*100)+'% ('+s[0]+'/'+s[1]+')':'아직 안 풀었어요';
+   return `<button class="btn ${l.id===1?'':'b2'}" style="text-align:left;padding:12px 14px" onclick="CUR.go(${l.id})"><b>Lv.${l.id} ${l.n}</b> · ${l.d}<br><span style="font-size:12.5px;opacity:.9">정답률 ${pc}</span></button>`;}).join('')}</div>
+  ${wn?`<button class="btn full g" style="margin-top:10px" onclick="CUR.go('W')">📒 오답노트 풀기 (${wn}개)</button><div class="m" style="text-align:center;margin-top:4px">틀린 문제를 다시 풀어요 · 맞히면 목록에서 빠져요</div>`:''}`;},
+ view(){if(!this.lv)return this.menu();const q=this.q,W=this.lv==='W';
+  const hd=`<div class="gst"><span>${W?'📒 오답노트':'Lv.'+this.lv} · ${Math.min(this.i+(this.fb||this.over?0:1),this.N)} / ${this.N} · 정답 <b>${this.ok}</b></span><span><a onclick="CUR.start()" style="color:var(--blue);cursor:pointer">레벨 선택</a></span></div>`;
+  const rule=`<div class="m" style="text-align:center;margin-top:8px">${W?'오답노트 복습 · 맞히면 목록에서 빠져요':q.rule}</div>`;
+  const fbCard=L=>`<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:16px">${L.ok?'✅ 정답':'❌ 오답 · 정답 '+L.q.fmt(L.q.a)} · ${L.t.toFixed(1)}초</div><div style="font-size:14.5px;line-height:1.75;margin-top:6px">${this.fx(L)}</div></div>`;
+  if(this.over){const L=this.fb;
+   return hd+(L?fbCard(L):'')+`<div class="gbig">${this.ok}/${this.N}</div><div class="card" style="text-align:center;font-size:15px;line-height:1.8">총 ${this.tsum.toFixed(1)}초 · 평균 ${(this.tsum/this.N).toFixed(1)}초<br><span class="m">${W?`맞힌 문제는 오답노트에서 빠졌어요 · 남은 오답 ${lsGet('wn_geom',[]).length}개`:`Lv.${this.lv} 누적 정답률 ${(()=>{const s=lsGet('st_geom',{})[q.tag];return s&&s[1]?Math.round(s[0]/s[1]*100)+'% ('+s[0]+'/'+s[1]+')':'-';})()} · 랭킹 없음`}</span></div>`
+    +`<div class="card"><div class="t">문제별 기록</div>${this.log.map((x,k)=>`<div class="row"><span>${k+1}. ${x.q.sum} → ${x.q.fmt(x.q.a)}</span><span class="m">${x.ok?'✅':'❌ '+x.q.fmt(x.o)} ${x.t.toFixed(1)}초</span></div>`).join('')}</div>
+    <button class="btn full" onclick="CUR.go(${W?"'W'":this.lv})">${W?'남은 오답 다시 풀기':'다시 하기'}</button><button class="btn full gr" style="margin-top:8px" onclick="CUR.start()">레벨 선택</button>`+rule;}
+  if(this.fb)return hd+fbCard(this.fb)+`<button class="btn full g" style="font-size:17px;padding:13px" onclick="CUR.next()">다음 문제 (${this.i+1}/${this.N})</button>`+rule;
+  const btns=q.kind==='yn'?`<div class="g2b"><button class="btn gr" style="font-size:19px;padding:15px" onclick="CUR.ans(0)">아니요</button><button class="btn" style="font-size:19px;padding:15px" onclick="CUR.ans(1)">네</button></div>`
+   :`<div class="g4b">${q.opts.map(o=>`<button class="btn" onclick="CUR.ans(${o})">${q.fmt(o)}</button>`).join('')}</div>`;
+  return hd+`<div class="card" style="text-align:center;font-size:17px;line-height:1.8">${q.show}</div>`+btns+rule;}});
+})();
 // ===== 목록 · 랭킹 · 오늘의 문제 · 화면 전환 =====
 G.forEach(g=>g.nm=g.n);   // 게임 안에서 this.n 을 숫자로 쓰는 경우가 있어 이름은 따로 보관
 const CATS=['전체','홀덤','카드','퍼즐','대전·도구'];let CATSEL=lsGet('gcat','전체');
