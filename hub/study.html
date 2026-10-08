@@ -283,7 +283,8 @@ function studyLog(game,tag,lv,ok,ms,p){
 // 서버 전송: 닉네임이 있을 때만. 실패하면 대기열(study_q)에 남겨 두고 다음에 다시 보냄. 서버는 같은 기록을 한 번만 저장
 let STUDY_SENDING=false;
 function studyFlush(){
-  if(STUDY_SENDING||!MEM.tok)return;   // 👤 로그인한 회원만 서버에 쌓임 (안 하면 이 기기에만)const q=lsGet('study_q',[]);if(!q.length)return;
+  if(STUDY_SENDING||!MEM.tok)return;   // 👤 로그인한 회원만 서버에 쌓임 (안 하면 이 기기에만)
+  const q=lsGet('study_q',[]);if(!q.length)return;
   const part=q.slice(0,50);STUDY_SENDING=true;
   fetch(API+'/api/study/log',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({token:MEM.tok,nick:NICK,items:part})})
    .then(r=>r.json()).then(r=>{STUDY_SENDING=false;if(r&&r.need_login){memSave(null);return;}if(r&&r.ok){const sent=new Set(part.map(x=>x.game+x.t));lsSet('study_q',lsGet('study_q',[]).filter(x=>!sent.has(x.game+x.t)));if(lsGet('study_q',[]).length)setTimeout(studyFlush,300);}})
@@ -1057,7 +1058,7 @@ G.push({k:'huview',cat:'홀덤',e:'📊',n:'헤즈업 레인지 뷰어',d:'프�
  randBoard(){this.userB='';this.bin='';this.loadBoard('',this.spot);},
  flBody(key,t){const sps=this.spots[key]||{},potBB=(sps.pot||0)/10,stBB=(sps.stack||0)/10;
   const hdr=`<div style="margin:12px 2px 4px;font-size:16px;font-weight:900;color:var(--blue)">▼ 플랍 · ${HV_TN[t]} · ${this.S}BB</div><div class="m" style="font-size:13px;margin-bottom:6px">${esc(((sps.name||'').match(/\(([^)]*)\)/)||[])[1]||'')}${potBB?` 팟 ${+potBB.toFixed(1)}BB · 남은 스택 ${+stBB.toFixed(1)}BB (SPR ${(stBB/potBB).toFixed(1)})`:''}</div>`;
-  const inp=`<div style="display:flex;gap:6px;margin:6px 0"><input id="hvb" placeholder="플랍 입력 예: AsKd7c" value="${esc(this.bin||'')}" oninput="CUR.bin=this.value" style="flex:1;font-size:16px;padding:8px;border-radius:8px;border:1px solid #ccc"><button class="btn" style="padding:8px 12px" onclick="CUR.boardIn()">보기</button><button class="btn b2" style="padding:8px 12px" onclick="CUR.randBoard()">랜덤</button></div>`;
+  const inp=`<div style="display:flex;gap:6px;margin:6px 0"><input id="hvb" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="플랍 입력 예: AsKd7c" value="${esc(this.bin||'')}" oninput="CUR.bin=this.value" style="flex:1;font-size:16px;padding:8px;border-radius:8px;border:1px solid #ccc"><button class="btn" style="padding:8px 12px" onclick="CUR.boardIn()">보기</button><button class="btn b2" style="padding:8px 12px" onclick="CUR.randBoard()">랜덤</button></div>`;
   const F=this.fl;if(this.loading||!F||F.spot!==key)return hdr+inp+`<div class="card m">${this.failed===key?'플랍 데이터를 불러오지 못했어요':'플랍 불러오는 중…'}</div>`;
   const nd=F.flop[this.fpath];const rep=svCards(F.rep);const IN=this.inC;
   const same=!IN||[...IN.map(c=>c.r)].sort().join()===[...rep.map(c=>c.r)].sort().join()&&new Set(IN.map(c=>c.s)).size===new Set(rep.map(c=>c.s)).size;
