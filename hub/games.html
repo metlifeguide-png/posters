@@ -601,12 +601,12 @@ const WBANK={
  '홀덤':TERMS.map(x=>x)};
 const WTHEMES=Object.keys(WBANK);
 
-G.push({k:'chosung',cat:'퍼즐',e:'🔤',n:'초성퀴즈',d:'음식·만화·드라마·홀덤… 테마별 · 극악 45초',
- start(){this.th=null;this.over=false;rr();},
- pickTh(t){this.th=t;this.L=shuf(WBANK[t]);this.i=0;this.sc=0;this.ps=0;this.wr=0;this.over=false;if(this.stopT)this.stopT();this.stopT=timer(45,()=>{this.over=true;record('chosung',this.sc);rr();});rr();setTimeout(()=>{const e=$('cin');if(e)e.focus();},50);},
+G.push({k:'chosung',cat:'퍼즐',e:'🔤',n:'초성퀴즈',d:'음식·만화·드라마·홀덤… 랜덤 출제 · 극악 45초',
+ start(){this.begin();},
+ begin(){this.th='랜덤';this.L=shuf([].concat(...WTHEMES.map(t=>WBANK[t])));this.i=0;this.sc=0;this.ps=0;this.wr=0;this.over=false;if(this.stopT)this.stopT();this.stopT=timer(45,()=>{this.over=true;record('chosung',this.sc);rr();});rr();setTimeout(()=>{const e=$('cin');if(e)e.focus();},50);},
  stop(){if(this.stopT)this.stopT();},
- view(){if(!this.th)return `<div class="gq">테마를 골라요</div><div class="grid">${WTHEMES.map(t=>`<button class="btn ${t==='홀덤'?'b2':''}" style="font-size:14px;padding:12px 4px" onclick="CUR.pickTh('${t}')">${t}</button>`).join('')}</div>`;
-  if(this.over)return overHtml(this.sc+'개',this.th+' · 극악 45초 · 맞힌 개수 · 내 최고 '+(myBest('chosung')||this.sc)+'개',"CUR.pickTh('"+this.th+"')")+`<button class="btn full gr" style="margin-top:8px" onclick="CUR.start()">테마 바꾸기</button>`;const [w,hint]=this.L[this.i%this.L.length];
+ view(){if(!this.th)return '';
+  if(this.over)return overHtml(this.sc+'개','랜덤 출제 · 극악 45초 · 맞힌 개수 · 내 최고 '+(myBest('chosung')||this.sc)+'개',"CUR.begin()");const [w,hint]=this.L[this.i%this.L.length];
   return `<div class="gst"><span>⏱ <b id="tleft">45초</b></span><span>맞힘 <b>${this.sc}</b> · ❌ ${this.wr}/3</span></div><div class="gbig" style="letter-spacing:6px">${cho(w)}</div><div class="gq">🔥 극악 · 힌트 없음</div>
    <input class="q" id="cin" autocomplete="off" placeholder="정답 입력 후 엔터" onkeydown="if(event.key==='Enter')CUR.ans(this.value)">
    <div class="g2b"><button class="btn" onclick="CUR.ans($('cin').value)">확인</button><button class="btn gr" ${this.ps>=2?'disabled':''} onclick="CUR.pass()">패스 (${2-this.ps})</button></div>`;},
@@ -704,6 +704,113 @@ function omForbid(b,p,depth){depth=depth||0;if(b[p])return '';b[p]=1;
 // p에 놓인 돌로 승리했는가 (흑은 정확히 5목, 백은 5목 이상)
 function omWin(b,p){const c=b[p],x0=p%ON,y0=(p/ON)|0;return OM_D.some(([dx,dy])=>{const n=omRunLen(b,x0,y0,dx,dy);return c===1?n===5:n>=5;});}
 function omScore(b,p,c){let s=0;for(const[dx,dy]of OM_D){b[p]=c;const[n,o]=omLine(b,p,c,dx,dy);b[p]=0;s+=n>=5?1e6:n===4?(o===2?5e4:o===1?6e3:0):n===3?(o===2?3e3:o===1?300:0):n===2?(o===2?120:o===1?20:0):o;}return s;}
+// ===== 오목 극악 AI (위협 탐색 VCF + 알파베타 + 무작위 변화) =====
+// 백(AI) 전용. 보드 b: 0 빈칸 / 1 흑(사람) / 2 백(AI). 렌주 금수는 흑 쪽에만 적용됨.
+const OM_TO={};
+function omCands(b,r){const out=[],m=new Uint8Array(ON*ON);
+  for(let p=0;p<ON*ON;p++){if(!b[p])continue;const x=p%ON,y=(p/ON)|0;
+    for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){const X=x+dx,Y=y+dy;if(X<0||Y<0||X>=ON||Y>=ON)continue;const q=Y*ON+X;if(!b[q]&&!m[q]){m[q]=1;out.push(q);}}}
+  return out;}
+// c가 둘 때 바로 승리하는 칸 전부
+function omWinAll(b,c){const r=[];for(const p of omCands(b,1)){b[p]=c;if(omWin(b,p))r.push(p);b[p]=0;}return r;}
+// p에 c를 이미 둔 상태에서, p를 지나는 줄에서 새로 생긴 "다음 수 승리 칸"
+function omWinPts(b,p,c){const x0=p%ON,y0=(p/ON)|0,r=[];
+  for(const[dx,dy]of OM_D)for(let t=-4;t<=4;t++){if(!t)continue;const x=x0+dx*t,y=y0+dy*t;if(omAt(b,x,y)!==0)continue;const q=y*ON+x;if(r.includes(q))continue;
+    b[q]=c;const w=omWin(b,q);b[q]=0;if(w)r.push(q);}
+  return r;}
+// p에 c를 두면 5칸 창 안에 c 돌이 4개(상대 돌 없음)가 되는가 — VCF 후보 빠른 거름망
+function omFourish(b,p,c){const x0=p%ON,y0=(p/ON)|0;
+  for(const[dx,dy]of OM_D)for(let s=-4;s<=0;s++){let n=0,ok=true;
+    for(let k=0;k<5;k++){const t=s+k;if(t===0){n++;continue;}const v=omAt(b,x0+dx*t,y0+dy*t);if(v===c)n++;else if(v!==0){ok=false;break;}}
+    if(ok&&n===4)return true;}
+  return false;}
+// VCF: c가 4(=다음 수 5목)만 연달아 만들어 상대 응수를 강제하며 이기는 수순. 이기면 첫 수, 없으면 -1
+// 전제: 상대(3-c)에게 바로 이기는 칸이 없을 것. depth=c가 둘 수 있는 4의 횟수(수순 길이 약 2배)
+function omVCF(b,c,depth,ctx){
+  if(depth<=0)return -1;
+  if((++ctx.n&31)===0&&Date.now()>ctx.t)ctx.out=1;
+  if(ctx.out)return -1;
+  const d=3-c,cs=omCands(b,2);
+  for(const m of cs){
+    if(!omFourish(b,m,c))continue;
+    if(c===1&&omForbid(b,m))continue;
+    b[m]=c;let ok=false;
+    if(omWin(b,m))ok=true;
+    else{const w=omWinPts(b,m,c);
+      if(w.length>=2)ok=true;                                  // 막을 곳이 둘 → 승리
+      else if(w.length===1){const q=w[0];
+        if(d===1&&omForbid(b,q))ok=true;                       // 흑이 막을 자리가 금수 → 승리
+        else{b[q]=d;
+          if(!omWin(b,q)&&!omWinPts(b,q,d).length)ok=omVCF(b,c,depth-1,ctx)>=0;   // 상대가 막으며 역공하면 실패 처리
+          b[q]=0;}}}
+    b[m]=0;
+    if(ok)return m;
+    if(ctx.out)return -1;}
+  return -1;}
+// 기존 극악(ai4)의 알파베타 탐색을 그대로 가져와 최대 깊이·시간을 늘리고, 최선과 비슷한 수 중 무작위로 고르게 한 것
+// 백 한 수. opt={ms:탐색 시간, maxD:최대 깊이, margin:이 점수 차 이내면 같은 급으로 보고 무작위, rnd:이 돌 수 이하일 때만 무작위}
+function omAB(b,opt){const N=ON*ON,WIN=1e7,LIM=opt.ms,t0=Date.now();let up=false;
+  const near=()=>{const m=new Uint8Array(N);let any=0;for(let p=0;p<N;p++){if(!b[p])continue;any=1;const x=p%ON,y=(p/ON)|0;for(let dy=-2;dy<=2;dy++){const Y=y+dy;if(Y<0||Y>=ON)continue;for(let dx=-2;dx<=2;dx++){const X=x+dx;if(X>=0&&X<ON)m[Y*ON+X]=1;}}}return any?m:null;};
+  const expand=(d,c,W)=>{const m=near();if(!m)return{val:0};const o=3-c,sg=c===2?1:-1,L=[];
+    for(let p=0;p<N;p++){if(!m[p]||b[p])continue;const me=omScore(b,p,c),op=omScore(b,p,o);L.push([me+op*.9,p,me,op]);}
+    if(!L.length)return{val:0};
+    for(const t of L)if(t[2]>=1e6&&(c===2||!omForbid(b,t[1])))return{val:sg*(WIN+d)};
+    const fo=[];for(const t of L)if(t[3]>=1e6&&(o===2||!omForbid(b,t[1])))fo.push(t[1]);
+    if(fo.length>1||(fo.length===1&&c===1&&omForbid(b,fo[0])))return{val:-sg*(WIN+d-1)};
+    if(fo.length===1)return{cand:fo};
+    for(const t of L)if(t[2]>=5e4&&(c===2||!omForbid(b,t[1])))return{val:sg*(WIN/2+d)};
+    if(d<=0){let A=0,B=0;for(const t of L){const w=c===2?t[2]:t[3],k=c===1?t[2]:t[3];if(w>A)A=w;if(k>B)B=k;}return{val:c===2?A-B*.8:A*.8-B};}
+    L.sort((x,y)=>y[0]-x[0]);const cand=[];for(const t of L){if(cand.length>=W)break;if(c===1&&omForbid(b,t[1]))continue;cand.push(t[1]);}
+    return cand.length?{cand}:{val:0};};
+  const node=(d,c,al,be)=>{if(Date.now()-t0>LIM){up=true;return 0;}
+    const e=expand(d,c,d>=3?8:10);if(e.val!==undefined)return e.val;
+    const o=3-c;let best=c===2?-Infinity:Infinity;
+    for(const p of e.cand){b[p]=c;const v=node(d-1,o,al,be);b[p]=0;if(up)return 0;
+      if(c===2){if(v>best)best=v;if(best>al)al=best;}else{if(v<best)best=v;if(best<be)be=best;}
+      if(al>=be)break;}
+    return best;};
+  const m0=near();if(!m0)return 112;
+  const cells=[];for(let p=0;p<N;p++)if(m0[p]&&!b[p])cells.push(p);
+  if(!cells.length)return 112;
+  for(const p of cells)if(omScore(b,p,2)>=1e6)return p;
+  for(const p of cells)if(omScore(b,p,1)>=1e6&&!omForbid(b,p))return p;
+  for(const p of cells)if(omScore(b,p,2)>=5e4)return p;
+  let pick;const e1=expand(1,2,14);pick=e1.cand?e1.cand[0]:cells[0];
+  let stones=0;for(let p=0;p<N;p++)if(b[p])stones++;
+  let final=pick;
+  for(let D=2;D<=opt.maxD;D++){up=false;const e=expand(D,2,14);if(!e.cand)break;
+    const cand=e.cand.slice();const i=cand.indexOf(pick);if(i>0){cand.splice(i,1);cand.unshift(pick);}
+    let best=-Infinity,al=-Infinity,bp=null;const sc=[];
+    for(const p of cand){b[p]=2;const v=node(D-1,1,al,Infinity);b[p]=0;if(up)break;sc.push([v,p]);if(v>best){best=v;bp=p;}al=best-opt.margin;}
+    if(up)break;
+    if(bp!==null){pick=bp;final=bp;}
+    if(best>=WIN/2||best<=-WIN/2){final=bp;break;}                    // 승부가 걸린 수순은 최선만
+    if(stones<=opt.rnd){const pool=sc.filter(x=>x[0]>=best||x[0]>best-opt.margin).sort((x,y)=>y[0]-x[0]).slice(0,3);final=pool[(Math.random()*pool.length)|0][1];}}
+  return final;}
+// 백의 한 수 (극악)
+function omAI(b,opt){opt=Object.assign({ms:1100,maxD:8,margin:300,rnd:16,vcfD:7},opt||{});
+  let n=0,last=-1;for(let p=0;p<ON*ON;p++)if(b[p]){n++;last=p;}
+  if(!n)return 112;
+  if(n===1){const x=last%ON,y=(last/ON)|0,L=[];   // 첫 응수: 흑 돌 주변 8방향 중 무작위
+    for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++)if((dx||dy)&&omAt(b,x+dx,y+dy)===0)L.push((y+dy)*ON+x+dx);
+    if(L.length)return L[(Math.random()*L.length)|0];}
+  const mine=omWinAll(b,2);if(mine.length)return mine[0];          // 1. 내가 바로 이김
+  const opp=omWinAll(b,1);if(opp.length)return opp[0];             // 2. 상대 5목 차단
+  const vc={n:0,out:0,t:Date.now()+450};
+  const v=omVCF(b,2,opt.vcfD,vc);if(v>=0)return v;                  // 3. 내 VCF(10수 이상 앞 강제승)
+  vc.out=0;vc.n=0;vc.t=Date.now()+450;
+  const ov=omVCF(b,1,opt.vcfD-1,vc);                                // 4. 상대 VCF가 있으면 그걸 끊는 수
+  if(ov>=0){
+    const cand=new Set([ov]);
+    for(const p of omCands(b,2)){if(omWinPts(b,p,1).length||omFourish(b,p,1)||omFourish(b,p,2))cand.add(p);}
+    let bestP=-1,bestS=-Infinity;
+    for(const p of cand){if(b[p])continue;b[p]=2;let safe;
+      if(omWinPts(b,p,2).length)safe=true;                          // 내가 4를 만들며 막는 수는 일단 안전으로 침
+      else{const c2={n:0,out:0,t:Date.now()+250};safe=omVCF(b,1,opt.vcfD-1,c2)<0&&!c2.out;}
+      b[p]=0;
+      if(safe){const s=omScore(b,p,2)+omScore(b,p,1)*.9;if(s>bestS){bestS=s;bestP=p;}}}
+    if(bestP>=0)return bestP;}
+  return omAB(b,opt);}                                              // 5. 알파베타 탐색 (+초반 무작위)
 const vsPick=(fn,ex)=>lvPick(fn,(ex||"")+`<button class="btn g" onclick="${fn}('친구')">👥 친구와 (폰 하나로 둘이)</button>${typeof OLA!=='undefined'&&CUR&&OLA[CUR.k]?'<button class="btn" onclick="olOpen()">🌐 온라인 대전 (방 만들기 · 관전)</button>':''}`);
 G.push({k:'omok',cat:'대전·도구',e:'⚫',n:'오목',d:'렌주룰 · AI 대전 · 친구와 2인',
  start(){this.lv=null;rr();},
@@ -741,12 +848,12 @@ G.push({k:'omok',cat:'대전·도구',e:'⚫',n:'오목',d:'렌주룰 · AI 대�
    for(const p of cand){b[p]=2;const v=node(D-1,1,al,Infinity);b[p]=0;if(up)break;if(v>best){best=v;bp=p;}if(best>al)al=best;}
    if(up)break;if(bp!==null)pick=bp;if(best>=WIN/2||best<=-WIN/2)break;}
   return pick;},
- ai(){if(this.lv==='극악')return this.ai4();const b=this.b,c=[];for(let p=0;p<ON*ON;p++){if(b[p])continue;let near=false;const x=p%ON,y=Math.floor(p/ON);
+ ai(){if(this.lv==='극악')return omAI(this.b);const b=this.b,c=[];for(let p=0;p<ON*ON;p++){if(b[p])continue;let near=false;const x=p%ON,y=Math.floor(p/ON);
    for(let dy=-2;dy<=2&&!near;dy++)for(let dx=-2;dx<=2;dx++){const X=x+dx,Y=y+dy;if(X>=0&&Y>=0&&X<ON&&Y<ON&&b[Y*ON+X]){near=true;break;}}
    if(!near)continue;const w=this.lv==='쉬움'?[1,.6]:this.lv==='보통'?[1,.95]:[1.1,1];
    const bk=omForbid(b,p)?0:omScore(b,p,1);   // 흑이 둘 수 없는 금수 자리는 막을 필요 없음
    let s=omScore(b,p,2)*w[0]+bk*w[1];if(this.lv==='쉬움')s*=.5+Math.random();c.push([s,p]);}
-  c.sort((a,b)=>b[0]-a[0]);if(!c.length)return 112;if(this.lv==='쉬움'&&c.length>2&&Math.random()<.35)return c[1+R(2)][1];return c[0][1];},
+  c.sort((a,b)=>b[0]-a[0]);if(!c.length)return 112;if(this.lv==='쉬움'&&c.length>2&&Math.random()<.35)return c[1+R(2)][1];if(this.lv==='어려움'&&c[0][0]<4e4){const pool=c.filter(x=>x[0]>=c[0][0]*.94).slice(0,3);return pool[R(pool.length)][1];}return c[0][1];},
  // 지금 흑이 둘 차례일 때 금수 자리 {칸:이유}
  fmap(){const m={};if(this.over||this.busy||(this.lv==='친구'&&this.turn!==1))return m;const b=this.b;
   for(let p=0;p<ON*ON;p++){if(b[p])continue;const x=p%ON,y=(p/ON)|0;let near=false;
@@ -2129,7 +2236,7 @@ let RTAB=lsGet('rtab','week');
 function loadRank(cb){if(!API){cb&&cb();return;}loadCrowns(()=>{if(location.hash==='#rank')show(rankView());});fetch(API+'/api/game/rankdata',{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{if(r&&r.ok){['boards','tbest','xtop','lv','daily'].forEach(k=>{if(r[k]!=null)GD[k]=r[k];});if(r.d)GD.d=r.d;}cb&&cb();}).catch(()=>cb&&cb());}
 function rankView(){const tabs=[['week','🏆 주간'],['today','⏰ 오늘'],['level','⭐ 레벨'],['ach','🏅 업적'],['crown','👑 왕관']];
  let h=`<div class="tabs">${tabs.map(([k,n])=>`<button class="${RTAB===k?'on':''}" onclick="RTAB='${k}';lsSet('rtab',RTAB);show(rankView());if(RTAB==='ach'||RTAB==='level')loadMe(()=>show(rankView()));if(RTAB==='crown')loadCrowns(()=>show(rankView()))">${n}</button>`).join('')}</div>`;
- if(RTAB==='week'){const B=GD.boards||{};let any=false;h+='<div class="sec">이번 주 랭킹 (최근 7일)</div>';
+ if(RTAB==='week'){const B=GD.boards||{};let any=false;h+='<div class="sec">이번 주 랭킹 (최근 7일)</div><div class="m" style="font-size:12px;margin:-4px 0 8px">난이도가 있는 게임은 어려움 이상(슬라이딩 퍼즐은 6×6 이상) 기록만 순위에 반영돼요</div>';
   for(const g of RANKED){const c=GCFG[g.k];const keys=c[3]?(c[4]||['쉬움','보통','어려움']).slice().reverse().map(l=>[g.k+'_'+l,l]).filter(([k])=>B[k]):(B[g.k]?[[g.k,'']]:[]);
    for(const [key,lv] of keys){any=true;h+=`<div class="card"><div class="t">${g.e} ${g.nm}${lv?' · '+lv:''}</div>${B[key].map((x,i)=>`<div class="row"><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${lvIco(x[0])}${esc(x[0])}${lvTag(x[0])}</span><span class="m">${fmtScore(g.k,x[1])}</span></div>`).join('')}</div>`;}}
   if(!any)h+='<div class="card m">아직 이번 주 기록이 없어요. 첫 1위의 주인공이 되어보세요!</div>';}
