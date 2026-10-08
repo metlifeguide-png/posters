@@ -1393,6 +1393,9 @@ function coffeeBox(full){loadMissions();const all=MISSIONS||[];const on=all.filt
    :`<div style="margin-top:8px;font-size:15px;color:#777">새 이벤트를 기다리는 중 ⏳ <b>진행 중일 때만 내용이 있어요.</b></div>`)+`${soon.length?`<div style="margin-top:6px;font-size:14px">⏰ 곧 시작: ${soon.map(m=>`<b>${esc(m.title)}</b> (${+m.start_d.slice(5,7)}/${+m.start_d.slice(8,10)}부터)`).join(', ')}</div>`:''}`;}
  else body=full?missionBox(on):`<div style="margin-top:8px;font-size:15.5px;line-height:1.7">${on.map(m=>`<div ${m.game?`onclick="event.stopPropagation();location.hash='g=${m.game}'" style="cursor:pointer"`:''}>🎮 <b>${esc(m.gname||'')}${m.lv?' '+esc(m.lv):''}</b> · 🎁 <b style="color:#c62828">${esc(m.reward||'-')}</b><br><span class="m">${esc(m.title)}</span></div>`).join('')}</div><div style="margin-top:8px"><span class="btn" style="display:inline-block;padding:8px 16px;font-size:15px">${on.length===1&&on[0].game?'바로 도전하기 ›':'이벤트 보기 ›'}</span></div>`;
  return `<div class="card" style="${full?'':'cursor:pointer;'}padding:16px;border:${lit?'3px solid #f6c344;background:linear-gradient(135deg,#fff8e1,#ffecb3)':'2px dashed #ccc;background:#f7f7f7'}" ${full?'':`onclick="location.hash='${lit&&on.length===1&&on[0].game?'g='+on[0].game:'event'}'"`}>${head}${body}</div>`;}
+// 👤 로그인한 회원만 쓰는 게임(그 밖의 게임은 누구나, 기록만 회원) · 온라인 대전은 p9o.js olOpen에서 따로 막음
+const MEM_ONLY=['pet'];
+function memNeed(what){toast(`${what}은(는) 로그인 후 이용해 주세요`,2600);setTimeout(()=>memOpen('login'),300);}
 // 📣 광고 자리 (서버 ads.py · 관리자 '광고' 탭) · list=목록 맨 위 배너, end=게임 끝나면 아래서 올라오는 카드
 // 서버에 못 붙으면 ADS0(기본값)을 씀 · until 그날 0시부터 숨김 · go: menu=홈 메뉴(val=meet 등) / poster=포스터 크게 / url=외부 링크
 const ADS0=[{id:0,slot:'list',title:'🏝 내일(10/10 토) 뚝섬유원지 정모',sub:'참석 예약하고 누가 오는지 확인하기 →',go:'menu',val:'meet',until:'2026-10-11T00:00:00+09:00'}];
@@ -1504,7 +1507,8 @@ function render(){const hsh=location.hash.slice(1);if(CUR&&CUR.stop)CUR.stop();S
  const back=$('backBtn');
  if(hsh.startsWith('g=')){const key=hsh.slice(2).split('&')[0];const g=G.find(x=>x.k===key);
   if(window.DAILY&&DAILY.k!==key)dailyEnd();
-  if(g){gvisit((g.study?'':'게임·')+g.nm+(window.DAILY&&DAILY.k===key?' (오늘의 문제)':''));CUR=g;const dly=window.DAILY&&DAILY.k===key;setTitle((dly?'📅 오늘의 문제 · ':'')+g.e+' '+g.nm);back.style.display=g.study?'none':'';g.start();newBtnSync();
+  if(g&&MEM_ONLY.includes(key)&&!MEM.tok){memNeed(g.nm);try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
+  else if(g){gvisit((g.study?'':'게임·')+g.nm+(window.DAILY&&DAILY.k===key?' (오늘의 문제)':''));CUR=g;const dly=window.DAILY&&DAILY.k===key;setTitle((dly?'📅 오늘의 문제 · ':'')+g.e+' '+g.nm);back.style.display=g.study?'none':'';g.start();newBtnSync();
    if(dly){if(key==='logic')g.go('오늘');else if(DAILY.lv&&g.go)g.go(DAILY.lv);}scrollTo(0,0);return;}}
  if(window.DAILY)dailyEnd();
  CUR=null;back.style.display='none';newBtnSync();
