@@ -178,7 +178,7 @@ function seatRow(o,type){if(type==='open')type='push';return `<div style="displa
   return `<span style="font-size:13px;font-weight:700;padding:6px 8px;border-radius:8px;background:${me?'var(--blue)':sh?'#d33b3b':fold?'#e6dfcc':'#fff'};color:${me||sh?'#fff':fold?'#a39a86':'var(--ink)'};border:1px solid var(--line)">${p}${sh?' 올인':''}${me?' 나':''}</span>`;}).join('')}</div>`;}
 G.push({k:'pushfold',cat:'홀덤',e:'🔥',n:'푸시/폴드',d:'올인·콜 판단 트레이너 · 연속 기록',
  start(){this.mode=null;rr();},
- go(mode){Object.assign(this,{mode,n:0,ok:0,tot:0,over:false,last:null,stat:lsGet('pf_stat',{}),stk:this.stk||'랜덤',typ:this.typ||'섞어서'});this.q=this.nq();rr();},
+ go(mode){Object.assign(this,{mode,n:0,ok:0,tot:0,over:false,last:null,stat:lsGet('pf_stat',{}),stk:this.stk||'랜덤',typ:this.typ||'섞어서'});this.q=this.nq();this.t0=Date.now();rr();},
  nq(){const stks=[6,8,10,12,15,20];const bb=this.stk==='랜덤'?pick(stks):+this.stk;const type=this.typ==='올인만'?'push':this.typ==='콜만'?'call':(Math.random()<.65?'push':'call');
   const o=type==='push'?pick([0,1,2,3,4,5,6,6,7,7]):pick([2,3,4,5,6,6,7,7]);const key=bb+'_'+o;const real=(this.basis||lsGet('pf_basis','실전'))==='실전';const rg=type==='push'?GS.ranges[key]:(real&&GS.calls_real?GS.calls_real[key]:GS.calls[key]);
   const cut=[...rg].lastIndexOf('1');const inN=[...rg].filter(c=>c==='1').length;const lo=Math.max(0,inN-16),hi=Math.min(168,inN+14);let idx=lo+R(hi-lo+1);if(Math.random()<.12)idx=R(169);
@@ -212,10 +212,10 @@ G.push({k:'pushfold',cat:'홀덤',e:'🔥',n:'푸시/폴드',d:'올인·콜 판�
  statHtml(){const s=lsGet('pf_stat',{});const ks=Object.keys(s);if(!ks.length)return '';
   return `<div class="sec">내 약점 (위치별 정답률)</div><div class="card">${ks.sort((a,b)=>s[a][0]/s[a][1]-s[b][0]/s[b][1]).slice(0,6).map(k=>`<div class="row"><span>${k}</span><span class="m">${Math.round(s[k][0]/s[k][1]*100)}% (${s[k][0]}/${s[k][1]})</span></div>`).join('')}</div>`;},
  ans(yes){const q=this.q;const right=q.type==='open'?(yes===2?(q.act==='C'||q.act==='O'):yes===1?q.act==='J':q.act==='F'):(!!yes)===q.inr;this.tot++;if(right)this.ok++;
-  const key=(q.type==='open'?POS9[q.o]+' 20BB 오픈':q.type==='push'?POS9[q.o]+' 올인':'BB 콜 vs '+POS9[q.o]);const st=lsGet('pf_stat',{});st[key]=st[key]||[0,0];st[key][1]++;if(right)st[key][0]++;lsSet('pf_stat',st);
+  const key=(q.type==='open'?POS9[q.o]+' 20BB 오픈':q.type==='push'?POS9[q.o]+' 올인':'BB 콜 vs '+POS9[q.o]);const st=lsGet('pf_stat',{});st[key]=st[key]||[0,0];st[key][1]++;if(right)st[key][0]++;lsSet('pf_stat',st);studyLog('pushfold',q.type==='open'?'pf_open':q.type==='push'?'pf_push':'pf_call',0,right,this.t0?Math.min(Date.now()-this.t0,120000):0);
   this.last={...q,right,ans:q.type==='open'?O20N[q.act]:q.inr?(q.type==='push'?'올인':'콜'):'폴드'};
   if(this.mode==='도전'){if(right){this.n++;}else{this.over=true;if(this.n>0)record('pushfold',this.n);rr();return;}}
-  this.q=this.nq();rr();scrollTo(0,0);}});
+  this.q=this.nq();this.t0=Date.now();rr();scrollTo(0,0);}});
 // 2) 푸시/폴드 무한
 // 3) 승률 맞히기
 // 4) 족보 맞히기 (60초)
