@@ -1012,8 +1012,9 @@ G.push({k:'ladder',cat:'대전·도구',e:'🪜',n:'사다리 타기',d:'순서�
  COL:['#e4572e','#2e86de','#20bf6b','#f7b731','#8854d0','#eb3b5a','#0fb9b1','#fa8231','#4b6584','#a55eea'],
  start(){
   const sp=s=>s.split(',').map(t=>t.trim()).filter(Boolean);
-  this.N=sp(lsGet('ld_names','철수, 영희, 민수, 지수'));
-  this.R=sp(lsGet('ld_res','꽝, 꽝, 커피, 꽝'));
+  const old=v=>/^(철수, 영희, 민수, 지수|꽝, 꽝, 커피, 꽝)$/.test(v)?'':v;   // 예전 예시값이 저장돼 있으면 비우기
+  this.N=sp(old(lsGet('ld_names','')));
+  this.R=sp(old(lsGet('ld_res','')));
   this.inN='';this.inR='';this.game=null;this.busy=false;this.last=-1;rr();
  },
  save(){lsSet('ld_names',this.N.join(', '));lsSet('ld_res',this.R.join(', '));},
@@ -2522,1264 +2523,226 @@ G.push({k:'hula',cat:'카드',e:'🀄',n:'세븐훌라',d:'AI 대전 · 등록·
    h+=`<div class="cgbtn c3"><button class="btn g" ${ty?'':'disabled'} onclick="CUR.regBtn()">등록${ty?` (${ty==='set'?'트리플':ty==='run'?'스트레이트':'7'})`:''}</button><button class="btn" ${cs.length===1&&S.must==null?'':'disabled'} onclick="CUR.discBtn()">버리기</button><button class="btn gr" onclick="CUR.hint()">💡 힌트</button></div>
    <div class="cgsum" style="margin-top:6px">붙이기: 카드를 고른 뒤 바닥의 반짝이는 묶음을 눌러요${S.must!=null&&!S.acted&&!S.stolen?' · <a href="javascript:void 0" onclick="CUR.undoTake()" style="color:var(--red)">땡큐 취소</a>':''}</div>`;}
   return h;}});
-// ===== 🀄 사천성 (Mahjong / Sichuan Tile Matching) =====
-// p9p.js
-// - 기본 사천성: 같은 패 + 직선/최대 2회 꺾기
-// - 클래식 / 타임어택 / 챌린지
-// - 콤보 / PERFECT / FEVER / 특수패 / 잠금 / 2중패 / 시한폭탄
-// - 자동 데드락 검사 + 자동 셔플
-// - 스테이지형 맵 + 오늘의 동일 시드 대응
-// - 기존 공통 record()를 이용하므로 GCFG 서버 등록 후 주간/오늘 랭킹에 참여
-//
-// 서버 GCFG 권장:
-// games.sichuan = ['사천성', true, 'msec', 1, ['쉬움','보통','어려움']]
-//   true = 낮을수록 좋은 기록
-//   msec = fmtScore()의 1/1000초 표시
-//
-// 중요: 이 파일은 게임 엔진만 담당합니다. 랭킹/XP/왕관은 기존 record()가 담당합니다.
-
+// ===== 🀄 사천성 (g_scahunsung.js) =====
+// 같은 그림 2개를 선으로 이어 없애는 퍼즐. 선은 최대 2번 꺾을 수 있고, 판 바깥으로 돌아가는 것은 허용.
+// 모드
+//  - 클래식: 난이도별 판(매판 다른 맵) · 클리어 시간 기록(힌트 +10초 · 셔플 +15초) · 서버 랭킹 (GAMES['sichuan'], msec, 낮을수록 좋음)
+//  - 타임어택: 제한 시간 안에 점수 · 콤보 · 폭탄 패 · 기록은 이 기기에만
+//  - 스테이지: 12단계 맵 · 잠금/폭탄 패가 차례로 등장 · 깨면 다음 단계 열림 · 별 3개
+// 주의: 화면 전체 다시 그리기(rr)는 패를 눌렀을 때만. 시계는 #scT 글자만 바꾼다 (0.1초마다 rr 하면 터치가 씹힘)
 (function(){
   const KEY='sichuan';
-  const TILE=['🀀','🀁','🀂','🀃','🀄','🀅','🀆','🀇','🀈','🀉','🀊','🀋','🀌','🀍','🀎','🀏','🀐','🀑','🀒','🀓','🀔','🀕','🀖','🀗','🀘','🀙','🀚','🀛','🀜','🀝','🀞','🀟','🀠','🀡','🀢','🀣','🀤','🀥'];
-  const EM=['🀄','🀅','🀆','🀇','🀈','🀉','🀊','🀋','🀌','🀍','🀎','🀏','🀐','🀑','🀒','🀓','🀔','🀕','🀖','🀗','🀘','🀙','🀚','🀛','🀜','🀝','🀞','🀟','🀠','🀡'];
-  const LV={
-    '쉬움':{w:10,h:8,time:180,pairs:36,shape:'full',special:0,locks:0,layers:0,bombs:0},
-    '보통':{w:12,h:8,time:150,pairs:48,shape:'frame',special:2,locks:2,layers:2,bombs:1},
-    '어려움':{w:14,h:9,time:120,pairs:60,shape:'temple',special:4,locks:4,layers:4,bombs:2}
-  };
-  const MODES=['클래식','타임어택','챌린지'];
-  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-  const now=()=>performance.now();
-  const seedHash=s=>{
-    let h=2166136261;
-    for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}
-    return h>>>0;
-  };
-  const rngFactory=seed=>{
-    let a=seed>>>0;
-    return ()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};
-  };
-  const shuffleWith=(a,r)=>{
-    a=a.slice();
-    for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
-    return a;
-  };
+  const SYM=['🍒','🍋','🍇','🍉','🍑','🥝','🍓','🍍','🥥','🍄','🌸','🌻','🍀','🐟','🐼','🦊','🐸','🐯','🐰','🐧','⭐','🌙','⚡','🔔','🎲','🎯','🏮','💎','🎈','🍩','🐙','🦋','🌵','🍔'];
+  const MODES=[['클래식','🀄','시간 기록 · 랭킹'],['타임어택','⚡','제한 시간 · 점수'],['스테이지','🗺️','12단계 · 단계별 맵']];
+  const LVC={'쉬움':{w:8,h:6,shapes:['rect','diamond','frame','cross']},
+             '보통':{w:10,h:7,shapes:['rect','frame','cross','heart','islands','pyramid']},
+             '어려움':{w:12,h:8,shapes:['rect','frame','heart','ring','turtle','checker','islands']}};
+  const TA_TIME={'쉬움':90,'보통':120,'어려움':150};
+  const SHAPE_NAME={rect:'네모',diamond:'다이아',frame:'액자',cross:'십자',pyramid:'피라미드',heart:'하트',islands:'두 섬',ring:'반지',checker:'바둑판',turtle:'거북이',stairs:'계단',temple:'사원'};
+  const STAGES=[
+    {n:'첫걸음',s:'rect',w:6,h:4},
+    {n:'다이아',s:'diamond',w:8,h:6},
+    {n:'액자',s:'frame',w:8,h:6},
+    {n:'십자로',s:'cross',w:9,h:7,lock:2},
+    {n:'피라미드',s:'pyramid',w:10,h:6,lock:3},
+    {n:'하트',s:'heart',w:10,h:8,bomb:1},
+    {n:'두 섬',s:'islands',w:10,h:7,lock:4,bomb:1},
+    {n:'반지',s:'ring',w:10,h:8,lock:4},
+    {n:'바둑판',s:'checker',w:11,h:8,lock:5,bomb:2},
+    {n:'거북이',s:'turtle',w:12,h:8,lock:6,bomb:2},
+    {n:'계단',s:'stairs',w:12,h:8,lock:6,bomb:2},
+    {n:'사원',s:'temple',w:12,h:9,lock:8,bomb:2}];
+  const D4=[[1,0],[-1,0],[0,1],[0,-1]];
+  const nowS=()=>performance.now();
+  const shuf2=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 
-  function makeMask(w,h,shape){
-    const a=Array(w*h).fill(1);
-    const put=(x,y,v)=>{if(x>=0&&x<w&&y>=0&&y<h)a[y*w+x]=v?1:0;};
-    if(shape==='full')return a;
-    if(shape==='frame'){
-      for(let y=2;y<h-2;y++)for(let x=2;x<w-2;x++)put(x,y,0);
-      for(let y=3;y<h-3;y++)for(let x=4;x<w-4;x++)put(x,y,1);
-      return a;
-    }
-    if(shape==='temple'){
-      const cx=(w-1)/2;
-      for(let y=0;y<h;y++){
-        const margin=Math.floor(y<2?2:y<4?1:0);
-        for(let x=0;x<w;x++){
-          if(Math.abs(x-cx)>cx-margin)put(x,y,0);
-        }
+  // ---------- 맵 모양 ----------
+  function mask(shape,w,h){
+    const cx=(w-1)/2,cy=(h-1)/2,m=[];
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){
+      const nx=(x-cx)/(w/2),ny=(y-cy)/(h/2);let on=true;
+      switch(shape){
+        case 'diamond':on=Math.abs(nx)+Math.abs(ny)<=1.1;break;
+        case 'frame':on=x<2||y<1||x>=w-2||y>=h-1||(Math.abs(x-cx)<1.6&&Math.abs(y-cy)<1.1);break;
+        case 'cross':on=Math.abs(x-cx)<w/5||Math.abs(y-cy)<h/4;break;
+        case 'pyramid':on=Math.abs(x-cx)<=(y+1)*(w/2)/h+.2;break;
+        case 'heart':{const X=nx*1.25,Y=-ny*1.3+.25;on=Math.pow(X*X+Y*Y-1,3)-X*X*Y*Y*Y<=0.05;break;}
+        case 'islands':on=Math.abs(x-cx)>.8&&!(y===0&&(x===0||x===w-1))&&!(y===h-1&&(x===0||x===w-1));break;
+        case 'ring':{const r=Math.hypot(nx,ny*1.05);on=r<=1.12&&r>=.42;break;}
+        case 'checker':on=!(x%3===1&&y%3===1);break;
+        case 'turtle':{const r=Math.hypot(nx*1.15,ny*1.25);on=r<=.95||((x===1||x===w-2)&&(y===0||y===h-1))||(x===Math.round(cx)&&y===0);break;}
+        case 'stairs':on=x<=Math.round((y+1)*w/h)+1&&x>=Math.round(y*w/h)-3;break;
+        case 'temple':on=(y<2?Math.abs(x-cx)<2.6:y<4?Math.abs(x-cx)<4.6:true)&&!(y>=h-3&&Math.abs(x-cx)<1.1);break;
       }
-      for(let x=2;x<w-2;x++)put(x,Math.floor(h/2),1);
-      return a;
+      m.push(on);
     }
-    return a;
+    return m;
   }
-
-  function buildBoard(lv,seed){
-    const r=rngFactory(seed);
-    const C=LV[lv];
-    let mask=makeMask(C.w,C.h,C.shape);
-    let cells=[];
-    for(let i=0;i<mask.length;i++)if(mask[i])cells.push(i);
-    if(cells.length%2)cells.pop();
-    const need=C.pairs*2;
-    if(cells.length>need){
-      const cx=(C.w-1)/2,cy=(C.h-1)/2;
-      cells.sort((a,b)=>{
-        const ax=Math.abs(a%C.w-cx)+Math.abs(Math.floor(a/C.w)-cy);
-        const bx=Math.abs(b%C.w-cx)+Math.abs(Math.floor(b/C.w)-cy);
-        return bx-ax;
-      });
-      cells=cells.slice(0,need);
-    }
-    if(cells.length<need){
-      mask=Array(C.w*C.h).fill(0);
-      cells=[];
-      for(let y=0;y<C.h;y++)for(let x=0;x<C.w;x++)
-        if((x+y)%2===0||cells.length<need)cells.push(y*C.w+x);
-      cells=cells.slice(0,need);
-      mask.forEach((_,i)=>mask[i]=cells.includes(i)?1:0);
-    }
-    cells=shuffleWith(cells,r);
-    const vals=[];
-    for(let i=0;i<cells.length/2;i++){
-      const v=i%EM.length;
-      vals.push(v,v);
-    }
-    const shuffled=shuffleWith(vals,r);
-    const board=Array(C.w*C.h).fill(null);
-    cells.forEach((p,i)=>board[p]={kind:'normal',v:shuffled[i],hp:1});
-
-    const occupied=cells.slice();
-    const take=(n)=>shuffleWith(occupied,r).slice(0,Math.min(n,occupied.length));
-
-    if(C.bombs){
-      take(C.bombs).forEach(p=>{
-        if(board[p])board[p].kind='bomb';
-      });
-    }
-
-    if(C.locks){
-      take(C.locks).forEach(p=>{
-        if(board[p]&&board[p].kind==='normal')board[p].kind='lock';
-      });
-    }
-
-    if(C.layers){
-      take(C.layers).forEach(p=>{
-        if(board[p]&&board[p].kind==='normal')board[p].hp=2;
-      });
-    }
-
-    return {w:C.w,h:C.h,mask,board};
+  function build(shape,w,h,lock,bomb){
+    const m=mask(shape,w,h);let cells=[];m.forEach((v,i)=>{if(v)cells.push(i);});
+    if(cells.length%2){ // 홀수면 가운데에서 가장 먼 칸 하나 빼기
+      const cx=(w-1)/2,cy=(h-1)/2;let far=0,fd=-1;cells.forEach((p,k)=>{const d=Math.abs(p%w-cx)+Math.abs((p/w|0)-cy);if(d>fd){fd=d;far=k;}});cells.splice(far,1);}
+    const pairs=cells.length/2,kinds=Math.min(SYM.length,Math.max(4,Math.ceil(pairs/2))),order=shuf2([...SYM.keys()]).slice(0,kinds);
+    const vals=[];for(let i=0;i<pairs;i++){const v=order[i%kinds];vals.push(v,v);}
+    const B=Array(w*h).fill(null),sv=shuf2(vals);cells.forEach((p,i)=>B[p]={v:sv[i]});
+    const st={w,h,B,shape};
+    for(let tries=0;tries<30&&!pairsOf(st).length;tries++)reshuffle(st);
+    if(bomb){ // 폭탄은 같은 그림 한 쌍에 붙임 (짝이 깨지지 않게)
+      const used=new Set();for(let k=0;k<bomb;k++){const v=shuf2([...new Set(cells.map(p=>B[p].v))]).find(x=>!used.has(x));if(v==null)break;used.add(v);
+        cells.filter(p=>B[p].v===v).slice(0,2).forEach(p=>B[p].bomb=1);}}
+    if(lock){shuf2(cells).slice(0,lock).forEach(p=>B[p].lock=1);}
+    return st;
   }
-
-  function freePath(st,a,b){
-    const {w,h,board}=st;
-    if(a===b||!board[a]||!board[b])return null;
-
-    const ax=a%w,ay=Math.floor(a/w),bx=b%w,by=Math.floor(b/w);
-    const inside=(x,y)=>x>=0&&x<w&&y>=0&&y<h;
-
-    const empty=(x,y)=>{
-      if(!inside(x,y))return true;
-      const p=y*w+x;
-      return p===a||p===b||!board[p];
-    };
-
-    const dirs=[[1,0],[-1,0],[0,1],[0,-1]];
-    const q=[];
-    const seen=new Map();
-
-    const push=(x,y,dir,t,path)=>{
-      const key=x+','+y+','+dir;
-      const old=seen.get(key);
-      if(old!=null&&old<=t)return;
-      seen.set(key,t);
-      q.push({x,y,dir,t,path});
-    };
-
-    for(let d=0;d<4;d++){
-      const [dx,dy]=dirs[d],nx=ax+dx,ny=ay+dy;
-      if(empty(nx,ny))push(nx,ny,d,0,[a]);
-    }
-
-    while(q.length){
-      const cur=q.shift();
-
-      if(cur.x===bx&&cur.y===by){
-        return cur.path.concat([b]);
-      }
-
-      for(let d=0;d<4;d++){
-        const [dx,dy]=dirs[d],nx=cur.x+dx,ny=cur.y+dy;
-        const nt=cur.t+(d===cur.dir?0:1);
-        if(nt>2)continue;
-        if(nx<-1||nx>w||ny<-1||ny>h)continue;
-        if(!empty(nx,ny))continue;
-
-        const np=cur.path.concat([
-          inside(nx,ny)?ny*w+nx:-1
-        ]);
-
-        push(nx,ny,d,nt,np);
-      }
-    }
-
+  function reshuffle(st){
+    const ids=[];st.B.forEach((t,i)=>{if(t)ids.push(i);});
+    const tiles=shuf2(ids.map(i=>st.B[i]));ids.forEach((p,k)=>st.B[p]=tiles[k]);
+  }
+  // ---------- 길 찾기 (꺾기 2번 이하, 판 바깥 한 칸 허용) ----------
+  function findPath(st,a,b){
+    const {w,h,B}=st;if(a===b||!B[a]||!B[b])return null;
+    const ax=a%w,ay=a/w|0,bx=b%w,by=b/w|0;
+    const free=(x,y)=>{if(x<-1||y<-1||x>w||y>h)return false;if(x<0||y<0||x>=w||y>=h)return true;const p=y*w+x;return p===b||!B[p];};
+    const nodes=[{x:ax,y:ay,p:-1}],best=new Map([[ay*(w+2)+ax,-1]]);let fr=[0];
+    for(let t=0;t<=2;t++){const nx=[];
+      for(const ni of fr){const n=nodes[ni];
+        for(const [dx,dy] of D4){let x=n.x+dx,y=n.y+dy;
+          while(free(x,y)){
+            if(x===bx&&y===by){const pts=[[x,y]];let c=ni;while(c>=0){pts.push([nodes[c].x,nodes[c].y]);c=nodes[c].p;}return pts.reverse();}
+            const k=(y+1)*(w+2)+(x+1);if(!best.has(k)||best.get(k)>t){best.set(k,t);nodes.push({x,y,p:ni});nx.push(nodes.length-1);}
+            x+=dx;y+=dy;}}}
+      fr=nx;}
     return null;
   }
-
-  function findPairs(st){
-    const out=[];
-    const alive=[];
-
-    st.board.forEach((v,i)=>{
-      if(v&&v.kind!=='lock')alive.push(i);
-    });
-
-    for(let i=0;i<alive.length;i++){
-      for(let j=i+1;j<alive.length;j++){
-        const a=alive[i],b=alive[j];
-        if(st.board[a].v===st.board[b].v&&freePath(st,a,b))
-          out.push([a,b]);
-      }
-    }
-
+  function pairsOf(st){
+    const by={};st.B.forEach((t,i)=>{if(t&&!t.lock)(by[t.v]=by[t.v]||[]).push(i);});
+    const out=[];for(const k in by){const a=by[k];for(let i=0;i<a.length;i++)for(let j=i+1;j<a.length;j++)if(findPath(st,a[i],a[j]))out.push([a[i],a[j]]);}
     return out;
   }
-
-  function ensureSolvable(st){
-    let guard=0;
-
-    while(!findPairs(st).length&&st.board.some(Boolean)&&guard++<8){
-      const ids=[];
-      st.board.forEach((v,i)=>{
-        if(v&&v.kind!=='lock')ids.push(i);
-      });
-
-      const vs=shuffleWith(ids,Math.random);
-      const vals=vs.map(i=>st.board[i].v);
-
-      for(let i=0;i<vs.length;i++)
-        st.board[vs[i]].v=vals[i];
-    }
-  }
-
-  function tileLabel(t){
-    if(!t)return '';
-    if(t.kind==='bomb')return '💣';
-    if(t.kind==='lock')return '🔒';
-    if(t.hp>1)return TILE[t.v]+'²';
-    return TILE[t.v]||EM[t.v%EM.length];
-  }
-
   function addStyle(){
-    if($('sichuanStyle'))return;
-
-    const s=document.createElement('style');
-    s.id='sichuanStyle';
-
-    s.textContent=`
-      .sc-wrap{max-width:620px;margin:0 auto}
-      .sc-top{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:8px}
-      .sc-stat{background:#fff;border:1px solid var(--line);border-radius:10px;padding:6px;text-align:center}
-      .sc-stat b{display:block;font-size:17px}
-      .sc-stat span{font-size:10px;color:var(--sub)}
-
-      .sc-board{
-        display:grid;
-        gap:3px;
-        justify-content:center;
-        margin:8px auto;
-        padding:7px;
-        border-radius:14px;
-        background:linear-gradient(145deg,#dfd2b7,#bfae8e);
-        box-shadow:inset 0 1px 0 #fff8,0 4px 14px #0001
-      }
-
-      .sc-tile{
-        position:relative;
-        border:1px solid #b9a98b;
-        border-radius:7px;
-        background:linear-gradient(145deg,#fffdf5,#eee5d1);
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        font-size:clamp(18px,5vw,28px);
-        font-weight:900;
-        cursor:pointer;
-        user-select:none;
-        box-shadow:0 2px 0 #c4b697,0 3px 7px #0002;
-        transition:transform .08s,filter .12s,box-shadow .12s
-      }
-
-      .sc-tile:active{transform:translateY(2px)}
-
-      .sc-tile.sel{
-        outline:3px solid #2f80ed;
-        transform:translateY(-2px);
-        box-shadow:0 0 0 4px #2f80ed33,0 5px 10px #0003
-      }
-
-      .sc-tile.lock{
-        background:linear-gradient(145deg,#d6d9df,#b8bdc7);
-        filter:grayscale(.5)
-      }
-
-      .sc-tile.bomb{
-        background:linear-gradient(145deg,#fff0d8,#ffd19a)
-      }
-
-      .sc-line{
-        position:absolute;
-        inset:0;
-        pointer-events:none
-      }
-
-      .sc-msg{
-        text-align:center;
-        min-height:25px;
-        font-weight:900;
-        font-size:15px;
-        margin:4px 0
-      }
-
-      .sc-fever{
-        height:9px;
-        background:#e6e1d4;
-        border-radius:99px;
-        overflow:hidden;
-        margin:5px 0 8px
-      }
-
-      .sc-fever>i{
-        display:block;
-        height:100%;
-        width:0;
-        background:linear-gradient(90deg,#ff8a00,#ff3d00,#e91e63);
-        transition:width .15s
-      }
-
-      .sc-mode{
-        display:flex;
-        gap:5px;
-        flex-wrap:wrap;
-        justify-content:center;
-        margin:7px 0
-      }
-
-      .sc-mode button{
-        border:1px solid var(--line);
-        background:#fff;
-        border-radius:999px;
-        padding:6px 11px;
-        font-weight:800;
-        cursor:pointer
-      }
-
-      .sc-mode button.on{
-        background:var(--blue);
-        color:#fff;
-        border-color:var(--blue)
-      }
-
-      .sc-legend{
-        display:flex;
-        gap:7px;
-        justify-content:center;
-        flex-wrap:wrap;
-        font-size:11px;
-        color:var(--sub);
-        margin:7px 0
-      }
-
-      .sc-overlay{
-        position:fixed;
-        inset:0;
-        z-index:80;
-        background:#0007;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        padding:18px
-      }
-
-      .sc-pop{
-        width:min(440px,100%);
-        background:#fff;
-        border-radius:18px;
-        padding:18px;
-        box-shadow:0 18px 60px #0006;
-        text-align:center
-      }
-
-      .sc-pop .big{
-        font-size:42px;
-        font-weight:1000;
-        margin:5px 0
-      }
-
-      @keyframes scpop{
-        50%{
-          transform:scale(1.16);
-          filter:brightness(1.25)
-        }
-      }
-
-      @keyframes scshake{
-        25%{transform:translateX(-4px)}
-        75%{transform:translateX(4px)}
-      }
-
-      @media(max-width:430px){
-        .sc-board{gap:2px;padding:4px}
-        .sc-tile{border-radius:5px;font-size:19px}
-        .sc-stat b{font-size:15px}
-      }
-    `;
-
+    if($('scStyle'))return;const s=document.createElement('style');s.id='scStyle';
+    s.textContent=`.sc-bd{position:relative;display:grid;margin:6px auto 8px;padding:4px;border-radius:12px;background:linear-gradient(145deg,#2f6b4f,#1f4d39);box-shadow:inset 0 2px 6px #0005;touch-action:manipulation}
+.sc-c{display:flex;align-items:center;justify-content:center}
+.sc-t{position:relative;width:calc(100% - 2px);height:calc(100% - 2px);border-radius:5px;background:linear-gradient(160deg,#fffdf6,#efe6d0);border:1px solid #c9b994;box-shadow:0 2px 0 #b5a27a;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;line-height:1}
+.sc-t.sel{background:linear-gradient(160deg,#fff4b8,#ffd95e);border-color:#e0a800;box-shadow:0 0 0 2px #ffcc00,0 2px 0 #b58a00;transform:translateY(-1px)}
+.sc-t.hint{animation:schint .5s ease-in-out 3}
+.sc-t.lock{filter:grayscale(.7) brightness(.85);cursor:not-allowed}
+.sc-t .bd{position:absolute;right:-2px;top:-4px;font-size:.55em}
+.sc-svg{position:absolute;inset:4px;pointer-events:none;overflow:visible}
+.sc-msg{text-align:center;min-height:22px;font-weight:800;font-size:14px;margin:2px 0}
+.sc-sg{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.sc-sg button{border:1px solid var(--line);background:#fff;border-radius:12px;padding:8px 2px;font-weight:800;font-size:15px;color:#222}
+.sc-sg button.op{border-color:var(--blue)}.sc-sg button.lk{opacity:.4}.sc-sg small{display:block;font-size:10.5px;font-weight:600;color:#777;margin-top:2px}
+@keyframes schint{50%{transform:scale(1.15);box-shadow:0 0 0 3px #2f80ed}}`;
     document.head.appendChild(s);
   }
-
-  function gobj(){
-    return {
-      k:KEY,
-      cat:'퍼즐',
-      e:'🀄',
-      n:'사천성',
-      d:'같은 패를 2번 이하로 꺾어 연결 · 콤보·피버·특수 패',
-
-      start(){
-        addStyle();
-
-        this.lv=lsGet('sc_lv','쉬움');
-        this.mode=lsGet('sc_mode','클래식');
-
-        this.seed=null;
-        this.over=false;
-        this.paused=false;
-        this.selected=-1;
-        this.path=null;
-
-        this.score=0;
-        this.combo=0;
-        this.bestCombo=0;
-        this.fever=0;
-        this.feverOn=0;
-
-        this.hint=3;
-        this.shuffle=2;
-        this.bombs=0;
-        this.last=0;
-        this.msg='';
-
-        this.go(this.lv);
-      },
-
-      stop(){
-        if(this.iv){
-          clearInterval(this.iv);
-          this.iv=null;
-        }
-      },
-
-      go(lv){
-        this.stop();
-
-        this.lv=LV[lv]?lv:'쉬움';
-        lsSet('sc_lv',this.lv);
-
-        this.today=!!(window.DAILY&&DAILY.k===KEY);
-        this.over=false;
-        this.paused=false;
-        this.selected=-1;
-        this.path=null;
-
-        this.score=0;
-        this.combo=0;
-        this.bestCombo=0;
-        this.fever=0;
-        this.feverOn=0;
-
-        this.hint=3;
-        this.shuffle=2;
-        this.turn=0;
-        this.msg='';
-
-        const C=LV[lv];
-        this.left=C.time;
-
-        let seed;
-
-        if(this.today&&window.DAILY&&DAILY.d){
-          seed=seedHash('sichuan|daily|'+DAILY.d+'|'+lv);
-        }else{
-          seed=seedHash(
-            'sichuan|'+Date.now()+'|'+Math.random()
-          );
-        }
-
-        this.seed=seed;
-        this.st=buildBoard(lv,seed);
-        ensureSolvable(this.st);
-
-        this.t0=now();
-        this.last=this.t0;
-
-        this.iv=setInterval(()=>this.tick(),100);
-
-        rr();
-      },
-
-      setMode(m){
-        if(!MODES.includes(m))return;
-        this.mode=m;
-        lsSet('sc_mode',m);
-        this.go(this.lv);
-      },
-
-      tick(){
-        if(this.over||this.paused)return;
-
-        const t=now();
-        const dt=(t-this.last)/1000;
-        this.last=t;
-
-        if(this.mode==='클래식'){
-          // 클래식도 시간 기록을 남기되 제한시간은 적용하지 않는다.
-        }else{
-          this.left-=dt;
-
-          if(this.left<=0){
-            this.left=0;
-            this.finish(false,'⏰ 시간 초과');
-          }
-        }
-
-        if(this.feverOn>0){
-          this.feverOn-=dt;
-
-          if(this.feverOn<=0){
-            this.feverOn=0;
-            this.msg='FEVER 종료';
-          }
-        }
-
-        if(this.combo>0&&t-this.comboAt>3200){
-          this.combo=0;
-          this.fever=Math.max(0,this.fever-10);
-        }
-
-        rr();
-      },
-
-      tap(i){
-        if(this.over||this.paused)return;
-
-        const t=this.st.board[i];
-
-        if(!t||t.kind==='lock')return;
-
-        if(this.selected===i){
-          this.selected=-1;
-          this.path=null;
-          rr();
-          return;
-        }
-
-        if(this.selected<0){
-          this.selected=i;
-          this.msg='같은 패를 하나 더 선택하세요';
-          rr();
-          return;
-        }
-
-        const a=this.selected;
-        const b=i;
-
-        const A=this.st.board[a];
-        const B=this.st.board[b];
-
-        if(!A||!B){
-          this.selected=-1;
-          rr();
-          return;
-        }
-
-        if(A.v!==B.v){
-          this.combo=0;
-          this.msg='❌ 같은 패가 아니에요';
-          this.selected=b;
-          rr();
-          return;
-        }
-
-        const path=freePath(this.st,a,b);
-
-        if(!path){
-          this.combo=0;
-          this.msg='↪️ 길이 막혀 있어요 · 2번 이하로 꺾여야 해요';
-          this.selected=b;
-          rr();
-          return;
-        }
-
-        this.match(a,b,path);
-      },
-
-      match(a,b,path){
-        const t=now();
-        const dt=this.lastSuccess
-          ?(t-this.lastSuccess)/1000
-          :9;
-
-        const A=this.st.board[a];
-        const B=this.st.board[b];
-
-        this.lastSuccess=t;
-        this.comboAt=t;
-        this.turn++;
-
-        const fast=dt<=1.15;
-
-        this.combo++;
-        this.bestCombo=Math.max(
-          this.bestCombo,
-          this.combo
-        );
-
-        let base=100;
-        let bonus=0;
-
-        if(fast)bonus+=80;
-        else if(dt<=2.2)bonus+=40;
-
-        bonus+=Math.min(
-          500,
-          this.combo*this.combo*4
-        );
-
-        if(path.length<=2)bonus+=40;
-
-        if(this.feverOn>0)bonus*=2;
-
-        let pts=base+bonus;
-        let special='';
-
-        const bomb=
-          A.kind==='bomb'||
-          B.kind==='bomb';
-
-        if(bomb){
-          const hit=this.blast(a);
-          pts+=hit*75;
-          special=` 💣 주변 ${hit}개 제거`;
-        }
-
-        let keepA=A.hp>1;
-        let keepB=B.hp>1;
-
-        if(keepA)A.hp--;
-        else this.st.board[a]=null;
-
-        if(keepB)B.hp--;
-        else this.st.board[b]=null;
-
-        this.unlockNear(a);
-        this.unlockNear(b);
-
-        this.score+=pts;
-
-        this.fever=clamp(
-          this.fever+
-          (fast?12:8)+
-          Math.min(8,this.combo),
-          0,
-          100
-        );
-
-        if(this.fever>=100&&!this.feverOn){
-          this.feverOn=8;
-          this.fever=0;
-          special+=' 🔥 FEVER!!';
-        }
-
-        this.selected=-1;
-        this.path=path;
-        this.flash=[a,b];
-
-        this.msg=
-          (fast?'⚡ PERFECT! ':'')+
-          '+'+pts+
-          (this.combo>1
-            ?' · COMBO x'+this.combo
-            :'')+
-          special;
-
-        if(this.st.board.every(v=>!v)){
-          setTimeout(()=>{
-            this.finish(true,'🎉 ALL CLEAR!');
-          },180);
-
-          rr();
-          return;
-        }
-
-        if(!findPairs(this.st).length){
-          const ok=this.autoShuffle();
-
-          if(!ok){
-            setTimeout(()=>{
-              this.finish(
-                false,
-                '🧩 더 이상 가능한 패가 없어요'
-              );
-            },250);
-
-            return;
-          }
-        }
-
-        setTimeout(()=>{
-          if(!this.over){
-            this.path=null;
-            this.flash=null;
-            rr();
-          }
-        },260);
-
-        rr();
-      },
-
-      blast(p){
-        const {w,h}=this.st;
-        const x=p%w;
-        const y=Math.floor(p/w);
-        let n=0;
-
-        for(let dy=-1;dy<=1;dy++){
-          for(let dx=-1;dx<=1;dx++){
-            if(!dx&&!dy)continue;
-
-            const q=(y+dy)*w+(x+dx);
-
-            if(
-              x+dx>=0&&
-              x+dx<w&&
-              y+dy>=0&&
-              y+dy<h&&
-              this.st.board[q]
-            ){
-              this.st.board[q]=null;
-              n++;
-            }
-          }
-        }
-
-        return n;
-      },
-
-      unlockNear(p){
-        const {w,h}=this.st;
-        const x=p%w;
-        const y=Math.floor(p/w);
-
-        for(const [dx,dy] of [
-          [1,0],
-          [-1,0],
-          [0,1],
-          [0,-1]
-        ]){
-          const q=(y+dy)*w+(x+dx);
-
-          if(
-            x+dx>=0&&
-            x+dx<w&&
-            y+dy>=0&&
-            y+dy<h&&
-            this.st.board[q]?.kind==='lock'
-          ){
-            this.st.board[q].kind='normal';
-            this.msg+=' 🔓';
-          }
-        }
-      },
-
-      autoShuffle(){
-        const ids=[];
-
-        this.st.board.forEach((v,i)=>{
-          if(v&&v.kind!=='lock')ids.push(i);
-        });
-
-        if(ids.length<2)return false;
-
-        for(let tries=0;tries<10;tries++){
-          const vals=shuffleWith(
-            ids.map(i=>this.st.board[i].v),
-            Math.random
-          );
-
-          ids.forEach((p,i)=>{
-            this.st.board[p].v=vals[i];
-          });
-
-          if(findPairs(this.st).length)
-            return true;
-        }
-
-        return false;
-      },
-
-      useHint(){
-        if(this.over||this.hint<=0)return;
-
-        const ps=findPairs(this.st);
-
-        if(!ps.length){
-          this.autoShuffle();
-          rr();
-          return;
-        }
-
-        this.hint--;
-
-        const [a,b]=
-          ps[Math.floor(Math.random()*ps.length)];
-
-        this.selected=a;
-        this.path=freePath(
-          this.st,
-          a,
-          b
-        );
-
-        this.score=Math.max(
-          0,
-          this.score-250
-        );
-
-        this.combo=0;
-        this.msg='💡 힌트 사용 · -250점';
-
-        setTimeout(()=>{
-          if(!this.over){
-            this.selected=-1;
-            this.path=null;
-            rr();
-          }
-        },900);
-
-        rr();
-      },
-
-      useShuffle(){
-        if(this.over||this.shuffle<=0)return;
-
-        this.shuffle--;
-
-        if(this.autoShuffle())
-          this.msg='🔀 셔플!';
-        else
-          this.msg='셔플할 수 없어요';
-
-        this.combo=0;
-        this.score=Math.max(
-          0,
-          this.score-120
-        );
-
-        rr();
-      },
-
-      pause(){
-        if(this.over)return;
-
-        this.paused=!this.paused;
-
-        if(!this.paused)
-          this.last=now();
-
-        rr();
-      },
-
-      finish(win,reason){
-        if(this.over)return;
-
-        this.over=true;
-        this.stop();
-
-        const elapsed=Math.max(
-          1,
-          (now()-this.t0)/1000
-        );
-
-        const remain=Math.max(
-          0,
-          this.left
-        );
-
-        const score=Math.round(
-          elapsed*1000
-        );
-
-        this.finalTime=score;
-
-        const detail=
-          this.lv+' · '+this.mode;
-
-        if(!win){
-          // 진 판(시간 초과·막힘)은 기록하지 않음 (빨리 지면 1등이 되는 문제 방지)
-        }else if(window.DAILY&&DAILY.k===KEY){
-          dailySubmit(
-            score,
-            fmtScore(
-              KEY,
-              score,
-              detail
-            )
-          );
-        }else{
-          record(
-            KEY,
-            score,
-            this.lv
-          );
-        }
-
-        this.msg=reason;
-
-        this.final={
-          elapsed,
-          remain,
-          score,
-          win,
-          detail
-        };
-
-        rr();
-      },
-
-      view(){
-        const C=LV[this.lv];
-
-        const alive=
-          this.st?.board
-            ?.filter(Boolean).length||0;
-
-        const elapsed=this.t0
-          ?Math.max(
-              0,
-              (now()-this.t0)/1000
-            )
-          :0;
-
-        const displayTime=
-          this.over
-            ?this.final?.elapsed||elapsed
-            :elapsed;
-
-        const remain=
-          this.mode==='클래식'
-            ?'∞'
-            :Math.ceil(this.left);
-
-        const cols=Math.min(
-          C.w,
-          innerWidth<430?C.w:14
-        );
-
-        const tile=Math.max(
-          20,
-          Math.min(
-            46,
-            Math.floor(
-              (
-                Math.min(innerWidth,620)
-                -28
-                -(cols-1)*3
-                -14
-              )/cols
-            )
-          )
-        );
-
-        let h=`<div class="sc-wrap">`;
-
-        h+=`
-          <div class="sc-mode">
-            ${MODES.map(m=>`
-              <button
-                class="${this.mode===m?'on':''}"
-                onclick="CUR.setMode('${m}')"
-              >
-                ${
-                  m==='클래식'
-                    ?'🀄'
-                    :m==='타임어택'
-                      ?'⚡'
-                      :'🔥'
-                } ${m}
-              </button>
-            `).join('')}
-          </div>
-        `;
-
-        h+=`
-          <div class="card" style="padding:9px">
-            <div class="sc-top">
-
-              <div class="sc-stat">
-                <span>시간</span>
-                <b>
-                  ${
-                    this.over
-                      ?displayTime.toFixed(2)
-                      :this.mode==='클래식'
-                        ?displayTime.toFixed(1)
-                        :remain+'s'
-                  }
-                </b>
-              </div>
-
-              <div class="sc-stat">
-                <span>점수</span>
-                <b>
-                  ${this.score.toLocaleString()}
-                </b>
-              </div>
-
-              <div class="sc-stat">
-                <span>콤보</span>
-                <b>x${this.combo}</b>
-              </div>
-
-              <div class="sc-stat">
-                <span>남은 패</span>
-                <b>${alive}</b>
-              </div>
-
-            </div>
-
-            <div class="sc-fever">
-              <i style="width:${this.fever}%"></i>
-            </div>
-
-            <div
-              style="
-                display:flex;
-                justify-content:space-between;
-                font-size:11px;
-                color:var(--sub)
-              "
-            >
-              <span>
-                ${this.lv} · ${this.mode}
-              </span>
-
-              <span>
-                ${this.feverOn>0
-                  ?'🔥 FEVER x2'
-                  :''
-                }
-              </span>
-            </div>
-          </div>
-        `;
-
-        h+=`
-          <div class="sc-msg">
-            ${esc(
-              this.msg||
-              '같은 패를 찾아 연결하세요'
-            )}
-          </div>
-        `;
-
-        h+=`
-          <div
-            class="sc-board"
-            style="
-              grid-template-columns:
-              repeat(${C.w},${tile}px)
-            "
-          >
-        `;
-
-        for(
-          let i=0;
-          i<C.w*C.h;
-          i++
-        ){
-          const t=this.st.board[i];
-          const sel=i===this.selected;
-
-          if(!t){
-            h+=`
-              <div
-                style="
-                  width:${tile}px;
-                  height:${tile}px
-                "
-              ></div>
-            `;
-            continue;
-          }
-
-          let cls=
-            'sc-tile'+
-            (sel?' sel':'')+
-            (t.kind==='lock'
-              ?' lock'
-              :'')+
-            (t.kind==='bomb'
-              ?' bomb'
-              :'');
-
-          h+=`
-            <div
-              class="${cls}"
-              onclick="CUR.tap(${i})"
-              style="
-                width:${tile}px;
-                height:${tile}px
-              "
-            >
-              ${esc(tileLabel(t))}
-
-              ${
-                t.kind==='lock'
-                  ?`
-                    <small
-                      style="
-                        position:absolute;
-                        right:2px;
-                        bottom:1px;
-                        font-size:8px
-                      "
-                    >
-                      LOCK
-                    </small>
-                  `
-                  :''
-              }
-            </div>
-          `;
-        }
-
-        h+=`</div>`;
-
-        h+=`
-          <div class="sc-legend">
-            <span>💡 힌트 ${this.hint}</span>
-            <span>🔀 셔플 ${this.shuffle}</span>
-            <span>💣 폭탄</span>
-            <span>🔒 잠금</span>
-            <span>² 2중 패</span>
-          </div>
-        `;
-
-        h+=`
-          <div class="g2b">
-            <button
-              class="btn"
-              onclick="CUR.useHint()"
-            >
-              💡 힌트
-            </button>
-
-            <button
-              class="btn b2"
-              onclick="CUR.useShuffle()"
-            >
-              🔀 셔플
-            </button>
-
-            <button
-              class="btn b2"
-              onclick="CUR.pause()"
-            >
-              ${
-                this.paused
-                  ?'▶ 계속'
-                  :'⏸ 일시정지'
-              }
-            </button>
-          </div>
-        `;
-
-        if(this.paused&&!this.over){
-          h+=`
-            <div
-              class="card"
-              style="
-                text-align:center;
-                font-weight:900
-              "
-            >
-              ⏸ 일시정지 중
-            </div>
-          `;
-        }
-
-        if(this.over){
-          const f=this.final;
-
-          h+=`
-            <div
-              class="card"
-              style="
-                text-align:center;
-                border-color:
-                  ${f.win?'#e0a800':'#d33'};
-                background:
-                  ${f.win?'#fff8e1':'#fff5f5'}
-              "
-            >
-              <div
-                style="
-                  font-size:26px;
-                  font-weight:1000
-                "
-              >
-                ${
-                  f.win
-                    ?'🎉 ALL CLEAR'
-                    :'🧩 GAME OVER'
-                }
-              </div>
-
-              <div class="gbig">
-                ${f.elapsed.toFixed(2)}초
-              </div>
-
-              <div
-                style="
-                  font-size:15px;
-                  line-height:1.8
-                "
-              >
-                점수
-                <b>
-                  ${this.score.toLocaleString()}
-                </b>
-                · 최고 콤보
-                <b>
-                  x${this.bestCombo}
-                </b>
-                <br>
-
-                ${
-                  f.win
-                    ?'기록이 서버 랭킹에 제출됐어요.'
-                    :'다음 판에서는 막히기 전에 셔플을 써보세요.'
-                }
-              </div>
-            </div>
-          `;
-
-          h+=`
-            <div class="g2b">
-
-              <button
-                class="btn g"
-                onclick="CUR.go('${this.lv}')"
-              >
-                🀄 한 판 더
-              </button>
-
-              <button
-                class="btn b2"
-                onclick="CUR.lv=null;rr()"
-              >
-                난이도 변경
-              </button>
-
-            </div>
-          `;
-        }
-
-        h+=`</div>`;
-
-        return h;
-      }
-    };
-  }
-
-  G.push({k:'sichuan',cat:'퍼즐',e:'🀄',n:'사천성',d:'같은 패를 2번 이하로 꺾어 연결 · 콤보·피버·특수 패',...gobj()});
+  const stars=()=>lsGet('sc_star',{});
+  const opened=()=>Math.max(1,lsGet('sc_open',1));
+
+  G.push({k:KEY,cat:'퍼즐',e:'🀄',n:'사천성',d:'같은 그림을 2번 이하로 꺾어 연결 · 클래식·타임어택·12스테이지',
+    start(){addStyle();this.stop();this.mode=lsGet('sc_mode','클래식');this.lv=null;this.stg=null;this.over=0;rr();},
+    stop(){clearInterval(this.iv);this.iv=null;clearTimeout(this.lt);},
+    setMode(m){this.mode=m;lsSet('sc_mode',m);rr();},
+    home(){this.stop();this.lv=null;this.stg=null;this.over=0;rr();scrollTo(0,0);},
+    // 판 시작: 클래식/타임어택은 go(난이도), 스테이지는 goStage(n)
+    go(lv){const C=LVC[lv];const shape=pick(C.shapes);const ta=this.mode==='타임어택';
+      this.begin(build(shape,C.w,C.h,0,ta?(lv==='쉬움'?1:2):0),{lv,limit:ta?TA_TIME[lv]:0,hint:ta?3:99,shuf:ta?2:99,title:`${lv} · ${SHAPE_NAME[shape]}`});},
+    goStage(n){if(n>opened())return;const S=STAGES[n-1];const st=build(S.s,S.w,S.h,S.lock||0,S.bomb||0);
+      const tiles=st.B.filter(Boolean).length;
+      this.begin(st,{stg:n,limit:Math.round(30+tiles*2.6*(1-n*0.02)),hint:3,shuf:2,title:`스테이지 ${n} · ${S.n}`});},
+    begin(st,o){this.stop();Object.assign(this,{st,lv:o.lv||null,stg:o.stg||null,limit:o.limit,hint:o.hint,shuf:o.shuf,title:o.title,
+      sel:-1,line:null,hl:null,over:0,pen:0,score:0,combo:0,bestCombo:0,lastHit:0,msg:'같은 그림 2개를 눌러 이어 보세요',t0:nowS(),pAt:0,pTot:0});
+      this.iv=setInterval(()=>this.tick(),200);rr();scrollTo(0,0);},
+    el(){return ((this.pAt||nowS())-this.t0-this.pTot)/1000;},
+    left(){return Math.max(0,this.limit-this.el());},
+    tick(){if(this.over||this.pAt)return;const e=$('scT');
+      if(this.limit){const l=this.left();if(e)e.textContent=Math.ceil(l)+'초';if(e)e.style.color=l<10?'#d33b3b':'';if(l<=0)this.finish(false,'⏰ 시간 초과');}
+      else if(e)e.textContent=fmtScore(KEY,(this.el()+this.pen)*1000);},
+    pause(){if(this.over)return;if(this.pAt){this.pTot+=nowS()-this.pAt;this.pAt=0;}else this.pAt=nowS();rr();},
+    tap(i){if(this.over||this.pAt)return;const t=this.st.B[i];if(!t)return;
+      if(t.lock){this.msg='🔒 잠긴 패 · 옆 패를 먼저 없애면 풀려요';rr();return;}
+      if(this.sel<0||this.sel===i){this.sel=this.sel===i?-1:i;rr();return;}
+      const a=this.sel,A=this.st.B[a];
+      if(A.v!==t.v){this.sel=i;this.msg='다른 그림이에요';rr();return;}
+      const p=findPath(this.st,a,i);
+      if(!p){this.sel=i;this.msg='↪ 길이 막혔어요 (꺾기는 2번까지)';rr();return;}
+      this.hit(a,i,p);},
+    hit(a,b,p){const B=this.st.B,bomb=B[a].bomb;B[a]=null;B[b]=null;this.sel=-1;this.hl=null;
+      const t=nowS();this.combo=t-this.lastHit<3000?this.combo+1:1;this.lastHit=t;this.bestCombo=Math.max(this.bestCombo,this.combo);
+      this.score+=100+Math.min(300,(this.combo-1)*30);
+      this.msg=this.combo>1?`🔥 ${this.combo} 콤보!`:'좋아요!';
+      this.unlockNear(a);this.unlockNear(b);
+      if(bomb){const ex=pairsOf(this.st);if(ex.length){const [c,d]=pick(ex);B[c]=null;B[d]=null;this.unlockNear(c);this.unlockNear(d);}
+        this.score+=200;if(this.limit)this.pTot+=5000;this.msg='💣 폭탄! 한 쌍 더 제거'+(this.limit?' · +5초':'');}
+      this.showLine(p);
+      if(!B.some(Boolean)){this.finish(true,'🎉 모두 없앴어요!');return;}
+      this.unstick();rr();},
+    unlockNear(p){const {w,h,B}=this.st,x=p%w,y=p/w|0;
+      for(const [dx,dy] of D4){const X=x+dx,Y=y+dy;if(X>=0&&Y>=0&&X<w&&Y<h&&B[Y*w+X]&&B[Y*w+X].lock){delete B[Y*w+X].lock;this.msg+=' 🔓';}}},
+    // 더 이을 수 있는 짝이 없으면: 잠금을 풀고, 그래도 없으면 무료 자동 셔플
+    unstick(){if(pairsOf(this.st).length)return;
+      const lk=this.st.B.filter(t=>t&&t.lock);if(lk.length){lk.forEach(t=>delete t.lock);if(pairsOf(this.st).length){this.msg='🔓 막혀서 잠금이 모두 풀렸어요';return;}}
+      for(let k=0;k<40;k++){reshuffle(this.st);if(pairsOf(this.st).length)break;}this.msg='🔀 이을 짝이 없어서 자동으로 섞었어요';},
+    showLine(p){this.line=p;clearTimeout(this.lt);this.lt=setTimeout(()=>{this.line=null;if(!this.over&&CUR===this)rr();},380);},
+    useHint(){if(this.over||this.pAt)return;if(this.hint<=0){toast('힌트를 다 썼어요');return;}
+      const ps=pairsOf(this.st);if(!ps.length){this.unstick();rr();return;}
+      const [a,b]=pick(ps);this.hint--;this.hl=[a,b];this.sel=-1;this.combo=0;
+      if(!this.limit){this.pen+=10;this.msg='💡 힌트 · 기록 +10초';}else if(this.mode==='타임어택'&&!this.stg){this.pTot-=5000;this.msg='💡 힌트 · 시간 -5초';}else this.msg='💡 힌트';
+      this.showLine(findPath(this.st,a,b));rr();},
+    useShuf(){if(this.over||this.pAt)return;if(this.shuf<=0){toast('셔플을 다 썼어요');return;}
+      this.shuf--;reshuffle(this.st);for(let k=0;k<40&&!pairsOf(this.st).length;k++)reshuffle(this.st);
+      this.sel=-1;this.hl=null;this.combo=0;if(!this.limit){this.pen+=15;this.msg='🔀 셔플 · 기록 +15초';}else this.msg='🔀 셔플!';rr();},
+    finish(win,why){if(this.over)return;this.stop();this.line=null;const el=this.el();this.over=win?1:2;this.msg=why;
+      this.res={el,ms:Math.round((el+this.pen)*1000)};
+      if(win&&this.stg){const n=this.stg,r=this.left()/this.limit,s=r>=.5?3:r>=.25?2:1,S=stars();if(!S[n]||S[n]<s){S[n]=s;lsSet('sc_star',S);}
+        if(n>=opened()&&n<STAGES.length)lsSet('sc_open',n+1);this.res.star=s;}
+      else if(win&&this.mode==='타임어택'){const bonus=Math.round(this.left()*20);this.score+=bonus;this.res.bonus=bonus;
+        const k='sc_ta_'+this.lv,b=lsGet(k,0);this.res.newBest=this.score>b;if(this.score>b)lsSet(k,this.score);}
+      else if(win)record(KEY,this.res.ms,this.lv);   // 클래식 클리어만 서버 랭킹
+      rr();},
+    // ---------- 화면 ----------
+    menu(){
+      const md=`<div class="tabs" style="margin-bottom:8px">${MODES.map(([m,e])=>`<button class="${this.mode===m?'on':''}" onclick="CUR.setMode('${m}')">${e} ${m}</button>`).join('')}</div>`;
+      const how=`<div class="card m" style="line-height:1.6;font-size:13px">같은 그림 2개를 차례로 눌러요. 두 패를 잇는 선이 <b>2번 이하로 꺾이고</b> 다른 패를 지나가지 않으면 없어져요. 판 바깥 테두리로 돌아가도 돼요.</div>`;
+      if(this.mode==='스테이지'){const S=stars(),op=opened();
+        return md+how+`<div class="card" style="margin-top:8px"><div class="t">🗺️ 스테이지 (${op}/${STAGES.length} 열림)</div><div class="m" style="margin:4px 0 8px;font-size:12.5px">깨면 다음 단계가 열려요 · 빨리 깰수록 ★ · 4단계부터 🔒잠금, 6단계부터 💣폭탄 패</div>
+          <div class="sc-sg">${STAGES.map((s,i)=>{const n=i+1,lk=n>op;return `<button class="${lk?'lk':n===op?'op':''}" ${lk?'disabled':`onclick="CUR.goStage(${n})"`}>${lk?'🔒':n}<small>${lk?s.n:(S[n]?'★'.repeat(S[n])+'☆'.repeat(3-S[n]):s.n)}</small></button>`;}).join('')}</div></div>
+          ${op<=STAGES.length?`<button class="btn full" style="margin-top:8px" onclick="CUR.goStage(${op})">▶ 스테이지 ${op} 도전</button>`:''}`;}
+      const ta=this.mode==='타임어택';
+      const best=['쉬움','보통','어려움'].map(l=>{const v=ta?lsGet('sc_ta_'+l,0):myBest(KEY,l);return `<div class="row"><span>${l}</span><span class="m">${v?(ta?v.toLocaleString()+'점':fmtScore(KEY,v)):'-'}</span></div>`;}).join('');
+      return md+how+`<div class="card m" style="margin-top:8px;font-size:12.5px">${ta?`제한 시간(쉬움 ${TA_TIME['쉬움']}초 · 보통 ${TA_TIME['보통']}초 · 어려움 ${TA_TIME['어려움']}초) 안에 모두 없애면 남은 시간이 점수로 더해져요. 콤보·💣폭탄 패(+5초) · 기록은 이 기기에만`:'매판 맵 모양이 바뀌어요. 클리어 시간이 기록돼요 (힌트 +10초 · 셔플 +15초). 어려움 기록은 랭킹에 올라가요'}</div>`
+        +lvPick('CUR.go')+`<div class="sec">내 최고 기록</div><div class="card">${best}</div>`;},
+    view(){
+      if(!this.st||(!this.lv&&!this.stg))return this.menu();
+      const {w,h,B}=this.st,W=w+2,H=h+2,avail=Math.min(innerWidth,620)-28,cw=Math.max(20,Math.min(44,Math.floor(avail/W))),ch=Math.round(cw*1.18),fs=Math.round(cw*.66);
+      const hl=this.hl||[];let cells='';
+      for(let y=-1;y<=h;y++)for(let x=-1;x<=w;x++){
+        const inb=x>=0&&y>=0&&x<w&&y<h,i=y*w+x,t=inb?B[i]:null;
+        cells+=t?`<div class="sc-c"><div class="sc-t${i===this.sel?' sel':''}${t.lock?' lock':''}${hl.includes(i)?' hint':''}" onclick="CUR.tap(${i})" style="font-size:${fs}px">${SYM[t.v]}${t.lock?'<span class="bd">🔒</span>':t.bomb?'<span class="bd">💣</span>':''}</div></div>`:'<div></div>';}
+      let svg='';
+      if(this.line){const pts=this.line.map(([x,y])=>`${(x+1.5)*cw},${(y+1.5)*ch}`).join(' ');
+        svg=`<svg class="sc-svg" width="${W*cw}" height="${H*ch}"><polyline points="${pts}" fill="none" stroke="#ffcf33" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;}
+      const left=this.pairsLeft=B.filter(Boolean).length;
+      const tm=this.over?'':(this.limit?Math.ceil(this.left())+'초':fmtScore(KEY,(this.el()+this.pen)*1000));
+      let h2=`<div class="gst"><span>${esc(this.title)}</span><span>⏱ <b id="scT">${tm}</b></span></div>
+        <div class="gst" style="font-size:12.5px"><span>남은 패 <b>${left}</b>${this.mode==='타임어택'&&!this.stg?` · 점수 <b>${this.score.toLocaleString()}</b>`:''}</span><span>${this.combo>1?'🔥 '+this.combo+' 콤보':''}</span></div>
+        <div class="sc-msg">${esc(this.msg||'')}</div>
+        <div class="sc-bd" style="grid-template-columns:repeat(${W},${cw}px);grid-template-rows:repeat(${H},${ch}px);width:${W*cw+8}px">${cells}${svg}</div>`;
+      if(this.pAt)h2+=`<div class="card" style="text-align:center;font-weight:900">⏸ 일시정지 중</div>`;
+      if(!this.over)return h2+`<div class="g3b"><button class="btn" onclick="CUR.useHint()">💡 힌트 ${this.hint>9?'':this.hint}</button><button class="btn b2" onclick="CUR.useShuf()">🔀 셔플 ${this.shuf>9?'':this.shuf}</button><button class="btn b2" onclick="CUR.pause()">${this.pAt?'▶ 계속':'⏸ 멈춤'}</button></div>
+        <button class="btn b2 full" style="margin-top:6px" onclick="CUR.home()">그만하고 메뉴로</button>`;
+      const r=this.res,win=this.over===1;let body,btns;
+      if(this.stg){const n=this.stg,last=n>=STAGES.length;
+        body=win?`<div class="gbig">${'★'.repeat(r.star)}${'☆'.repeat(3-r.star)}</div><div>스테이지 ${n} 클리어! · ${r.el.toFixed(1)}초</div><div class="m" style="margin-top:4px">${last?'🏆 모든 스테이지를 깼어요!':`스테이지 ${n+1} 「${STAGES[n].n}」이 열렸어요`}</div>`
+          :`<div class="gbig">😵</div><div>${esc(this.msg)} · 남은 패 ${left}개</div><div class="m" style="margin-top:4px">힌트·셔플을 아끼지 말고 써 보세요</div>`;
+        btns=win&&!last?`<button class="btn g" onclick="CUR.goStage(${n+1})">▶ 다음 스테이지</button><button class="btn b2" onclick="CUR.goStage(${n})">다시 하기</button>`
+          :`<button class="btn g" onclick="CUR.goStage(${n})">다시 도전</button><button class="btn b2" onclick="CUR.home()">스테이지 목록</button>`;}
+      else if(this.mode==='타임어택'){body=win?`<div class="gbig">${this.score.toLocaleString()}점</div><div>남은 시간 보너스 +${r.bonus} · 최고 콤보 ${this.bestCombo}${r.newBest?' · 🏆 내 최고!':''}</div>`
+          :`<div class="gbig">${this.score.toLocaleString()}점</div><div>${esc(this.msg)} · 남은 패 ${left}개</div>`;
+        btns=`<button class="btn g" onclick="CUR.go('${this.lv}')">한 판 더</button><button class="btn b2" onclick="CUR.home()">난이도 선택</button>`;}
+      else{body=`<div class="gbig">${fmtScore(KEY,r.ms)}</div><div>${this.lv} 클리어${this.pen?` (힌트·셔플 +${this.pen}초 포함)`:''}</div>${this.lv==='어려움'?'':'<div class="m" style="margin-top:4px">랭킹에는 어려움 기록만 올라가요</div>'}`;
+        btns=`<button class="btn g" onclick="CUR.go('${this.lv}')">한 판 더</button><button class="btn b2" onclick="CUR.home()">난이도 선택</button>`;}
+      return h2+`<div class="card" style="text-align:center;line-height:1.6;border-color:${win?'#e0a800':'#d33b3b'}">${body}</div><div class="g2b">${btns}</div>`;}
+  });
 })();
 // ===== 🕹️ 아케이드 =====
 function cvSetup(game,w,h,extra){show(`<div class="gst"><span>점수 <b id="csc">0</b></span><span>내 최고 ${(myBest(game.k)||0).toLocaleString()}</span></div><canvas id="cv" class="cv" width="${w}" height="${h}"></canvas>${extra||''}<div id="cmsg" class="m" style="text-align:center;margin-top:8px"></div>`);
