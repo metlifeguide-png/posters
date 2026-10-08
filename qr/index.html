@@ -107,6 +107,7 @@ function norm(L){L={...L};if(L.card===undefined&&L.hero!==undefined)L.card=L.her
   L[s+'b']=l.trim();L[s]=r.trim()}});return L}
 const _unused=[[100,200],[150,300],[200,400],[300,600],[400,800],[500,1000],[600,1200],[800,1600],[1000,2000],[1500,3000],[2000,4000],[2500,5000],[3000,6000],[4000,8000],[5000,10000]];
 let D={tours:[]},T=null,ed=null,aK='stack',R=null,U=null,pend=null;
+const MTOK=(()=>{try{return localStorage.getItem("mtok")||""}catch(e){return ""}})();   // 👤 뚝섬 회원 token (홈 로그인)
 const API="https://211-233-211-164.sslip.io",H={"Content-Type":"application/json","ngrok-skip-browser-warning":"true"};
 try{U=JSON.parse(localStorage.getItem('qr_sess')||'null')}catch(e){}
 const ck=()=>'hr1_'+U.login.toLowerCase();
@@ -128,7 +129,7 @@ async function boot(){let loc=null;try{loc=JSON.parse(localStorage.getItem(ck())
   if((dirty||!D.tours.length)&&loc&&loc.tours&&loc.tours.length){D=loc;push()}}
  catch(e){D=loc&&loc.tours?loc:{tours:[]}}
  $('#auth').hidden=true;$('#who').textContent=U.login;home()}
-function logout(exp){U=null;D={tours:[]};T=null;try{localStorage.removeItem('qr_sess')}catch(e){}$('#app').hidden=true;$('#home').hidden=true;$('#auth').hidden=false;sync();$('#am').textContent=exp?'다시 로그인해 주세요':''}
+function logout(exp){if(exp&&MTOK&&!window._qrRetry){window._qrRetry=1;qrMember();return}U=null;D={tours:[]};T=null;try{localStorage.removeItem('qr_sess')}catch(e){}$('#app').hidden=true;$('#home').hidden=true;$('#auth').hidden=false;sync();$('#am').textContent=exp?'다시 로그인해 주세요':''}
 function toast(m){const t=$('#ts');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1400)}
 
 /* ---------- 게임 엔진 ---------- */
@@ -311,15 +312,21 @@ function init(){mk();kp();
   if(a==='gto'){if(!h.S.bb){toast('blind 줄에 BB를 입력하면 GTO Wizard 복사가 돼요');return}cp(ps(h))}else if(a==='cl')cp(cl(h));
   else if(a==='ed'){ed=id;T.S={...h.S};let L2=h.L;if(T.S.v!==2){if(T.S.bb>0)L2=conv(norm(h.L),T.S.bb);T.S.v=2}T.form=L2;ses();setL(L2);sv();upd();window.scrollTo(0,0);toast('불러왔습니다. 저장하면 덮어씁니다')}
   else if(a==='del'&&confirm('이 핸드를 삭제할까요?')){T.hands=T.hands.filter(x=>x.id!==id);sv();hands()}};
- $('#li').onclick=()=>authGo('login');$('#su').onclick=()=>authGo('signup');$('#lo').onclick=()=>logout(false);
+ $('#li').onclick=()=>authGo('login');$('#su').onclick=()=>authGo('signup');$('#lo').hidden=true;   // 로그아웃은 뚝섬 홈에서
  $('#pw').onkeydown=e=>{if(e.key==='Enter')authGo('login')};
- if(U)boot()}
+ if(MTOK)qrMember();}
 init();
 
+// 👤 핸드 기록은 뚝섬 회원 로그인(홈 오른쪽 위)을 그대로 씀 · 따로 아이디를 만들지 않음 (서버 /api/qr/member)
+async function qrMember(){$('#auth').hidden=true;
+ try{const r=await fetch(API+'/api/qr/member',{method:'POST',headers:H,body:JSON.stringify({mtok:MTOK})}),j=await r.json().catch(()=>({}));
+  if(!r.ok){memGate();return}
+  U={login:j.login,token:j.token};try{localStorage.setItem('qr_sess',JSON.stringify(U))}catch(e){}await boot()}
+ catch(e){if(U)await boot();else{$('#auth').hidden=false;$('#am').textContent='서버에 연결할 수 없어요'}}}
 // 👤 빠른복기는 뚝섬 회원만 (홈 오른쪽 위 로그인을 같이 씀 · 서버 quickrec.py가 mtok 확인)
-const MTOK=(()=>{try{return localStorage.getItem("mtok")||""}catch(e){return ""}})();
-if(!MTOK){const w=document.createElement("div");w.id="memGate";
+function memGate(){if(document.getElementById("memGate"))return;const w=document.createElement("div");w.id="memGate";
  w.style.cssText="position:fixed;inset:0;z-index:99999;background:rgba(20,24,30,.72);display:flex;align-items:center;justify-content:center;padding:18px";
- w.innerHTML='<div style="background:#fff;color:#222;border-radius:16px;padding:22px 18px;max-width:340px;width:100%;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.35)"><div style="font-size:30px">🔒</div><div style="font-weight:900;font-size:17px;margin:6px 0">로그인 후 이용해 주세요</div><div style="font-size:13.5px;color:#555;line-height:1.6;margin-bottom:14px">빠른복기는 뚝섬 회원만 쓸 수 있어요.<br>뚝섬 홈 오른쪽 위에서 로그인(회원가입)한 뒤 다시 열어주세요.</div><a href="../hub/" target="_top" style="display:block;background:#1f5fae;color:#fff;text-decoration:none;border-radius:11px;padding:12px;font-weight:800">뚝섬 홈으로 가기</a><button type="button" onclick="location.reload()" style="margin-top:8px;width:100%;border:0;background:none;padding:10px;color:#666;font-size:14px">로그인했어요 · 다시 열기</button></div>';
+ w.innerHTML='<div style="background:#fff;color:#222;border-radius:16px;padding:22px 18px;max-width:340px;width:100%;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.35)"><div style="font-size:30px">🔒</div><div style="font-weight:900;font-size:17px;margin:6px 0">로그인 후 이용해 주세요</div><div style="font-size:13.5px;color:#555;line-height:1.6;margin-bottom:14px">핸드 기록은 뚝섬 회원 아이디로 바로 쓸 수 있어요.<br>뚝섬 홈 오른쪽 위에서 로그인(회원가입)한 뒤 다시 열어주세요.</div><a href="../hub/" target="_top" style="display:block;background:#1f5fae;color:#fff;text-decoration:none;border-radius:11px;padding:12px;font-weight:800">뚝섬 홈으로 가기</a><button type="button" onclick="location.reload()" style="margin-top:8px;width:100%;border:0;background:none;padding:10px;color:#666;font-size:14px">로그인했어요 · 다시 열기</button></div>';
  document.body.appendChild(w);}
+if(!MTOK)memGate();
 </script></body></html>
