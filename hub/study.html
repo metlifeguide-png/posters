@@ -356,7 +356,7 @@ function rvEq(A,B,board,N){let w=0,t=0;for(let k=0;k<N;k++){const a=pick(A),b=pi
 function texture(b){const r=b.map(c=>c.r).sort((x,y)=>y-x),s=new Set(b.map(c=>c.s)).size;const hi=r[0];const conn=r[0]-r[2]<=4&&new Set(r).size===3;const pair=new Set(r).size<3;
  return {hi,conn,pair,mono:s===1,two:s===2,low:hi<=9,high:hi>=12};}
 G.push({k:'nutadv',cat:'홀덤',e:'🧭',n:'넛 우위 맞히기',d:'포지션별 레인지 · 누구 보드인가',
- start(){this.i=0;this.sc=0;this.res=null;this.nq();rr();},
+ start(){this.i=0;this.sc=0;this.res=null;this.pend=false;this.nq();rr();},
  nq(){const sp=pick(SPOTS);let board;do{board=deck().slice(0,3);}while(false);const IPc=combos(parseRange(sp.IP),board),OOPc=combos(parseRange(sp.OOP),board);
   const [ni,si]=nutPct(IPc,board),[no,so]=nutPct(OOPc,board);const eq=rvEq(IPc,OOPc,board,900);const d=ni-no;const ans=Math.abs(d)<0.015?'=':(d>0?'ip':'oop');
   this.q={sp,board,ni,no,si,so,eq,ans};},
@@ -373,13 +373,15 @@ G.push({k:'nutadv',cat:'홀덤',e:'🧭',n:'넛 우위 맞히기',d:'포지션�
     <div class="m" style="margin:4px 0">넛(투페어 이상) 비율 ${r.q.sp.ip} ${(r.q.ni*100).toFixed(1)}% · ${r.q.sp.oop} ${(r.q.no*100).toFixed(1)}% · 레인지 에퀴티 ${r.q.sp.ip} ${Math.round(r.q.eq*100)}%</div>
     ${this.explain(r.q)}</div>${this.askBoxHtml?this.askBoxHtml():''}`:'';
   if(this.i>=10)return overHtml(this.sc+'/10','넛 우위 맞히기 10문제 · 내 최고 '+(myBest('nutadv')||this.sc)+'/10')+fb;
+  if(this.pend)return `<div class="gst"><span>${this.i} / 10 완료</span><span>정답 <b>${this.sc}</b></span></div>`+fb.replace('직전 문제 풀이','문제 풀이')+`<button class="btn full g" style="font-size:17px;padding:13px;margin-top:10px" onclick="CUR.next()">다음 문제 (${this.i+1}/10)</button>`;
   return `<div class="gst"><span>${this.i+1} / 10</span><span>정답 <b>${this.sc}</b></span></div>
    <div class="card" style="text-align:center"><div class="m">${q.sp.t} · 100BB</div><div class="t" style="font-size:16px;margin:4px 0">${q.sp.n}</div><div class="lbl">플랍</div>${cardsHtml(q.board)}
     <div class="gq" style="margin:10px 0 0">넛 우위는 누구에게?</div></div>
    <div class="g3b"><button class="btn" onclick="CUR.ans('ip')">${q.sp.ip}</button><button class="btn gr" onclick="CUR.ans('=')">비슷</button><button class="btn b2" onclick="CUR.ans('oop')">${q.sp.oop}</button></div>
    ${fb}
    <div class="m" style="text-align:center;margin-top:8px">넛 = 투페어(두 장 다 사용)·셋·스트레이트 이상 · 레인지는 100BB 기준 대표 레인지 · 계산 기반 해설(솔버 경향 요약)</div>`;},
- ans(a){const ok=a===this.q.ans;if(ok)this.sc++;this.res={ok,q:this.q};this.i++;if(this.i>=10)record('nutadv',this.sc);else this.nq();rr();scrollTo(0,0);}});
+ ans(a){if(this.pend)return;const ok=a===this.q.ans;if(ok)this.sc++;this.res={ok,q:this.q};this.i++;if(this.i>=10)record('nutadv',this.sc);else this.pend=true;rr();scrollTo(0,0);},
+ next(){if(!this.pend)return;this.pend=false;this.res=null;this.nq();rr();scrollTo(0,0);}});
 // ===== 🎴 바카라 카운팅 트레이너 (8덱 슈 · 컷카드 16장) =====
 const BV=r=>r>=10&&r<=13?0:r===14?1:r;
 const LV1=r=>{const v=BV(r);return v>=1&&v<=4?1:(v>=5&&v<=8?-1:0);};
