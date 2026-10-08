@@ -225,11 +225,24 @@ G.push({k:'pushfold',cat:'홀덤',e:'🔥',n:'푸시/폴드',d:'올인·콜 판�
 // Lv.1 = 예전 팟 오즈 그대로 (점수·랭킹 'potodds'). Lv.2~5 = 정답률 중심 (랭킹 없음, record 안 보냄)
 // studyLog: 유형별 정답률(st_<game>)과 틀린 문제(wn_<game>)를 이 기기에 저장. 서버 전송은 study.py 단계에서 여기에 추가.
 function studyLog(game,tag,lv,ok,ms,p){
+  const key=p?JSON.stringify(p):'';
   const st=lsGet('st_'+game,{});const e=st[tag]||(st[tag]=[0,0]);e[1]++;if(ok)e[0]++;lsSet('st_'+game,st);
-  if(!p)return;const key=JSON.stringify(p),wn=lsGet('wn_'+game,[]);
-  if(ok){const n=wn.filter(x=>x.k!==key);if(n.length!==wn.length)lsSet('wn_'+game,n);}
-  else if(!wn.some(x=>x.k===key)){wn.unshift({k:key,tag,lv,t:Date.now()});lsSet('wn_'+game,wn.slice(0,50));}
+  if(key){const wn=lsGet('wn_'+game,[]);
+    if(ok){const n=wn.filter(x=>x.k!==key);if(n.length!==wn.length)lsSet('wn_'+game,n);}
+    else if(!wn.some(x=>x.k===key)){wn.unshift({k:key,tag,lv,t:Date.now()});lsSet('wn_'+game,wn.slice(0,50));}}
+  const q=lsGet('study_q',[]);q.push({game,tag,lv:lv|0,ok:ok?1:0,ms:ms|0,p:key,t:Date.now()});lsSet('study_q',q.slice(-300));
+  studyFlush();
 }
+// 서버 전송: 닉네임이 있을 때만. 실패하면 대기열(study_q)에 남겨 두고 다음에 다시 보냄. 서버는 같은 기록을 한 번만 저장
+let STUDY_SENDING=false;
+function studyFlush(){
+  if(STUDY_SENDING||!NICK)return;const q=lsGet('study_q',[]);if(!q.length)return;
+  const part=q.slice(0,50);STUDY_SENDING=true;
+  fetch(API+'/api/study/log',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({nick:NICK,items:part})})
+   .then(r=>r.json()).then(r=>{STUDY_SENDING=false;if(r&&r.ok){const sent=new Set(part.map(x=>x.game+x.t));lsSet('study_q',lsGet('study_q',[]).filter(x=>!sent.has(x.game+x.t)));if(lsGet('study_q',[]).length)setTimeout(studyFlush,300);}})
+   .catch(()=>{STUDY_SENDING=false;});
+}
+setTimeout(studyFlush,2000);
 const PO_LV=[{id:1,n:'기본',d:'팟·베팅 → 필요 승률',tag:'po_basic'},{id:2,n:'멀티웨이',d:'앞에 콜러 1~3명',tag:'po_multi'},{id:3,n:'프리플랍 팟',d:'빅앤티·블라인드·오픈·3벳',tag:'po_pre'},{id:4,n:'콜/폴드 판단',d:'필요 승률 vs 내 에퀴티',tag:'po_equity'},{id:5,n:'블러프 본전',d:'상대가 몇 % 폴드해야 본전?',tag:'po_bluff'}];
 const PO_DRAWS=[{n:'플러시 드로우',o:9},{n:'양끝 스트레이트 드로우',o:8},{n:'거트샷(속 빈 스트레이트 드로우)',o:4},{n:'오버카드 2장',o:6},{n:'플러시 드로우 + 거트샷',o:12},{n:'플러시 드로우 + 양끝 스트레이트 드로우',o:15}];
 const poN=n=>(+n).toLocaleString(),poB=n=>String(+(+n).toFixed(1));
