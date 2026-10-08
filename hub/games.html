@@ -526,7 +526,7 @@ G.push({k:'blackjack',cat:'카드',e:'🂡',n:'블랙잭 트레이너',d:'스플
   const top=`<div class="gst"><span>칩 <b>${this.chips.toLocaleString()}</b></span><span>최고 <b>${this.peak.toLocaleString()}</b> · 일치 ${this.total?Math.round(this.good/this.total*100):0}%</span></div>`;
   if(this.ph==='bet'){
    if(this.chips<10)return tabs+top+`<div class="gq">칩이 다 떨어졌어요 😢<br><span class="m">최고 기록 ${this.peak.toLocaleString()}칩은 랭킹에 남아요</span></div><button class="btn full" onclick="CUR.refillChips()">1,000칩 다시 받기</button>`;
-   if(this.quiz)return tabs+top+`<div class="card" style="border-color:var(--blue)"><div class="t">🧠 지금 러닝 카운트는? (Hi-Lo)</div><div style="display:flex;gap:6px;margin-top:6px"><input class="q" id="rcin" inputmode="numeric" placeholder="예: -3" onkeydown="if(event.key==='Enter')CUR.qcheck(this.value)"><button class="btn" style="flex:none" onclick="CUR.qcheck($('rcin').value)">확인</button></div></div>`;
+   if(this.quiz)return tabs+top+`<div class="card" style="border-color:var(--blue)"><div class="t">🧠 지금 러닝 카운트는? (Hi-Lo)</div><div style="display:flex;gap:6px;margin-top:6px"><input class="q" id="rcin" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="numeric" placeholder="예: -3" onkeydown="if(event.key==='Enter')CUR.qcheck(this.value)"><button class="btn" style="flex:none" onclick="CUR.qcheck($('rcin').value)">확인</button></div></div>`;
    return tabs+top+cnt+`<div class="gbig" style="font-size:38px">${this.bet.toLocaleString()}</div><div class="lbl">베팅 금액</div>
     <div class="g4b" style="grid-template-columns:repeat(4,1fr)">${[10,50,100,500].map(v=>`<button class="btn b2" onclick="CUR.addBet(${v})">+${v}</button>`).join('')}</div>
     <div class="g4b" style="grid-template-columns:repeat(4,1fr);margin-top:8px"><button class="btn gr" onclick="CUR.setBet(0)">지우기</button><button class="btn gr" onclick="CUR.setBet(CUR.bet/2)">½</button><button class="btn gr" onclick="CUR.setBet(CUR.bet*2)">×2</button><button class="btn gr" onclick="CUR.setBet(CUR.chips)">올인</button></div>
@@ -685,7 +685,7 @@ G.push({k:'chosung',cat:'퍼즐',e:'🔤',n:'초성퀴즈',d:'영화·드라마�
   if(this.over)return overHtml(this.sc+'개',this.th+' · 극악 1분 · 맞힌 개수 · 내 최고 '+(myBest('chosung')||this.sc)+'개',"CUR.pick(CUR.th)")+`<button class="btn full b2" style="margin-top:8px" onclick="CUR.menu()">🎯 테마 다시 선택</button>`;
   const [w,hint,tm]=this.L[this.i];
   return `<div class="gst"><span>⏱ <b id="tleft">${this.timeLeft()}초</b></span><span>맞힘 <b>${this.sc}</b> · ❌ ${this.wr} <small>(오답 -1초)</small></span></div><div class="gbig" style="letter-spacing:6px">${this.hs?`<span style="color:var(--blue)">${w[0]}</span>`+cho(w).slice(1):cho(w)}</div><div class="gq">🏷 테마: ${CICON[tm]||''} ${tm}${this.th==='랜덤'?' (랜덤)':''} · 🔥 극악</div><div class="gq">💡 ${hint}</div>
-   <input class="q" id="cin" autocomplete="off" placeholder="정답 입력 후 엔터" onkeydown="if(event.key==='Enter')CUR.ans(this.value)">
+   <input class="q" id="cin" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="정답 입력 후 엔터" onkeydown="if(event.key==='Enter')CUR.ans(this.value)">
    <div class="g2b"><button class="btn" onclick="CUR.ans($('cin').value)">확인</button><button class="btn b2" ${this.hn>=3||this.hs?'disabled':''} onclick="CUR.useHint()">💡 첫 글자 (${3-this.hn})</button></div>
    <button class="btn full gr" style="margin-top:8px" ${this.ps>=2?'disabled':''} onclick="CUR.pass()">패스 (${2-this.ps})</button>
    <button class="btn full b2" style="margin-top:8px" onclick="CUR.menu()">← 테마 선택으로</button>`;},
@@ -697,7 +697,7 @@ G.push({k:'baseball',cat:'퍼즐',e:'⚾',n:'숫자야구',d:'겹치지 않는 3
  start(){this.a=shuf([1,2,3,4,5,6,7,8,9]).slice(0,3).join('');this.h=[];this.done=false;rr();},
  view(){return `<div class="gst"><span>시도 <b>${this.h.length}</b></span><span>내 최고 ${myBest('baseball')?myBest('baseball')+'번':'-'}</span></div><div class="m" style="text-align:center;margin-bottom:8px">1~9 서로 다른 숫자 3개 · 자리까지 맞으면 S, 숫자만 맞으면 B</div>
   ${this.done?`<div class="gok">🎉 정답 ${this.a}! ${this.h.length}번 만에</div><button class="btn full" onclick="CUR.start()">다시 하기</button>`
-  :`<input class="q" id="bin" inputmode="numeric" maxlength="3" placeholder="예: 386" onkeydown="if(event.key==='Enter')CUR.ans(this.value)"><button class="btn full" style="margin-top:8px" onclick="CUR.ans($('bin').value)">던지기</button>`}
+  :`<input class="q" id="bin" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="numeric" maxlength="3" placeholder="예: 386" onkeydown="if(event.key==='Enter')CUR.ans(this.value)"><button class="btn full" style="margin-top:8px" onclick="CUR.ans($('bin').value)">던지기</button>`}
   <div class="card" style="margin-top:10px">${this.h.slice().reverse().map(x=>`<div class="row"><span style="font-size:18px;font-weight:800;letter-spacing:4px">${x[0]}</span><span><b style="color:var(--blue)">${x[1]}S</b> <b style="color:var(--brown)">${x[2]}B</b>${!x[1]&&!x[2]?' 아웃':''}</span></div>`).join('')||'<div class="m">아직 시도 없음</div>'}</div>`;},
  ans(v){v=String(v).trim();if(!/^[1-9]{3}$/.test(v)||new Set(v).size<3){toast('1~9 서로 다른 숫자 3개');return;}let s=0,b=0;[...v].forEach((c,i)=>{if(this.a[i]===c)s++;else if(this.a.includes(c))b++;});this.h.push([v,s,b]);
   if(s===3){this.done=true;record('baseball',this.h.length);}rr();setTimeout(()=>{const e=$('bin');if(e)e.focus();},30);}});
@@ -1178,7 +1178,7 @@ G.push({k:'ladder',cat:'대전·도구',e:'🪜',n:'사다리 타기',d:'순서�
   // 준비 단계: 아래 입력칸에 적을 때마다 한 칸씩 채워짐
   if(!g){
    const ok=N.length>=2&&N.length===R.length;
-   const inp=(t,id,val,ph)=>`<div style="display:flex;gap:6px;margin:6px 0 10px"><input id="${id}" class="q" style="flex:1" placeholder="${ph}" value="${esc(val)}" oninput="CUR.${t==='n'?'inN':'inR'}=this.value" onkeydown="if(event.key==='Enter'&&!event.isComposing)CUR.add('${t}')"><button class="btn" onclick="CUR.add('${t}')">추가</button></div>`;
+   const inp=(t,id,val,ph)=>`<div style="display:flex;gap:6px;margin:6px 0 10px"><input id="${id}" class="q" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" style="flex:1" placeholder="${ph}" value="${esc(val)}" oninput="CUR.${t==='n'?'inN':'inR'}=this.value" onkeydown="if(event.key==='Enter'&&!event.isComposing)CUR.add('${t}')"><button class="btn" onclick="CUR.add('${t}')">추가</button></div>`;
    return `${css}${board}
     <div class="card" style="margin-top:12px">
      <div class="t">참가자 (${N.length})</div>${inp('n','ldInN',this.inN,'이름 입력 후 Enter')}
@@ -1210,7 +1210,7 @@ G.push({k:'roulette',cat:'대전·도구',e:'🎡',n:'룰렛 돌리기',d:'이�
    <div id="wheel" style="width:min(260px,82vw);height:min(260px,82vw);border-radius:50%;background:conic-gradient(${grad});transition:transform 4.2s cubic-bezier(.12,.75,.1,1);transform:rotate(${this.rot}deg);position:relative;border:4px solid #fff;box-shadow:0 4px 14px rgba(0,0,0,.2)">
    ${N.map((s,i)=>`<div style="position:absolute;left:50%;top:50%;transform:rotate(${i*seg+seg/2}deg) translateY(-95px) translateX(-50%);transform-origin:0 0;color:#fff;font-weight:800;font-size:13px;white-space:nowrap">${esc(s)}</div>`).join('')}</div></div>
    <div id="rlwin">${this.win?`<div class="gbig" style="font-size:32px">🎉 ${esc(this.win)}</div>`:''}</div>
-   <input class="q" value="${esc(this.names)}" oninput="CUR.names=this.value;CUR.N=null" placeholder="이름을 쉼표로" ${this.spin?'disabled':''}><button id="rlbtn" class="btn full" style="margin-top:8px" onclick="CUR.go()" ${this.spin?'disabled':''}>돌리기!</button>`;}});
+   <input class="q" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="${esc(this.names)}" oninput="CUR.names=this.value;CUR.N=null" placeholder="이름을 쉼표로" ${this.spin?'disabled':''}><button id="rlbtn" class="btn full" style="margin-top:8px" onclick="CUR.go()" ${this.spin?'disabled':''}>돌리기!</button>`;}});
 // ===== 🂠 카드 게임 추가 =====
 // 바카라
 const bcv=c=>c.r>=10&&c.r<=13?0:c.r===14?1:c.r;const bct=cs=>cs.reduce((a,c)=>a+bcv(c),0)%10;
@@ -1260,7 +1260,7 @@ G.push({k:'crossword',cat:'퍼즐',e:'📝',n:'가로세로 낱말퀴즈',d:'상
   return `<div class="gst"><span>${this.pl.filter(q=>q.got).length}/${this.pl.length} · 힌트 ${this.hints}</span><span>⏱ <b id="clk">${fmtScore('memory',secs(this.t0)+this.hints*20)}</b></span></div>
    ${this.done?`<div class="gok">🎉 완성! ${fmtScore('memory',secs(this.t0)+this.hints*20)} <button class="btn" style="padding:4px 10px;font-size:13px" onclick="CUR.pickTh(CUR.th)">새 퍼즐</button> <button class="btn gr" style="padding:4px 10px;font-size:13px" onclick="CUR.start()">테마</button></div>`:''}${h}
    ${this.done?'':`<div class="card" style="margin-top:10px"><div class="t">${p.no}번 ${p.dx?'가로':'세로'} · ${p.w.length}글자</div><div class="m" style="margin:4px 0 8px">${esc(p.clue)}</div>
-    <div style="display:flex;gap:6px"><input class="q" id="cwin" autocomplete="off" placeholder="정답" onkeydown="if(event.key==='Enter')CUR.ans(this.value)"><button class="btn" style="flex:none" onclick="CUR.ans($('cwin').value)">확인</button><button class="btn gr" style="flex:none" onclick="CUR.hint()">힌트</button></div></div>`}
+    <div style="display:flex;gap:6px"><input class="q" id="cwin" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="정답" onkeydown="if(event.key==='Enter')CUR.ans(this.value)"><button class="btn" style="flex:none" onclick="CUR.ans($('cwin').value)">확인</button><button class="btn gr" style="flex:none" onclick="CUR.hint()">힌트</button></div></div>`}
    <div class="sec">➡ 가로</div><div class="card">${clues(1)}</div><div class="sec">⬇ 세로</div><div class="card">${clues(0)}</div>`;}});
 // ===== 🧠 두뇌 게임 =====
 // 코드 브레이커
@@ -1705,7 +1705,7 @@ function olLobby(g){const o=g.ol,s=olLd(),S=OL_SIDE[g.k];
   <div class="card"><div class="gq">방 만들기</div><div class="g2b">${sb('first','선공 '+S[0].slice(0,1))}${sb('second','후공 '+S[1].slice(0,1))}${sb('random','랜덤')}</div>
   <div class="g2b" style="margin-top:8px"><button class="btn ${o.pub?'':'b2'}" onclick="CUR.ol.pub=true;rr()">공개</button><button class="btn ${o.pub?'b2':''}" onclick="CUR.ol.pub=false;rr()">비공개 (번호로만)</button></div>
   <button class="btn full" style="margin-top:8px" onclick="olCreate()">방 만들기</button></div>
-  <div class="card"><div class="gq">방 번호로 들어가기</div><input id="olcode" inputmode="numeric" maxlength="5" placeholder="방 번호 5자리" value="${olE(o.code)}" oninput="CUR.ol.code=this.value" style="width:100%;box-sizing:border-box;padding:10px;font-size:16px">
+  <div class="card"><div class="gq">방 번호로 들어가기</div><input id="olcode" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="numeric" maxlength="5" placeholder="방 번호 5자리" value="${olE(o.code)}" oninput="CUR.ol.code=this.value" style="width:100%;box-sizing:border-box;padding:10px;font-size:16px">
   <div class="g2b" style="margin-top:8px"><button class="btn" onclick="olJoinCode(0)">입장</button><button class="btn b2" onclick="olJoinCode(1)">👀 관전</button></div></div>
   <div class="card"><div class="gq">열린 방</div><div id="olList" class="m">${o.lh||'불러오는 중…'}</div></div>${back}`;}
 function olView(g,v0){const o=g.ol;if(!o.tok)return olLobby(g);const S=OL_SIDE[g.k],me=o.you,pl=me>=0,ov=o.over,sd=o.seats||[];
