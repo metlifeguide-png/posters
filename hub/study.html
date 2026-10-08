@@ -373,7 +373,7 @@ G.push({k:'nutadv',cat:'홀덤',e:'🧭',n:'넛 우위 맞히기',d:'포지션�
     <div class="m" style="margin:4px 0">넛(투페어 이상) 비율 ${r.q.sp.ip} ${(r.q.ni*100).toFixed(1)}% · ${r.q.sp.oop} ${(r.q.no*100).toFixed(1)}% · 레인지 에퀴티 ${r.q.sp.ip} ${Math.round(r.q.eq*100)}%</div>
     ${this.explain(r.q)}</div>${this.askBoxHtml?this.askBoxHtml():''}`:'';
   if(this.i>=10)return overHtml(this.sc+'/10','넛 우위 맞히기 10문제 · 내 최고 '+(myBest('nutadv')||this.sc)+'/10')+fb;
-  if(this.pend)return `<div class="gst"><span>${this.i} / 10 완료</span><span>정답 <b>${this.sc}</b></span></div>`+fb.replace('직전 문제 풀이','문제 풀이')+`<button class="btn full g" style="font-size:17px;padding:13px;margin-top:10px" onclick="CUR.next()">다음 문제 (${this.i+1}/10)</button>`;
+  if(this.pend)return `<div class="gst"><span>${this.i} / 10 완료</span><span>정답 <b>${this.sc}</b> <button class="btn g" style="padding:6px 14px;font-size:14px;margin-left:8px;white-space:nowrap" onclick="CUR.next()">다음 ▶</button></span></div>`+fb.replace('직전 문제 풀이','문제 풀이')+`<button class="btn full g" style="font-size:17px;padding:13px;margin-top:10px" onclick="CUR.next()">다음 문제 (${this.i+1}/10)</button>`;
   return `<div class="gst"><span>${this.i+1} / 10</span><span>정답 <b>${this.sc}</b></span></div>
    <div class="card" style="text-align:center"><div class="m">${q.sp.t} · 100BB</div><div class="t" style="font-size:16px;margin:4px 0">${q.sp.n}</div><div class="lbl">플랍</div>${cardsHtml(q.board)}
     <div class="gq" style="margin:10px 0 0">넛 우위는 누구에게?</div></div>
@@ -1129,6 +1129,111 @@ G.push({k:'geom',cat:'홀덤',e:'📐',n:'팟 지오메트리',d:'SPR · 베팅 
   const btns=q.kind==='yn'?`<div class="g2b"><button class="btn gr" style="font-size:19px;padding:15px" onclick="CUR.ans(0)">아니요</button><button class="btn" style="font-size:19px;padding:15px" onclick="CUR.ans(1)">네</button></div>`
    :`<div class="g4b">${q.opts.map(o=>`<button class="btn" onclick="CUR.ans(${o})">${q.fmt(o)}</button>`).join('')}</div>`;
   return hd+`<div class="card" style="text-align:center;font-size:17px;line-height:1.8">${q.show}</div>`+btns+rule;}});
+})();
+;
+// ===== 📜 대회 룰 퀴즈 · 문제 은행 (운영진이 고치는 파일) =====
+// 이 파일만 고치고 build.bat → 서버 올리기 하면 문제가 바뀌어요. 코드(p9n.js)는 건드릴 필요 없어요.
+// 한 문제 = 한 줄 묶음:
+//   id: 문제 번호(겹치면 안 됨, 한 번 정하면 바꾸지 마세요 — 오답노트가 이 번호로 문제를 찾아요)
+//   c : 분류  bet(베팅·레이즈) sd(쇼다운·족보) pot(올인·사이드팟) btn(딜러·진행) flow(대회 운영) etq(에티켓·반칙)
+//   q : 질문   o: 보기 목록(2~6개)   a: 정답 번호(첫 보기가 0, 둘째가 1 …)   w: 해설 (\n 은 줄바꿈)
+//   v : 1 이면 "특히 대회마다 다른 규칙이에요" 안내가 해설에 더 붙어요 (없으면 0)
+//   f : 1 이면 보기 순서를 섞지 않아요 (보기에 '위 모두' 같은 게 있을 때)
+// 문장 안에 큰따옴표(")는 쓰지 마세요. 작은따옴표(')는 괜찮아요. 줄 끝 쉼표(,)를 꼭 남겨 두세요.
+const RULE_QS=[
+ // ── 베팅·레이즈 ──
+ {id:"b1",c:"bet",q:"블라인드 100/200 프리플랍에서 첫 오픈 레이즈의 최소 금액(레이즈 투)은?",o:["300","400","500","600"],a:1,w:"최소 레이즈는 직전 베팅에 '직전 증가분 이상'을 더한 금액이에요.\n프리플랍 첫 오픈은 BB(200)가 직전 베팅이고 증가분이 200이라서 200 + 200 = 400이에요 (보통 2BB)."},
+ {id:"b2",c:"bet",q:"블라인드 100/200에서 A가 600으로 레이즈했어요. B의 최소 재레이즈(레이즈 투)는?",o:["800","1,000","1,200","1,400"],a:1,w:"A의 레이즈 증가분은 600 − 200 = 400이에요.\n재레이즈는 최소 그 증가분만큼 더 올려야 해서 600 + 400 = 1,000이에요."},
+ {id:"b3",c:"bet",q:"블라인드 100/200에서 플랍에 아무도 베팅하지 않았어요. 첫 베팅의 최소 금액은?",o:["100","200","300","400"],a:1,w:"포스트플랍 최소 베팅은 BB 금액(1BB)이에요. 여기서는 200이에요."},
+ {id:"b4",c:"bet",q:"내 차례에 '콜'이라고 말했지만 아직 칩은 내지 않았어요. 그 사이 마음이 바뀌었다면?",o:["폴드해도 된다","콜로 확정이라 바꿀 수 없다","레이즈로 바꿀 수 있다","딜러 판단에 따라 다르다"],a:1,w:"자기 차례에 입으로 한 선언은 구속력이 있어요(말한 것이 우선). '콜'이라고 했으면 콜이에요.\n그래서 확신이 없을 때는 말을 아끼고 생각을 끝낸 뒤에 선언하는 게 좋아요."},
+ {id:"b5",c:"bet",q:"금액을 말하지 않고 칩을 두 번에 나눠 넣었어요(스트링 베트). 어떻게 판정될까요?",o:["두 번 합친 금액으로 레이즈","첫 번째 동작으로 낸 금액까지만 인정","무조건 폴드","딜러가 알아서 벌금 부과"],a:1,w:"베팅·레이즈는 한 번의 동작으로 해야 해요. 말로 금액을 먼저 선언하면 나눠 넣어도 괜찮아요.\n선언 없이 나눠 넣으면 보통 첫 번째 동작으로 낸 금액까지만 인정돼요(예: 콜).",v:1},
+ {id:"b6",c:"bet",q:"나는 이미 베팅을 했고, 내 뒤에서 풀 레이즈에 못 미치는 올인이 나왔어요(그 사이 다른 풀 레이즈는 없음). 내가 할 수 있는 것은?",o:["콜 또는 폴드만 가능","콜·폴드·레이즈 모두 가능","폴드만 가능","체크"],a:0,w:"풀 레이즈보다 작은 올인(불완전 레이즈)은 이미 액션한 사람에게 레이즈 권리를 다시 열어 주지 않아요. 콜 또는 폴드만 가능해요.\n아직 액션하지 않은 사람은 그 올인에 대해 레이즈할 수 있어요.",v:1},
+ {id:"b7",c:"bet",q:"프리플랍에서 모두 림프(콜)만 하고 BB까지 왔어요. BB가 할 수 있는 것은?",o:["체크만 가능","체크 또는 레이즈 (옵션)","콜 또는 폴드만","자동으로 폴드"],a:1,w:"BB는 이미 낸 블라인드가 있어서 추가로 낼 필요가 없고, 체크하거나 레이즈할 수 있어요. 이걸 BB의 '옵션'이라고 해요."},
+ // ── 쇼다운·족보 ──
+ {id:"s1",c:"sd",q:"리버에서 모두 체크해서 쇼다운이 됐어요. 먼저 카드를 보여야 하는 사람은?",o:["딜러 버튼","포스트플랍에서 먼저 행동하는 자리(버튼 왼쪽 첫 번째 사람)","칩이 가장 많은 사람","아무나 먼저"],a:1,w:"리버에 베팅이 없었다면 먼저 행동하는 자리(버튼 왼쪽부터 첫 번째 남은 사람)가 먼저 보여 줘요."},
+ {id:"s2",c:"sd",q:"리버에서 A가 베팅하고 B가 콜했어요. 쇼다운에서 먼저 카드를 오픈해야 하는 사람은?",o:["A (마지막에 베팅한 사람)","B (콜한 사람)","둘이 동시에","포지션이 앞선 사람"],a:0,w:"마지막에 공격적으로 베팅·레이즈한 사람이 먼저 보여 줘요. 콜한 쪽은 그 뒤에 보여 주면 돼요."},
+ {id:"s3",c:"sd",q:"쇼다운에서 '플러시!'라고 말하며 카드를 냈는데 실제로는 투페어였어요. 판정은?",o:["말한 대로 플러시","실제 카드 기준 (카드가 말한다)","무효로 재경기","말한 사람은 폴드 처리"],a:1,w:"쇼다운은 '카드가 말한다(cards speak)'가 기본이에요. 선언이 틀려도 테이블 위의 실제 카드로 판정해요."},
+ {id:"s4",c:"sd",q:"쇼다운에서 팟을 받으려면 홀카드를 어떻게 보여야 할까요?",o:["이기는 카드 한 장만","두 장 모두 공개","말로 족보만 선언","딜러에게만 보여 주기"],a:1,w:"쇼다운에서 팟을 받으려면 홀카드를 모두 공개해야 해요. 한 장만 보여 주거나 말로만 선언하는 건 안 돼요."},
+ {id:"s5",c:"sd",q:"보드가 A♠ K♠ Q♠ J♠ T♠ (로열 플러시)로 깔렸고 두 명이 끝까지 남았어요. 팟은?",o:["더 큰 홀카드를 가진 사람","반반으로 스플릿","칩이 많은 사람","포지션이 늦은 사람"],a:1,w:"보드의 5장이 이미 가능한 최고 핸드라서 두 사람 다 그 보드를 그대로 써요(플레이 더 보드). 승부가 안 갈려서 팟을 나눠요."},
+ {id:"s6",c:"sd",q:"보드 2♣ 3♦ 4♠ 5♥ K♣. 나는 A♥ 7♠, 상대는 6♣ 9♦ 입니다. 누가 이길까요?",o:["나 (A-2-3-4-5 스트레이트)","상대 (2-3-4-5-6 스트레이트)","스플릿","나 (A 하이카드)"],a:1,w:"A-2-3-4-5(휠)는 가장 낮은 스트레이트(5 하이)예요. 2-3-4-5-6은 6 하이 스트레이트라 휠을 이겨요."},
+ {id:"s8",c:"sd",q:"한 명이 올인했고 상대가 콜해서 더 이상 베팅 액션이 없어요. 아직 보드가 다 안 깔렸다면 홀카드는?",o:["리버까지 그대로 비공개","액션이 끝난 시점에 남은 사람 모두 공개","올인한 사람만 공개","딜러만 확인"],a:1,w:"올인으로 더 이상 베팅 액션이 없어지면 남은 핸드를 모두 공개하고 나머지 보드를 깔아요(올인 쇼다운). 공개해서 정보가 새는 것을 막기 위한 규칙이에요."},
+ {id:"s9",c:"sd",q:"내가 폴드한 뒤, 딜러에게 '남은 보드 카드를 미리 보여 달라'고 요청했어요(래빗 헌팅). 대부분의 대회에서는?",o:["허용된다","금지된다","플로어 승인 시 허용","한 번만 허용"],a:1,w:"대부분의 대회는 래빗 헌팅을 금지해요. 남은 카드를 미리 알면 덱·진행에 영향을 주고 다른 사람이 정보를 얻을 수 있기 때문이에요.",v:1},
+ // ── 올인·사이드팟 ──
+ {id:"p1",c:"pot",q:"A가 스택 1,000을 올인했고, 스택 5,000의 B가 전부 올인으로 콜했어요. B가 돌려받는 금액은?",o:["0","1,000","4,000","5,000"],a:2,w:"A는 1,000밖에 못 걸어서 B도 1,000만 맞붙어요. B가 더 낸 4,000은 아무도 콜하지 않은 금액이라 돌려받아요.\n그래서 실제 팟은 2,000이에요."},
+ {id:"p2",c:"pot",q:"A가 100 올인, B가 300 올인, 스택이 큰 C가 300 콜. 메인팟 / 사이드팟은 각각 얼마일까요?",o:["300 / 400","300 / 300","400 / 300","600 / 100"],a:0,w:"메인팟은 모두가 낸 100씩, 100 × 3 = 300이에요.\n사이드팟은 B와 C가 100을 넘어 더 낸 200씩, 200 × 2 = 400이에요."},
+ {id:"p3",c:"pot",q:"위 상황(A 100 올인, B 300 올인, C 300 콜)에서 핸드 순위는 A가 1등, B가 2등, C가 3등입니다. 사이드팟 400은 누가 받을까요?",o:["A","B","C","A와 B가 반반"],a:1,w:"A는 100만 걸어서 메인팟(300)만 받을 자격이 있어요. 사이드팟은 B와 C 둘만의 팟이라 더 강한 B가 받아요."},
+ {id:"p4",c:"pot",q:"팟 301(가장 작은 칩 단위 1)을 두 명이 스플릿해요. 남는 1칩은 누구에게?",o:["칩이 많은 사람","버튼에서 왼쪽으로 가장 가까운 승자","딜러가 가져감","팟에 그대로 남김"],a:1,w:"홀수 칩은 보통 버튼의 왼쪽(시계 방향)에서 가장 먼저 만나는 승자에게 줘요.",v:1},
+ // ── 딜러·진행 ──
+ {id:"d1",c:"btn",q:"1:1(헤즈업)에서 프리플랍에 먼저 행동하는 사람은?",o:["BB","버튼(SB)","칩이 많은 사람","딜러가 정함"],a:1,w:"헤즈업에서는 버튼이 스몰블라인드를 내고, 프리플랍은 버튼(SB)이 먼저 행동해요."},
+ {id:"d2",c:"btn",q:"1:1(헤즈업)에서 플랍부터 먼저 행동하는 사람은?",o:["버튼(SB)","BB","칩이 많은 사람","프리플랍 마지막 레이저"],a:1,w:"플랍부터는 BB가 먼저 행동해요(버튼이 포지션). 프리플랍과 순서가 반대예요."},
+ {id:"d3",c:"btn",q:"9인 테이블에서 프리플랍에 가장 먼저 행동하는 사람은?",o:["SB","BB","UTG (BB 왼쪽 첫 번째)","버튼"],a:2,w:"프리플랍은 BB 왼쪽 사람(UTG)부터 시작해서 시계 방향으로 돌고, BB가 마지막에 행동해요."},
+ {id:"d4",c:"btn",q:"카드를 돌릴 때 첫 장을 받는 사람은?",o:["딜러 버튼","SB (버튼 왼쪽 첫 번째)","BB","UTG"],a:1,w:"버튼 왼쪽(SB)부터 시계 방향으로 한 장씩 두 바퀴 돌려요. 그래서 버튼이 마지막에 받아요."},
+ {id:"d5",c:"btn",q:"한 핸드에서 보드를 깔기 전에 버리는 번 카드는 모두 몇 장일까요?",o:["1장","2장","3장","4장"],a:2,w:"플랍 전, 턴 전, 리버 전에 각각 한 장씩 버려서 총 3장이에요. 카드가 뒷면 표시 등으로 노출됐을 때 영향을 줄이기 위한 장치예요."},
+ // ── 대회 운영 ──
+ {id:"f1",c:"flow",q:"대회 중 자리를 비운 사람(싯 아웃)은 어떻게 처리될까요?",o:["핸드와 블라인드 모두 건너뜀","블라인드·앤티는 계속 빠지고 핸드는 자동 폴드","핸드는 자동 콜","대회에서 자동 탈락"],a:1,w:"자리를 비워도 칩은 살아 있어서 블라인드와 앤티는 계속 빠져나가요. 핸드는 차례가 오면 폴드 처리돼요."},
+ {id:"f2",c:"flow",q:"같은 핸드에서 A(핸드 시작 칩 8,000)와 B(3,000)가 모두 탈락했어요. 더 높은 순위는?",o:["A","B","동순위","카드 높은 사람"],a:0,w:"같은 핸드에서 여러 명이 탈락하면, 핸드 시작 때 칩이 더 많았던 사람이 더 높은 순위예요."},
+ {id:"f3",c:"flow",q:"버블 근처에서 '핸드 포 핸드'를 하는 이유는?",o:["딜러를 쉬게 하려고","한 테이블이 느리게 해서 버블을 미루는 걸 막으려고","블라인드를 올리려고","칩을 정리하려고"],a:1,w:"모든 테이블이 같은 핸드를 끝낸 뒤 다음 핸드로 넘어가요. 버블이 가까울 때 일부러 느리게 쳐서 시간을 끄는 걸 막기 위한 방식이에요.",v:1},
+ {id:"f4",c:"flow",q:"블라인드 레벨이 끝나는 순간 아직 진행 중인 핸드의 블라인드는?",o:["새 레벨로 바뀜","그 핸드는 이전 레벨로 끝까지, 다음 핸드부터 새 레벨","핸드를 중단하고 다시 시작","플레이어 투표"],a:1,w:"진행 중인 핸드는 시작할 때의 블라인드로 끝내고, 새 블라인드는 다음 핸드부터 적용돼요."},
+ {id:"f5",c:"flow",q:"컬러업 때 작은 칩이 남으면(큰 칩으로 교환 불가) 보통 어떻게 처리할까요?",o:["그냥 버림","카드를 한 장씩 뽑아 높은 사람이 남은 칩을 받는 방식","가장 작은 칩 사람이 가져감","딜러가 가져감"],a:1,w:"남는 칩(홀수 칩)은 카드를 한 장씩 돌려 높은 카드를 받은 사람이 올림 칩을 받는 식으로 처리하는 경우가 많아요.",v:1},
+ {id:"f6",c:"flow",q:"상대가 오래 고민해서 '타임'을 요청했고 정해진 시간이 지났는데 액션이 없어요. 보통의 처리는?",o:["자동 콜","체크 가능하면 체크, 아니면 폴드","플로어가 대신 결정","무한 대기"],a:1,w:"타임콜 뒤 제한 시간이 지나면 핸드가 죽어요(폴드). 앞에 베팅이 없어서 체크할 수 있었다면 체크로 처리하는 곳이 많아요.\n제한 시간은 대회마다 달라요.",v:1},
+ {id:"f7",c:"flow",q:"내 칩 중 가장 큰 단위 칩을 손으로 가리거나 숨겨도 될까요?",o:["괜찮다","안 된다 (큰 칩은 보이게 둬야 함)","상대가 물어볼 때만 보여 주면 된다","플로어에게만 보여 주면 된다"],a:1,w:"큰 단위 칩은 다른 사람이 스택 크기를 가늠할 수 있게 보이도록 두어야 해요. 칩을 가리거나 작은 칩 뒤에 숨기는 건 반칙이에요."},
+ // ── 에티켓·반칙 ──
+ {id:"e1",c:"etq",q:"핸드가 진행 중인데 옆에서 구경하던 친구에게 '이거 콜해도 돼?'라고 물었어요. 규칙상은?",o:["문제없다","반칙 (한 핸드에는 한 명의 플레이어만)","상대 동의 시 허용","폴드할 때만 허용"],a:1,w:"'한 핸드에는 한 명의 플레이어(one player to a hand)' 원칙이 있어요. 진행 중인 핸드에 대해 다른 사람에게 조언을 구하거나 받으면 안 돼요."},
+ {id:"e2",c:"etq",q:"내가 폴드한 카드를 핸드가 진행 중인 동안 옆 사람에게 보여 줬어요. 규칙상은?",o:["문제없다","반칙 (핸드가 끝나기 전에는 보여 주면 안 됨)","본인만 허용","폴드한 카드는 항상 공개 가능"],a:1,w:"진행 중인 핸드에서는 폴드한 카드의 내용을 다른 사람에게 알려 주면 안 돼요. 정보가 다른 플레이어의 결정에 영향을 줄 수 있어서예요."},
+ {id:"e3",c:"etq",q:"내 차례인데 일부러 칩을 만지작거리며 애매하게 행동해서 상대의 반응을 본 뒤 결정을 바꾸려는 행동은?",o:["심리전이라 허용","앵글 슈팅이라 반칙","허용되지만 비매너","상대가 속았을 때만 반칙"],a:1,w:"규칙의 허점이나 오해를 이용해 속이는 행동을 앵글 슈팅이라고 해요. 반칙이고, 심하면 페널티나 실격 사유가 돼요."},
+ {id:"e4",c:"etq",q:"베팅 칩을 팟 한가운데 던져 넣었어요(스플래시). 올바른 방법은?",o:["던져 넣는 게 정석","내 앞 라인에 놓고 딜러가 모으게 함","상대에게 건네줌","딜러 손에 올려놓음"],a:1,w:"칩을 팟에 던지면 금액을 확인하기 어려워요. 베팅 칩은 내 앞에 놓고 딜러가 확인한 뒤 모으게 해요."},
+ {id:"e5",c:"etq",q:"친구와 같은 테이블에서 일부러 한 쪽으로 칩을 넘겨주는 행동(칩 덤핑)은?",o:["친구 사이라 허용","부정행위라 페널티·실격 가능","양쪽이 동의하면 허용","프리플랍에서만 허용"],a:1,w:"칩 덤핑이나 소프트 플레이(일부러 안 싸우는 것)는 공모로 보고 페널티나 실격 처리해요. 대회의 공정함을 해치기 때문이에요."},
+ {id:"e6",c:"etq",q:"모든 상대가 폴드해서 나 혼자 남았어요. 내 카드를 보여 줘야 할까요?",o:["반드시 두 장 모두","한 장만","보여 줄 의무 없음","딜러에게만"],a:2,w:"상대가 모두 폴드해서 쇼다운 없이 끝나면 내 카드를 보여 줄 의무가 없어요. 보여 주고 싶으면 보여 줄 수 있지만, 그 정보가 다른 사람에게 영향을 줄 수 있어요."}
+];
+;(function(){
+// ===== 📜 대회 룰 퀴즈 (입문) — 문제는 rulesdata.js (RULE_QS) 에서 가져와요 =====
+// 한 판 10문제, 정답 확인 후 '다음 문제'. 점수·랭킹 없음(record 안 보냄). studyLog('rulequiz', 'rl_분류', 1, 정오, ms, {lv:1,id})
+const CAT={bet:'베팅·레이즈',sd:'쇼다운·족보',pot:'올인·사이드팟',btn:'딜러·진행',flow:'대회 운영',etq:'에티켓·반칙'};
+const NOTE='※ 룰은 대회·장소마다 다를 수 있어요. 이 문제는 일반적인 TDA(토너먼트 디렉터 협회) 기준이고, 실제 대회에서는 그날 운영진·플로어의 판정이 우선이에요.';
+const NOTE_V='이 항목은 특히 대회마다 달라요. 참가하는 대회의 룰을 꼭 확인하세요.';
+const valid=x=>x&&x.id&&x.q&&Array.isArray(x.o)&&x.o.length>=2&&x.a>=0&&x.a<x.o.length;
+const bank=()=>(typeof RULE_QS!=='undefined'?RULE_QS:[]).filter(valid);
+const nl=t=>esc(t).replace(/\n/g,'<br>');
+const isPerm=(a,n)=>Array.isArray(a)&&a.length===n&&[...a].sort((x,y)=>x-y).every((v,i)=>v===i);
+function mk(p){p=Object.assign({},p||{});const B=bank();let b=p.id?B.find(x=>x.id===p.id):null;if(!b)b=pick(B);
+ const n=b.o.length;let perm=p.o;if(b.f)perm=[...Array(n).keys()];else if(!isPerm(perm,n))perm=shuf([...Array(n).keys()]);
+ p={lv:1,id:b.id};return {b,a:perm.indexOf(b.a),opts:perm.map(i=>b.o[i]),tag:'rl_'+b.c,p};}
+G.push({k:'rulequiz',cat:'홀덤',e:'📜',n:'대회 룰 퀴즈',d:'입문 · 베팅·쇼다운·사이드팟 등 대회 룰 10문제',
+ start(){this.lv=null;this.fb=null;this.over=false;rr();},
+ stop(){},
+ go(mode){const B=bank();if(!B.length){toast('문제가 없어요');return;}let queue;
+  if(mode==='W'){const wn=lsGet('wn_rulequiz',[]);queue=[];for(const x of shuf(wn)){try{const p=JSON.parse(x.k);if(p&&B.some(y=>y.id===p.id))queue.push(p);}catch(e){}if(queue.length>=10)break;}
+   if(!queue.length){toast('오답노트가 비어 있어요');return;}}
+  else queue=shuf(B).slice(0,10).map(b=>({id:b.id}));
+  Object.assign(this,{lv:mode,N:queue.length,queue,i:0,ok:0,tsum:0,over:false,fb:null,log:[]});this.nq();rr();scrollTo(0,0);},
+ nq(){this.q=mk(this.queue[this.i]);this.t0=Date.now();},
+ ans(k){if(this.over||this.fb)return;const q=this.q,t=(Date.now()-this.t0)/1000,ok=k===q.a;
+  this.i++;this.tsum+=t;if(ok)this.ok++;const L={q,o:k,ok,t};this.log.push(L);this.fb=L;
+  studyLog('rulequiz',q.tag,1,ok,Math.round(t*1000),q.p);
+  if(this.i>=this.N)this.over=true;rr();scrollTo(0,0);},
+ next(){if(!this.fb||this.over)return;this.fb=null;this.nq();rr();scrollTo(0,0);},
+ menu(){const st=lsGet('st_rulequiz',{}),wn=lsGet('wn_rulequiz',[]).length,n=bank().length;
+  return `<div class="card"><div class="t">📜 대회 룰 퀴즈</div><div class="m" style="margin-top:4px;line-height:1.6">대회에서 자주 나오는 룰과 상황을 문제로 익혀요. 한 판 10문제 · 정답 확인 후 해설을 읽고 다음 문제로 · 점수·랭킹 없이 정답률 중심이에요.<br>지금 문제 ${n}개 중에서 무작위로 나와요.</div></div>
+  <button class="btn full g" style="font-size:17px;padding:14px" onclick="CUR.go('A')">10문제 시작</button>
+  <div class="card" style="margin-top:10px"><div class="t" style="font-size:15px">분류별 정답률</div>${Object.keys(CAT).map(c=>{const s=st['rl_'+c],pc=s&&s[1]?Math.round(s[0]/s[1]*100)+'% ('+s[0]+'/'+s[1]+')':'아직 안 풀었어요';return `<div class="row"><span>${CAT[c]}</span><span class="m">${pc}</span></div>`;}).join('')}</div>
+  ${wn?`<button class="btn full b2" style="margin-top:10px" onclick="CUR.go('W')">📒 오답노트 풀기 (${wn}개)</button><div class="m" style="text-align:center;margin-top:4px">틀린 문제를 다시 풀어요 · 맞히면 목록에서 빠져요</div>`:''}
+  <div class="m" style="text-align:center;margin-top:10px">${esc(NOTE)}</div>`;},
+ view(){if(!this.lv)return this.menu();const q=this.q,W=this.lv==='W';
+  const nextBtn=(this.fb&&!this.over)?` <button class="btn g" style="padding:6px 14px;font-size:14px;margin-left:8px;white-space:nowrap" onclick="CUR.next()">다음 ▶</button>`:'';
+  const hd=`<div class="gst"><span>${W?'📒 오답노트':'룰 퀴즈'} · ${Math.min(this.i+(this.fb||this.over?0:1),this.N)} / ${this.N}</span><span>정답 <b>${this.ok}</b>${nextBtn} <a onclick="CUR.start()" style="color:var(--blue);cursor:pointer;margin-left:6px">처음으로</a></span></div>`;
+  const fbCard=L=>{const b=L.q.b;return `<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:16px">${L.ok?'✅ 정답':'❌ 오답'} · ${L.t.toFixed(1)}초 <span class="m">· ${CAT[b.c]||''}</span></div>
+   <div class="m" style="margin:6px 0 2px">${nl(b.q)}</div>
+   <div style="font-size:14.5px;margin-top:4px">정답: <b>${esc(L.q.opts[L.q.a])}</b>${L.ok?'':`<br><span style="color:var(--red)">내 선택: ${esc(L.q.opts[L.o])}</span>`}</div>
+   <div style="font-size:14px;line-height:1.75;margin-top:8px">${nl(b.w)}</div>
+   <div class="m" style="margin-top:8px;line-height:1.55">${b.v?'⚠️ '+esc(NOTE_V)+'<br>':''}${esc(NOTE)}</div></div>`;};
+  if(this.over){const L=this.fb;
+   return hd+(L?fbCard(L):'')+`<div class="gbig">${this.ok}/${this.N}</div><div class="card" style="text-align:center;font-size:15px;line-height:1.8">총 ${this.tsum.toFixed(1)}초 · 평균 ${(this.tsum/this.N).toFixed(1)}초<br><span class="m">${W?`맞힌 문제는 오답노트에서 빠졌어요 · 남은 오답 ${lsGet('wn_rulequiz',[]).length}개`:'점수·랭킹 없음 · 틀린 문제는 오답노트에 쌓여요'}</span></div>
+    <div class="card"><div class="t">문제별 기록</div>${this.log.map((x,k)=>`<div class="row"><span>${k+1}. ${CAT[x.q.b.c]||''} → ${esc(x.q.opts[x.q.a])}</span><span class="m">${x.ok?'✅':'❌'} ${x.t.toFixed(1)}초</span></div>`).join('')}</div>
+    <button class="btn full" onclick="CUR.go('${W?'W':'A'}')">${W?'남은 오답 다시 풀기':'다시 하기'}</button><button class="btn full gr" style="margin-top:8px" onclick="CUR.start()">처음으로</button>`;}
+  if(this.fb)return hd+fbCard(this.fb)+`<button class="btn full g" style="font-size:17px;padding:13px" onclick="CUR.next()">다음 문제 (${this.i+1}/${this.N})</button>`;
+  return hd+`<div class="card" style="font-size:16.5px;line-height:1.7"><div class="m" style="margin-bottom:4px">${CAT[q.b.c]||''}</div>${nl(q.b.q)}</div>
+   <div style="display:grid;gap:8px;margin-top:10px">${q.opts.map((o,k)=>`<button class="btn b2" style="text-align:left;padding:13px 14px;font-size:15.5px;line-height:1.5" onclick="CUR.ans(${k})">${esc(o)}</button>`).join('')}</div>
+   <div class="m" style="text-align:center;margin-top:8px">${esc(NOTE)}</div>`;}});
 })();
 // ===== 목록 · 랭킹 · 오늘의 문제 · 화면 전환 =====
 G.forEach(g=>g.nm=g.n);   // 게임 안에서 this.n 을 숫자로 쓰는 경우가 있어 이름은 따로 보관
