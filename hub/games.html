@@ -1132,9 +1132,17 @@ G.push({k:'speed50',cat:'대전·도구',e:'🔟',n:'1 to 50',d:'1부터 50까�
  view(){return `<div class="gst"><span>다음 <b>${this.done?'-':this.n}</b></span><span>⏱ <b id="s50">${this.done?(this.ms/1000).toFixed(2)+'초':'0.00초'}</b></span></div>
   ${this.done?`<div class="gok">🎉 ${(this.ms/1000).toFixed(2)}초 · 내 최고 ${((myBest('speed50')||this.ms)/1000).toFixed(2)}초</div><button class="btn full" style="margin-bottom:10px" onclick="CUR.start()">다시 하기</button>`:''}
   <div class="board" style="grid-template-columns:repeat(5,1fr);max-width:340px">${this.g.map((v,i)=>`<div onpointerdown="CUR.tap(${i})" style="aspect-ratio:1;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:900;user-select:none;background:${v?(v>25?'#2f80ed':'#fff'):'transparent'};color:${v>25?'#fff':'var(--ink)'};border:${v?'1.5px solid var(--line)':'none'}">${v||''}</div>`).join('')}</div>`;}});
-// ===== ♟️ 체스 =====
+// ===== 공통: 마지막 수 표시 · 극악 난이도 =====
 const AI_DELAY=1000;   // 내가 둔 뒤 AI가 두기까지 텀(ms)
-const MINE_BOX='box-shadow:inset 0 0 0 3px #e02424;';   // 내가 둔 자리 = 빨간 네모
+const HELL_DELAY=150;  // 극악은 AI가 직접 오래 생각하므로 텀을 짧게
+const aiDelay=lv=>lv==='극악'?HELL_DELAY:AI_DELAY;
+const MINE_C='#e02424',OPP_C='#2f80ed';   // 내 마지막 수 = 빨강, 상대 마지막 수 = 파랑
+const HELL_BTN=`<button class="btn full" style="margin-top:10px;background:#7a0f0f;border-color:#7a0f0f;color:#fff" onclick="CUR.go('극악')">💀 극악 — 어려움이 너무 쉬울 때</button>`;
+const LAST_TIP=`<div class="m" style="text-align:center;margin-top:4px"><b style="color:${MINE_C}">■</b> 내 마지막 수 · <b style="color:${OPP_C}">■</b> 상대 마지막 수</div>`;
+// 두 사람의 마지막 수 [[mv,색],...] 중 더 최근 수가 앞에 오도록 정렬 (같은 칸이면 최근 수 색이 우선)
+function lastMarks(mine,opp,last){const m=[[opp,OPP_C],[mine,MINE_C]];if(last&&last===mine)m.reverse();return m;}
+
+// ===== ♟️ 체스 =====
 const CHU={K:'♔',Q:'♕',R:'♖',B:'♗',N:'♘',P:'♙',k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
 const isW=p=>p&&p===p.toUpperCase();
 const CVAL={p:100,n:310,b:320,r:500,q:900,k:20000};
@@ -1163,25 +1171,86 @@ function chAB(b,d,al,be,max,cs){const w=!max;const ms=chLegal(b,w,cs);if(!ms.len
  ms.sort((a,c)=>(b[c[1]]?CVAL[b[c[1]].toLowerCase()]:0)-(b[a[1]]?CVAL[b[a[1]].toLowerCase()]:0));
  if(max){let v=-1e9;for(const mv of ms){v=Math.max(v,chAB(chDo(b,mv),d-1,al,be,false,null));al=Math.max(al,v);if(al>=be)break;}return v;}
  let v=1e9;for(const mv of ms){v=Math.min(v,chAB(chDo(b,mv),d-1,al,be,true,null));be=Math.min(be,v);if(al>=be)break;}return v;}
+
+// --- 체스 극악 엔진: 반복 심화 + 알파베타(PVS) + 정지탐색 + 치환표 + 킬러/히스토리 + 널무브 + LMR + 위치평가표 ---
+const CH_HELL_MS=1800;   // 극악 AI 생각 시간(ms)
+const CPST={  // 백 기준, 0번 = a8 (8랭크부터)
+ p:[0,0,0,0,0,0,0,0,50,50,50,50,50,50,50,50,10,10,20,30,30,20,10,10,5,5,10,25,25,10,5,5,0,0,0,20,20,0,0,0,5,-5,-10,0,0,-10,-5,5,5,10,10,-20,-20,10,10,5,0,0,0,0,0,0,0,0],
+ n:[-50,-40,-30,-30,-30,-30,-40,-50,-40,-20,0,0,0,0,-20,-40,-30,0,10,15,15,10,0,-30,-30,5,15,20,20,15,5,-30,-30,0,15,20,20,15,0,-30,-30,5,10,15,15,10,5,-30,-40,-20,0,5,5,0,-20,-40,-50,-40,-30,-30,-30,-30,-40,-50],
+ b:[-20,-10,-10,-10,-10,-10,-10,-20,-10,0,0,0,0,0,0,-10,-10,0,5,10,10,5,0,-10,-10,5,5,10,10,5,5,-10,-10,0,10,10,10,10,0,-10,-10,10,10,10,10,10,10,-10,-10,5,0,0,0,0,5,-10,-20,-10,-10,-10,-10,-10,-10,-20],
+ r:[0,0,0,0,0,0,0,0,5,10,10,10,10,10,10,5,-5,0,0,0,0,0,0,-5,-5,0,0,0,0,0,0,-5,-5,0,0,0,0,0,0,-5,-5,0,0,0,0,0,0,-5,-5,0,0,0,0,0,0,-5,0,0,0,5,5,0,0,0],
+ q:[-20,-10,-10,-5,-5,-10,-10,-20,-10,0,0,0,0,0,0,-10,-10,0,5,5,5,5,0,-10,-5,0,5,5,5,5,0,-5,0,0,5,5,5,5,0,-5,-10,5,5,5,5,5,0,-10,-10,0,5,0,0,0,0,-10,-20,-10,-10,-5,-5,-10,-10,-20],
+ k:[-30,-40,-40,-50,-50,-40,-40,-30,-30,-40,-40,-50,-50,-40,-40,-30,-30,-40,-40,-50,-50,-40,-40,-30,-30,-40,-40,-50,-50,-40,-40,-30,-20,-30,-30,-40,-40,-30,-30,-20,-10,-20,-20,-20,-20,-20,-20,-10,20,20,0,0,0,0,20,20,20,30,10,0,0,10,30,20],
+ ke:[-50,-40,-30,-20,-20,-30,-40,-50,-30,-20,-10,0,0,-10,-20,-30,-30,-10,20,30,30,20,-10,-30,-30,-10,30,40,40,30,-10,-30,-30,-10,30,40,40,30,-10,-30,-30,-10,20,30,30,20,-10,-30,-30,-30,0,0,0,0,-30,-30,-50,-30,-30,-30,-30,-30,-30,-50]};
+function chEval2(b){let s=0,np=0,wk=-1,bk=-1,wb=0,bb=0;   // 백 기준 점수
+ for(let i=0;i<64;i++){const p=b[i];if(!p)continue;const w=p<'a',t=w?p.toLowerCase():p;
+  if(t==='k'){if(w)wk=i;else bk=i;continue;}
+  if(t!=='p')np+=CVAL[t];if(t==='b'){if(w)wb++;else bb++;}
+  const v=CVAL[t]+CPST[t][w?i:i^56];s+=w?v:-v;}
+ const kt=np<=2600?CPST.ke:CPST.k;if(wk>=0)s+=kt[wk];if(bk>=0)s-=kt[bk^56];if(wb>=2)s+=30;if(bb>=2)s-=30;return s;}
+function chEngine(b0,cs0,ms){const MATE=1e6,dl=Date.now()+ms,TT=new Map(),kil=[],hs=new Map();let nodes=0,stop=false,rootMv=null;
+ const tick=()=>{if((++nodes&511)===0&&Date.now()>dl)stop=true;return stop;};
+ const vic=(b,m)=>b[m[1]]?CVAL[b[m[1]].toLowerCase()]:0;
+ const mvv=(b,m)=>vic(b,m)*10-CVAL[b[m[0]].toLowerCase()]/100;
+ const kAtt=(b,w)=>{const k=b.indexOf(w?'K':'k');return k<0||chAtt(b,k,!w);};
+ const promo=(b,m)=>(b[m[0]]==='P'&&m[1]<8)||(b[m[0]]==='p'&&m[1]>=56);
+ const same=(a,c)=>a&&a[0]===c[0]&&a[1]===c[1];
+ function qs(b,w,al,be,ply){if(tick())return 0;const st=(w?1:-1)*chEval2(b);if(st>=be)return st;if(st>al)al=st;if(ply>40)return st;
+  const ms=chPseudo(b,w,null).filter(m=>b[m[1]]||promo(b,m)).sort((a,c)=>mvv(b,c)-mvv(b,a));
+  for(const mv of ms){if(!promo(b,mv)&&st+vic(b,mv)+250<al)continue;const n=chDo(b,mv);if(kAtt(n,w))continue;
+   const v=-qs(n,!w,-be,-al,ply+1);if(stop)return 0;if(v>=be)return v;if(v>al)al=v;}
+  return al;}
+ function nm(b,w,d,al,be,ply,nul){if(tick())return 0;
+  const chk=kAtt(b,w);if(chk&&ply<16)d++;
+  if(d<=0)return qs(b,w,al,be,ply);
+  const key=b.join(',')+w,e=TT.get(key);let ttm=null;
+  if(e){ttm=e.m;if(ply&&e.d>=d){if(e.f===0)return e.v;if(e.f===1&&e.v>=be)return e.v;if(e.f===2&&e.v<=al)return e.v;}}
+  if(nul&&!chk&&d>=3&&ply&&be<MATE/2){let big=false;for(let i=0;i<64&&!big;i++){const p=b[i];if(p&&isW(p)===w&&'nbrq'.includes(p.toLowerCase()))big=true;}
+   if(big&&(w?1:-1)*chEval2(b)>=be){const v=-nm(b,!w,d-3,-be,-be+1,ply+1,false);if(stop)return 0;if(v>=be)return be;}}
+  const K=kil[ply]||[];
+  const sv=chPseudo(b,w,ply===0?cs0:null).map(m=>[same(ttm,m)?1e7:b[m[1]]?1e6+mvv(b,m):same(K[0],m)?9e5:same(K[1],m)?8e5:Math.min(hs.get(m[0]*64+m[1])||0,7e5),m]).sort((a,c)=>c[0]-a[0]);
+  let best=-Infinity,bm=null,cnt=0;const a0=al;
+  for(const[s0,mv]of sv){const n=chDo(b,mv);if(kAtt(n,w))continue;cnt++;let v;
+   if(cnt===1)v=-nm(n,!w,d-1,-be,-al,ply+1,true);
+   else{const r=(s0<8e5&&cnt>3&&d>=3&&!chk)?(cnt>8?2:1):0;v=-nm(n,!w,d-1-r,-al-1,-al,ply+1,true);
+    if(!stop&&v>al&&r)v=-nm(n,!w,d-1,-al-1,-al,ply+1,true);if(!stop&&v>al&&v<be)v=-nm(n,!w,d-1,-be,-al,ply+1,true);}
+   if(stop)return 0;
+   if(v>best){best=v;bm=mv;if(!ply)rootMv=mv;}
+   if(v>al)al=v;
+   if(al>=be){if(!b[mv[1]]){const k=kil[ply]||(kil[ply]=[]);if(!same(k[0],mv)){k[1]=k[0];k[0]=mv;}const hk=mv[0]*64+mv[1];hs.set(hk,(hs.get(hk)||0)+d*d);}break;}}
+  if(!cnt)return chk?-MATE+ply:0;
+  if(TT.size>300000)TT.clear();TT.set(key,{d,v:best,f:best<=a0?2:best>=be?1:0,m:bm});return best;}
+ let best=null;
+ for(let d=1;d<=30;d++){rootMv=null;const v=nm(b0,false,d,-Infinity,Infinity,0,false);
+  if(stop){if(rootMv)best=rootMv;break;}best=rootMv;if(Math.abs(v)>MATE/2||Date.now()>dl-ms*.55)break;}
+ return best||chLegal(b0,false,cs0)[0]||null;}
+
 G.push({k:'chess',cat:'대전·도구',e:'♟️',n:'체스',d:'AI 대전 · 친구와 2인',
  start(){this.lv=null;rr();},
- go(lv){Object.assign(this,{lv,b:chInit(),w:true,sel:-1,cs:{K:1,Q:1,k:1,q:1},over:'',last:null,mine:-1,streak:lsGet('ch2_'+lv,0)});rr();},
+ go(lv){Object.assign(this,{lv,b:chInit(),w:true,sel:-1,cs:{K:1,Q:1,k:1,q:1},over:'',last:null,lm:{W:null,B:null},streak:lsGet('ch2_'+lv,0)});rr();},
  upd(mv){const p=this.b[mv[0]];if(p==='K')this.cs.K=this.cs.Q=0;if(p==='k')this.cs.k=this.cs.q=0;[[56,'Q'],[63,'K'],[0,'q'],[7,'k']].forEach(([s,f])=>{if(mv[0]===s||mv[1]===s)this.cs[f]=0;});
+  (this.lm||(this.lm={}))[isW(p)?'W':'B']=mv;
   this.b=chDo(this.b,mv);this.last=mv;this.w=!this.w;const ms=chLegal(this.b,this.w,this.cs);
   if(!ms.length){const k=this.b.indexOf(this.w?'K':'k');const mate=chAtt(this.b,k,!this.w);this.over=mate?(this.w?'B':'W'):'D';this.fin();}},
  fin(){if(this.lv==='친구')return;if(this.over==='W'){this.streak++;lsSet('ch2_'+this.lv,this.streak);record('chess',this.streak,this.lv);}else{this.streak=0;lsSet('ch2_'+this.lv,0);}},
  tap(s){if(this.over||(this.lv!=='친구'&&!this.w))return;const p=this.b[s];
-  if(this.sel>=0){const mv=chLegal(this.b,this.w,this.cs).find(m=>m[0]===this.sel&&m[1]===s);if(mv){this.sel=-1;this.upd(mv);if(this.lv!=='친구')this.mine=mv[1];else this.mine=-1;rr();if(!this.over&&this.lv!=='친구')setTimeout(()=>this.ai(),AI_DELAY);return;}}
+  if(this.sel>=0){const mv=chLegal(this.b,this.w,this.cs).find(m=>m[0]===this.sel&&m[1]===s);if(mv){this.sel=-1;this.upd(mv);rr();if(!this.over&&this.lv!=='친구')setTimeout(()=>this.ai(),aiDelay(this.lv));return;}}
   this.sel=p&&isW(p)===this.w?s:-1;rr();},
- ai(){const d={'쉬움':1,'보통':2,'어려움':3}[this.lv];const ms=chLegal(this.b,false,this.cs);let best_=null,bv=-1e9;
+ ai(){if(this.over||this.w)return;
+  if(this.lv==='극악'){const mv=chEngine(this.b,this.cs,CH_HELL_MS);if(mv)this.upd(mv);rr();return;}
+  const d={'쉬움':1,'보통':2,'어려움':3}[this.lv];const ms=chLegal(this.b,false,this.cs);let best_=null,bv=-1e9;
   for(const mv of shuf(ms)){const v=chAB(chDo(this.b,mv),d-1,-1e9,1e9,false,null)+(this.lv==='쉬움'?R(120):0);if(v>bv){bv=v;best_=mv;}}if(best_)this.upd(best_);rr();},
- view(){if(!this.lv)return vsPick('CUR.go');const tg=this.sel>=0?chLegal(this.b,this.w,this.cs).filter(m=>m[0]===this.sel).map(m=>m[1]):[];
+ view(){if(!this.lv)return vsPick('CUR.go')+HELL_BTN;const tg=this.sel>=0?chLegal(this.b,this.w,this.cs).filter(m=>m[0]===this.sel).map(m=>m[1]):[];
   const k=this.b.indexOf(this.w?'K':'k'),chk=k>=0&&chAtt(this.b,k,!this.w);
+  const lm=this.lm||{},me=this.lv==='친구'?(this.w?'W':'B'):'W',marks=lastMarks(lm[me],lm[me==='W'?'B':'W'],this.last);
+  const shOf=s=>{for(const[m,c]of marks)if(m&&m[1]===s)return `box-shadow:inset 0 0 0 3px ${c};`;for(const[m,c]of marks)if(m&&m[0]===s)return `box-shadow:inset 0 0 0 2px ${c}66;`;return '';};
   const msg=this.over?(this.over==='D'?'스테일메이트 무승부':(this.over==='W'?'⚪ 백 승리!':'⚫ 흑 승리!')+(this.lv!=='친구'?(this.over==='W'?` ${this.streak}연승`:' · 연승 끝'):'')):(chk?'체크! ':'')+(this.w?'백 차례':(this.lv==='친구'?'흑 차례':'AI 생각 중…'));
   return `<div class="gst"><span>${this.lv==='친구'?'👥 친구와':this.lv+' · 연승 <b>'+this.streak+'</b>'}</span><span>${msg}</span></div>
-   <div style="display:grid;grid-template-columns:repeat(8,minmax(0,1fr));aspect-ratio:1;border-radius:6px;overflow:hidden;border:2px solid #6b4a2a">${this.b.map((p,s)=>{const dark=((s%8)+(s>>3))%2;const L=this.last&&(this.last[0]===s||this.last[1]===s);
-    return `<div onclick="CUR.tap(${s})" style="${s===this.mine?MINE_BOX:''}aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:min(8.5vw,40px);line-height:1;position:relative;background:${s===this.sel?'#9fd18b':L?(dark?'#c9b458':'#e8d88a'):(dark?'#b58863':'#f0d9b5')};color:${p&&isW(p)?'#fff':'#111'};${p&&isW(p)?'text-shadow:0 0 2px #000,0 0 1px #000':''}">${p?CHU[p.toLowerCase()]:''}${tg.includes(s)?`<i style="position:absolute;width:28%;height:28%;border-radius:50%;background:rgba(0,0,0,.28)"></i>`:''}</div>`;}).join('')}</div>
+   <div style="display:grid;grid-template-columns:repeat(8,minmax(0,1fr));aspect-ratio:1;border-radius:6px;overflow:hidden;border:2px solid #6b4a2a">${this.b.map((p,s)=>{const dark=((s%8)+(s>>3))%2;
+    return `<div onclick="CUR.tap(${s})" style="${shOf(s)}aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:min(8.5vw,40px);line-height:1;position:relative;background:${s===this.sel?'#9fd18b':(dark?'#b58863':'#f0d9b5')};color:${p&&isW(p)?'#fff':'#111'};${p&&isW(p)?'text-shadow:0 0 2px #000,0 0 1px #000':''}">${p?CHU[p.toLowerCase()]:''}${tg.includes(s)?`<i style="position:absolute;width:28%;height:28%;border-radius:50%;background:rgba(0,0,0,.28)"></i>`:''}</div>`;}).join('')}</div>
+   ${LAST_TIP}
    ${this.over?`<div class="g2b"><button class="btn" onclick="CUR.go('${this.lv}')">한 판 더</button><button class="btn b2" onclick="CUR.lv=null;rr()">모드 바꾸기</button></div>`:`<div class="m" style="text-align:center;margin-top:6px">말을 누르면 갈 수 있는 곳이 점으로 보여요 · 폰은 끝에 가면 퀸으로</div>`}`;}});
+
 // ===== ⚫ 바둑 (19줄) =====
 const BN=19;
 const BD_STAR=BN===19?[3,9,15]:BN===13?[3,6,9]:[2,4,6];   // 화점 좌표(가로·세로 조합)
@@ -1190,10 +1259,62 @@ function bdGroup(b,i){const c=b[i],g=[i],seen=new Set([i]);let lib=new Set();for
 function bdPlay(b,i,c){if(b[i])return null;const n=b.slice();n[i]=c;let cap=0;bdNb(i).forEach(j=>{if(n[j]===3-c){const [g,l]=bdGroup(n,j);if(!l.size){g.forEach(k=>n[k]=0);cap+=g.length;}}});const [g,l]=bdGroup(n,i);if(!l.size)return null;return [n,cap];}
 function bdScore(b){let s=[0,0,0];const seen=new Set();for(let i=0;i<BN*BN;i++){if(b[i]){s[b[i]]++;continue;}if(seen.has(i))continue;const reg=[i],own=new Set();seen.add(i);
   for(let k=0;k<reg.length;k++)bdNb(reg[k]).forEach(j=>{if(b[j])own.add(b[j]);else if(!seen.has(j)){seen.add(j);reg.push(j);}});if(own.size===1)s[[...own][0]]+=reg.length;}return s;}
+
+// --- 바둑 극악 AI: 축·단수 수읽기로 죽은 돌 판정 + 세력(영향력) 계가 + 상대 응수까지 보는 2수 읽기 ---
+const BD_HELL_MS=1500;
+// 벽을 넘지 못하는 집 추정(Bouzy 팽창·침식): 상대 돌로 막힌 곳은 내 집으로 치지 않음
+const BD_NBS=[];for(let i=0;i<BN*BN;i++)BD_NBS.push(bdNb(i));
+function bdBouzy(b,nd,ne){const N=BN*BN;let v=new Int32Array(N),t=new Int32Array(N);for(let i=0;i<N;i++)v[i]=b[i]===2?128:b[i]===1?-128:0;
+ for(let k=0;k<nd;k++){for(let i=0;i<N;i++){const x=v[i];let pos=0,neg=0;for(const j of BD_NBS[i]){if(v[j]>0)pos++;else if(v[j]<0)neg++;}
+   t[i]=x>=0&&!neg?x+pos:x<=0&&!pos?x-neg:x;}[v,t]=[t,v];}
+ for(let k=0;k<ne;k++){for(let i=0;i<N;i++){const x=v[i];if(!x){t[i]=0;continue;}let c=0;for(const j of BD_NBS[i])if(x>0?v[j]<=0:v[j]>=0)c++;
+   t[i]=x>0?Math.max(0,x-c):Math.min(0,x+c);}[v,t]=[t,v];}
+ return v;}
+function bdInfl(b){const N=BN*BN,T=bdBouzy(b,5,21),M=bdBouzy(b,5,10);let s=0;   // 백(+) 기준: 돌 + 확정 집 + 세력(모양) 절반
+ for(let i=0;i<N;i++){if(b[i]){s+=b[i]===2?1:-1;continue;}if(T[i]>0)s+=1;else if(T[i]<0)s-=1;else if(M[i]>0)s+=.5;else if(M[i]<0)s-=.5;}return s;}
+function bdEscape(b,i,dep){const c=b[i];const [g,lib]=bdGroup(b,i);if(lib.size>=2)return true;if(!lib.size)return false;if(dep>30)return false;   // 단수 당한 쪽이 둘 차례: 살 수 있나
+ const tried=new Set();
+ for(const k of g)for(const j of bdNb(k)){if(b[j]!==3-c||tried.has(j))continue;const [g2,l2]=bdGroup(b,j);g2.forEach(q=>tried.add(q));if(l2.size!==1)continue;
+  const r=bdPlay(b,[...l2][0],c);if(r&&bdGroup(r[0],i)[1].size>=2)return true;}
+ const r=bdPlay(b,[...lib][0],c);if(!r)return false;const l=bdGroup(r[0],i)[1].size;if(l>=3)return true;if(l<=1)return false;
+ return !bdAttack2(r[0],i,dep+1);}
+function bdAttack2(b,i,dep){const c=b[i];const lib=bdGroup(b,i)[1];if(lib.size!==2)return lib.size<2;if(dep>30)return false;   // 활로 2개 그룹을 공격자가 잡을 수 있나(축 포함)
+ for(const p of lib){const r=bdPlay(b,p,3-c);if(!r)continue;if(!r[0][i])return true;if(!bdEscape(r[0],i,dep+1))return true;}return false;}
+function bdEval(b,toMove){const N=BN*BN,n=b.slice(),seen=new Uint8Array(N);let adj=0;
+ for(let i=0;i<N;i++){if(!b[i]||seen[i])continue;const [g,l]=bdGroup(b,i);for(const k of g)seen[k]=1;const c=b[i];let dead=false;
+  if(l.size===1)dead=c!==toMove||!bdEscape(b,i,0);else if(l.size===2&&c!==toMove)dead=bdAttack2(b,i,0);
+  if(dead){for(const k of g)n[k]=0;adj+=(c===2?-1:1)*g.length;}
+  else if(l.size<=3)adj+=(c===2?-1:1)*Math.min(g.length,6)*(l.size===1?.6:l.size===2?.35:.12);}   // 활로가 적은 돌은 약점
+ return bdInfl(n)+adj;}
+function bdHell(G){const b=G.b,N=BN*BN,t0=Date.now();let stones=0;const near=new Uint8Array(N);
+ const inB=(X,Y)=>X>=0&&Y>=0&&X<BN&&Y<BN;
+ for(let i=0;i<N;i++){if(!b[i])continue;stones++;const x=i%BN,y=(i/BN)|0;for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++)if(Math.abs(dx)+Math.abs(dy)<=2&&inB(x+dx,y+dy))near[(y+dy)*BN+x+dx]=1;}
+ const real=bb=>{const s=bdScore(bb);return s[2]-s[1];};
+ const heur=(i,cap)=>{const x=i%BN,y=(i/BN)|0,e=Math.min(x,y,BN-1-x,BN-1-y);let h=0;
+  if(stones<80){if(e===0)h-=3;else if(e===1)h-=1.5;else if(e===2||e===3)h+=.5;}
+  if(!cap&&bdNb(i).every(j=>b[j]===2))h-=8;return h;};   // 내 집(눈) 메우기 금지
+ const cands=[];
+ for(let i=0;i<N;i++){if(b[i])continue;let ok=!!near[i];
+  if(!ok){const x=i%BN,y=(i/BN)|0,e=Math.min(x,y,BN-1-x,BN-1-y);if(e===2||e===3){ok=true;for(let dy=-4;dy<=4&&ok;dy++)for(let dx=-4;dx<=4;dx++)if(inB(x+dx,y+dy)&&b[(y+dy)*BN+x+dx]){ok=false;break;}}}   // 빈 곳의 3·4선 큰 자리
+  if(!ok)continue;const r=bdPlay(b,i,2);if(!r||r[0].join('')===G.prev)continue;
+  const raw=bdEval(r[0],1)+.15*real(r[0]),h=heur(i,r[1]);cands.push({i,r,raw,h,v1:raw+h+Math.random()*.05});}
+ if(!cands.length)return -1;
+ cands.sort((a,c)=>c.v1-a.v1);
+ const rs=bdScore(b);if(G.passes>0&&rs[2]+6.5>rs[1])return -1;   // 상대가 패스했고 실제 계가로 이기면 패스
+ const passV=bdEval(b,1)+.15*real(b);if(cands[0].v1<passV-1.5&&stones>N*.3&&(G.passes>0||rs[2]+6.5>rs[1]))return -1;   // 지고 있으면 먼저 패스하지 않음
+ const hot=cands.slice(0,12).map(c=>c.i),bkey=b.join('');let best=null,bv=-Infinity;
+ for(const c of cands.slice(0,12)){if(best&&Date.now()-t0>BD_HELL_MS)break;const nb=c.r[0],qs=new Set(hot),x=c.i%BN,y=(c.i/BN)|0;
+  for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++)if(Math.abs(dx)+Math.abs(dy)<=2&&inB(x+dx,y+dy))qs.add((y+dy)*BN+x+dx);
+  const seen=new Uint8Array(N);for(let k=0;k<N;k++){if(!nb[k]||seen[k])continue;const [g,l]=bdGroup(nb,k);g.forEach(q=>seen[q]=1);if(l.size<=2)l.forEach(q=>qs.add(q));}
+  let worst=Infinity;
+  for(const q of qs){if(nb[q])continue;const r2=bdPlay(nb,q,1);if(!r2||r2[0].join('')===bkey)continue;const v=bdEval(r2[0],2)+.15*real(r2[0]);if(v<worst)worst=v;}
+  if(worst===Infinity)worst=c.raw;const fv=worst+c.h;if(fv>bv){bv=fv;best=c;}}
+ return (best||cands[0]).i;}
+
 G.push({k:'baduk',cat:'대전·도구',e:'⚫',n:'바둑 (19줄)',d:'AI 대전 · 친구와 2인 · 계가 자동',
  start(){this.lv=null;rr();},
- go(lv){Object.assign(this,{lv,b:Array(BN*BN).fill(0),pv:-1,turn:1,prev:'',passes:0,cap:[0,0,0],over:null,last:-1,mine:-1,msg:'',streak:lsGet('bd_'+lv,0)});rr();},
- put(i,c){const r=bdPlay(this.b,i,c);if(!r)return false;const key=r[0].join('');if(key===this.prev)return false;this.prev=this.b.join('');this.b=r[0];this.cap[c]+=r[1];this.last=i;this.passes=0;this.turn=3-c;return true;},
+ go(lv){Object.assign(this,{lv,b:Array(BN*BN).fill(0),pv:-1,turn:1,prev:'',passes:0,cap:[0,0,0],over:null,last:-1,lo:{1:-1,2:-1},mine:-1,msg:'',streak:lsGet('bd_'+lv,0)});rr();},
+ put(i,c){const r=bdPlay(this.b,i,c);if(!r)return false;const key=r[0].join('');if(key===this.prev)return false;this.prev=this.b.join('');this.b=r[0];this.cap[c]+=r[1];this.last=i;(this.lo||(this.lo={1:-1,2:-1}))[c]=i;this.passes=0;this.turn=3-c;return true;},
  // 2단계 착수: 첫 탭=미리보기(십자선+반투명 돌), 같은 교차점 한 번 더=확정 (19줄은 칸이 작아 터치 미스 방지)
  pick(i){const o=this.ol,on=!!(o&&o.tok);
   if(this.over||this.b[i]){this.pv=-1;return;}
@@ -1202,9 +1323,11 @@ G.push({k:'baduk',cat:'대전·도구',e:'⚫',n:'바둑 (19줄)',d:'AI 대전 �
   if(this.pv===i){this.pv=-1;return this.tap(i);}
   const r=bdPlay(this.b,i,this.turn);if(!r||r[0].join('')===this.prev){this.pv=-1;toast('둘 수 없는 자리예요 (자충·패)',900);rr();return;}
   this.pv=i;rr();},
- tap(i){this.pv=-1;if(this.over||(this.lv!=='친구'&&this.turn!==1))return;if(!this.put(i,this.turn)){toast('둘 수 없는 자리예요 (자충·패)',900);return;}this.msg='';this.mine=this.lv!=='친구'?i:-1;rr();if(this.lv!=='친구')setTimeout(()=>this.ai(),AI_DELAY);},
- pass(){this.pv=-1;if(this.over)return;this.passes++;this.prev=this.b.join('');this.msg=(this.turn===1?'흑':'백')+' 패스';this.turn=3-this.turn;if(this.passes>=2)return this.end();rr();if(this.lv!=='친구'&&this.turn===2)setTimeout(()=>this.ai(),AI_DELAY);},
- ai(){if(this.over||this.turn!==2)return;let best_=-1,bv=-1e9;const noise={'쉬움':40,'보통':12,'어려움':3}[this.lv];
+ tap(i){this.pv=-1;if(this.over||(this.lv!=='친구'&&this.turn!==1))return;if(!this.put(i,this.turn)){toast('둘 수 없는 자리예요 (자충·패)',900);return;}this.msg='';this.mine=this.lv!=='친구'?i:-1;rr();if(this.lv!=='친구')setTimeout(()=>this.ai(),aiDelay(this.lv));},
+ pass(){this.pv=-1;if(this.over)return;this.passes++;this.prev=this.b.join('');this.msg=(this.turn===1?'흑':'백')+' 패스';this.turn=3-this.turn;if(this.passes>=2)return this.end();rr();if(this.lv!=='친구'&&this.turn===2)setTimeout(()=>this.ai(),aiDelay(this.lv));},
+ ai(){if(this.over||this.turn!==2)return;
+  if(this.lv==='극악'){const i=bdHell(this);if(i<0||!this.put(i,2))return this.pass();rr();return;}
+  let best_=-1,bv=-1e9;const noise={'쉬움':40,'보통':12,'어려움':3}[this.lv];
   for(let i=0;i<BN*BN;i++){if(this.b[i])continue;const r=bdPlay(this.b,i,2);if(!r||r[0].join('')===this.prev)continue;const n=r[0];let s=r[1]*30;const [,lib]=bdGroup(n,i);if(lib.size===1)s-=40;else s+=lib.size*2;
    const nb=bdNb(i);if(nb.every(j=>this.b[j]===2))s-=60;nb.forEach(j=>{if(this.b[j]===1){const [,l]=bdGroup(n,j);if(l.size===1)s+=15;else if(l.size===2)s+=5;}if(this.b[j]===2){const [,l0]=bdGroup(this.b,j);if(l0.size===1)s+=25;}});
    const x=i%BN,y=Math.floor(i/BN);if(x===0||y===0||x===BN-1||y===BN-1)s-=6;if(BD_STAR.includes(x)&&BD_STAR.includes(y))s+=4;const e=Math.min(x,y,BN-1-x,BN-1-y);if(e===2||e===3)s+=2;
@@ -1212,15 +1335,23 @@ G.push({k:'baduk',cat:'대전·도구',e:'⚫',n:'바둑 (19줄)',d:'AI 대전 �
     s+=Math.random()*noise;if(s>bv){bv=s;best_=i;}}
   if(best_<0||(bv<-20&&this.passes>0)){this.pass();return;}this.put(best_,2);rr();},
  end(){const s=bdScore(this.b);const bk=s[1],wt=s[2]+6.5;this.over={bk,wt,win:bk>wt?1:2};if(this.lv!=='친구'){if(this.over.win===1){this.streak++;lsSet('bd_'+this.lv,this.streak);record('baduk',this.streak,this.lv);}else{this.streak=0;lsSet('bd_'+this.lv,0);}}rr();},
- view(){if(!this.lv)return vsPick('CUR.go');const o=this.over;const msg=o?`${o.win===1?'⚫ 흑':'⚪ 백'} 승 (흑 ${o.bk} : 백 ${o.wt})`:(this.msg||(this.turn===1?'⚫ 흑 차례':(this.lv==='친구'?'⚪ 백 차례':'AI 생각 중…')));
+ view(){if(!this.lv)return vsPick('CUR.go')+HELL_BTN;const o=this.over;const msg=o?`${o.win===1?'⚫ 흑':'⚪ 백'} 승 (흑 ${o.bk} : 백 ${o.wt})`:(this.msg||(this.turn===1?'⚫ 흑 차례':(this.lv==='친구'?'⚪ 백 차례':'AI 생각 중…')));
   const P=+(50/BN).toFixed(3),W=+(100-2*P).toFixed(3),pv=(this.pv>=0&&!this.b[this.pv])?this.pv:-1,gc=(this.lv==='친구'||this.ol)?this.turn:1;
+  // 마지막 수 표시: 내 색 = AI전은 흑, 친구전은 지금 둘 차례인 쪽, 온라인은 내 자리 색
+  let me=1;const ol=this.ol;
+  if(ol&&ol.tok&&ol.you>=0&&typeof OLA!=='undefined'){try{me=OLA.baduk.seat(this)===ol.you?this.turn:3-this.turn;}catch(e){}}
+  else if(this.lv==='친구')me=this.turn;
+  const lo=Object.assign({1:-1,2:-1},this.lo||{});if(this.last>=0&&this.b[this.last])lo[this.b[this.last]]=this.last;
+  const mk=(i,v)=>{const c=(i===lo[me]&&v===me)?MINE_C:(i===lo[3-me]&&v===3-me)?OPP_C:'';return c?`<i style="position:absolute;width:92%;height:92%;border:3px solid ${c};border-radius:2px;box-sizing:border-box;pointer-events:none"></i>`:'';};
   let h=`<div style="position:relative;aspect-ratio:1;background:#dcb35c;border-radius:6px;padding:${P}%">`;
   h+=`<svg viewBox="0 0 ${BN-1} ${BN-1}" style="position:absolute;inset:${P}%;width:${W}%;height:${W}%" preserveAspectRatio="none">${[...Array(BN).keys()].map(k=>`<line x1="0" y1="${k}" x2="${BN-1}" y2="${k}" stroke="#5a3d17" stroke-width="${BN>13?.06:.03}"/><line x1="${k}" y1="0" x2="${k}" y2="${BN-1}" stroke="#5a3d17" stroke-width="${BN>13?.06:.03}"/>`).join('')}${BD_STAR.flatMap(x=>BD_STAR.map(y=>`<circle cx="${x}" cy="${y}" r="${BN>13?.16:.09}" fill="#5a3d17"/>`)).join('')}${pv>=0?`<line x1="0" y1="${(pv/BN)|0}" x2="${BN-1}" y2="${(pv/BN)|0}" stroke="#1b9e4b" stroke-width=".07" opacity=".75"/><line x1="${pv%BN}" y1="0" x2="${pv%BN}" y2="${BN-1}" stroke="#1b9e4b" stroke-width=".07" opacity=".75"/>`:''}</svg>`;
-  h+=`<div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat(${BN},1fr);padding:0">${this.b.map((v,i)=>`<div onclick="CUR.pick(${i})" style="display:flex;align-items:center;justify-content:center;position:relative">${i===pv?`<b style="width:86%;height:86%;border-radius:50%;opacity:.6;background:${gc===1?'#111':'#fafafa'};box-shadow:0 0 0 2px #1b9e4b;pointer-events:none"></b>`:''}${v?`<b style="width:86%;height:86%;border-radius:50%;background:${v===1?'radial-gradient(circle at 35% 35%,#555,#000)':'radial-gradient(circle at 35% 35%,#fff,#ccc)'};box-shadow:0 1px 2px rgba(0,0,0,.4);${i===this.last&&i!==this.mine?'outline:2px solid #2f80ed;outline-offset:-3px':''}"></b>`:''}${i===this.mine?'<i style="position:absolute;width:92%;height:92%;border:3px solid #e02424;border-radius:2px;pointer-events:none"></i>':''}</div>`).join('')}</div></div>`;
+  h+=`<div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat(${BN},1fr);padding:0">${this.b.map((v,i)=>`<div onclick="CUR.pick(${i})" style="display:flex;align-items:center;justify-content:center;position:relative">${i===pv?`<b style="width:86%;height:86%;border-radius:50%;opacity:.6;background:${gc===1?'#111':'#fafafa'};box-shadow:0 0 0 2px #1b9e4b;pointer-events:none"></b>`:''}${v?`<b style="width:86%;height:86%;border-radius:50%;background:${v===1?'radial-gradient(circle at 35% 35%,#555,#000)':'radial-gradient(circle at 35% 35%,#fff,#ccc)'};box-shadow:0 1px 2px rgba(0,0,0,.4)"></b>`:''}${v?mk(i,v):''}</div>`).join('')}</div></div>`;
   return `<div class="gst"><span>${this.lv==='친구'?'👥 친구와':this.lv+' · 연승 <b>'+this.streak+'</b>'} · 잡은 돌 ⚫${this.cap[1]} ⚪${this.cap[2]}</span><span>${msg}</span></div>${h}
+   ${LAST_TIP}
    ${o?`<div class="g2b"><button class="btn" onclick="CUR.go('${this.lv}')">한 판 더</button><button class="btn b2" onclick="CUR.lv=null;rr()">모드 바꾸기</button></div>`:`<button class="btn full gr" style="margin-top:10px" onclick="CUR.pass()">패스 (둘 다 패스하면 계가)</button>`}
    <div class="m" style="text-align:center;margin-top:6px;font-weight:700;color:#1b9e4b">${(this.pv>=0&&!this.b[this.pv])?'👆 같은 자리를 한 번 더 누르면 놓여요 (다른 곳을 누르면 옮겨져요)':'👆 교차점을 눌러 확인 → 같은 자리를 한 번 더 눌러 착수'}</div>
    <div class="m" style="text-align:center;margin-top:6px">중국식 계가(돌+집) · 백 덤 6.5집 · 죽은 돌은 끝까지 잡아내고 패스하세요</div>`;}});
+
 // ===== 장기 =====
 const JW=9,JH=10;
 const JV={K:1000,R:13,C:7,H:5,E:3,A:3,P:2};const JN={K:'궁',R:'차',C:'포',H:'마',E:'상',A:'사',P:'졸'};
@@ -1246,21 +1377,74 @@ function jAB(b,d,al,be,s){const king=c=>b.some(p=>p&&p.t==='K'&&p.s===c);if(!kin
  const ms=jMoves(b,s).sort((a,c)=>(b[c[1]]?JV[b[c[1]].t]:0)-(b[a[1]]?JV[b[a[1]].t]:0));if(!ms.length)return jEval(b);
  if(s===2){let v=-1e9;for(const mv of ms){v=Math.max(v,jAB(jDo(b,mv),d-1,al,be,1));al=Math.max(al,v);if(al>=be)break;}return v;}
  let v=1e9;for(const mv of ms){v=Math.min(v,jAB(jDo(b,mv),d-1,al,be,2));be=Math.min(be,v);if(al>=be)break;}return v;}
+
+// --- 장기 극악 엔진: 반복 심화 + PVS + 정지탐색(잡는 수) + 장군 연장 + 치환표 + 킬러/히스토리 + LMR ---
+const J_HELL_MS=2000;
+const JV2={R:1300,C:700,H:500,E:300,A:300,P:200};
+function jEval2(b){let v=0,cnt=0;for(const p of b)if(p)cnt++;   // 한(AI) 기준
+ for(let i=0;i<JW*JH;i++){const p=b[i];if(!p||p.t==='K')continue;const x=i%JW,y=(i/JW)|0;let s=p.t==='C'?400+cnt*10:JV2[p.t];   // 포는 기물이 줄수록 약해짐
+  if(p.t==='P')s+=(p.s===1?6-y:y-3)*15+(x===4?10:0);
+  else if(p.t==='H'||p.t==='R')s+=12-3*Math.abs(4-x);
+  else if(p.t==='A'&&inPal(x,y))s+=20;
+  v+=p.s===2?s:-s;}return v;}
+function jEngine(b0,side,ms){const MATE=1e6,dl=Date.now()+ms,TT=new Map(),kil=[],hs=new Map();let nodes=0,stop=false,rootMv=null;
+ const tick=()=>{if((++nodes&255)===0&&Date.now()>dl)stop=true;return stop;};
+ const val=p=>p?(p.t==='K'?20000:JV2[p.t]):0;
+ const isK=(b,m)=>b[m[1]]&&b[m[1]].t==='K';
+ const mvv=(b,m)=>val(b[m[1]])*10-Math.min(val(b[m[0]]),2000);
+ const key=b=>{let k='';for(const p of b)k+=p?p.t+p.s:'.';return k;};
+ const inChk=(b,s)=>jMoves(b,3-s).some(m=>isK(b,m));
+ const same=(a,c)=>a&&a[0]===c[0]&&a[1]===c[1];
+ function qs(b,s,al,be,ply,ms){if(tick())return 0;ms=ms||jMoves(b,s);
+  for(const m of ms)if(isK(b,m))return MATE-ply;
+  const st=(s===2?1:-1)*jEval2(b);if(st>=be)return st;if(st>al)al=st;if(ply>30)return st;
+  for(const mv of ms.filter(m=>b[m[1]]).sort((a,c)=>mvv(b,c)-mvv(b,a))){if(st+val(b[mv[1]])+300<al)continue;
+   const v=-qs(jDo(b,mv),3-s,-be,-al,ply+1);if(stop)return 0;if(v>=be)return v;if(v>al)al=v;}
+  return al;}
+ function nm(b,s,d,al,be,ply){if(tick())return 0;
+  const ms=jMoves(b,s);for(const m of ms)if(isK(b,m))return MATE-ply;
+  if(d<=0){if(ply<12&&inChk(b,s))d=1;else return qs(b,s,al,be,ply,ms);}   // 장군 상태면 한 수 더 읽기
+  const k=key(b)+s,e=TT.get(k);let ttm=null;
+  if(e){ttm=e.m;if(ply&&e.d>=d){if(e.f===0)return e.v;if(e.f===1&&e.v>=be)return e.v;if(e.f===2&&e.v<=al)return e.v;}}
+  const K=kil[ply]||[];
+  const sv=ms.map(m=>[same(ttm,m)?1e7:b[m[1]]?1e6+mvv(b,m):same(K[0],m)?9e5:same(K[1],m)?8e5:Math.min(hs.get(m[0]*90+m[1])||0,7e5),m]).sort((a,c)=>c[0]-a[0]);
+  let best=-Infinity,bm=null,cnt=0;const a0=al;
+  for(const[s0,mv]of sv){const n=jDo(b,mv);cnt++;let v;
+   if(cnt===1)v=-nm(n,3-s,d-1,-be,-al,ply+1);
+   else{const r=(s0<8e5&&cnt>3&&d>=3)?(cnt>10?2:1):0;v=-nm(n,3-s,d-1-r,-al-1,-al,ply+1);
+    if(!stop&&v>al&&r)v=-nm(n,3-s,d-1,-al-1,-al,ply+1);if(!stop&&v>al&&v<be)v=-nm(n,3-s,d-1,-be,-al,ply+1);}
+   if(stop)return 0;
+   if(v>best){best=v;bm=mv;if(!ply)rootMv=mv;}
+   if(v>al)al=v;
+   if(al>=be){if(!b[mv[1]]){const kk=kil[ply]||(kil[ply]=[]);if(!same(kk[0],mv)){kk[1]=kk[0];kk[0]=mv;}const hk=mv[0]*90+mv[1];hs.set(hk,(hs.get(hk)||0)+d*d);}break;}}
+  if(!cnt)return (s===2?1:-1)*jEval2(b);
+  if(TT.size>300000)TT.clear();TT.set(k,{d,v:best,f:best<=a0?2:best>=be?1:0,m:bm});return best;}
+ const root=jMoves(b0,side);const kc=root.find(m=>isK(b0,m));if(kc)return kc;
+ let best=null;
+ for(let d=1;d<=30;d++){rootMv=null;const v=nm(b0,side,d,-Infinity,Infinity,0);
+  if(stop){if(rootMv)best=rootMv;break;}best=rootMv;if(Math.abs(v)>MATE/2||Date.now()>dl-ms*.55)break;}
+ return best||root[0]||null;}
+
 G.push({k:'janggi',cat:'대전·도구',e:'🀄',n:'장기',d:'AI 대전 · 친구와 2인',
  start(){this.lv=null;rr();},
- go(lv){Object.assign(this,{lv,b:jInit(),turn:1,sel:-1,over:0,last:null,mine:-1,streak:lsGet('jg_'+lv,0)});rr();},
- move(mv){const cap=this.b[mv[1]];this.b=jDo(this.b,mv);this.last=mv;if(cap&&cap.t==='K'){this.over=this.turn;if(this.lv!=='친구'){if(this.over===1){this.streak++;lsSet('jg_'+this.lv,this.streak);record('janggi',this.streak,this.lv);}else{this.streak=0;lsSet('jg_'+this.lv,0);}}}this.turn=3-this.turn;},
+ go(lv){Object.assign(this,{lv,b:jInit(),turn:1,sel:-1,over:0,last:null,lm:{1:null,2:null},streak:lsGet('jg_'+lv,0)});rr();},
+ move(mv){const cap=this.b[mv[1]];(this.lm||(this.lm={}))[this.turn]=mv;this.b=jDo(this.b,mv);this.last=mv;if(cap&&cap.t==='K'){this.over=this.turn;if(this.lv!=='친구'){if(this.over===1){this.streak++;lsSet('jg_'+this.lv,this.streak);record('janggi',this.streak,this.lv);}else{this.streak=0;lsSet('jg_'+this.lv,0);}}}this.turn=3-this.turn;},
  tap(i){if(this.over||(this.lv!=='친구'&&this.turn!==1))return;const p=this.b[i];
-  if(this.sel>=0){const mv=jMoves(this.b,this.turn).find(m=>m[0]===this.sel&&m[1]===i);if(mv){this.sel=-1;this.move(mv);this.mine=this.lv!=='친구'?mv[1]:-1;rr();if(!this.over&&this.lv!=='친구')setTimeout(()=>this.ai(),AI_DELAY);return;}}
+  if(this.sel>=0){const mv=jMoves(this.b,this.turn).find(m=>m[0]===this.sel&&m[1]===i);if(mv){this.sel=-1;this.move(mv);rr();if(!this.over&&this.lv!=='친구')setTimeout(()=>this.ai(),aiDelay(this.lv));return;}}
   this.sel=p&&p.s===this.turn?i:-1;rr();},
- ai(){const d={'쉬움':1,'보통':2,'어려움':3}[this.lv];let best_=null,bv=-1e9;for(const mv of shuf(jMoves(this.b,2))){const v=jAB(jDo(this.b,mv),d-1,-1e9,1e9,1)+(this.lv==='쉬움'?Math.random()*4:0);if(v>bv){bv=v;best_=mv;}}if(best_)this.move(best_);rr();},
- view(){if(!this.lv)return vsPick('CUR.go');const tg=this.sel>=0?jMoves(this.b,this.turn).filter(m=>m[0]===this.sel).map(m=>m[1]):[];
+ ai(){if(this.over||this.turn!==2)return;
+  if(this.lv==='극악'){const mv=jEngine(this.b,2,J_HELL_MS);if(mv)this.move(mv);rr();return;}
+  const d={'쉬움':1,'보통':2,'어려움':3}[this.lv];let best_=null,bv=-1e9;for(const mv of shuf(jMoves(this.b,2))){const v=jAB(jDo(this.b,mv),d-1,-1e9,1e9,1)+(this.lv==='쉬움'?Math.random()*4:0);if(v>bv){bv=v;best_=mv;}}if(best_)this.move(best_);rr();},
+ view(){if(!this.lv)return vsPick('CUR.go')+HELL_BTN;const tg=this.sel>=0?jMoves(this.b,this.turn).filter(m=>m[0]===this.sel).map(m=>m[1]):[];
   const msg=this.over?(this.over===1?'🟢 초 승리!':'🔴 한 승리!')+(this.lv!=='친구'?(this.over===1?` ${this.streak}연승`:' · 연승 끝'):''):(this.turn===1?'🟢 초 차례 (나)':(this.lv==='친구'?'🔴 한 차례':'AI 생각 중…'));
+  const lm=this.lm||{},me=this.lv==='친구'?this.turn:1,marks=lastMarks(lm[me],lm[3-me],this.last);
+  const dst=i=>{for(const[m,c]of marks)if(m&&m[1]===i)return c;return '';},src=i=>{for(const[m,c]of marks)if(m&&m[0]===i)return c;return '';};
   const W=JW-1,H=JH-1;let svg=`<svg viewBox="-.5 -.5 ${JW} ${JH}" style="position:absolute;inset:0;width:100%;height:100%">`;for(let y=0;y<JH;y++)svg+=`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="#6b4a2a" stroke-width=".03"/>`;for(let x=0;x<JW;x++)svg+=`<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="#6b4a2a" stroke-width=".03"/>`;
   [[0,2],[7,9]].forEach(([a,b2])=>{svg+=`<line x1="3" y1="${a}" x2="5" y2="${b2}" stroke="#6b4a2a" stroke-width=".03"/><line x1="5" y1="${a}" x2="3" y2="${b2}" stroke="#6b4a2a" stroke-width=".03"/>`;});svg+='</svg>';
-  const cells=this.b.map((p,i)=>{const L=this.last&&(this.last[0]===i||this.last[1]===i);return `<div onclick="CUR.tap(${i})" style="display:flex;align-items:center;justify-content:center;position:relative">${p?`<b style="width:${p.t==='K'?92:p.t==='P'?70:80}%;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:min(${p.t==='K'?5:4.2}vw,${p.t==='K'?22:19}px);background:#f6ead0;border:2px solid ${p.s===1?'#2d7a31':'#c0392b'};color:${p.s===1?'#2d7a31':'#c0392b'};${i===this.sel?'box-shadow:0 0 0 3px #2f80ed':i===this.mine?'box-shadow:0 0 0 3px #e02424':L?'box-shadow:0 0 0 2px #e8a33d':''}">${p.s===2&&p.t==='P'?'병':JN[p.t]}</b>`:''}${tg.includes(i)?`<i style="position:absolute;width:30%;height:30%;border-radius:50%;background:rgba(47,128,237,.45)"></i>`:''}</div>`;}).join('');
+  const cells=this.b.map((p,i)=>{const dc=dst(i),sc=!p&&src(i);return `<div onclick="CUR.tap(${i})" style="display:flex;align-items:center;justify-content:center;position:relative">${p?`<b style="width:${p.t==='K'?92:p.t==='P'?70:80}%;aspect-ratio:1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:min(${p.t==='K'?5:4.2}vw,${p.t==='K'?22:19}px);background:#f6ead0;border:2px solid ${p.s===1?'#2d7a31':'#c0392b'};color:${p.s===1?'#2d7a31':'#c0392b'};${i===this.sel?'box-shadow:0 0 0 3px #1b9e4b':dc?`box-shadow:0 0 0 3px ${dc}`:''}">${p.s===2&&p.t==='P'?'병':JN[p.t]}</b>`:''}${sc?`<i style="position:absolute;width:42%;height:42%;border-radius:50%;border:2px dashed ${sc};box-sizing:border-box;opacity:.8;pointer-events:none"></i>`:''}${tg.includes(i)?`<i style="position:absolute;width:30%;height:30%;border-radius:50%;background:rgba(27,158,75,.5)"></i>`:''}</div>`;}).join('');
   return `<div class="gst"><span>${this.lv==='친구'?'👥 친구와':this.lv+' · 연승 <b>'+this.streak+'</b>'}</span><span>${msg}</span></div>
    <div style="position:relative;aspect-ratio:${JW}/${JH};background:#e8c98a;border-radius:8px">${svg}<div style="position:absolute;inset:0;display:grid;grid-template-columns:repeat(${JW},1fr);grid-template-rows:repeat(${JH},1fr)">${cells}</div></div>
+   ${LAST_TIP}
    ${this.over?`<div class="g2b"><button class="btn" onclick="CUR.go('${this.lv}')">한 판 더</button><button class="btn b2" onclick="CUR.lv=null;rr()">모드 바꾸기</button></div>`:`<div class="m" style="text-align:center;margin-top:6px">궁을 잡으면 이겨요 · 장군을 무시하면 바로 잡혀요</div>`}`;}});
 // ===== 🌐 온라인 대전 (방 만들기 · 입장 · 관전 · 재대결) — 서버 rooms.py /api/room/* =====
 // 규칙 판정은 각 클라이언트가 같은 코드로 하고, 서버는 수(mv)만 순서대로 중계. 온라인 대전은 연승·XP·기록에 반영하지 않음
