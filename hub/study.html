@@ -356,7 +356,7 @@ function rvEq(A,B,board,N){let w=0,t=0;for(let k=0;k<N;k++){const a=pick(A),b=pi
 function texture(b){const r=b.map(c=>c.r).sort((x,y)=>y-x),s=new Set(b.map(c=>c.s)).size;const hi=r[0];const conn=r[0]-r[2]<=4&&new Set(r).size===3;const pair=new Set(r).size<3;
  return {hi,conn,pair,mono:s===1,two:s===2,low:hi<=9,high:hi>=12};}
 G.push({k:'nutadv',cat:'홀덤',e:'🧭',n:'넛 우위 맞히기',d:'포지션별 레인지 · 누구 보드인가',
- start(){this.i=0;this.sc=0;this.res=null;this.pend=false;this.nq();rr();},
+ start(){this.i=0;this.sc=0;this.res=null;this.pend=false;this.over=false;this.nq();rr();},
  nq(){const sp=pick(SPOTS);let board;do{board=deck().slice(0,3);}while(false);const IPc=combos(parseRange(sp.IP),board),OOPc=combos(parseRange(sp.OOP),board);
   const [ni,si]=nutPct(IPc,board),[no,so]=nutPct(OOPc,board);const eq=rvEq(IPc,OOPc,board,900);const d=ni-no;const ans=Math.abs(d)<0.015?'=':(d>0?'ip':'oop');
   this.q={sp,board,ni,no,si,so,eq,ans};},
@@ -372,15 +372,15 @@ G.push({k:'nutadv',cat:'홀덤',e:'🧭',n:'넛 우위 맞히기',d:'포지션�
     <div class="m" style="font-size:12.5px;margin-top:4px">${r.q.sp.t} · ${r.q.sp.n}</div><div style="margin:4px 0">${cardsHtml(r.q.board,true)}</div>
     <div class="m" style="margin:4px 0">넛(투페어 이상) 비율 ${r.q.sp.ip} ${(r.q.ni*100).toFixed(1)}% · ${r.q.sp.oop} ${(r.q.no*100).toFixed(1)}% · 레인지 에퀴티 ${r.q.sp.ip} ${Math.round(r.q.eq*100)}%</div>
     ${this.explain(r.q)}</div>${this.askBoxHtml?this.askBoxHtml():''}`:'';
-  if(this.i>=10)return overHtml(this.sc+'/10','넛 우위 맞히기 10문제 · 내 최고 '+(myBest('nutadv')||this.sc)+'/10')+fb;
-  if(this.pend)return `<div class="gst"><span>${this.i} / 10 완료</span><span>정답 <b>${this.sc}</b> <button class="btn g" style="padding:6px 14px;font-size:14px;margin-left:8px;white-space:nowrap" onclick="CUR.next()">다음 ▶</button></span></div>`+fb.replace('직전 문제 풀이','문제 풀이')+`<button class="btn full g" style="font-size:17px;padding:13px;margin-top:10px" onclick="CUR.next()">다음 문제 (${this.i+1}/10)</button>`;
-  return `<div class="gst"><span>${this.i+1} / 10</span><span>정답 <b>${this.sc}</b></span></div>
+  if(this.over)return overHtml(this.sc+'연속','넛 우위 맞히기 · 틀릴 때까지 · 내 최고 '+Math.max(myBest('nutadv')||0,this.sc)+'연속')+fb;
+  if(this.pend)return `<div class="gst"><span>${this.i}문제 통과</span><span>정답 <b>${this.sc}</b> <button class="btn g" style="padding:6px 14px;font-size:14px;margin-left:8px;white-space:nowrap" onclick="CUR.next()">다음 ▶</button></span></div>`+fb.replace('직전 문제 풀이','문제 풀이')+`<button class="btn full g" style="font-size:17px;padding:13px;margin-top:10px" onclick="CUR.next()">다음 문제 (${this.i+1}번째)</button>`;
+  return `<div class="gst"><span>${this.i+1}번째</span><span>정답 <b>${this.sc}</b></span></div>
    <div class="card" style="text-align:center"><div class="m">${q.sp.t} · 100BB</div><div class="t" style="font-size:16px;margin:4px 0">${q.sp.n}</div><div class="lbl">플랍</div>${cardsHtml(q.board)}
     <div class="gq" style="margin:10px 0 0">넛 우위는 누구에게?</div></div>
    <div class="g3b"><button class="btn" onclick="CUR.ans('ip')">${q.sp.ip}</button><button class="btn gr" onclick="CUR.ans('=')">비슷</button><button class="btn b2" onclick="CUR.ans('oop')">${q.sp.oop}</button></div>
    ${fb}
    <div class="m" style="text-align:center;margin-top:8px">넛 = 투페어(두 장 다 사용)·셋·스트레이트 이상 · 레인지는 100BB 기준 대표 레인지 · 계산 기반 해설(솔버 경향 요약)</div>`;},
- ans(a){if(this.pend)return;const ok=a===this.q.ans;if(ok)this.sc++;this.res={ok,q:this.q};this.i++;if(this.i>=10)record('nutadv',this.sc);else this.pend=true;rr();scrollTo(0,0);},
+ ans(a){if(this.pend)return;const ok=a===this.q.ans;if(ok)this.sc++;this.res={ok,q:this.q};this.i++;if(!ok){this.over=true;record('nutadv',this.sc);}else this.pend=true;rr();scrollTo(0,0);},
  next(){if(!this.pend)return;this.pend=false;this.res=null;this.nq();rr();scrollTo(0,0);}});
 // ===== 🎴 바카라 카운팅 트레이너 (8덱 슈 · 컷카드 16장) =====
 const BV=r=>r>=10&&r<=13?0:r===14?1:r;
@@ -1362,7 +1362,7 @@ let DLIVE=null;
 function dailyView(){const d=kstDay(),[k,lv]=dailyType(d);const g=G.find(x=>x.k===k);const done=lsGet('daily_done_'+d,null),started=lsGet('daily_start_'+d,0);
  const D=DLIVE&&DLIVE.d===d?DLIVE:(GD.daily&&GD.daily.d===d?GD.daily:null);const B=D?D.board:[];
  const fmt=x=>D&&D.unit==='logic'?esc(x[2]):(x[2]&&x[2]==='실패'?'실패':fmtScore(k,x[1]));
- const rule={sudoku:'스도쿠 보통 · 빨리 풀수록 높은 순위',logic:'논리 퍼즐 5문제 · 많이 맞히고 빨리 풀수록',speed50:'1 to 50 · 빠를수록',kakuro:'카쿠로 보통 · 빠를수록',codebreak:'코드 브레이커 · 적은 시도로',nutadv:'넛 우위 10문제 · 많이 맞힐수록',nerdle:'수식 맞히기 · 적은 시도로',nonogram:'노노그램 보통 · 빠를수록'}[k]||'';
+ const rule={sudoku:'스도쿠 보통 · 빨리 풀수록 높은 순위',logic:'논리 퍼즐 5문제 · 많이 맞히고 빨리 풀수록',speed50:'1 to 50 · 빠를수록',kakuro:'카쿠로 보통 · 빠를수록',codebreak:'코드 브레이커 · 적은 시도로',nutadv:'넛 우위 · 틀릴 때까지 연속 정답',nerdle:'수식 맞히기 · 적은 시도로',nonogram:'노노그램 보통 · 빠를수록'}[k]||'';
  return `<div class="card" style="text-align:center"><div class="m">${d} · 모두 같은 문제 · 하루 1번</div><div style="font-size:26px;margin:6px 0">${g?g.e:''}</div><div class="t" style="font-size:19px">${g?g.nm:k}</div><div class="m">${rule}</div></div>
   ${!NICK?`<div class="card"><div class="t">닉네임을 먼저 저장해요</div><div style="display:flex;gap:6px;margin-top:6px"><input class="q" id="nk" placeholder="예: 구우"><button class="btn" onclick="setNick($('nk').value);render()">저장</button></div></div>`:''}
   ${done?`<div class="gok">✅ 오늘 제출 완료 · 내 기록 <b>${esc(done.detail||'')}</b></div>`:started?`<div class="card m">오늘 문제는 이미 시작했어요. 하루 1번이라 다시 할 수 없어요.</div>`:NICK?`<button class="btn full g" style="font-size:18px;padding:14px" onclick="dailyBegin()">도전하기 (한 번뿐이에요!)</button>`:''}
