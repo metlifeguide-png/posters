@@ -601,13 +601,13 @@ const WBANK={
  '홀덤':TERMS.map(x=>x)};
 const WTHEMES=Object.keys(WBANK);
 
-G.push({k:'chosung',cat:'퍼즐',e:'🔤',n:'초성퀴즈',d:'음식·만화·드라마·홀덤… 랜덤 출제 · 극악 45초',
+G.push({k:'chosung',cat:'퍼즐',e:'🔤',n:'초성퀴즈',d:'음식·만화·드라마·홀덤… 랜덤 출제 · 극악 1분',
  start(){this.begin();},
- begin(){this.th='랜덤';this.L=shuf([].concat(...WTHEMES.map(t=>WBANK[t].map(x=>[x[0],x[1],t]))));this.i=0;this.sc=0;this.ps=0;this.wr=0;this.over=false;if(this.stopT)this.stopT();this.stopT=timer(45,()=>{this.over=true;record('chosung',this.sc);rr();});rr();setTimeout(()=>{const e=$('cin');if(e)e.focus();},50);},
+ begin(){this.th='랜덤';this.L=shuf([].concat(...WTHEMES.map(t=>WBANK[t].map(x=>[x[0],x[1],t]))));this.i=0;this.sc=0;this.ps=0;this.wr=0;this.over=false;if(this.stopT)this.stopT();this.stopT=timer(60,()=>{this.over=true;record('chosung',this.sc);rr();});rr();setTimeout(()=>{const e=$('cin');if(e)e.focus();},50);},
  stop(){if(this.stopT)this.stopT();},
  view(){if(!this.th)return '';
-  if(this.over)return overHtml(this.sc+'개','랜덤 출제 · 극악 45초 · 맞힌 개수 · 내 최고 '+(myBest('chosung')||this.sc)+'개',"CUR.begin()");const [w,hint,tm]=this.L[this.i%this.L.length];
-  return `<div class="gst"><span>⏱ <b id="tleft">45초</b></span><span>맞힘 <b>${this.sc}</b> · ❌ ${this.wr}/3</span></div><div class="gbig" style="letter-spacing:6px">${cho(w)}</div><div class="gq">🏷 테마: ${tm} · 🔥 극악 · 힌트 없음</div>
+  if(this.over)return overHtml(this.sc+'개','랜덤 출제 · 극악 1분 · 맞힌 개수 · 내 최고 '+(myBest('chosung')||this.sc)+'개',"CUR.begin()");const [w,hint,tm]=this.L[this.i%this.L.length];
+  return `<div class="gst"><span>⏱ <b id="tleft">60초</b></span><span>맞힘 <b>${this.sc}</b> · ❌ ${this.wr}/3</span></div><div class="gbig" style="letter-spacing:6px">${cho(w)}</div><div class="gq">🏷 테마: ${tm} · 🔥 극악 · 힌트 없음</div>
    <input class="q" id="cin" autocomplete="off" placeholder="정답 입력 후 엔터" onkeydown="if(event.key==='Enter')CUR.ans(this.value)">
    <div class="g2b"><button class="btn" onclick="CUR.ans($('cin').value)">확인</button><button class="btn gr" ${this.ps>=2?'disabled':''} onclick="CUR.pass()">패스 (${2-this.ps})</button></div>`;},
  pass(){if(this.over||this.ps>=2)return;this.ps++;this.i++;rr();setTimeout(()=>{const e=$('cin');if(e)e.focus();},30);},
