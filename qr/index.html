@@ -117,7 +117,7 @@ window.__qrFlush=flush;addEventListener('pagehide',flush);document.addEventListe
 async function push(ka){if(!U)return;try{const body=JSON.stringify({data:D}),go=k=>fetch(API+'/api/qr/data',{method:'PUT',headers:{...H,'X-QR-Token':U.token},body,keepalive:k});let r;try{r=await go(!!ka&&body.length<60000)}catch(e){if(!ka)throw e;r=await go(false)}
  if(r.status===401){logout(true);return}if(!r.ok)throw 0;try{localStorage.removeItem(dk())}catch(e){}$('#sst').textContent='자동 저장'}catch(e){$('#sst').textContent='오프라인 · 기기에 저장됨'}}
 async function authGo(kind){const login=$('#lg').value.trim(),pw=$('#pw').value;$('#am').textContent='';
- try{const r=await fetch(API+'/api/qr/'+kind,{method:'POST',headers:H,body:JSON.stringify({login,pw})}),j=await r.json().catch(()=>({}));
+ try{const r=await fetch(API+'/api/qr/'+kind,{method:'POST',headers:H,body:JSON.stringify({login,pw,mtok:MTOK})}),j=await r.json().catch(()=>({}));
   if(!r.ok){$('#am').textContent=j.detail||'실패했어요';return}
   U={login:j.login,token:j.token};try{localStorage.setItem('qr_sess',JSON.stringify(U))}catch(e){}$('#pw').value='';await boot()}
  catch(e){$('#am').textContent='서버에 연결할 수 없어요'}}
@@ -315,4 +315,11 @@ function init(){mk();kp();
  $('#pw').onkeydown=e=>{if(e.key==='Enter')authGo('login')};
  if(U)boot()}
 init();
+
+// 👤 빠른복기는 뚝섬 회원만 (홈 오른쪽 위 로그인을 같이 씀 · 서버 quickrec.py가 mtok 확인)
+const MTOK=(()=>{try{return localStorage.getItem("mtok")||""}catch(e){return ""}})();
+if(!MTOK){const w=document.createElement("div");w.id="memGate";
+ w.style.cssText="position:fixed;inset:0;z-index:99999;background:rgba(20,24,30,.72);display:flex;align-items:center;justify-content:center;padding:18px";
+ w.innerHTML='<div style="background:#fff;color:#222;border-radius:16px;padding:22px 18px;max-width:340px;width:100%;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.35)"><div style="font-size:30px">🔒</div><div style="font-weight:900;font-size:17px;margin:6px 0">로그인 후 이용해 주세요</div><div style="font-size:13.5px;color:#555;line-height:1.6;margin-bottom:14px">빠른복기는 뚝섬 회원만 쓸 수 있어요.<br>뚝섬 홈 오른쪽 위에서 로그인(회원가입)한 뒤 다시 열어주세요.</div><a href="../hub/" target="_top" style="display:block;background:#1f5fae;color:#fff;text-decoration:none;border-radius:11px;padding:12px;font-weight:800">뚝섬 홈으로 가기</a><button type="button" onclick="location.reload()" style="margin-top:8px;width:100%;border:0;background:none;padding:10px;color:#666;font-size:14px">로그인했어요 · 다시 열기</button></div>';
+ document.body.appendChild(w);}
 </script></body></html>
