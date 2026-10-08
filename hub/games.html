@@ -3652,7 +3652,9 @@ G.push({k:'hula',cat:'카드',e:'🀄',n:'세븐훌라',d:'AI 대전 · 등록·
     };
   }
 
-  G.push({k:'sichuan',cat:'퍼즐',e:'🀄',n:'사천성',d:'같은 패를 2번 이하로 꺾어 연결 · 콤보·피버·특수 패',...gobj()});// ===== 🕹️ 아케이드 =====
+  G.push({k:'sichuan',cat:'퍼즐',e:'🀄',n:'사천성',d:'같은 패를 2번 이하로 꺾어 연결 · 콤보·피버·특수 패',...gobj()});
+})();
+// ===== 🕹️ 아케이드 =====
 function cvSetup(game,w,h,extra){show(`<div class="gst"><span>점수 <b id="csc">0</b></span><span>내 최고 ${(myBest(game.k)||0).toLocaleString()}</span></div><canvas id="cv" class="cv" width="${w}" height="${h}"></canvas>${extra||''}<div id="cmsg" class="m" style="text-align:center;margin-top:8px"></div>`);
  const c=$('cv');game.cv=c;game.cx=c.getContext('2d');game.alive=true;const loop=t=>{if(!game.alive||CUR!==game)return;game.tick(t);requestAnimationFrame(loop);};requestAnimationFrame(loop);
  const pos=e=>{const r=c.getBoundingClientRect(),p=e.touches?e.touches[0]:e;return [(p.clientX-r.left)*w/r.width,(p.clientY-r.top)*h/r.height];};return pos;}
