@@ -95,7 +95,7 @@ try{MEM.tok=localStorage.getItem('mtok')||'';MEM.nick=localStorage.getItem('mnic
 if(MEM.tok&&MEM.nick)NICK=MEM.nick;
 function memSave(r){MEM.tok=(r&&r.token)||'';MEM.nick=(r&&r.nick)||'';MEM.login=(r&&r.login)||'';
   try{if(MEM.tok){localStorage.setItem('mtok',MEM.tok);localStorage.setItem('mnick',MEM.nick);localStorage.setItem('mlogin',MEM.login);localStorage.setItem('nick',MEM.nick);localStorage.setItem('nick2',JSON.stringify(MEM.nick));}
-    else['mtok','mnick','mlogin'].forEach(k=>localStorage.removeItem(k));}catch(e){}
+    else['mtok','mnick','mlogin','ddpet_tok'].forEach(k=>localStorage.removeItem(k));}catch(e){}
   if(MEM.nick)NICK=MEM.nick;try{memChanged();}catch(e){}}
 function memPost(p,b){return fetch(API+p,{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b)}).then(r=>r.json()).catch(()=>({ok:false,msg:'서버에 연결하지 못했어요. 잠시 뒤 다시 해주세요'}));}
 function memCheck(){if(!MEM.tok||!API)return;fetch(API+'/api/member/me?token='+encodeURIComponent(MEM.tok),{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json())
@@ -2035,12 +2035,13 @@ function petBushes(v,x,pick){const f={...petForm(v),uid:'hd'};let h='';for(let i
 function petApi(path,body){return fetch(API+path,body?{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(body)}:{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json());}
 const petStars=n=>`<span style="color:#f5b400;letter-spacing:-1px">${'★'.repeat(n||0)}</span><span style="color:#ccc;letter-spacing:-1px">${'★'.repeat(10-(n||0))}</span>`;
 G.push({k:'pet',cat:'펫',e:'🐣',n:'뚝섬펫',d:'7일 동안 키우는 다마고치 · 20종 중 선택 · 이름+비번 접속',
- start(){this.tab='home';this.data=null;this.msg='';this.err='';this.mode=this.tok()?'login':'new';this.sel=0;this.fl='';this.fp='';this.menu='feed';this.fx=null;this.hiding=false;this.flash=false;this.load();rr();clearInterval(this.iv);this.iv=setInterval(()=>{if(CUR===this&&this.tab==='home'&&!this.fx&&!this.hiding&&this.tok())this.load(true);},60000);},
+ start(){this._mine=0;this._linking=0;this.tab='home';this.data=null;this.msg='';this.err='';this.mode=this.tok()?'login':'new';this.sel=0;this.fl='';this.fp='';this.menu='feed';this.fx=null;this.hiding=false;this.flash=false;this.load();rr();clearInterval(this.iv);this.iv=setInterval(()=>{if(CUR===this&&this.tab==='home'&&!this.fx&&!this.hiding&&this.tok())this.load(true);},60000);},
  stop(){clearInterval(this.iv);clearTimeout(this.ft);},
  tok(){try{return localStorage.getItem('ddpet_tok')||'';}catch(e){return '';}},
  setTok(t){try{if(t)localStorage.setItem('ddpet_tok',t);else localStorage.removeItem('ddpet_tok');}catch(e){}},
  nick(){return (typeof NICK!=='undefined'&&NICK)?NICK:'';},
- nickBox(){const nk=this.nick();const bx='border:2px solid #f5a623;background:#fff6dc';
+ nickBox(){if(typeof MEM!=='undefined'&&MEM.tok)return '';   // 👤 회원은 펫이 자동으로 회원 닉네임에 연결됨 (load)
+  const nk=this.nick();const bx='border:2px solid #f5a623;background:#fff6dc';
   const nin=`<input class="q" id="pn" maxlength="20" placeholder="카톡 닉네임" value="${esc(this.pnv!=null?this.pnv:nk)}" oninput="CUR.pnv=this.value" style="flex:1;min-width:0">`;
   if(!this.tok()){if(nk)return '';
    return `<div class="card" style="${bx}"><div style="font-weight:900;font-size:13.5px">⚠️ 카톡 닉네임을 먼저 저장해 주세요</div><div class="m" style="font-size:12.5px;margin:4px 0 6px;line-height:1.6">닉네임이 있어야 게임 보상(🍪 간식 · 🔮 별조각 · 🍖 특식)이 내 펫에게 들어와요</div><div style="display:flex;gap:6px">${nin}<button class="btn g" onclick="CUR.saveNick()">저장</button></div></div>`;}
@@ -2053,7 +2054,10 @@ G.push({k:'pet',cat:'펫',e:'🐣',n:'뚝섬펫',d:'7일 동안 키우는 다마
  linkNick(){const e=document.getElementById('pn');const v=((e&&e.value)||this.pnv||'').trim();const pw=this.pwv||'';const lg=this.data&&this.data.login;
   if(!v){toast('닉네임을 입력해 주세요');return;}if(!pw){toast('비밀번호를 입력해 주세요');return;}if(!lg)return;
   petApi('/api/pet/login',{mtok:MEM.tok,login:lg,pw,nick:v}).then(r=>{if(!r.ok){toast(r.msg||'실패했어요',2500);return;}setNick(v);this.setTok(r.token);this.pnv=null;this.pwv='';toast('닉네임이 펫에 연결됐어요 🎁',2200);this.load(true);}).catch(()=>toast('서버 연결 실패'));},
- load(quiet){const t=this.tok();if(!t){this.data=null;rr();return;}petApi('/api/pet?token='+encodeURIComponent(t)).then(r=>{if(r.auth===false){this.setTok('');this.data=null;this.err='';this.mode='login';rr();return;}this.data=r;this.err='';if(CUR===this)rr();}).catch(()=>{this.err='서버에 연결이 안 돼요';if(!quiet)rr();});},
+ load(quiet){const t=this.tok();
+  if(!t&&MEM.tok&&!this._mine){this._mine=1;petApi('/api/pet/mine?mtok='+encodeURIComponent(MEM.tok)).then(r=>{if(r&&r.ok){this.setTok(r.token);this.load(quiet);}else{this.data=null;rr();}}).catch(()=>{this.data=null;rr();});return;}   // 👤 회원이면 연결된 펫으로 자동 접속
+  if(!t){this.data=null;rr();return;}petApi('/api/pet?token='+encodeURIComponent(t)).then(r=>{if(r.auth===false){this.setTok('');this.data=null;this.err='';this.mode='login';rr();return;}this.data=r;this.err='';if(CUR===this)rr();
+   if(MEM.tok&&typeof r.nick==='string'&&r.nick!==MEM.nick&&!this._linking){this._linking=1;petApi('/api/pet/link',{token:t,mtok:MEM.tok}).then(x=>{if(x&&x.ok){toast(`🐣 '${x.login}' 펫이 내 계정(${MEM.nick})에 연결됐어요 · 게임 보상이 이 펫에게 가요`,3000);this.load(true);}}).catch(()=>{});}}).catch(()=>{this.err='서버에 연결이 안 돼요';if(!quiet)rr();});},
  register(){petApi('/api/pet/register',{mtok:MEM.tok,login:(this.fl||'').trim(),pw:this.fp||'',species:this.sel,nick:this.nick()}).then(r=>{if(!r.ok){toast(r.msg||'실패했어요',2500);return;}this.setTok(r.token);this.fp='';this.data={ok:true,login:r.login,pet:r.pet,dex:r.dex,dexTotal:r.dexTotal};this.err='';toast('알을 받았어요! 🥚',2000);rr();}).catch(()=>toast('서버 연결 실패'));},
  doLogin(){petApi('/api/pet/login',{mtok:MEM.tok,login:(this.fl||'').trim(),pw:this.fp||'',nick:this.nick()}).then(r=>{if(!r.ok){toast(r.msg||'실패했어요',2500);return;}this.setTok(r.token);this.fp='';this.load();}).catch(()=>toast('서버 연결 실패'));},
  logout(){this.setTok('');this.data=null;this.mode='login';this.fx=null;this.hiding=false;rr();},
