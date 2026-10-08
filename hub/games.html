@@ -2638,7 +2638,7 @@ G.push({k:'hula',cat:'카드',e:'🀄',n:'세븐훌라',d:'AI 대전 · 등록·
   const stars=()=>lsGet('sc_star',{});
   const opened=()=>Math.max(1,lsGet('sc_open',1));
 
-  G.push({k:KEY,cat:'퍼즐',e:'🀄',n:'사천성',d:'같은 그림을 2번 이하로 꺾어 연결 · 클래식·타임어택·12스테이지',
+  G.push({k:'sichuan',cat:'퍼즐',e:'🀄',n:'사천성',d:'같은 그림을 2번 이하로 꺾어 연결 · 클래식·타임어택·12스테이지',
     start(){addStyle();this.stop();this.mode=lsGet('sc_mode','클래식');this.lv=null;this.stg=null;this.over=0;rr();},
     stop(){clearInterval(this.iv);this.iv=null;clearTimeout(this.lt);},
     setMode(m){this.mode=m;lsSet('sc_mode',m);rr();},
