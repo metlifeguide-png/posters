@@ -109,6 +109,83 @@ const _unused=[[100,200],[150,300],[200,400],[300,600],[400,800],[500,1000],[600
 let D={tours:[]},T=null,ed=null,aK='stack',R=null,U=null,pend=null;
 const MTOK=(()=>{try{return localStorage.getItem("mtok")||""}catch(e){return ""}})();   // 👤 뚝섬 회원 token (홈 로그인)
 const API="https://211-233-211-164.sslip.io",H={"Content-Type":"application/json","ngrok-skip-browser-warning":"true"};
+// 📣 광고 띠 (광고 자리 'bar' = 휴대폰 하단 고정 띠, 'side' = PC 좌우 여백 세로 배너)
+// 같은 코드가 games_src/p7.js · hub.html · qr.html · review.html 네 군데에 있음 (고칠 땐 넷 다)
+// 페이지마다 ABAR.go(광고)=누르면, ABAR.src(파일이름)=그림 주소, ABAR.api=서버 주소, ABAR.sel=본문 칸(여백 계산용) 을 정해 줌
+// 홈 안(iframe)에서 열린 화면은 세로 배너를 안 띄우고(홈이 바깥 여백에 띄움), 홈에 세로 배너가 없을 때만 하단 띠
+// abarSet(광고목록) → abarShow(true/false). 좌우 여백이 넉넉하고(세로 배너 170px 이상) 'side' 광고가 있으면 세로 배너, 아니면 하단 띠
+const ABAR={inF:window.top!==window.self,noBar:false,L:[],S:[],a:null,s:null,want:false,closed:false,sclosed:false,hide:{},seen:{},api:'',go:null,src:n=>'',sel:'.wrap',css:false};
+function abarSet(list){const A=Array.isArray(list)?list:[];ABAR.L=A.filter(a=>a&&a.slot==='bar');ABAR.S=A.filter(a=>a&&a.slot==='side'&&a.poster);
+ if(ABAR.a&&!ABAR.L.some(x=>x.id===ABAR.a.id))ABAR.a=null;if(ABAR.s&&!ABAR.s.every(a=>ABAR.S.some(x=>x.id===a.id)))ABAR.s=null;abarDraw();}
+function abarPick(L,not){L=L.filter(a=>!not||a.id!==not.id);if(!L.length)return null;let s=L.reduce((t,a)=>t+(a.weight||1),0)*Math.random();for(const a of L){s-=(a.weight||1);if(s<0)return a;}return L[0];}
+function abarShow(on,repick){ABAR.want=!!on;if(repick){if(ABAR.L.length>1)ABAR.a=null;if(ABAR.S.length>1)ABAR.s=null;}abarDraw();clearTimeout(ABAR.st);ABAR.st=setTimeout(abarDraw,400);}   // 화면이 자리 잡은 뒤 한 번 더 (여백 다시 재기)
+function abarHide(why,on){if(on)ABAR.hide[why]=1;else delete ABAR.hide[why];abarDraw();}
+function abarHit(a,t){if(!a||!a.id||!ABAR.api)return;if(t==='v'){if(ABAR.seen[a.id])return;ABAR.seen[a.id]=1;}
+ try{fetch(ABAR.api+'/api/ads/hit',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({id:a.id,t})}).catch(()=>{});}catch(e){}}
+function abarEsc(s){return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function abarImg(n){return `<img src="${ABAR.src(n)}" alt="" onerror="this.onerror=function(){this.style.display='none'};this.src=ABAR.api+'/api/ads/img/${abarEsc(n)}.jpg'">`;}
+function abarCss(){if(ABAR.css)return;ABAR.css=true;const st=document.createElement('style');st.textContent=
+  '#abar{position:fixed;left:0;right:0;bottom:0;z-index:40;display:flex;justify-content:center;padding:0 6px env(safe-area-inset-bottom,0px);pointer-events:none}'
+  +'#abar .ab{pointer-events:auto;position:relative;width:100%;max-width:560px;height:58px;box-sizing:border-box;display:flex;align-items:center;gap:10px;border:0;border-radius:12px 12px 0 0;padding:0 40px 0 9px;color:#fff;text-align:left;cursor:pointer;font-family:inherit;box-shadow:0 -3px 14px rgba(0,0,0,.2)}'
+  +'#abar .ab img{width:42px;height:42px;object-fit:cover;border-radius:8px;flex:none;background:rgba(255,255,255,.12)}'
+  +'#abar .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;line-height:1.25}'
+  +'#abar .t1{font-size:14.5px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+  +'#abar .t2{font-size:12px;font-weight:700;color:#e8c46a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'
+  +'.abtg{font-size:9.5px;font-weight:800;background:#e8c46a;color:#3a2c06;border-radius:4px;padding:0 4px;margin-right:5px;vertical-align:1px}'
+  +'#abar .x,.abrail .x{position:absolute;width:36px;height:40px;border:0;background:none;font-size:16px;cursor:pointer;padding:0}'
+  +'#abar .x{right:2px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.75)}'
+  +'.abrail{position:fixed;z-index:30;display:flex;flex-direction:column;gap:5px;cursor:pointer;font-family:inherit}'
+  +'.abrail .pic{position:relative;border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,.18);line-height:0}'
+  +'.abrail img{display:block;width:100%;height:auto;max-height:calc(100vh - 150px);object-fit:contain}'
+  +'.abrail .x{right:0;top:0;width:30px;height:30px;color:#fff;background:rgba(0,0,0,.35);border-radius:0 12px 0 10px;font-size:13px}'
+  +'.abrail .cap{font-size:12px;font-weight:800;line-height:1.3;color:#6b6f76;text-align:center;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}'
+  +'html.abar-on body{padding-bottom:calc(66px + env(safe-area-inset-bottom,0px))!important}'
+  +'html.abar-on .toast,html.abar-on #ts{bottom:calc(76px + env(safe-area-inset-bottom,0px))!important}'
+  +'html.abar-on #kt{bottom:calc(72px + env(safe-area-inset-bottom,0px))!important}';
+  document.head.appendChild(st);}
+// 본문 칸 바깥 좌우 여백(px) · 본문 칸을 못 찾으면 0
+function abarParentRail(){try{const d=parent.document;return ['abrailr','abraill'].some(id=>{const e=d.getElementById(id);return e&&e.style.display!=='none';});}catch(e){return false;}}
+function abarGap(){const c=document.querySelector(ABAR.sel);if(!c)return {l:0,r:0,c:null};const r=c.getBoundingClientRect();return {l:r.left,r:innerWidth-r.right,c:r};}
+function abarDraw(){const ok=ABAR.want&&!Object.keys(ABAR.hide).some(k=>k!=='kb');abarCss();
+ const g=abarGap(),side=Math.min(g.l,g.r),rw=Math.min(200,Math.floor(side-28));
+ const useRail=ok&&!ABAR.inF&&!ABAR.sclosed&&ABAR.S.length&&rw>=150;
+ // ── PC 좌우 세로 배너
+ for(const k of ['l','r']){const id='abrail'+k;let el=document.getElementById(id);
+  if(!useRail||(k==='l'&&ABAR.S.length<2)){if(el)el.style.display='none';continue;}   // 광고가 1개면 오른쪽에만
+  if(!ABAR.s)ABAR.s=[abarPick(ABAR.S)];if(ABAR.S.length>1&&!ABAR.s[1])ABAR.s[1]=abarPick(ABAR.S,ABAR.s[0]);
+  const a=k==='r'?ABAR.s[0]:ABAR.s[1];if(!a){if(el)el.style.display='none';continue;}
+  if(!el){el=document.createElement('div');el.id=id;el.className='abrail';el.setAttribute('role','button');el.tabIndex=0;document.body.appendChild(el);}
+  if(el.dataset.id!==String(a.id)){el.dataset.id=String(a.id);
+   el.innerHTML=`<div class="pic" style="background:${abarEsc(a.bg||'#14233a')}">${abarImg(a.poster)}<button type="button" class="x" aria-label="광고 닫기">✕</button></div><div class="cap"><span class="abtg">${a.go==='menu'?'안내':'광고'}</span>${abarEsc(a.title)}</div>`;
+   el.onclick=e=>{if(e.target.closest('.x')){e.stopPropagation();ABAR.sclosed=true;abarDraw();return;}abarHit(a,'c');if(ABAR.go)ABAR.go(a);};}
+  el.style.width=rw+'px';el.style.top='80px';
+  if(k==='l'){el.style.left=Math.round((g.l-rw)/2)+'px';el.style.right='';}else{el.style.right=Math.round((g.r-rw)/2)+'px';el.style.left='';}
+  el.style.display='flex';abarHit(a,'v');}
+ // ── 휴대폰(또는 좌우 여백이 좁은 화면) 하단 띠
+ let el=document.getElementById('abar');
+ const vis=ok&&!useRail&&!ABAR.noBar&&!ABAR.closed&&ABAR.L.length&&!ABAR.hide.kb&&!(ABAR.inF&&abarParentRail());   // 세로 배너가 떠 있으면 하단 띠는 안 띄움
+ if(vis&&!ABAR.a)ABAR.a=abarPick(ABAR.L);
+ document.documentElement.classList.toggle('abar-on',!!(vis&&ABAR.a));
+ if(!vis||!ABAR.a){if(el)el.style.display='none';return;}
+ if(!el){el=document.createElement('div');el.id='abar';document.body.appendChild(el);}
+ const a=ABAR.a;
+ if(el.dataset.id!==String(a.id)){el.dataset.id=String(a.id);const th=a.poster||a.img;
+  el.innerHTML=`<div class="ab" role="button" tabindex="0" style="background:${abarEsc(a.bg||'#14233a')}">${th?abarImg(th):''}<div class="tx"><div class="t1"><span class="abtg">${a.go==='menu'?'안내':'광고'}</span>${abarEsc(a.title)}</div>${a.sub?`<div class="t2">${abarEsc(a.sub)}</div>`:''}</div><button type="button" class="x" aria-label="광고 닫기">✕</button></div>`;
+  el.firstElementChild.onclick=e=>{if(e.target.closest('.x')){e.stopPropagation();ABAR.closed=true;abarDraw();return;}abarHit(a,'c');if(ABAR.go)ABAR.go(a);};}
+ el.style.display='flex';abarHit(a,'v');}
+addEventListener('resize',()=>{clearTimeout(ABAR.rt);ABAR.rt=setTimeout(abarDraw,150);});
+try{new ResizeObserver(()=>{clearTimeout(ABAR.rt);ABAR.rt=setTimeout(abarDraw,150);}).observe(document.documentElement);}catch(e){}
+// 글자 입력칸을 누르면(휴대폰 키보드가 올라오면) 하단 띠를 잠깐 숨김
+const ABAR_KB='input:not([type=checkbox]):not([type=radio]):not([type=range]):not([type=button]):not([type=submit]):not([type=file]):not([type=color]),textarea,[contenteditable="true"]';
+document.addEventListener('focusin',e=>{if(e.target&&e.target.matches&&e.target.matches(ABAR_KB)){ABAR.hide.kb=1;abarDraw();}});
+document.addEventListener('focusout',()=>setTimeout(()=>{const t=document.activeElement;if(!(t&&t.matches&&t.matches(ABAR_KB))){delete ABAR.hide.kb;abarDraw();}},120));
+ABAR.api=API;ABAR.src=n=>'../hub/ads/'+n+'.jpg';ABAR.sel='main';
+ABAR.go=a=>{if(a.go==='url'){window.open(a.val,'_blank','noopener');return;}
+ if(a.go==='poster'){if(a.poster)window.open(ABAR.src(a.poster),'_blank','noopener');return;}
+ if(window.top!==window.self){parent.postMessage({t:'ttuk-go',k:a.val},'*');return;}
+ location.href='../hub/?home#'+a.val;};
+if(API)fetch(API+'/api/ads/live',{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{if(r&&r.ok){abarSet(r.ads);abarShow(true);}}).catch(()=>{});
+
 try{U=JSON.parse(localStorage.getItem('qr_sess')||'null')}catch(e){}
 const ck=()=>'hr1_'+U.login.toLowerCase();
 const dk=()=>'hrd_'+U.login.toLowerCase();
@@ -246,7 +323,7 @@ const PC=matchMedia('(hover:hover) and (pointer:fine)').matches; /* PC(마우스
 let ky=null;try{ky=JSON.parse(localStorage.getItem('qr_ky')||'null')}catch(e){}
 function yClamp(y,h){return Math.min(Math.max(4,innerHeight-h-70),Math.max(4,y))}
 function placeKb(){const w=$('#kw');if(w.hidden)return;const h=w.offsetHeight;w.style.top=yClamp(ky==null?(innerHeight-h)/2:ky*innerHeight,h)+'px'}
-function sync(){const a=!$('#app').hidden&&!PC;$('#kw').hidden=!(a&&kOn);$('#kt').hidden=!(a&&!kOn);placeKb();document.documentElement.style.setProperty('--kh',(a&&kOn?Math.max(0,innerHeight-$('#kw').getBoundingClientRect().top):0)+'px')}
+function sync(){const a=!$('#app').hidden&&!PC;$('#kw').hidden=!(a&&kOn);$('#kt').hidden=!(a&&!kOn);placeKb();abarHide('kp',!!(a&&kOn));document.documentElement.style.setProperty('--kh',(a&&kOn?Math.max(0,innerHeight-$('#kw').getBoundingClientRect().top):0)+'px')}
 function setKb(v){kOn=v;sync()}
 const el=k=>$(`#form input[data-k="${k}"]`),getL=()=>Object.fromEntries(K.map(k=>[k,el(k).value]));
 function setL(L){L=norm(L);K.forEach(k=>el(k).value=L[k]||'')}
