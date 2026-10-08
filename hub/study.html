@@ -95,7 +95,7 @@ try{MEM.tok=localStorage.getItem('mtok')||'';MEM.nick=localStorage.getItem('mnic
 if(MEM.tok&&MEM.nick)NICK=MEM.nick;
 function memSave(r){MEM.tok=(r&&r.token)||'';MEM.nick=(r&&r.nick)||'';MEM.login=(r&&r.login)||'';
   try{if(MEM.tok){localStorage.setItem('mtok',MEM.tok);localStorage.setItem('mnick',MEM.nick);localStorage.setItem('mlogin',MEM.login);localStorage.setItem('nick',MEM.nick);localStorage.setItem('nick2',JSON.stringify(MEM.nick));}
-    else['mtok','mnick','mlogin'].forEach(k=>localStorage.removeItem(k));}catch(e){}
+    else['mtok','mnick','mlogin','ddpet_tok'].forEach(k=>localStorage.removeItem(k));}catch(e){}
   if(MEM.nick)NICK=MEM.nick;try{memChanged();}catch(e){}}
 function memPost(p,b){return fetch(API+p,{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b)}).then(r=>r.json()).catch(()=>({ok:false,msg:'서버에 연결하지 못했어요. 잠시 뒤 다시 해주세요'}));}
 function memCheck(){if(!MEM.tok||!API)return;fetch(API+'/api/member/me?token='+encodeURIComponent(MEM.tok),{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json())
