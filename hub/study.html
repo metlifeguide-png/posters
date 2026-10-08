@@ -1376,7 +1376,7 @@ let RTAB=lsGet('rtab','week');
 function loadRank(cb){if(!API){cb&&cb();return;}loadCrowns(()=>{if(location.hash==='#rank')show(rankView());});fetch(API+'/api/game/rankdata',{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{if(r&&r.ok){['boards','tbest','xtop','lv','daily'].forEach(k=>{if(r[k]!=null)GD[k]=r[k];});if(r.d)GD.d=r.d;}cb&&cb();}).catch(()=>cb&&cb());}
 function rankView(){const tabs=[['week','🏆 주간'],['today','⏰ 오늘'],['level','⭐ 레벨'],['ach','🏅 업적'],['crown','👑 왕관']];
  let h=`<div class="tabs">${tabs.map(([k,n])=>`<button class="${RTAB===k?'on':''}" onclick="RTAB='${k}';lsSet('rtab',RTAB);show(rankView());if(RTAB==='ach'||RTAB==='level')loadMe(()=>show(rankView()));if(RTAB==='crown')loadCrowns(()=>show(rankView()))">${n}</button>`).join('')}</div>`;
- if(RTAB==='week'){const B=GD.boards||{};let any=false;h+='<div class="sec">이번 주 랭킹 (최근 7일)</div>';
+ if(RTAB==='week'){const B=GD.boards||{};let any=false;h+='<div class="sec">이번 주 랭킹 (최근 7일)</div><div class="m" style="font-size:12px;margin:-4px 0 8px">난이도가 있는 게임은 어려움 이상(슬라이딩 퍼즐은 6×6 이상) 기록만 순위에 반영돼요</div>';
   for(const g of RANKED){const c=GCFG[g.k];const keys=c[3]?(c[4]||['쉬움','보통','어려움']).slice().reverse().map(l=>[g.k+'_'+l,l]).filter(([k])=>B[k]):(B[g.k]?[[g.k,'']]:[]);
    for(const [key,lv] of keys){any=true;h+=`<div class="card"><div class="t">${g.e} ${g.nm}${lv?' · '+lv:''}</div>${B[key].map((x,i)=>`<div class="row"><span>${['🥇','🥈','🥉'][i]||(i+1)+'.'} ${lvIco(x[0])}${esc(x[0])}${lvTag(x[0])}</span><span class="m">${fmtScore(g.k,x[1])}</span></div>`).join('')}</div>`;}}
   if(!any)h+='<div class="card m">아직 이번 주 기록이 없어요. 첫 1위의 주인공이 되어보세요!</div>';}
