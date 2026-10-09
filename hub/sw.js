@@ -1,4 +1,3 @@
-// 뚝섬유원지 홈화면 설치용 · 캐시 없음 (항상 최신 화면)
+// 뚝섬유원지: 서비스워커 안 씀 · 예전에 등록된 것은 스스로 해제
 self.addEventListener('install',e=>self.skipWaiting());
-self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
-self.addEventListener('fetch',e=>{});
+self.addEventListener('activate',e=>e.waitUntil(self.registration.unregister()));
