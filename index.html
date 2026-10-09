@@ -3,7 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-<title>대회 안내 포스터 뷰어</title>
+<title>뚝섬유원지 홈</title>
+<!-- 🏝 뚝섬.kr 주소만 치면(또는 카톡에 붙이면) '뚝섬유원지 홈' + 뚝섬 배너 그림으로 보이게. 포스터 링크(?type=…)는 예전처럼 포스터 뷰어 -->
+<meta name="description" content="대회 캘린더 · 포스터 · 참가 현황 · 입상 순위 · 게임 · 홀덤학습을 한곳에서">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="뚝섬유원지">
+<meta property="og:title" content="🏝 뚝섬유원지 홈">
+<meta property="og:description" content="대회 캘린더 · 포스터 · 참가 현황 · 입상 순위 · 게임 · 홀덤학습을 한곳에서">
+<meta property="og:image" content="https://xn--bc2b73r.kr/hub/banner.jpg">
+<meta property="og:url" content="https://xn--bc2b73r.kr/">
+<meta name="twitter:card" content="summary_large_image">
+<script>
+// 주소 뒤에 ?type= 이 없으면(= 뚝섬.kr 만 친 경우) 뚝섬유원지 홈으로 바로 이동
+(function(){try{if(!new URLSearchParams(location.search).get('type'))location.replace('hub/'+location.hash);}catch(e){}})();
+</script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
