@@ -134,7 +134,8 @@ function memOpen(mode){const o=document.getElementById('memM');if(o)o.remove();c
     if(r&&r.ok){close();memSave(r);toast(`👤 ${r.nick}님 ${reg?'가입 완료! 환영해요':'로그인했어요'}`,2600);}else R.textContent=(r&&r.msg)||'잘 안 됐어요. 다시 해주세요';};
   setTimeout(()=>{const f=$m(MEM.login&&!reg?'memP':'memL');if(f)f.focus();},50);}
 setTimeout(memCheck,1500);
-function memChanged(){ME=null;try{loadMe(()=>{if(typeof rr2==='function')rr2();});}catch(e){}}
+function memChanged(){ME=null;try{if(MEM.tok&&!CUR&&location.hash.startsWith('#g=')&&typeof render==='function')render();}catch(e){}   // 회원 전용 게임 잠금 화면에서 로그인하면 바로 그 게임으로
+  try{loadMe(()=>{if(typeof rr2==='function')rr2();});}catch(e){}}
 const GCFG=(GD.games||{});
 const lowerBetter=k=>!!(GCFG[k]&&GCFG[k][1]);
 function fmtScore(k,v,lv){const u=(GCFG[k]||[])[2]||'pt';v=Math.round(v);
@@ -2888,6 +2889,7 @@ function coffeeBox(full){loadMissions();const all=MISSIONS||[];const on=all.filt
  return `<div class="card" style="${full?'':'cursor:pointer;'}padding:16px;border:${lit?'3px solid #f6c344;background:linear-gradient(135deg,#fff8e1,#ffecb3)':'2px dashed #ccc;background:#f7f7f7'}" ${full?'':`onclick="location.hash='${lit&&on.length===1&&on[0].game?'g='+on[0].game:'event'}'"`}>${head}${body}</div>`;}
 // 👤 로그인한 회원만 쓰는 게임(그 밖의 게임은 누구나, 기록만 회원) · 온라인 대전은 p9o.js olOpen에서 따로 막음
 const MEM_ONLY=['pet'];
+function memLockView(g){return `<div class="card" style="text-align:center;padding:26px 16px"><div style="font-size:44px">${g.e}</div><div style="font-size:18px;font-weight:900;margin-top:6px">${esc(g.nm)}</div><div class="m" style="margin:8px 0 16px;line-height:1.6">회원만 이용할 수 있어요<br>로그인하면 바로 이어서 열려요</div><button class="btn" style="width:100%;max-width:280px;font-size:16px;padding:12px" onclick="memOpen('login')">로그인</button><div style="margin-top:8px"><button class="btn" style="width:100%;max-width:280px;background:var(--green,#3a9d3f)" onclick="memOpen('reg')">처음이면 회원가입</button></div></div>`;}
 function memNeed(what){toast(`${what}은(는) 로그인 후 이용해 주세요`,2600);setTimeout(()=>memOpen('login'),300);}
 // 📣 광고 자리 (서버 ads.py · 관리자 '광고' 탭) · list=목록 맨 위 배너, end=게임 끝나면 아래서 올라오는 카드
 // 서버에 못 붙으면 ADS0(기본값)을 씀 · until 그날 0시부터 숨김 · go: menu=홈 메뉴(val=meet 등) / poster=포스터 크게 / url=외부 링크
@@ -3009,7 +3011,7 @@ function listView(){if(CATSEL==='펫')CATSEL='전체';const L=G.filter(g=>!g.stu
   <div class="tabs">${CATS.map(c=>`<button class="${c===CATSEL?'on':''}" onclick="CATSEL='${c}';lsSet('gcat',CATSEL);render()">${c}</button>`).join('')}<button onclick="location.hash='rank'">🏆 랭킹·업적</button></div>
   <div class="grid">${L.map(g=>`<div class="tile" onclick="location.hash='g='+'${g.k}'"><div class="e">${g.e}</div><div class="n">${g.nm}</div><div class="b">${tileBest(g)}</div></div>`).join('')}</div>
   <div class="m" style="text-align:center;margin-top:14px">주간 1~3위에 들면 📣 자랑하기 버튼이 떠요 · 카톡방에 직접 공유해보세요 🎉</div>`;}
-function rr2(){if(!CUR)render0();}
+function rr2(){if(!CUR&&!location.hash.slice(1))render0();}   // 목록 화면일 때만 다시 그림 (예전엔 랭킹·이벤트 화면에서도 광고·로그인 신호가 오면 목록으로 바뀌었음)
 function eventView(){const done=(MISSIONS||[]).filter(m=>m.state==='끝'&&m.winners.length).slice(0,5);
  return coffeeBox(true)+(done.length?`<div class="sec">지난 이벤트</div><div class="card">${missionBox(done)}</div>`:'')+'<div class="m" style="text-align:center;margin-top:8px">달성하면 자동으로 기록되고, 운영진 확인 후 커피를 보내드려요 ☕</div>';}
 // 📅 오늘의 문제
@@ -3074,7 +3076,7 @@ function render(){const hsh=location.hash.slice(1);if(CUR&&CUR.stop)CUR.stop();S
  const back=$('backBtn');
  if(hsh.startsWith('g=')){const key=hsh.slice(2).split('&')[0];const g=G.find(x=>x.k===key);
   if(window.DAILY&&DAILY.k!==key)dailyEnd();
-  if(g&&MEM_ONLY.includes(key)&&!MEM.tok){memNeed(g.nm);try{history.replaceState(null,'',location.pathname+location.search);}catch(e){}}
+  if(g&&MEM_ONLY.includes(key)&&!MEM.tok){CUR=null;setTitle(g.e+' '+g.nm);back.style.display='';newBtnSync();show(memLockView(g));memNeed(g.nm);scrollTo(0,0);return;}   // 회원 전용: 주소(#g=)는 그대로 두고 잠금 화면 → 로그인하면 바로 그 게임 (예전엔 목록으로 갔다가 다시 넘어왔음)
   else if(g){gvisit((g.study?'':'게임·')+g.nm+(window.DAILY&&DAILY.k===key?' (오늘의 문제)':''));CUR=g;const dly=window.DAILY&&DAILY.k===key;setTitle((dly?'📅 오늘의 문제 · ':'')+g.e+' '+g.nm);back.style.display=g.study?'none':'';g.start();newBtnSync();
    if(dly){if(key==='logic')g.go('오늘');else if(DAILY.lv&&g.go)g.go(DAILY.lv);}scrollTo(0,0);return;}}
  if(window.DAILY)dailyEnd();
@@ -3082,7 +3084,7 @@ function render(){const hsh=location.hash.slice(1);if(CUR&&CUR.stop)CUR.stop();S
  if(hsh==='rank'){gvisit('게임·랭킹');setTitle('🏆 랭킹·업적');back.style.display='';show(rankView());loadRank(()=>{if(location.hash==='#rank')show(rankView());});if(RTAB==='ach'||RTAB==='level')loadMe(()=>{if(location.hash==='#rank')show(rankView());});return;}
  if(hsh==='daily'){gvisit('게임·오늘의 문제');setTitle('📅 오늘의 문제');back.style.display='';show(dailyView());loadDaily();return;}
  if(hsh==='event'){gvisit('게임·커피이벤트');setTitle('☕ 커피이벤트');back.style.display='';MIS_AT=0;show(eventView());return;}
- render0();if(window.top===window.self)gvisit('게임 목록');else presPage('게임 목록');if(NICK&&!ME)loadMe(()=>{if(!CUR&&!location.hash.slice(1))render0();});}
+ render0();if(window.top===window.self)gvisit('게임 목록');else{presPage('게임 목록');back.style.display='';}/* 홈 안에서는 목록 화면에도 '목록'(홈으로) 버튼: 휴대폰은 홈의 위·아래 줄이 숨어 있음 */if(NICK&&!ME)loadMe(()=>{if(!CUR&&!location.hash.slice(1))render0();});}
 addEventListener('hashchange',render);addEventListener('hashchange',abarSync);
 if(window.top!==window.self){$('homeBtn').style.display='none';}   // 홈 안에서 열렸으면 홈 버튼 숨김 (위의 ← 뒤로로 닫기)
 render();abarSync();
