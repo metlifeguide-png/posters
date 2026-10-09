@@ -1520,9 +1520,11 @@ function listView(){if(CATSEL==='펫')CATSEL='전체';const L=G.filter(g=>!g.stu
  :`<div class="t" style="margin-bottom:2px">로그인하면 랭킹·레벨·업적·미션이 쌓여요</div><div class="m" style="margin-bottom:8px">로그인 안 해도 게임은 다 할 수 있어요</div><div style="display:flex;gap:6px"><button class="btn" style="flex:1" onclick="memOpen('login')">로그인</button><button class="btn g" style="flex:1" onclick="memOpen('reg')">회원가입</button></div>`}</div>
   ${dailyTile()}
   ${coffeeBox()}
-  <div class="tabs">${CATS.map(c=>`<button class="${c===CATSEL?'on':''}" onclick="CATSEL='${c}';lsSet('gcat',CATSEL);render()">${c}</button>`).join('')}<button onclick="location.hash='rank'">🏆 랭킹·업적</button></div>
+  <div class="tabs">${CATS.map(c=>`<button class="${c===CATSEL?'on':''}" onclick="CATSEL='${c}';lsSet('gcat',CATSEL);render()">${c}</button>`).join('')}<button onclick="rankBtn()">${window.top!==window.self?'👑 명예의 전당':'🏆 랭킹·업적'}</button></div>
   <div class="grid">${L.map(g=>`<div class="tile" onclick="location.hash='g='+'${g.k}'"><div class="e">${g.e}</div><div class="n">${g.nm}</div><div class="b">${tileBest(g)}</div></div>`).join('')}</div>
   <div class="m" style="text-align:center;margin-top:14px">주간 1~3위에 들면 📣 자랑하기 버튼이 떠요 · 카톡방에 직접 공유해보세요 🎉</div>`;}
+// 👑 홈 안에서 열렸으면 '랭킹·업적' 버튼 → 홈의 명예의 전당(게임/홀덤학습 탭) · 주소로 바로 열었으면 예전처럼 이 화면의 랭킹·업적
+function rankBtn(){if(window.top!==window.self){parent.postMessage({t:'ttuk-go',k:'fame',ft:location.pathname.includes('study')?'study':'game'},'*');return;}location.hash='rank';}
 function rr2(){if(!CUR&&!location.hash.slice(1))render0();}   // 목록 화면일 때만 다시 그림 (예전엔 랭킹·이벤트 화면에서도 광고·로그인 신호가 오면 목록으로 바뀌었음)
 function eventView(){const done=(MISSIONS||[]).filter(m=>m.state==='끝'&&m.winners.length).slice(0,5);
  return coffeeBox(true)+(done.length?`<div class="sec">지난 이벤트</div><div class="card">${missionBox(done)}</div>`:'')+'<div class="m" style="text-align:center;margin-top:8px">달성하면 자동으로 기록되고, 운영진 확인 후 커피를 보내드려요 ☕</div>';}
