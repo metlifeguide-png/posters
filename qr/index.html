@@ -321,7 +321,7 @@ function mk(){const F=$('#form');F.innerHTML=FD.map(d=>`<div class="ln" data-k="
 let kOn=true;
 const PC=matchMedia('(hover:hover) and (pointer:fine)').matches; /* PC(마우스+키보드)에서는 플로팅 키패드 없이 실제 키보드로 입력 */
 let ky=null;try{ky=JSON.parse(localStorage.getItem('qr_ky')||'null')}catch(e){}
-function yClamp(y,h){return Math.min(Math.max(4,innerHeight-h-70),Math.max(4,y))}
+function yClamp(y,h){return Math.min(Math.max(4,innerHeight-h),Math.max(4,y))}   // 아래 끝 = 화면(홈 안에선 아래 탭 위) 맨 아래까지 붙일 수 있음 (10/11, 예전엔 70px 띄움)
 function placeKb(){const w=$('#kw');if(w.hidden)return;const h=w.offsetHeight;w.style.top=yClamp(ky==null?(innerHeight-h)/2:ky*innerHeight,h)+'px'}
 function sync(){const a=!$('#app').hidden&&!PC;$('#kw').hidden=!(a&&kOn);$('#kt').hidden=!(a&&!kOn);placeKb();abarHide('kp',!!(a&&kOn));document.documentElement.style.setProperty('--kh',(a&&kOn?Math.max(0,innerHeight-$('#kw').getBoundingClientRect().top):0)+'px')}
 function setKb(v){kOn=v;sync()}
