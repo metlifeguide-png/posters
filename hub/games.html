@@ -2040,7 +2040,7 @@ function petBushes(v,x,pick){const f={...petForm(v),uid:'hd'};let h='';for(let i
 function petApi(path,body){return fetch(API+path,body?{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(body)}:{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json());}
 const petStars=n=>`<span style="color:#f5b400;letter-spacing:-1px">${'★'.repeat(n||0)}</span><span style="color:#ccc;letter-spacing:-1px">${'★'.repeat(10-(n||0))}</span>`;
 G.push({k:'pet',cat:'펫',e:'🐣',n:'뚝섬펫',d:'7일 동안 키우는 다마고치 · 20종 중 선택 · 이름+비번 접속',
- start(){this._mine=0;this._linking=0;this.tab='home';this.data=null;this.msg='';this.err='';this.mode=this.tok()?'login':'new';this.sel=0;this.fl='';this.fp='';this.menu='feed';this.fx=null;this.hiding=false;this.flash=false;this.load();rr();clearInterval(this.iv);this.iv=setInterval(()=>{if(CUR===this&&this.tab==='home'&&!this.fx&&!this.hiding&&this.tok())this.load(true);},60000);},
+ start(){this._mine=0;this._mineBusy=0;this._linking=0;this.tab='home';this.data=null;this.msg='';this.err='';this.mode=this.tok()?'login':'new';this.sel=0;this.fl='';this.fp='';this.menu='feed';this.fx=null;this.hiding=false;this.flash=false;this.load();rr();clearInterval(this.iv);this.iv=setInterval(()=>{if(CUR===this&&this.tab==='home'&&!this.fx&&!this.hiding&&this.tok())this.load(true);},60000);},
  stop(){clearInterval(this.iv);clearTimeout(this.ft);},
  tok(){try{return localStorage.getItem('ddpet_tok')||'';}catch(e){return '';}},
  setTok(t){try{if(t)localStorage.setItem('ddpet_tok',t);else localStorage.removeItem('ddpet_tok');}catch(e){}},
@@ -2060,7 +2060,7 @@ G.push({k:'pet',cat:'펫',e:'🐣',n:'뚝섬펫',d:'7일 동안 키우는 다마
   if(!v){toast('닉네임을 입력해 주세요');return;}if(!pw){toast('비밀번호를 입력해 주세요');return;}if(!lg)return;
   petApi('/api/pet/login',{mtok:MEM.tok,login:lg,pw,nick:v}).then(r=>{if(!r.ok){toast(r.msg||'실패했어요',2500);return;}setNick(v);this.setTok(r.token);this.pnv=null;this.pwv='';toast('닉네임이 펫에 연결됐어요 🎁',2200);this.load(true);}).catch(()=>toast('서버 연결 실패'));},
  load(quiet){const t=this.tok();
-  if(!t&&MEM.tok&&!this._mine){this._mine=1;petApi('/api/pet/mine?mtok='+encodeURIComponent(MEM.tok)).then(r=>{if(r&&r.ok){this.setTok(r.token);this.load(quiet);}else{this.data=null;rr();}}).catch(()=>{this.data=null;rr();});return;}   // 👤 회원이면 연결된 펫으로 자동 접속
+  if(!t&&MEM.tok&&!this._mine){this._mine=1;this._mineBusy=1;petApi('/api/pet/mine?mtok='+encodeURIComponent(MEM.tok)).then(r=>{this._mineBusy=0;if(r&&r.ok){this.setTok(r.token);this.load(quiet);}else{this.data=null;rr();}}).catch(()=>{this._mineBusy=0;this.data=null;rr();});return;}   // 👤 회원이면 연결된 펫으로 자동 접속
   if(!t){this.data=null;rr();return;}petApi('/api/pet?token='+encodeURIComponent(t)).then(r=>{if(r.auth===false){this.setTok('');this.data=null;this.err='';this.mode='login';rr();return;}this.data=r;this.err='';if(CUR===this)rr();
    if(MEM.tok&&typeof r.nick==='string'&&r.nick!==MEM.nick&&!this._linking){this._linking=1;petApi('/api/pet/link',{token:t,mtok:MEM.tok}).then(x=>{if(x&&x.ok){toast(`🐣 '${x.login}' 펫이 내 계정(${MEM.nick})에 연결됐어요 · 게임 보상이 이 펫에게 가요`,3000);this.load(true);}}).catch(()=>{});}}).catch(()=>{this.err='서버에 연결이 안 돼요';if(!quiet)rr();});},
  register(){petApi('/api/pet/register',{mtok:MEM.tok,login:(this.fl||'').trim(),pw:this.fp||'',species:this.sel,nick:this.nick()}).then(r=>{if(!r.ok){toast(r.msg||'실패했어요',2500);return;}this.setTok(r.token);this.fp='';this.data={ok:true,login:r.login,pet:r.pet,dex:r.dex,dexTotal:r.dexTotal};this.err='';toast('알을 받았어요! 🥚',2000);rr();}).catch(()=>toast('서버 연결 실패'));},
@@ -2120,7 +2120,7 @@ G.push({k:'pet',cat:'펫',e:'🐣',n:'뚝섬펫',d:'7일 동안 키우는 다마
   return `<div id="pcta" class="card ${this.flash?'pflash':''}" style="margin-top:8px;border:2px dashed #f5a623;background:#fffbea"><div style="font-weight:900;font-size:14px;margin-bottom:4px">🎯 오늘의 펫 미션 <span style="font-weight:600;font-size:12px;color:#8a6d3b">게임하면 선물이 와요</span></div>${this.missions(v,shard)}<div class="m" style="font-size:12px;margin-top:4px">✨ 별조각은 진화할 때 자동으로 써서 <b>특별 진화</b>(별 점수↑ · 희귀 장식)!${v.evoIn!=null?` 다음 진화까지 약 ${v.evoIn}시간`:''} · 특별 진화 ${v.evo||0}/3</div><button class="btn g" style="width:100%;margin-top:8px" onclick="CUR.goGames()">🎮 게임하러 가기</button></div>`;},
  view(){const css=PET_CSS;
   const tabs=`<div class="tabs" style="margin-bottom:8px">${[['home','🐣 키우기'],['dex','📖 도감'],['rank','🏆 랭킹']].map(([k,n])=>`<button class="${this.tab===k?'on':''}" onclick="CUR.tab='${k}';${k==='rank'?'CUR.loadRank();':''}rr()">${n}</button>`).join('')}</div>`;
-  if(!this.tok())return this.authView(css,tabs);
+  if(!this.tok()){if(typeof MEM!=='undefined'&&MEM.tok&&this._mineBusy)return css+tabs+'<div class=\"gq\">내 펫 불러오는 중…</div>';return this.authView(css,tabs);}   // 👤 회원: 연결된 펫을 찾는 동안 '새로 시작' 화면이 잠깐 보이던 것 방지
   if(this.err)return css+tabs+`<div class="gq">${this.err}<br><button class="btn" onclick="CUR.load()">다시 시도</button></div>`;
   if(!this.data)return css+tabs+'<div class="gq">불러오는 중…</div>';
   const out=`<div style="text-align:right;margin:-2px 0 6px"><span class="m" style="font-size:12px">🔑 ${esc(this.data.login||'')}</span> <button class="btn" style="padding:2px 8px;font-size:12px" onclick="CUR.logout()">접속 해제</button></div>`+(this.tab==='home'?this.nickBox():'');
@@ -2711,15 +2711,14 @@ G.push({k:'hula',cat:'카드',e:'🀄',n:'세븐훌라',d:'AI 대전 · 등록·
       const tiles=st.B.filter(Boolean).length;
       this.begin(st,{stg:n,limit:Math.round(30+tiles*2.6*(1-n*0.02)),hint:3,shuf:2,title:`스테이지 ${n} · ${S.n}`});},
     begin(st,o){this.stop();Object.assign(this,{st,lv:o.lv||null,stg:o.stg||null,limit:o.limit,hint:o.hint,shuf:o.shuf,title:o.title,
-      sel:-1,line:null,hl:null,over:0,pen:0,score:0,combo:0,bestCombo:0,lastHit:0,msg:'같은 그림 2개를 눌러 이어 보세요',t0:nowS(),pAt:0,pTot:0});
+      sel:-1,line:null,hl:null,over:0,pen:0,score:0,combo:0,bestCombo:0,lastHit:0,msg:'같은 그림 2개를 눌러 이어 보세요',t0:nowS(),pTot:0});
       this.iv=setInterval(()=>this.tick(),200);rr();scrollTo(0,0);},
-    el(){return ((this.pAt||nowS())-this.t0-this.pTot)/1000;},
+    el(){return (nowS()-this.t0-this.pTot)/1000;},
     left(){return Math.max(0,this.limit-this.el());},
-    tick(){if(this.over||this.pAt)return;const e=$('scT');
+    tick(){if(this.over)return;const e=$('scT');
       if(this.limit){const l=this.left();if(e)e.textContent=Math.ceil(l)+'초';if(e)e.style.color=l<10?'#d33b3b':'';if(l<=0)this.finish(false,'⏰ 시간 초과');}
       else if(e)e.textContent=fmtScore(KEY,(this.el()+this.pen)*1000);},
-    pause(){if(this.over)return;if(this.pAt){this.pTot+=nowS()-this.pAt;this.pAt=0;}else this.pAt=nowS();rr();},
-    tap(i){if(this.over||this.pAt)return;const t=this.st.B[i];if(!t)return;
+    tap(i){if(this.over)return;const t=this.st.B[i];if(!t)return;
       if(t.lock){this.msg='🔒 잠긴 패 · 옆 패를 먼저 없애면 풀려요';rr();return;}
       if(this.sel<0||this.sel===i){this.sel=this.sel===i?-1:i;rr();return;}
       const a=this.sel,A=this.st.B[a];
@@ -2744,12 +2743,12 @@ G.push({k:'hula',cat:'카드',e:'🀄',n:'세븐훌라',d:'AI 대전 · 등록·
       const lk=this.st.B.filter(t=>t&&t.lock);if(lk.length){lk.forEach(t=>delete t.lock);if(pairsOf(this.st).length){this.msg='🔓 막혀서 잠금이 모두 풀렸어요';return;}}
       for(let k=0;k<40;k++){reshuffle(this.st);if(pairsOf(this.st).length)break;}this.msg='🔀 이을 짝이 없어서 자동으로 섞었어요';},
     showLine(p){this.line=p;clearTimeout(this.lt);this.lt=setTimeout(()=>{this.line=null;if(!this.over&&CUR===this)rr();},380);},
-    useHint(){if(this.over||this.pAt)return;if(this.hint<=0){toast('힌트를 다 썼어요');return;}
+    useHint(){if(this.over)return;if(this.hint<=0){toast('힌트를 다 썼어요');return;}
       const ps=pairsOf(this.st);if(!ps.length){this.unstick();rr();return;}
       const [a,b]=pick(ps);this.hint--;this.hl=[a,b];this.sel=-1;this.combo=0;
       if(!this.limit){this.pen+=10;this.msg='💡 힌트 · 기록 +10초';}else if(this.mode==='타임어택'&&!this.stg){this.pTot-=5000;this.msg='💡 힌트 · 시간 -5초';}else this.msg='💡 힌트';
       this.showLine(findPath(this.st,a,b));rr();},
-    useShuf(){if(this.over||this.pAt)return;if(this.shuf<=0){toast('셔플을 다 썼어요');return;}
+    useShuf(){if(this.over)return;if(this.shuf<=0){toast('셔플을 다 썼어요');return;}
       this.shuf--;reshuffle(this.st);for(let k=0;k<40&&!pairsOf(this.st).length;k++)reshuffle(this.st);
       this.sel=-1;this.hl=null;this.combo=0;if(!this.limit){this.pen+=15;this.msg='🔀 셔플 · 기록 +15초';}else this.msg='🔀 셔플!';rr();},
     finish(win,why){if(this.over)return;this.stop();this.line=null;const el=this.el();this.over=win?1:2;this.msg=why;
@@ -2788,8 +2787,7 @@ G.push({k:'hula',cat:'카드',e:'🀄',n:'세븐훌라',d:'AI 대전 · 등록·
         <div class="gst" style="font-size:12.5px"><span>남은 패 <b>${left}</b>${this.mode==='타임어택'&&!this.stg?` · 점수 <b>${this.score.toLocaleString()}</b>`:''}</span><span>${this.combo>1?'🔥 '+this.combo+' 콤보':''}</span></div>
         <div class="sc-msg">${esc(this.msg||'')}</div>
         <div class="sc-bd" style="grid-template-columns:repeat(${W},${cw}px);grid-template-rows:repeat(${H},${ch}px);width:${W*cw+8}px">${cells}${svg}</div>`;
-      if(this.pAt)h2+=`<div class="card" style="text-align:center;font-weight:900">⏸ 일시정지 중</div>`;
-      if(!this.over)return h2+`<div class="g3b"><button class="btn" onclick="CUR.useHint()">💡 힌트 ${this.hint>9?'':this.hint}</button><button class="btn b2" onclick="CUR.useShuf()">🔀 셔플 ${this.shuf>9?'':this.shuf}</button><button class="btn b2" onclick="CUR.pause()">${this.pAt?'▶ 계속':'⏸ 멈춤'}</button></div>
+      if(!this.over)return h2+`<div class="g3b"><button class="btn" onclick="CUR.useHint()">💡 힌트 ${this.hint>9?'':this.hint}</button><button class="btn b2" onclick="CUR.useShuf()">🔀 셔플 ${this.shuf>9?'':this.shuf}</button></div>
         <button class="btn b2 full" style="margin-top:6px" onclick="CUR.home()">그만하고 메뉴로</button>`;
       const r=this.res,win=this.over===1;let body,btns;
       if(this.stg){const n=this.stg,last=n>=STAGES.length;
@@ -3067,7 +3065,10 @@ function pres(off){if(!API)return;let n='';try{n=localStorage.getItem('nick')||'
  try{if(off&&navigator.sendBeacon&&navigator.sendBeacon(API+'/api/presence',new Blob([b],{type:'text/plain'})))return;
   fetch(API+'/api/presence',{method:'POST',headers:{'Content-Type':'text/plain'},body:b,keepalive:true}).catch(()=>{});}catch(e){}}
 function presPage(p){PPAGE=String(p||'').slice(0,40);pres();}
-setInterval(()=>{if(!document.hidden&&PPAGE)pres();},15000);
+// 💤 30분 동안 손 안 대면 접속 신호를 멈추고 OFF (방치된 화면이 계속 ON 으로 남지 않게) · 다시 손대면 바로 ON
+let PACT=Date.now(),PIDLE=false;const PIDLE_MS=30*60*1000;
+['pointerdown','keydown','touchstart','wheel','scroll','mousemove'].forEach(ev=>addEventListener(ev,()=>{PACT=Date.now();if(PIDLE){PIDLE=false;if(PPAGE&&!document.hidden)pres();}},{passive:true,capture:true}));
+setInterval(()=>{if(document.hidden||!PPAGE)return;if(Date.now()-PACT>PIDLE_MS){if(!PIDLE){PIDLE=true;pres(1);}return;}pres();},15000);
 document.addEventListener('visibilitychange',()=>{if(PPAGE)pres(document.hidden);});
 window.addEventListener('pagehide',()=>{if(PPAGE)pres(1);});
 function gvisit(p){presPage(p);if(!API)return;try{fetch(API+'/api/visit',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({p,n:NICK||''})}).catch(()=>{});}catch(e){}}
