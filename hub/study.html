@@ -1570,7 +1570,10 @@ function pres(off){if(!API)return;let n='';try{n=localStorage.getItem('nick')||'
  try{if(off&&navigator.sendBeacon&&navigator.sendBeacon(API+'/api/presence',new Blob([b],{type:'text/plain'})))return;
   fetch(API+'/api/presence',{method:'POST',headers:{'Content-Type':'text/plain'},body:b,keepalive:true}).catch(()=>{});}catch(e){}}
 function presPage(p){PPAGE=String(p||'').slice(0,40);pres();}
-setInterval(()=>{if(!document.hidden&&PPAGE)pres();},15000);
+// 💤 30분 동안 손 안 대면 접속 신호를 멈추고 OFF (방치된 화면이 계속 ON 으로 남지 않게) · 다시 손대면 바로 ON
+let PACT=Date.now(),PIDLE=false;const PIDLE_MS=30*60*1000;
+['pointerdown','keydown','touchstart','wheel','scroll','mousemove'].forEach(ev=>addEventListener(ev,()=>{PACT=Date.now();if(PIDLE){PIDLE=false;if(PPAGE&&!document.hidden)pres();}},{passive:true,capture:true}));
+setInterval(()=>{if(document.hidden||!PPAGE)return;if(Date.now()-PACT>PIDLE_MS){if(!PIDLE){PIDLE=true;pres(1);}return;}pres();},15000);
 document.addEventListener('visibilitychange',()=>{if(PPAGE)pres(document.hidden);});
 window.addEventListener('pagehide',()=>{if(PPAGE)pres(1);});
 function gvisit(p){presPage(p);if(!API)return;try{fetch(API+'/api/visit',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({p,n:NICK||''})}).catch(()=>{});}catch(e){}}
