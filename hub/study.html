@@ -291,7 +291,7 @@ function studyFlush(){
   const q=lsGet('study_q',[]);if(!q.length)return;
   const part=q.slice(0,50);STUDY_SENDING=true;
   fetch(API+'/api/study/log',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({token:MEM.tok,nick:NICK,items:part})})
-   .then(r=>r.json()).then(r=>{STUDY_SENDING=false;if(r&&r.need_login){memSave(null);return;}if(r&&r.ok){const sent=new Set(part.map(x=>x.game+x.t));lsSet('study_q',lsGet('study_q',[]).filter(x=>!sent.has(x.game+x.t)));if(lsGet('study_q',[]).length)setTimeout(studyFlush,300);}})
+   .then(r=>r.json()).then(r=>{STUDY_SENDING=false;if(r&&r.need_login){memSave(null);return;}if(r&&r.ok){/*studyms*/if(r.missions&&r.missions.length){const m=r.missions[0];setTimeout(()=>toast(`🎯 미션 달성! ${m[0]} · 보상: ${m[1]} (운영진 확인 후 지급)`,4500),600);if(typeof MIS_AT!=='undefined')MIS_AT=0;}const sent=new Set(part.map(x=>x.game+x.t));lsSet('study_q',lsGet('study_q',[]).filter(x=>!sent.has(x.game+x.t)));if(lsGet('study_q',[]).length)setTimeout(studyFlush,300);}})
    .catch(()=>{STUDY_SENDING=false;});
 }
 setTimeout(studyFlush,2000);
@@ -2002,7 +2002,7 @@ G.push({k:'rulequiz',cat:'홀덤',e:'📜',n:'대회 룰 퀴즈',d:'입문 · �
  ans(k){if(this.over||this.fb)return;const q=this.q,t=(Date.now()-this.t0)/1000,ok=k===q.a;
   this.i++;this.tsum+=t;if(ok)this.ok++;const L={q,o:k,ok,t};this.log.push(L);this.fb=L;
   studyLog('rulequiz',q.tag,1,ok,Math.round(t*1000),q.p);
-  if(this.i>=this.N)this.over=true;rr();scrollTo(0,0);},
+  if(this.i>=this.N){this.over=true;if(this.lv!=='W')record('rulequiz',this.ok);}rr();scrollTo(0,0);},
  next(){if(!this.fb||this.over)return;this.fb=null;this.nq();rr();scrollTo(0,0);},
  menu(){const st=lsGet('st_rulequiz',{}),wn=lsGet('wn_rulequiz',[]).length,n=bank().length;
   return `<div class="card"><div class="t">📜 대회 룰 퀴즈</div><div class="m" style="margin-top:4px;line-height:1.6">대회에서 자주 나오는 룰과 상황을 문제로 익혀요. 한 판 10문제 · 정답 확인 후 해설을 읽고 다음 문제로 · 점수·랭킹 없이 정답률 중심이에요.<br>지금 문제 ${n}개 중에서 무작위로 나와요.</div></div>
