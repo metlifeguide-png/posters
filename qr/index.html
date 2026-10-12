@@ -305,6 +305,20 @@ function cl(h){
  if(Q.q.length)o+=`고민 지점: ${Q.q.join(', ')}\n`;if(L.show)o+=`공개 패: ${L.show}\n`;if(L.memo)o+=`메모: ${L.memo}\n`;
  return o+'\n이 핸드의 판단을 GTO 관점에서 복기해줘.';
 }
+function toReview(h){/*qr2rv*/   // ✍️ 이 핸드를 핸드리뷰 작성 화면으로 넘김 (같은 기기 저장소 hr_import)
+ if(!h.S.bb){toast('blind 줄에 BB를 넣어야 리뷰로 보낼 수 있어요');return}
+ const S=h.S,Q=sim(h.L,S),bb=S.bb,ord=Q.order,ix=p=>ord.indexOf(p),c=x=>Math.round(x*bb);
+ if(!Q.hp||Q.hc.length<2||ix(Q.hp)<0){toast('card 줄에 내 포지션·카드 2장을 넣어 주세요 ('+S.max+'max 자리)');return}
+ const parts=[...new Set([...Object.keys(Q.st),Q.hp])].map(ix).filter(i=>i>=0),stacks={};
+ Object.keys(Q.st).forEach(p=>{if(ix(p)>=0)stacks[ix(p)]=String(c(Q.st[p]))});
+ const B=Q.board,cards={h0:Q.hc[0]||'',h1:Q.hc[1]||'',f0:B[0]||'',f1:B[1]||'',f2:B[2]||'',t0:B[3]||'',r0:B[4]||''},sd={};
+ Object.keys(Q.sh).forEach(p=>{const i=ix(p);if(i<0||p===Q.hp)return;sd[i]={m:'show'};cards['s'+i+'_0']=Q.sh[p][0]||'';cards['s'+i+'_1']=Q.sh[p][1]||''});
+ const acts=[],exp=[];
+ Q.ev.forEach(e=>{exp.push(ix(e.p));acts.push(e.k==='f'?{t:'fold'}:e.k==='x'?{t:'check'}:e.k==='c'?{t:'call'}:e.ai?{t:'allin'}:{t:'raise',to:c(e.to)})});
+ const d={ts:Date.now(),exp,S:{tname:T.name,sb:String(S.sb),bb:String(S.bb),ante:String(S.ante==='none'?0:(S.at||0)),anteType:S.ante==='all'?'all':'bb',
+  T:S.max,hero:ix(Q.hp),parts,stacks,unit:'chip',cards,acts,sd,q:(h.L.memo||'').trim()}};
+ try{localStorage.setItem('hr_import',JSON.stringify(d))}catch(e){toast('이 기기에 저장할 수 없어요');return}
+ flush();location.href=new URL("../review/",location.href).href}
 function cp(t){const ok=()=>toast('복사됨');function fb(){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');ok()}catch(e){toast('복사 실패')}a.remove()}
  if(navigator.clipboard)navigator.clipboard.writeText(t).then(ok,fb);else fb()}
 
@@ -360,7 +374,7 @@ function hands(){const H=T.hands;$('#hh').textContent=`저장한 핸드 (${H.len
   <div>${cH(Q.hc)} ${Q.board.length?'· '+cH(Q.board):''}</div>
   <div class="mu">${Q.es!=null?'유효 스택 '+f(Q.es*Q.u)+' ('+f(Q.es)+'bb)':''} ${qs?`<span class="tag">고민: ${Q.q.join('·')}</span>`:''}${miss?'<span class="tag">입력 누락</span>':''}</div>
   ${h.L.memo?`<div class="mu">${esc(h.L.memo)}</div>`:''}
-  <div class="bt"><button class="btn" data-a="gto">GTO Wizard 복사</button><button class="btn" data-a="cl">Claude 복기용 복사</button><button class="btn" data-a="ed">${h.d?'이어서 쓰기':'수정'}</button><button class="btn" data-a="del">삭제</button></div></div>`}).join(''):'<p class="mu">아직 저장한 핸드가 없습니다. 위에서 기록하고 [저장]을 눌러 보세요.</p>'}
+  <div class="bt"><button class="btn" data-a="gto">GTO Wizard 복사</button><button class="btn" data-a="cl">Claude 복기용 복사</button><button class="btn" data-a="rv">✍️ 리뷰 작성</button><button class="btn" data-a="ed">${h.d?'이어서 쓰기':'수정'}</button><button class="btn" data-a="del">삭제</button></div></div>`}).join(''):'<p class="mu">아직 저장한 핸드가 없습니다. 위에서 기록하고 [저장]을 눌러 보세요.</p>'}
 function saveH(d){const L=getL();if(!K.some(k=>L[k].trim())){toast('입력된 내용이 없습니다');return}
  const old=ed&&T.hands.find(h=>h.id===ed),h={id:ed||'h'+Date.now(),hid:old?old.hid:String(Date.now()).slice(-9)+Math.floor(Math.random()*90+10),ts:old?old.ts:Date.now(),L,S:{...T.S},d};
  if(old)T.hands[T.hands.indexOf(old)]=h;else T.hands.unshift(h);
@@ -386,7 +400,7 @@ function init(){mk();kp();
  $('#exp').onclick=()=>{const hs=T.hands.filter(h=>!h.d&&h.S.bb).reverse(),t=hs.map(ps).join('\n\n\n');if(hs.length<T.hands.filter(h=>!h.d).length)toast('BB를 안 적은 핸드는 빼고 복사했어요');if(!t){toast('내보낼 핸드가 없습니다');return}cp(t);
   try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));a.download=T.name+'.txt';a.click()}catch(e){}};
  $('#hands').onclick=e=>{const b=e.target.closest('button[data-a]');if(!b)return;const id=b.closest('.hc').dataset.id,h=T.hands.find(x=>x.id===id),a=b.dataset.a;
-  if(a==='gto'){if(!h.S.bb){toast('blind 줄에 BB를 입력하면 GTO Wizard 복사가 돼요');return}cp(ps(h))}else if(a==='cl')cp(cl(h));
+  if(a==='gto'){if(!h.S.bb){toast('blind 줄에 BB를 입력하면 GTO Wizard 복사가 돼요');return}cp(ps(h))}else if(a==='cl')cp(cl(h));else if(a==='rv')toReview(h);
   else if(a==='ed'){ed=id;T.S={...h.S};let L2=h.L;if(T.S.v!==2){if(T.S.bb>0)L2=conv(norm(h.L),T.S.bb);T.S.v=2}T.form=L2;ses();setL(L2);sv();upd();window.scrollTo(0,0);toast('불러왔습니다. 저장하면 덮어씁니다')}
   else if(a==='del'&&confirm('이 핸드를 삭제할까요?')){T.hands=T.hands.filter(x=>x.id!==id);sv();hands()}};
  $('#li').onclick=()=>authGo('login');$('#su').onclick=()=>authGo('signup');$('#lo').hidden=true;   // 로그아웃은 뚝섬 홈에서
