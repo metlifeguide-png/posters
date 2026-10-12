@@ -1666,6 +1666,8 @@ function envOf(g,en,pl,bb){const D=GD[g],B=bb||D.bb,n=D.t,avg=r1(en*START/pl/B),
 // p = {g,en,pl,h:내 자리,hb:내 BB,s:'o'|'s'|'r',v:빌런 자리,vb:빌런 BB,R:오픈 크기,k:손패}
 // ---- 3명 상황(B안): 계산은 p9p_multi.js (AOFMULTI). 같은 문제를 두 번 계산하지 않게 마지막 결과를 기억 ----
 const MW=window.AOFMULTI;let MWC={};/*aofmw*/
+// ⏱ 실제 게임처럼: 베팅 시간(게임별) 지나면 타임뱅크 30초 자동(한 판에 3개), 그것도 끝나면 자동 폴드(폴드로 채점)
+const AP_T={pm:12,hg:15,wpl:15,apl:15},AP_BANK=30,AP_BANKS=3;/*aoftime*/
 function solveMW(p,e){const c=e.ctx,key=JSON.stringify([p.g,p.en,p.pl,p.bb,p.s,p.h,p.hb,p.v,p.vb,p.v2,p.vb2,p.R]);if(MWC.key===key)return MWC.val;
  const run=o=>p.s==='m'?MW.solveM(c,p.h,p.hb,p.v,p.vb,p.v2,p.vb2,o):MW.solveQ(c,p.h,p.hb,p.v,p.R,p.vb,p.v2,p.vb2,o);
  // 빠른 예비 계산(시뮬레이션 적게)으로 범위가 너무 좁거나 넓은 상황은 바로 버림 — 오답노트 다시 풀기(p.k 있음)는 건너뜀
@@ -1776,8 +1778,8 @@ function gen(mode,games){const g=games[Math.floor(Math.random()*games.length)],D
 
 G.push({k:'aofprac',cat:'홀덤',e:'🎯',n:'새틀 AOF 연습',d:'앞액션 3종류 · 올인/콜/폴드 · 이번 주 새틀 인원 기준',
  cfg:null,cfgNote:'',
- start(){this.gsel=null;this.mode=null;this.fb=null;this.over=false;this.q=null;this.nxt=null;this.gid=(this.gid||0)+1;this.load();rr();},
- stop(){this.gid=(this.gid||0)+1;},
+ start(){clearInterval(this.iv);this.gsel=null;this.mode=null;this.fb=null;this.over=false;this.q=null;this.nxt=null;this.gid=(this.gid||0)+1;this.load();rr();},
+ stop(){clearInterval(this.iv);this.gid=(this.gid||0)+1;},
  load(){if(this.cfg)return;
   const use=(o,note)=>{const L=[];for(const k in GD){if(k==='apl')continue;const c=o&&o[k];if(c&&+c.entries>+c.live&&+c.live>=GD[k].min)L.push({k,cfg:{entries:+c.entries,live:+c.live}});else if(RND[k])L.push({k,cfg:{rnd:1}});}
    this.cfg=L;this.cfgNote=note;rr();};
@@ -1786,11 +1788,18 @@ G.push({k:'aofprac',cat:'홀덤',e:'🎯',n:'새틀 AOF 연습',d:'앞액션 3�
     if(r&&r.ok&&r.games){const L=[];for(const k in GD){if(k==='apl')continue;const c=r.games[k];if(c&&+c.entries>+c.live&&+c.live>=GD[k].min)L.push(k);}
      if(L.length)use(r.games,'이번 주 숫자'+(r.week?' ('+r.week+')':'')+': '+L.map(k=>GD[k].n).join('·')+' · 나머지는 랜덤 숫자');else ex();}else ex();}).catch(ex);}catch(e){ex();}},
  pickG(k){this.gsel=k;rr();},
+ tStart(q){clearInterval(this.iv);this.t0=Date.now();this.bankOn=false;this.dl=this.t0+(AP_T[q.p.g]||15)*1000;const me=this;this.iv=setInterval(()=>me.tick(),100);},
+ tick(){if(CUR!==this||this.fb||this.over||!this.q){clearInterval(this.iv);return;}
+  const rem=this.dl-Date.now();
+  if(rem<=0){if(!this.bankOn&&this.banks>0){this.banks--;this.bankOn=true;this.dl=Date.now()+AP_BANK*1000;this.q.usedBank=true;rr();return;}this.ans('f',true);return;}
+  const tm=document.getElementById('apTm'),br=document.getElementById('apBar');if(tm){tm.textContent=(rem/1000).toFixed(1)+'초';tm.style.color=rem<=3000?'#d33b3b':'';}
+  if(br){br.style.width=Math.min(100,rem/((this.bankOn?AP_BANK:(AP_T[this.q.p.g]||15))*1000)*100)+'%';br.style.background=this.bankOn?'#e08a00':(rem<=3000?'#d33b3b':'#1565c0');}},
+ tgAll(){const L=this.selL(),all=L.length>=5;L.length=0;if(!all)L.push('o','s','r','m','q');try{localStorage.setItem('aofsel',JSON.stringify(L));}catch(e){}rr();},
  tg(k){/*aofsel*/const L=this.selL();const i=L.indexOf(k);if(i>=0)L.splice(i,1);else L.push(k);try{localStorage.setItem('aofsel',JSON.stringify(L));}catch(e){}rr();},
  selL(){if(!this.sel){let L=[];try{L=JSON.parse(localStorage.getItem('aofsel')||'[]');}catch(e){}this.sel=(Array.isArray(L)?L:[]).filter(k=>TAG[k]);}return this.sel;},
  selHtml(){const L=this.selL(),ks=['o','s','r','m','q'];
   return `<div class="gq">여러 상황 골라 섞기</div><div class="m" style="margin:-2px 0 6px">약한 상황만 골라서 섞어 풀 수 있어요 · 고른 것은 기억해요</div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">${ks.map(k=>`<button class="btn ${L.includes(k)?'':'gr'}" style="padding:9px 6px;font-size:13.5px" onclick="CUR.tg('${k}')">${L.includes(k)?'✅ ':'☐ '}${SN[k]}</button>`).join('')}</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px"><button class="btn ${L.length>=5?'':'gr'}" style="padding:9px 6px;font-size:13.5px" onclick="CUR.tgAll()">${L.length>=5?'✅ ':'☐ '}🎲 모두 랜덤</button>${ks.map(k=>`<button class="btn ${L.includes(k)?'':'gr'}" style="padding:9px 6px;font-size:13.5px" onclick="CUR.tg('${k}')">${L.includes(k)?'✅ ':'☐ '}${SN[k]}</button>`).join('')}</div>
   <button class="btn full" style="margin-top:8px${L.length?'':';opacity:.45'}" onclick="CUR.go('sel')">${L.length?'고른 '+L.length+'개 섞어서 연습 (10문제)':'위에서 상황을 골라 주세요'}</button>`;},
  go(mode){if(mode==='sel'){if(!this.selL().length){toast('연습할 상황을 골라 주세요');return;}window.AOFSEL=this.selL().slice();}if(!this.cfg||!this.cfg.length){toast('숫자를 불러오는 중이에요');return;}
   const pool=(!this.gsel||this.gsel==='rand')?this.cfg:this.cfg.filter(x=>x.k===this.gsel);
@@ -1799,7 +1808,7 @@ G.push({k:'aofprac',cat:'홀덤',e:'🎯',n:'새틀 AOF 연습',d:'앞액션 3�
   let n=10,queue=null;
   if(mode==='W'){const wn=lsGet('wn_aofprac',[]);queue=[];for(const x of shuf(wn)){try{const p=JSON.parse(x.k);if(p&&p.g&&GD[p.g]&&TAG[p.s])queue.push(p);}catch(e){}if(queue.length>=10)break;}
    if(!queue.length){toast('오답노트가 비어 있어요');return;}n=queue.length;}
-  Object.assign(this,{mode,N:n,queue,i:0,ok:0,tsum:0,over:false,fb:null,log:[],q:null,nxt:null});this.nq();rr();},
+  Object.assign(this,{mode,N:n,queue,i:0,ok:0,tsum:0,over:false,fb:null,log:[],q:null,nxt:null,tq:null,banks:AP_BANKS});this.nq();rr();},
  nq(){const gid=this.gid=(this.gid||0)+1;this.fb=null;
   if(this.queue){const p=this.queue[this.i],q=p&&build(Object.assign({},p));if(q){this.q=q;this.t0=Date.now();return;}
    this.queue.splice(this.i,1);this.N=this.i+this.queue.length;if(this.i>=this.N){this.over=true;this.q=null;return;}return this.nq();}
@@ -1809,8 +1818,8 @@ G.push({k:'aofprac',cat:'홀덤',e:'🎯',n:'새틀 AOF 연습',d:'앞액션 3�
    if(q){this.q=q;this.t0=Date.now();rr();}else setTimeout(step,0);};setTimeout(step,30);},
  prefetch(){if(this.queue||this.nxt||this.over)return;this.pt=0;const gid=this.gid,mode=this.mode;
   const step=()=>{if(gid!==this.gid||this.nxt)return;window.AOFTRIES=this.pt=(this.pt||0)+1;const q=gen(mode,this.pool);if(q){this.nxt=q;this.pt=0;}else setTimeout(step,20);};setTimeout(step,60);},
- ans(o){if(this.over||this.fb||!this.q)return;const q=this.q,t=(Date.now()-this.t0)/1000,ok=o===q.a;
-  this.i++;this.tsum+=t;if(ok)this.ok++;const L={q,o,ok,t};this.log.push(L);this.fb=L;
+ ans(o,to){if(this.over||this.fb||!this.q)return;clearInterval(this.iv);const q=this.q,t=(Date.now()-this.t0)/1000,ok=o===q.a;
+  this.i++;this.tsum+=t;if(ok)this.ok++;const L={q,o,ok,t,to:!!to};this.log.push(L);this.fb=L;
   studyLog('aofprac',q.tag,1,ok,Math.round(t*1000),q.p);
   if(this.i>=this.N)this.over=true;else this.prefetch();rr();},
  next(){this.nq();rr();},
@@ -1831,8 +1840,8 @@ G.push({k:'aofprac',cat:'홀덤',e:'🎯',n:'새틀 AOF 연습',d:'앞액션 3�
   <div style="display:grid;gap:8px">${row('o','앞 모두 폴드','폴드 / 오픈 / 올인','aof_open')+row('s','앞에서 올인','콜 / 폴드','aof_vs')+row('r','앞에서 오픈','폴드 / 콜 / 3벳 올인','aof_vr')+row('m','올인 + 올인','앞에서 2명 올인 → 콜 / 폴드','aof_mw')+row('q','오픈 + 3벳 올인','오픈 뒤 3벳 올인 → 올인 / 폴드','aof_sq')}</div>${this.selHtml()}${wnB}`;},
  view(){if(!this.mode)return this.menu();const W=this.mode==='W',q=this.q;
   const gl=this.gsel==='rand'||!this.gsel?'랜덤':GD[this.gsel].n;
-  const hd=`<div class="gst"><span>${W?'📒 오답노트':'🎯 '+gl+' · '+(this.mode==='mix'?'모두 랜덤':this.mode==='sel'?(window.AOFSEL||[]).map(k=>SN[k]).join('·'):SN[this.mode])} · ${Math.min(this.i+(this.fb||this.over?0:1),this.N)} / ${this.N} · 정답 <b>${this.ok}</b></span><span><a onclick="CUR.start()" style="color:var(--blue);cursor:pointer">메뉴</a></span></div>`;
-  const fbCard=L=>`<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:16px">${L.ok?'✅ 정답':'❌ 오답 · 정답 '+L.q.fmt(L.q.a)} · ${L.t.toFixed(1)}초</div><div style="font-size:14.5px;line-height:1.75;margin-top:6px">${this.fx(L)}</div></div>`;
+  const hd=`<div class="gst"><span>${W?'📒 오답노트':'🎯 '+gl+' · '+(this.mode==='mix'?'모두 랜덤':this.mode==='sel'?((window.AOFSEL||[]).length>=5?'모두 랜덤':(window.AOFSEL||[]).map(k=>SN[k]).join('·')):SN[this.mode])} · ${Math.min(this.i+(this.fb||this.over?0:1),this.N)} / ${this.N} · 정답 <b>${this.ok}</b> · 타임뱅크 <b>${this.banks==null?AP_BANKS:this.banks}</b>/${AP_BANKS}</span><span><a onclick="CUR.start()" style="color:var(--blue);cursor:pointer">메뉴</a></span></div>`;
+  const fbCard=L=>`<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:16px">${L.ok?'✅ 정답':'❌ 오답 · 정답 '+L.q.fmt(L.q.a)} · ${L.t.toFixed(1)}초${L.to?' · ⏰ 시간 초과 (자동 폴드)':L.q.usedBank?' · 타임뱅크 사용':''}</div><div style="font-size:14.5px;line-height:1.75;margin-top:6px">${this.fx(L)}</div></div>`;
   const rule=q=>q?`<div class="m" style="text-align:center;margin-top:8px">${W?'오답노트 복습 · 맞히면 목록에서 빠져요':q.rule}</div>`:'';
   if(this.over){const L=this.fb;
    return hd+(L?fbCard(L):'')+`<div class="gbig">${this.ok}/${this.N}</div><div class="card" style="text-align:center;font-size:15px;line-height:1.8">총 ${this.tsum.toFixed(1)}초 · 평균 ${(this.tsum/Math.max(1,this.N)).toFixed(1)}초<br><span class="m">${W?`맞힌 문제는 오답노트에서 빠졌어요 · 남은 오답 ${lsGet('wn_aofprac',[]).length}개`:'랭킹 없음 · 유형별 정답률은 메뉴에서 볼 수 있어요'}</span></div>`
@@ -1841,7 +1850,9 @@ G.push({k:'aofprac',cat:'홀덤',e:'🎯',n:'새틀 AOF 연습',d:'앞액션 3�
   if(this.fb)return hd+fbCard(this.fb)+`<button class="btn full g" style="font-size:17px;padding:13px" onclick="CUR.next()">다음 문제 (${this.i+1}/${this.N})</button>`+rule(this.fb.q);
   if(!q)return hd+`<div class="card m" style="text-align:center;line-height:1.7">문제 만드는 중…<br><span style="font-size:12.5px">조건에 맞는 상황을 찾느라 몇 초 걸릴 수 있어요 · 잠시만요</span><!--/*aofmsg*/--></div>`;
   const cols=q.opts.length===3?'g3b':'g2b';
-  return hd+`<style>.hand{font-size:34px;font-weight:800;letter-spacing:1px}</style><div class="card" style="text-align:center;font-size:16px;line-height:1.8">${q.show}</div>`
+  if(q!==this.tq){this.tq=q;this.tStart(q);}
+  const tm0=Math.max(0,this.dl-Date.now()),tot0=(this.bankOn?AP_BANK:(AP_T[q.p.g]||15))*1000;
+  return hd+`<div style="margin:0 0 8px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span id="apTm" style="font-size:22px;font-weight:900">${(tm0/1000).toFixed(1)}초</span><span class="m">${this.bankOn?'⏱ 타임뱅크 사용 중 (30초)':'베팅 시간 '+(AP_T[q.p.g]||15)+'초 · 지나면 타임뱅크 자동'}</span></div><div style="height:7px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:3px"><div id="apBar" style="height:100%;width:${Math.min(100,tm0/tot0*100)}%;background:${this.bankOn?'#e08a00':'#1565c0'}"></div></div></div>`+`<style>.hand{font-size:34px;font-weight:800;letter-spacing:1px}</style><div class="card" style="text-align:center;font-size:16px;line-height:1.8">${q.show}</div>`
    +`<div class="${cols}" style="${q.opts.length===3?'display:grid;grid-template-columns:repeat(3,1fr);gap:8px':''}">${q.opts.map(o=>`<button class="btn ${o[0]==='f'?'gr':''}" style="font-size:17px;padding:14px 6px" onclick="CUR.ans('${o[0]}')">${o[1]}</button>`).join('')}</div>`+rule(q);}});
 })();
 ;
