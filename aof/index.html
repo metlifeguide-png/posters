@@ -310,7 +310,7 @@ body.isetc .noetc{display:none!important}
   <b>레지 마감 전 = 칩EV</b>: 아직 재입장이 되고 인원이 늘어나는 구간이라 칩 = 가치예요. 칩을 모으는 게 정답이라 콜도 넓어요.<br>
   <b>레지 마감 후 = ICM EV</b>: 티켓 수가 정해져서, 칩을 잃는 손해가 따는 이득보다 커요. 콜은 좁아지고, 짧은 스택 상대 올인은 넓어져요.<br><br>
   <b>게임별 포인트</b><br>
-  · <b>WPL</b>: 12~15위 딥스택 초대권은 가치 0으로 계산해요. 진짜 버블은 11위예요.<br>
+  · <b>WPL</b>: 메인(1~10위)과 미니메인(11~12위) 티켓이 있어요. 진짜 버블은 13위고, 12위 안이면 최소 미니메인이에요.<br>
   · <b>한게임</b>: 20위(1장)와 9위(2장) 버블이 두 번 있어요. 1장만으론 바인이 안 돼서 9위 안이 중요해요.<br>
   · <b>피망</b>: 25장 게임은 25위까지(15시 게임은 5위까지) 똑같은 티켓이라 스택이 쌓이면 폴드만 해도 따는 경우가 많아요.<br><br>
   <b>계산 가정</b><br>
@@ -588,7 +588,7 @@ function send(msg){
 if(worker) worker.onmessage=e=>onResult(e.data);
 
 let START=10000, ANTE=0.1;   // 💡 게임마다 바뀜 (applyGame)
-const TV={wpl:(TICKETS["WPL메인"]||250000)/10000, hg:(TICKETS["HPT"]||220000)/10000, pm:(TICKETS["피망"]||92700)/10000, apl:(TICKETS["APL"]||50000)/10000};
+const TV={wpl:(TICKETS["WPL메인"]||250000)/10000, hg:(TICKETS["HPT"]||220000)/10000, pm:(TICKETS["피망"]||92700)/10000, apl:(TICKETS["APL"]||50000)/10000, wplm:(TICKETS["WPL미니메인"]||200000)/10000};
 const r1=x=>Math.round(x*10)/10;
 // 게임사 블라인드 구조 (BB, 칩) · 7분 레벨 · 앤티 = BB의 10% · 레지 마감 15레벨
 const STD_BB=[50,100,150,200,250,300,400,500,600,800,1000,1200,1600,2000,2400,2800,3200,4000,5000,6000,7000,8000,10000,12000,16000,20000,24000,28000,32000,40000,50000,60000,70000,80000,100000];
@@ -602,8 +602,8 @@ const TS_CHIP={floor:0,shove:1,name:"계산 그대로"};
 const tsty=()=>st.mode==="icm"?TSTYLE.normal:TS_CHIP;   // 테이블 성향 입력은 없앰: 항상 레귤러(보통) 기준
 const pmSeats=()=>25;
 const GAMES={
-  wpl:{blinds:STD_BB,times:["18:00","19:00","20:00","21:00","22:00","23:00"],name:"WPL",desc:`1~11위 메인(${TV.wpl}만)<br>12~15위 딥스택`,pay:()=>Array(11).fill(TV.wpl),
-       bubbles:[{key:"t1",label:"메인 티켓 (11위 안)",n:11}]},
+  wpl:{blinds:STD_BB,times:["18:00","19:00","20:00","21:00","22:00","23:00"],name:"WPL",desc:`1~10위 메인(${TV.wpl}만)<br>11~12위 미니메인(${TV.wplm}만)`,pay:()=>Array(10).fill(TV.wpl).concat(Array(2).fill(TV.wplm)),
+       bubbles:[{key:"t1",label:"미니메인 이상 (12위 안)",n:12},{key:"t2",label:"메인 (10위 안)",n:10}]},
   hg:{blinds:STD_BB,times:["17:30","19:30","20:30","22:00","23:00"],name:"한게임",desc:`1~9위 2장(${r1(TV.hg*2)}만)<br>10~20위 1장`,pay:()=>Array(9).fill(TV.hg*2).concat(Array(11).fill(TV.hg)),
        bubbles:[{key:"t1",label:"1장 (20위 안)",n:20},{key:"t2",label:"2장 (9위 안)",n:9}]},
   pm:{blinds:PM_BB,times:["18:00","19:30","21:00","22:30"],name:"피망",desc:`1~25위 메인 1장<br>(${TV.pm}만)`,pay:()=>Array(pmSeats()).fill(TV.pm),
