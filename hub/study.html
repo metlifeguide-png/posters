@@ -1489,10 +1489,12 @@ window.AOFFRONT={solveOpen,solveVs,solveVr,pct,playOrder,openPct,posted,DEEP_BB}
 // 숫자(레지마감 바인·라이브 인원)는 서버 /api/satprac(관리자 🎯 새틀 연습 탭)에서 가져옴. 점수·랭킹 없음, studyLog('aofprac',…)로 정답률만 기록.
 // 계산 = p9p_engine.js(AOFENG) + p9p_front.js(AOFFRONT). 둘 다 이 파일보다 앞에 빌드돼야 함.
 const F=window.AOFFRONT,SAT=window.AOFENG.SAT,START=10000;
-const GD={wpl:{n:'WPL',pay:Array(11).fill(25),bb:2800,t:9,min:12,tk:11},
- hg:{n:'한게임',pay:Array(20).fill(22),bb:2800,t:9,min:21,tk:20},
- pm:{n:'피망',pay:Array(25).fill(9.27),bb:2400,t:9,min:26,tk:25},
- apl:{n:'APL',pay:[5,3,2,1,1,1,1,1].map(x=>x*5),bb:1000,t:8,min:9,tk:8}};
+// bb = 레지 마감 직후 BB(칩), tab = 블라인드표 이름, min = 버블 다음 인원(이 인원 이상만 출제), tk = 티켓 수
+const GD={wpl:{n:'WPL',pay:Array(10).fill(25).concat(Array(2).fill(20)),bb:2800,tab:'std',t:9,min:13,tk:12,tkn:'메인 10 · 미니메인 2'},
+ hg:{n:'한게임',pay:Array(20).fill(22),bb:2800,tab:'std',t:9,min:21,tk:20,tkn:'20장'},
+ pm:{n:'피망',pay:Array(25).fill(9.27),bb:2400,tab:'pm',t:9,min:26,tk:25,tkn:'25장'},
+ apl:{n:'APL',pay:[5,3,2,1,1,1,1,1].map(x=>x*5),bb:1000,tab:'apl',t:8,min:9,tk:8,tkn:'8위까지'}};
+const BBT=window.AOFENG.bb;
 const DEF={wpl:{entries:231,live:55}};   // 서버 숫자가 없을 때 쓰는 예시
 const TAG={o:'aof_open',s:'aof_vs',r:'aof_vr'},SN={o:'앞 모두 폴드',s:'앞에서 올인',r:'앞에서 오픈'};
 const r1=x=>Math.round(x*10)/10,N1=x=>(+x).toFixed(1).replace(/\.0$/,'');
@@ -1505,15 +1507,24 @@ function rangeText(freq){const RK=SAT.RANKS,inR=k=>freq[k]>=0.5,parts=[];
   if(!ks.length)continue;let runs=[],a=ks[0],b=ks[0];for(let x=1;x<ks.length;x++){if(ks[x]===b+1)b=ks[x];else{runs.push([a,b]);a=b=ks[x];}}runs.push([a,b]);
   const sfx=suited?'s':'o';for(const [p,q] of runs){if(p===h+1)parts.push(q===p?RK[h]+RK[p]+sfx:RK[h]+RK[q]+sfx+'+');else parts.push(q===p?RK[h]+RK[p]+sfx:RK[h]+RK[q]+sfx+'-'+RK[h]+RK[p]+sfx);}}}
  return parts.length?parts.join(' '):'없음';}
+const CC={s:'#d94a2b',c:'#7a4ec9',z:'#e08a1e',f:'#e4dfd4'};
+function chartHtml(p,r,k0){let h='';for(let k=0;k<169;k++){const q=probs(p,r,k),a=Object.keys(q).reduce((x,y)=>q[y]>q[x]?y:x);
+  h+=`<div style="background:${CC[a]};color:${a==='f'?'#6b665c':'#fff'};font-size:8.5px;line-height:1;padding:5px 0;text-align:center;border-radius:2px;${k===k0?'outline:2px solid #111;outline-offset:-1px;font-weight:800;':''}">${SAT.handName(k)}</div>`;}
+ const leg=p.s==='o'?[['s','올인'],...(r.canRaise&&p.hb>15?[['z','오픈 레이즈']]:[]),['f','폴드']]:p.s==='s'?[['c','콜'],['f','폴드']]:[['s','3벳 올인'],...(r.flPct>0?[['c','콜']]:[]),['f','폴드']];
+ return `<div style="display:grid;grid-template-columns:repeat(13,1fr);gap:1px;margin-top:10px">${h}</div><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;font-size:12px">${leg.map(l=>`<span><i style="display:inline-block;width:10px;height:10px;background:${CC[l[0]]};border-radius:2px;margin-right:3px"></i>${l[1]}</span>`).join('')}<span class="m">· 검은 테두리 = 이 핸드</span></div>`;}
 const sumA=(a,b)=>{const o=new Float64Array(169);for(let k=0;k<169;k++)o[k]=a[k]+(b?b[k]:0);return o;};
 
 // 게임 숫자 → 문제용 환경
-function envOf(g,en,pl){const D=GD[g],n=D.t,avg=r1(en*START/pl/D.bb),M=Math.max(0,pl-n),tot=en*START/D.bb,off=M?new Array(M).fill(Math.max(M*0.5,tot-n*avg)/M):[];
+// 남은 인원이 줄수록 블라인드가 올라가요: 마감 직후 평균 스택(BB)의 1.35배 안에 들어오는 첫 블라인드(+가끔 한 단계 위)
+function lvIdx(g,en,pl,live){const D=GD[g],T=BBT[D.tab],i0=Math.max(0,T.indexOf(D.bb)),A0=en*START/live/D.bb,need=en*START/pl/(A0*1.35);
+ let i=i0;while(i<T.length-1&&T[i]<need)i++;
+ if(Math.random()<0.4&&i<T.length-1&&en*START/pl/T[i+1]>=6)i++;return i;}
+function envOf(g,en,pl,bb){const D=GD[g],B=bb||D.bb,n=D.t,avg=r1(en*START/pl/B),M=Math.max(0,pl-n),tot=en*START/B,off=M?new Array(M).fill(Math.max(M*0.5,tot-n*avg)/M):[];
  return {D,n,avg,ctx:{pay:D.pay,players:pl,avg,n,mode:'icm',off,raise:2}};}
 
 // 파라미터 p → 문제. h(손패 번호)가 없으면 null 반환(고르는 건 gen). 계산이 부적합하면 null.
 // p = {g,en,pl,h:내 자리,hb:내 BB,s:'o'|'s'|'r',v:빌런 자리,vb:빌런 BB,R:오픈 크기,k:손패}
-function solveP(p){const e=envOf(p.g,p.en,p.pl),c=e.ctx;
+function solveP(p){const e=envOf(p.g,p.en,p.pl,p.bb),c=e.ctx;
  if(p.s==='o'){const r=F.solveOpen(c,p.h,p.hb);return r&&!r.deep?{e,r}:null;}
  if(p.s==='s'){const r=F.solveVs(c,p.h,p.hb,p.v,p.vb);return r?{e,r}:null;}
  const r=F.solveVr(c,p.h,p.hb,p.v,p.R,p.vb);return r&&!r.noRaise&&!r.deep?{e,r}:null;}
@@ -1535,7 +1546,8 @@ function pickHand(p,r){const ord=F.playOrder(),W=SAT.W;
 function build(p){const S=solveP(p);if(!S)return null;const {e,r}=S,k=p.k,P=POSN(e.n),D=e.D;
  const q=probs(p,r,k),ans=Object.keys(q).reduce((a,b)=>q[b]>q[a]?b:a),hn=SAT.handName(k),pct=x=>Math.round(x*100)+'%';
  const heroP=P[p.h],vilP=p.s==='o'?'':P[p.v];
- const head=`<b>${D.n}</b> · 남은 <b>${p.pl}명</b> (티켓 ${D.tk}장 · 버블까지 ${p.pl-D.tk}명) · 평균 <b>${N1(e.avg)}BB</b><br>`;
+ const bbv=p.bb||D.bb,lvn=BBT[D.tab].indexOf(bbv)+1;
+ const head=`<b>${D.n}</b> · 남은 <b>${p.pl}명</b> (티켓 ${D.tk}장 · 버블까지 ${p.pl-D.tk}명) · 블라인드 ${bbv.toLocaleString()}${lvn?' (Lv.'+lvn+')':''} · 평균 <b>${N1(e.avg)}BB</b><br>`;
  let show,opts,expl,rule,why={};
  if(p.s==='o'){const raise=r.canRaise&&p.hb>15;
   show=head+`앞 사람이 모두 폴드 → <b>${heroP}</b> · 내 스택 <b>${N1(p.hb)}BB</b><br><span class="hand">${hn}</span>`;
@@ -1559,26 +1571,26 @@ function build(p){const S=solveP(p);if(!S)return null;const {e,r}=S,k=p.k,P=POSN
   rule='가정: 오픈한 사람 외 다른 사람은 폴드 · 25BB 이하 · [근사]';}
  expl+=`<br><span class="m">${D.n} · 남은 ${p.pl}명 · 평균 ${N1(e.avg)}BB · 내 ${N1(p.hb)}BB (평균의 ${N1(p.hb/e.avg)}배)</span>`;
  return {a:ans,opts,why,show,expl,rule,sum:`${SN[p.s]} ${heroP} ${N1(p.hb)}BB ${hn}`,tag:TAG[p.s],p,lv:1,
-  fmt:id=>(opts.find(o=>o[0]===id)||[0,id])[1]};}
+  fmt:id=>(opts.find(o=>o[0]===id)||[0,id])[1],chart:chartHtml(p,r,k)};}
 
 // 랜덤 문제 하나 만들기 (적당한 범위가 안 나오면 null → 호출쪽이 다시 시도)
 function gen(mode,games){const g=games[Math.floor(Math.random()*games.length)],c=g.cfg,D=GD[g.k];
  const lo=D.min,pl=lo+Math.floor((c.live-lo)*Math.pow(Math.random(),1.8)),n=D.t;
  if(pl<Math.max(lo,n))return null;
- const avg=c.entries*START/pl/D.bb;
+ const bi=lvIdx(g.k,c.entries,pl,c.live),bb=BBT[D.tab][bi],avg=c.entries*START/pl/bb;
  const hb=Math.random()<0.6?10+Math.floor(Math.random()*21)/2:Math.max(4,Math.min(24.5,Math.round(avg*(0.3+2.2*Math.random())*2)/2));
  let s=mode;if(mode==='mix'){const x=Math.random();s=x<0.4?'o':x<0.7?'s':'r';}
- const p={g:g.k,en:c.entries,pl,hb,s,h:0,v:0,vb:0,R:2,k:0};
+ const p={g:g.k,en:c.entries,pl,bb,hb,s,h:0,v:0,vb:0,R:2,k:0};
  if(s==='o')p.h=Math.floor(Math.random()*(n-1));
- else if(s==='s'){p.h=1+Math.floor(Math.random()*(n-1));p.v=Math.floor(Math.random()*Math.min(p.h,n-1));p.vb=5+Math.floor(Math.random()*35)/2;}
- else{p.h=1+Math.floor(Math.random()*(n-2));p.v=Math.floor(Math.random()*p.h);p.R=[2,2,2.5,3][Math.floor(Math.random()*4)];p.vb=8+Math.floor(Math.random()*(22-8+1));p.hb=Math.min(p.hb,24);}
+ else if(s==='s'){p.h=1+Math.floor(Math.random()*(n-1));p.v=Math.floor(Math.random()*Math.min(p.h,n-1));p.vb=Math.max(5,Math.min(22,Math.round(avg*(0.4+Math.random()*1.1)*2)/2));}
+ else{p.h=1+Math.floor(Math.random()*(n-2));p.v=Math.floor(Math.random()*p.h);p.R=[2,2,2.5,3][Math.floor(Math.random()*4)];p.vb=Math.max(8,Math.min(22,Math.round(avg*(0.5+Math.random()*1.2))));p.hb=Math.min(p.hb,24);}
  const S=solveP(p);if(!S)return null;
  const m=metric(p,S.r);if(m<0.05||m>0.70)return null;
  const k=pickHand(p,S.r);if(k<0)return null;p.k=k;return build(p);}
 
 G.push({k:'aofprac',cat:'홀덤',e:'🎯',n:'새틀 AOF 연습',d:'앞액션 3종류 · 올인/콜/폴드 · 이번 주 새틀 인원 기준',
  cfg:null,cfgNote:'',
- start(){this.mode=null;this.fb=null;this.over=false;this.q=null;this.nxt=null;this.gid=(this.gid||0)+1;this.load();rr();},
+ start(){this.gsel=null;this.mode=null;this.fb=null;this.over=false;this.q=null;this.nxt=null;this.gid=(this.gid||0)+1;this.load();rr();},
  stop(){this.gid=(this.gid||0)+1;},
  load(){if(this.cfg)return;
   const use=(o,note)=>{const L=[];for(const k in GD){const c=o&&o[k];if(c&&+c.entries>+c.live&&+c.live>=GD[k].min)L.push({k,cfg:{entries:+c.entries,live:+c.live}});}
@@ -1587,7 +1599,11 @@ G.push({k:'aofprac',cat:'홀덤',e:'🎯',n:'새틀 AOF 연습',d:'앞액션 3�
   try{fetch(API+'/api/satprac',{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{
     if(r&&r.ok&&r.games){const L=[];for(const k in GD){const c=r.games[k];if(c&&+c.entries>+c.live&&+c.live>=GD[k].min)L.push(k);}
      if(L.length)use(r.games,'이번 주 숫자'+(r.week?' ('+r.week+')':'')+': '+L.map(k=>GD[k].n).join('·'));else ex();}else ex();}).catch(ex);}catch(e){ex();}},
+ pickG(k){this.gsel=k;rr();},
  go(mode){if(!this.cfg||!this.cfg.length){toast('숫자를 불러오는 중이에요');return;}
+  const pool=(!this.gsel||this.gsel==='rand')?this.cfg:this.cfg.filter(x=>x.k===this.gsel);
+  if(mode!=='W'&&!pool.length){toast('이 게임은 이번 주 숫자가 없어요');return;}
+  this.pool=pool.length?pool:this.cfg;
   let n=10,queue=null;
   if(mode==='W'){const wn=lsGet('wn_aofprac',[]);queue=[];for(const x of shuf(wn)){try{const p=JSON.parse(x.k);if(p&&p.g&&GD[p.g]&&TAG[p.s])queue.push(p);}catch(e){}if(queue.length>=10)break;}
    if(!queue.length){toast('오답노트가 비어 있어요');return;}n=queue.length;}
@@ -1596,24 +1612,33 @@ G.push({k:'aofprac',cat:'홀덤',e:'🎯',n:'새틀 AOF 연습',d:'앞액션 3�
   if(this.queue){const p=this.queue[this.i],q=p&&build(Object.assign({},p));if(q){this.q=q;this.t0=Date.now();return;}
    this.queue.splice(this.i,1);this.N=this.i+this.queue.length;if(this.i>=this.N){this.over=true;this.q=null;return;}return this.nq();}
   if(this.nxt){this.q=this.nxt;this.nxt=null;this.t0=Date.now();return;}
-  this.q=null;const step=()=>{if(gid!==this.gid)return;let q=null;for(let t=0;t<3&&!q;t++)q=gen(this.mode,this.cfg);
+  this.q=null;const step=()=>{if(gid!==this.gid)return;let q=null;for(let t=0;t<3&&!q;t++)q=gen(this.mode,this.pool);
    if(q){this.q=q;this.t0=Date.now();rr();}else setTimeout(step,20);};setTimeout(step,30);},
  prefetch(){if(this.queue||this.nxt||this.over)return;const gid=this.gid,mode=this.mode;
-  const step=()=>{if(gid!==this.gid||this.nxt)return;const q=gen(mode,this.cfg);if(q)this.nxt=q;else setTimeout(step,20);};setTimeout(step,60);},
+  const step=()=>{if(gid!==this.gid||this.nxt)return;const q=gen(mode,this.pool);if(q)this.nxt=q;else setTimeout(step,20);};setTimeout(step,60);},
  ans(o){if(this.over||this.fb||!this.q)return;const q=this.q,t=(Date.now()-this.t0)/1000,ok=o===q.a;
   this.i++;this.tsum+=t;if(ok)this.ok++;const L={q,o,ok,t};this.log.push(L);this.fb=L;
   studyLog('aofprac',q.tag,1,ok,Math.round(t*1000),q.p);
   if(this.i>=this.N)this.over=true;else this.prefetch();rr();},
  next(){this.nq();rr();},
- fx(L){const q=L.q;return q.expl+(!L.ok&&q.why[L.o]?`<br><span style="color:var(--red)">내 선택 ${q.fmt(L.o)} → ${q.why[L.o]}</span>`:'');},
+ fx(L){const q=L.q;return q.expl+(!L.ok&&q.why[L.o]?`<br><span style="color:var(--red)">내 선택 ${q.fmt(L.o)} → ${q.why[L.o]}</span>`:'')+q.chart;},
  menu(){const st=lsGet('st_aofprac',{}),wn=lsGet('wn_aofprac',[]).length;
+  const note=`<div class="m" style="margin-top:4px;line-height:1.6">남은 인원·평균 스택이 이번 주 새틀 상황에 맞는 문제예요. 한 판 10문제 · 정답 확인 후 다음 문제 · 점수·랭킹 없이 정답률만 기록해요.<br>${this.cfg?(this.cfgNote||''):'숫자를 불러오는 중…'}</div>`;
+  const wnB=wn?`<button class="btn full g" style="margin-top:10px" onclick="CUR.go('W')">📒 오답노트 풀기 (${wn}개)</button><div class="m" style="text-align:center;margin-top:4px">틀린 문제를 다시 풀어요 · 맞히면 목록에서 빠져요</div>`:'';
+  if(!this.gsel){const has=k=>(this.cfg||[]).some(x=>x.k===k),L=['hg','wpl','pm','apl'];
+   return `<div class="card"><div class="t">🎯 새틀 AOF 연습</div>${note}</div><div class="gq">게임 선택</div>
+   <div style="display:grid;gap:8px">${L.map(k=>{const c=has(k)&&this.cfg.find(x=>x.k===k).cfg,D=GD[k];
+    return c?`<button class="btn b2" style="text-align:left;padding:12px 14px" onclick="CUR.pickG('${k}')"><b>${D.n}</b> · 티켓 ${D.tkn}<br><span style="font-size:12.5px;opacity:.9">바인 ${c.entries} · 마감 직후 ${c.live}명</span></button>`
+     :`<button class="btn b2" style="text-align:left;padding:12px 14px;opacity:.45" onclick="toast('이번 주 숫자가 아직 없어요')"><b>${D.n}</b> · 이번 주 숫자 없음</button>`;}).join('')}
+    <button class="btn" style="text-align:left;padding:12px 14px" onclick="CUR.pickG('rand')"><b>🎲 랜덤</b> · 숫자가 있는 게임 중에서 섞어서</button></div>${wnB}`;}
+  const gn=this.gsel==='rand'?'랜덤':GD[this.gsel].n;
   const row=(m,t,d,tag)=>{const s=tag&&st[tag],pc=tag?(s&&s[1]?Math.round(s[0]/s[1]*100)+'% ('+s[0]+'/'+s[1]+')':'아직 안 풀었어요'):'';
    return `<button class="btn ${m==='mix'?'':'b2'}" style="text-align:left;padding:12px 14px" onclick="CUR.go('${m}')"><b>${t}</b> · ${d}${tag?`<br><span style="font-size:12.5px;opacity:.9">정답률 ${pc}</span>`:''}</button>`;};
-  return `<div class="card"><div class="t">🎯 새틀 AOF 연습</div><div class="m" style="margin-top:4px;line-height:1.6">남은 인원·평균 스택이 이번 주 새틀 상황에 맞는 문제예요. 한 판 10문제 · 정답 확인 후 다음 문제 · 점수·랭킹 없이 정답률만 기록해요.<br>${this.cfg?(this.cfgNote||''):'숫자를 불러오는 중…'}</div></div>
-  <div style="display:grid;gap:8px">${row('mix','섞어서','3종류 랜덤')+row('o','앞 모두 폴드','폴드 / 오픈 / 올인','aof_open')+row('s','앞에서 올인','콜 / 폴드','aof_vs')+row('r','앞에서 오픈','폴드 / 콜 / 3벳 올인','aof_vr')}</div>
-  ${wn?`<button class="btn full g" style="margin-top:10px" onclick="CUR.go('W')">📒 오답노트 풀기 (${wn}개)</button><div class="m" style="text-align:center;margin-top:4px">틀린 문제를 다시 풀어요 · 맞히면 목록에서 빠져요</div>`:''}`;},
+  return `<div class="card"><div class="t">🎯 ${gn}</div><div class="m" style="margin-top:4px"><a onclick="CUR.pickG(null)" style="color:var(--blue);cursor:pointer">← 게임 다시 고르기</a></div></div><div class="gq">상황 선택</div>
+  <div style="display:grid;gap:8px">${row('mix','🎲 모두 랜덤','3가지 상황을 섞어서')+row('o','앞 모두 폴드','폴드 / 오픈 / 올인','aof_open')+row('s','앞에서 올인','콜 / 폴드','aof_vs')+row('r','앞에서 오픈','폴드 / 콜 / 3벳 올인','aof_vr')}</div>${wnB}`;},
  view(){if(!this.mode)return this.menu();const W=this.mode==='W',q=this.q;
-  const hd=`<div class="gst"><span>${W?'📒 오답노트':'🎯 '+(this.mode==='mix'?'섞어서':SN[this.mode])} · ${Math.min(this.i+(this.fb||this.over?0:1),this.N)} / ${this.N} · 정답 <b>${this.ok}</b></span><span><a onclick="CUR.start()" style="color:var(--blue);cursor:pointer">메뉴</a></span></div>`;
+  const gl=this.gsel==='rand'||!this.gsel?'랜덤':GD[this.gsel].n;
+  const hd=`<div class="gst"><span>${W?'📒 오답노트':'🎯 '+gl+' · '+(this.mode==='mix'?'모두 랜덤':SN[this.mode])} · ${Math.min(this.i+(this.fb||this.over?0:1),this.N)} / ${this.N} · 정답 <b>${this.ok}</b></span><span><a onclick="CUR.start()" style="color:var(--blue);cursor:pointer">메뉴</a></span></div>`;
   const fbCard=L=>`<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:16px">${L.ok?'✅ 정답':'❌ 오답 · 정답 '+L.q.fmt(L.q.a)} · ${L.t.toFixed(1)}초</div><div style="font-size:14.5px;line-height:1.75;margin-top:6px">${this.fx(L)}</div></div>`;
   const rule=q=>q?`<div class="m" style="text-align:center;margin-top:8px">${W?'오답노트 복습 · 맞히면 목록에서 빠져요':q.rule}</div>`:'';
   if(this.over){const L=this.fb;
