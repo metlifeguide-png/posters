@@ -1104,14 +1104,17 @@ function vrCalc(r,seat){
     return {rs,fl,op,eff:I.eff,R:r.R,rsPct:pct(rs),flPct:pct(fl),vcPct:0,deep:true};
   }
   let rs=SAT.topRange(0.05,E), vc=new Float64Array(169), fl=new Float64Array(169);
-  for(let it=0;it<25;it++){
-    // 오픈한 사람: 내 올인 범위 상대로 승률이 필요 승률(oNeed)보다 높으면 콜
-    const nvc=new Float64Array(169); for(let h=0;h<169;h++) if(Ra[h]) nvc[h]=(eqv(h,rs)>=I.oNeed||FLOOR[h])?1:0;
-    vc=nvc; let pr=0,pc=0; for(let h=0;h<169;h++){pr+=W[h]*Ra[h]; pc+=W[h]*vc[h];} const pf=pr>0?1-pc/pr:1;
+  const rsA=Float64Array.from(rs), vcA=new Float64Array(169);   /*vrfp*/ // 평균에 맞춰 반복(수렴) — 직전 값에만 맞추면 5%↔100%로 오감
+  for(let it=0;it<60;it++){
+    // 오픈한 사람: 내 올인 범위(지금까지 평균) 상대로 승률이 필요 승률(oNeed)보다 높으면 콜
+    const nvc=new Float64Array(169); for(let h=0;h<169;h++) if(Ra[h]) nvc[h]=(eqv(h,rsA)>=I.oNeed||FLOOR[h])?1:0;
+    for(let h=0;h<169;h++) vcA[h]=(vcA[h]*it+nvc[h])/(it+1);
+    vc=vcA; let pr=0,pc=0; for(let h=0;h<169;h++){pr+=W[h]*Ra[h]; pc+=W[h]*vc[h];} const pf=pr>0?1-pc/pr:1;
     const nrs=new Float64Array(169), nfl=new Float64Array(169);
     for(let h=0;h<169;h++){ const e=eqv(h,vc), evRs=pf*I.RSw+(1-pf)*(e*I.CW+(1-e)*I.CL);
       const ei=eqv(h,Ra)*I.real, evFc=flatOK?ei*I.FWi+(1-ei)*I.FLi:-1e18, best=Math.max(evRs,evFc,I.CF);
       if(best>I.CF+1e-12){ if(evRs>=evFc) nrs[h]=1; else nfl[h]=1; } }
+    for(let h=0;h<169;h++) rsA[h]=(rsA[h]*(it+1)+nrs[h])/(it+2);
     rs=nrs; fl=nfl;
   }
   let pct=a=>{let p=0;for(let k=0;k<169;k++)p+=W[k]*a[k];return p;};
