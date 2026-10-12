@@ -1968,6 +1968,13 @@ const PET_BODY=[ // 20종 몸통 (얼굴 위치: 눈 48/72,62 · 입 60,78)
  f=>`<rect x="28" y="20" width="64" height="88" rx="10" fill="#fff" stroke="${f}" stroke-width="5"/><text x="33" y="42" font-size="15" fill="${f}">♠</text><text x="87" y="100" font-size="15" fill="${f}" text-anchor="end" transform="rotate(180 87 95)">♠</text>`,
  f=>`<circle cx="60" cy="68" r="38" fill="${f}"${PET_ST}/><circle cx="60" cy="68" r="33" fill="none" stroke="#fff" stroke-width="6" stroke-dasharray="11 11"/><circle cx="60" cy="68" r="26" fill="${f}" stroke="#fff9" stroke-width="2"/>`];
 const PET_DEFC=PET_SP.map(x=>x[5]);
+const PET_DECO_SVG={
+ ribbon:`<path d="M60 36 L46 27 L46 45Z M60 36 L74 27 L74 45Z" fill="#a56cf0" stroke="#0002"/><circle cx="60" cy="36" r="4.5" fill="#7d3fd1"/>`,
+ hat:`<rect x="45" y="12" width="30" height="24" rx="3" fill="#2d2d38"/><rect x="45" y="27" width="30" height="5" fill="#e74c3c"/><rect x="34" y="34" width="52" height="6" rx="3" fill="#2d2d38"/>`,
+ glasses:`<circle cx="48" cy="62" r="9" fill="#cfeaff" fill-opacity=".35" stroke="#c0392b" stroke-width="2.5"/><circle cx="72" cy="62" r="9" fill="#cfeaff" fill-opacity=".35" stroke="#c0392b" stroke-width="2.5"/><path d="M57 62 L63 62" stroke="#c0392b" stroke-width="2.5"/>`,
+ scarf:`<path d="M32 86 Q60 98 88 86 L88 93 Q60 105 32 93Z" fill="#27ae60"/><rect x="72" y="92" width="8" height="16" rx="2" fill="#1e8449"/><path d="M72 99 L80 99 M72 104 L80 104" stroke="#a9dfbf" stroke-width="2"/>`,
+ cape:`<path d="M30 52 Q60 44 90 52 L102 106 L18 106Z" fill="#2c3e91" stroke="#0003"/><circle cx="60" cy="50" r="3.5" fill="#f5c542"/>`
+};
 function petSVG(f,o){o=o||{};const id=(f.uid!=null?f.uid:Math.random().toString(36).slice(2,7));const fill=petFill(f.color,id);const sick=o.sick,sleep=o.sleep,fx=o.fx||'';
  const aura=f.aura?`<circle cx="60" cy="66" r="${52+f.aura*2}" fill="${f.aura===3?`url(#pr${id})`:f.aura===2?'#ffe08a':'#fff'}" opacity="${f.aura===3?.35:.5}"/><circle cx="60" cy="66" r="50" fill="url(#pa${id})"/>${f.aura>=2?'<text x="14" y="26" font-size="12">✨</text><text x="96" y="30" font-size="10">✨</text><text x="100" y="104" font-size="11">✨</text>':''}`:'';
  const happyEyes='<path d="M42 63 Q48 56 54 63 M66 63 Q72 56 78 63" fill="none" stroke="#333" stroke-width="3" stroke-linecap="round"/>';
@@ -1989,14 +1996,14 @@ function petSVG(f,o){o=o||{};const id=(f.uid!=null?f.uid:Math.random().toString(
   const leash=o.leash?'<path d="M36 90 Q60 102 84 90" stroke="#e74c3c" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="36" cy="90" r="3.5" fill="#f5c542"/>':'';
  let sx=1,sy=1;if(o.fat>=32)sx=1.2;else if(o.fat>=22)sx=1.1;if(o.hungry&&!sleep){sx*=.88;sy=1.03;}
  const cls=o.cls!==undefined?o.cls:(o.jump&&!sleep&&!sick?'petj':'petb');
- const bodyAcc=(PET_ACC_BACK[f.acc]||'');
- return `<svg viewBox="0 0 120 120" width="${o.size||120}" height="${o.size||120}" style="overflow:visible">${petDefs(id)}${aura}<g class="${cls}"><g transform="translate(60 104) scale(${sx} ${sy}) translate(-60 -104)">${bodyAcc}${PET_BODY[f.body%20](fill)}${PET_PAT[f.pattern%8]()}${dirt}${grime}${blink}${lids}${mouth}${leash}${PET_ACC_FRONT[f.acc]||''}${extra}</g></g>${sleep?'<text x="88" y="30" font-size="16" fill="#6c8cf5">z<tspan font-size="12" dy="-8">z</tspan></text>':''}</svg>`;}
+ const dw=(f.deco&&typeof f.deco==='object')?f.deco:{};const bodyAcc=(dw.back&&PET_DECO_SVG[dw.back]?PET_DECO_SVG[dw.back]:'')+(PET_ACC_BACK[f.acc]||'');const decoFront=['neck','face','head'].map(k=>(dw[k]&&PET_DECO_SVG[dw[k]])||'').join('');
+ return `<svg viewBox="0 0 120 120" width="${o.size||120}" height="${o.size||120}" style="overflow:visible">${petDefs(id)}${aura}<g class="${cls}"><g transform="translate(60 104) scale(${sx} ${sy}) translate(-60 -104)">${bodyAcc}${PET_BODY[f.body%20](fill)}${PET_PAT[f.pattern%8]()}${dirt}${grime}${blink}${lids}${mouth}${leash}${(dw.head&&f.acc>=1&&f.acc<=4)?'':(PET_ACC_FRONT[f.acc]||'')}${decoFront}${extra}</g></g>${sleep?'<text x="88" y="30" font-size="16" fill="#6c8cf5">z<tspan font-size="12" dy="-8">z</tspan></text>':''}</svg>`;}
 function petNested(f,o,x,y,size){return petSVG(f,{...o,size}).replace('<svg viewBox','<svg x="'+x+'" y="'+y+'" viewBox');}
 const PET_SCALE={'아기':.55,'어린이':.7,'청소년':.85,'어른':1};
 function petForm(v){const seed=v.seed||1,st=v.stage,evo=v.evo||0;
  if(v.done&&v.final)return {...v.final,uid:'fin'};
  return {uid:'s'+seed,body:v.sp,color:PET_DEFC[v.sp],eyes:st==='아기'?1:(seed%10),mouth:seed%8,pattern:(st==='청소년'||st==='어른')?seed%8:0,
-  acc:st==='청소년'?(evo>=1?2:1):(st==='어른'?(evo>=2?3:0):0),aura:(st==='어른'&&evo>=3)?1:0};}
+  acc:st==='청소년'?(evo>=1?2:1):(st==='어른'?(evo>=2?3:0):0),aura:(st==='어른'&&evo>=3)?1:0,deco:(v.deco&&v.deco.worn)||null};}
 function petEgg(v){const sp=PET_SP[v.sp],c1=PET_COL[sp[5]]||PET_COL[0],c2=PET_COL[(sp[5]+5)%14],crack=v.hatchLeft<=5;
  return `<svg viewBox="0 0 120 120" width="130" height="130"><g class="petw"><ellipse cx="60" cy="66" rx="30" ry="38" fill="#fff8e7" stroke="#d9c9a3" stroke-width="3"/><circle cx="48" cy="54" r="6" fill="${c1}"/><circle cx="70" cy="78" r="8" fill="${c2}"/><circle cx="66" cy="46" r="3.5" fill="${c1}"/><circle cx="46" cy="82" r="3" fill="${c2}"/>${crack?'<path d="M40 64 L48 58 L54 66 L62 58 L70 66 L80 60" fill="none" stroke="#8a7650" stroke-width="2.5"/>':''}</g></svg>`;}
 const PET_CSS=`<style>
@@ -2163,9 +2170,19 @@ G.push({k:'pet',cat:'펫',e:'🐣',n:'뚝섬펫',d:'7일 동안 키우는 다마
  shopHTML(v){const L=this.list||{},W=L.wallet||{coins:0,shards:0},S=L.shop||[],inv=v.inv||{};
   return `<div class="card" style="margin-top:8px"><div class="row"><b>🛒 상점</b><span>🪙 ${W.coins} · 🔮 ${W.shards}</span></div>`
    +S.map(it=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px dashed #f0d9a8"><span style="font-size:22px">${it.e}</span><span style="flex:1;min-width:0;font-size:12.5px;line-height:1.4"><b>${it.name}</b> <span class="m">(가방 ${inv[it.key]||0})</span><br><span class="m">${it.desc}</span></span><button class="btn g" style="flex:none;padding:5px 12px" onclick="CUR.buy('${it.key}')">🪙 ${it.price}</button></div>`).join('')
-   +`<div class="m" style="font-size:12px;margin-top:6px;line-height:1.6">🍚 기본 밥·🥗 채소는 무료예요<br>🪙 코인: 게임 한 판 +2(하루 ${W.gameCap||40}까지) · 오늘의 문제 +10 · 출석 +5 · 모든 펫이 같이 써요<br>🔮 별조각: 게임 1위 · 오늘의 문제로 받아요(하루 ${W.shardCap||2}개) · 진화할 때 자동으로 써요</div></div>`;},
+   +this.decoShopHTML(v)+`<div class="m" style="font-size:12px;margin-top:6px;line-height:1.6">🍚 기본 밥·🥗 채소는 무료예요<br>🪙 코인: 게임 한 판 +2(하루 ${W.gameCap||40}까지) · 오늘의 문제 +10 · 출석 +5 · 모든 펫이 같이 써요<br>🔮 별조각: 게임 1위 · 오늘의 문제로 받아요(하루 ${W.shardCap||2}개) · 진화할 때 자동으로 써요</div></div>`;},
  buy(k){if(this._buying)return;if(typeof MEM==='undefined'||!MEM.tok||!this.list)return;this._buying=1;
   petApi('/api/pet/shop',{mtok:MEM.tok,token:this.tok(),act:k,arg:1}).then(r=>{this._buying=0;
+   if(r&&r.wallet&&this.list)this.list.wallet=r.wallet;
+   if(r&&r.ok&&r.pet)this.data={...(this.data||{}),pet:r.pet};
+   toast((r&&r.msg)||'실패했어요',2200);rr();}).catch(()=>{this._buying=0;toast('서버 연결 실패');});},
+ decoShopHTML(v){const S=v.decoShop||[];if(!S.length)return '';const D=v.deco||{own:[],worn:{}},own=D.own||[],worn=D.worn||{};const SL={head:'머리',face:'얼굴',neck:'목',back:'등'};
+  return `<div style="margin-top:10px;font-weight:900;font-size:13px">🎀 장식 <span class="m" style="font-weight:600;font-size:12px">부위마다 1개씩 · 이 펫에게 계속 붙어 있어요</span></div>`
+   +S.map(it=>{const has=own.includes(it.key),on=worn[it.slot]===it.key;
+    const b=on?`<button class="btn" style="flex:none;padding:5px 12px" onclick="CUR.decoDo('off:${it.slot}')">벗기</button>`:has?`<button class="btn g" style="flex:none;padding:5px 12px" onclick="CUR.decoDo('wear:${it.key}')">입히기</button>`:`<button class="btn g" style="flex:none;padding:5px 12px" onclick="CUR.decoDo('buy:${it.key}')">🪙 ${it.price}</button>`;
+    return `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px dashed #f0d9a8"><span style="font-size:22px">${it.e}</span><span style="flex:1;min-width:0;font-size:12.5px;line-height:1.4"><b>${it.name}</b> <span class="m">(${SL[it.slot]||''})</span>${on?' <span class="m">· 착용 중</span>':''}</span>${b}</div>`;}).join('');},
+ decoDo(c){if(this._buying)return;if(typeof MEM==='undefined'||!MEM.tok||!this.list)return;this._buying=1;
+  petApi('/api/pet/deco',{mtok:MEM.tok,token:this.tok(),act:c}).then(r=>{this._buying=0;
    if(r&&r.wallet&&this.list)this.list.wallet=r.wallet;
    if(r&&r.ok&&r.pet)this.data={...(this.data||{}),pet:r.pet};
    toast((r&&r.msg)||'실패했어요',2200);rr();}).catch(()=>{this._buying=0;toast('서버 연결 실패');});},
