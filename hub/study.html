@@ -147,7 +147,7 @@ function xpToast(r){if(!r)return;const L=[];const pl=lsGet('mylv',null);if(r.lev
 function record(k,score,lv){try{adEnd(k);}catch(e){}if(window.DAILY&&DAILY.k===k&&!DAILY.sent){dailySubmit(score,fmtScore(k,score,lv));return;}
   const key='best_'+k+(lv?'_'+lv:'');const b=lsGet(key,null);const better=b==null||(lowerBetter(k)?score<b:score>b);if(better)lsSet(key,score);
   if(!MEM.tok){toast((better?'🏆 내 최고 기록! ':'')+'로그인하면 랭킹·레벨·업적이 쌓여요 (목록 맨 위 로그인)',2600);return;}
-  fetch(API+'/api/game/record',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({token:MEM.tok,nick:NICK,game:k,score,detail:lv||''})})
+  fetch(API+'/api/game/record',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({token:MEM.tok,nick:NICK,game:k,score,detail:lv||'',theme:/*thrand*/(typeof CUR!=='undefined'&&CUR&&typeof CUR.th==='string'&&CUR.k===k?CUR.th:'')})})
    .then(r=>r.json()).then(r=>{if(memLost(r))return;if(r&&r.ok){toast((r.best?('🏆 개인 최고 기록!'+(r.rank?` 주간 ${r.rank}위`:'')):'기록했어요')+' · +'+(r.best?25:10)+'xp');xpToast(r);if(r.missions&&r.missions.length){const m=r.missions[0];setTimeout(()=>{toast(`🎯 미션 달성! ${m[0]} · 보상: ${m[1]} (운영진 확인 후 지급)`,4500);bragOffer(k,score,lv,r.rank||0,`🎯 미션 달성 · ${m[0]}`);},1300);if(typeof MIS_AT!=='undefined')MIS_AT=0;}else if(r.best&&r.rank&&r.rank<=3)setTimeout(()=>bragOffer(k,score,lv,r.rank),900);petToast(r,r.missions&&r.missions.length?6000:2400);}}).catch(()=>{if(better)toast('🏆 내 최고 기록! (서버 연결 안 돼서 랭킹엔 못 올렸어요)',2400);});}
 // 🐣 뚝섬펫 미션 완료 알림: 게임 기록·오늘의 문제 제출 뒤 서버가 준 보상(r.pet)을 잠깐 보여줌 · 받은 게 없으면(간식 5/5 등) 조용히
 function petToast(r,ms){const p=r&&r.pet;if(!p||!p.got||!p.got.length)return;
