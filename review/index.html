@@ -505,6 +505,20 @@ function handData(){ if(!setupOK()) return null; const R=replay();
 function autoAnte(){ const bb=num(S.bb); return S.anteType==="bb"?bb:Math.round(bb*0.1); }
 function alertNote(m){ const w=document.createElement("div"); w.className="warn"; w.textContent=m; $("actbox").appendChild(w); setTimeout(()=>w.remove(),2000); }
 render();
+/*qr2rv*/ // ✍️ 빠른복기(qr.html)에서 [리뷰 작성]으로 넘어온 핸드 채우기 (10분 안에 연 것만)
+(function(){let d=null;try{d=JSON.parse(localStorage.getItem("hr_import")||"null");localStorage.removeItem("hr_import");}catch(e){}
+ if(!d||!d.S||Date.now()-(d.ts||0)>600000) return;
+ const busy=(S.acts&&S.acts.length)||String(S.tname||"").trim()||String(S.q||"").trim();
+ if(busy&&!confirm("쓰던 리뷰가 있어요. 빠른복기 핸드로 바꿔 쓸까요?\n(취소하면 쓰던 리뷰를 그대로 둬요)")) return;
+ const nick=S.nick; S=Object.assign(blank(),d.S); if(nick) S.nick=nick;
+ if($("structSel")){ $("structSel").value=""; $("lvSel").value=""; $("lvSel").disabled=true; }
+ let msg="";
+ if(setupOK()&&Array.isArray(d.exp)){ const R=replay(),got=[]; R.streets.forEach(s=>s.log.forEach(r=>got.push(r.seat)));
+   let k=0; while(k<d.exp.length&&got[k]===d.exp[k]) k++;
+   if(k<S.acts.length){ S.acts=S.acts.slice(0,k); msg=`<br>액션은 ${k}개까지만 옮겼어요 (순서가 안 맞는 곳부터). ④ 액션에서 이어서 넣어 주세요.`; } }
+ render();
+ document.querySelector(".lead").insertAdjacentHTML("afterend",`<div class="done" style="margin:-4px 0 12px">📥 빠른복기 핸드를 불러왔어요. ⑥ 질문을 확인하고 제출하면 돼요${S.q?" (메모를 질문 칸에 넣어 뒀어요)":""}.${msg}</div>`);
+})();
 // 👤 뚝섬 회원 로그인(홈 오른쪽 위에서 한 로그인)을 같이 씀 · 닉네임은 회원 카톡 닉네임으로 고정 (서버 members.py)
 const MTOK=(()=>{try{return localStorage.getItem("mtok")||"";}catch(e){return "";}})(),MNICK=(()=>{try{return localStorage.getItem("mnick")||"";}catch(e){return "";}})();
 (function(){const n=$("nick");if(!n)return;
