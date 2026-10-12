@@ -2040,7 +2040,7 @@ function petBushes(v,x,pick){const f={...petForm(v),uid:'hd'};let h='';for(let i
 function petApi(path,body){return fetch(API+path,body?{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(body)}:{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json());}
 const petStars=n=>`<span style="color:#f5b400;letter-spacing:-1px">${'★'.repeat(n||0)}</span><span style="color:#ccc;letter-spacing:-1px">${'★'.repeat(10-(n||0))}</span>`;
 G.push({k:'pet',cat:'펫',e:'🐣',n:'뚝섬펫',d:'7일 동안 키우는 다마고치 · 20종 중 선택 · 여러 마리 키우기',
- start(){this._mine=0;this._mineBusy=0;this._linking=0;this.tab='home';this.data=null;this.msg='';this.err='';this.mode=this.tok()?'login':'new';this.sel=0;this.fl='';this.fp='';this.menu='feed';this.fx=null;this.hiding=false;this.flash=false;this.list=null;this.scr='';this.boot();rr();clearInterval(this.iv);this.iv=setInterval(()=>{if(CUR===this&&this.tab==='home'&&!this.fx&&!this.hiding){if(this.scr==='list')this.loadList(true);else if(this.tok())this.load(true);}},60000);},
+ start(){this._mine=0;this._mineBusy=0;this._linking=0;this.tab='home';this.data=null;this.msg='';this.err='';this.mode=this.tok()?'login':'new';this.sel=0;this.fl='';this.fp='';this.menu='feed';this.fx=null;this.hiding=false;this.flash=false;this.list=null;this.scr='';this.boot();rr();clearInterval(this.iv);this.iv=setInterval(()=>{if(CUR===this&&this.tab==='home'&&!this.fx&&!this.hiding){if(this.scr==='list')this.loadList(true);else if(this.tok()){this.load(true);if(this.scr==='pet')this.loadList(true);}}},60000);},
  stop(){clearInterval(this.iv);clearTimeout(this.ft);},
  tok(){try{return localStorage.getItem('ddpet_tok')||'';}catch(e){return '';}},
  setTok(t){try{if(t)localStorage.setItem('ddpet_tok',t);else localStorage.removeItem('ddpet_tok');}catch(e){}},
@@ -2054,11 +2054,11 @@ G.push({k:'pet',cat:'펫',e:'🐣',n:'뚝섬펫',d:'7일 동안 키우는 다마
    if(this.data){this.data.dex=r.dex;this.data.dexTotal=r.dexTotal;}else if(this.scr!=='pet')this.data={ok:true,login:'',pet:null,dex:r.dex||[],dexTotal:r.dexTotal};
    if(!keep){const t=this.tok(),hit=P.find(x=>x.token===t);
     if(!P.length){this.setTok('');this.scr='add';}
-    else if(hit||P.length===1){if(!hit)this.setTok(P[0].token);this.scr='pet';this.data=null;this.load();return;}
+    else if(hit||P.length>=1){if(!hit)this.setTok(P[0].token);this.scr='pet';this.data=null;this.load();return;}
     else this.scr='list';}
    if(CUR===this)rr();}).catch(()=>{this.err='서버에 연결이 안 돼요';if(CUR===this)rr();});},
- openPet(t){this.setTok(t);this.scr='pet';this.tab='home';this.data=null;this.err='';this.menu='feed';this.fx=null;this.hiding=false;rr();this.load();},
- toList(){this.tab='home';this.scr='list';this.hiding=false;this.fx=null;this.loadList(true);rr();},
+ openPet(t){if(t===this.tok()&&this.scr==='pet'&&this.data)return;this.setTok(t);this.scr='pet';this.tab='home';this.data=null;this.err='';this.menu='feed';this.fx=null;this.hiding=false;rr();this.load();},
+ toList(){const P=(this.list&&this.list.pets)||[],t=this.tok(),h=P.find(x=>x.token===t)||P[0];if(h){this.scr='list';this.openPet(h.token);return;}this.tab='home';this.scr='list';this.hiding=false;this.fx=null;this.loadList(true);rr();},
  toAdd(){this.fl='';this.tab='home';this.scr='add';rr();},
  addPet(){if(this._adding)return;this._adding=1;
   petApi('/api/pet/add',{mtok:MEM.tok,name:(this.fl||'').trim(),species:this.sel}).then(r=>{this._adding=0;
@@ -2070,8 +2070,7 @@ G.push({k:'pet',cat:'펫',e:'🐣',n:'뚝섬펫',d:'7일 동안 키우는 다마
   if(!this.tok()&&!this.list)return css+tabs+(this.err?`<div class="gq">${esc(this.err)}<br><button class="btn" onclick="CUR.err='';CUR.boot()">다시 시도</button></div>`:'<div class="gq">내 펫 불러오는 중…</div>');
   if(this.tab==='home'){if(this.scr==='list'&&this.list)return css+tabs+this.listView();if(this.scr==='add')return css+tabs+this.addView();if(!this.tok())return css+tabs+'<div class="gq">내 펫 불러오는 중…</div>';}
   return '';},
- navBar(old){if(typeof MEM==='undefined'||!MEM.tok)return old;const L=this.list;
-  return `<div style="display:flex;justify-content:space-between;align-items:center;margin:-2px 0 6px"><button class="btn" style="padding:3px 10px;font-size:12.5px" onclick="CUR.toList()">🐾 내 펫${L?' '+L.alive+'/'+L.max:''}</button><span class="m" style="font-size:12px">${this.scr==='pet'&&this.data&&this.data.pet?esc(this.data.pet.name):''}</span></div>`;},
+ navBar(old){/*pettabs*/if(typeof MEM==='undefined'||!MEM.tok)return old;const L=this.list;if(!L)return '';const P=L.pets||[];if(!P.length)return '';const cur=this.tok();const need=x=>x.runaway||(!x.done&&x.stage!=='알'&&(x.hunger<30||x.happy<30||x.poop||x.sick||(x.dirt||0)>=60));const tb=P.map(x=>`<button class="btn${(x.token===cur&&this.scr==='pet')?' g':''}" style="flex:none;padding:5px 11px;font-size:13px;white-space:nowrap" onclick="CUR.openPet('${x.token}')">${x.done?'🎉':x.stage==='알'?'🥚':x.runaway?'🏠':''}${esc(x.name)}${need(x)?'<span style="color:#e33"> ●</span>':''}</button>`).join('')+(L.canAdd?`<button class="btn${this.scr==='add'?' g':''}" style="flex:none;padding:5px 11px;font-size:13px" onclick="CUR.toAdd()">＋ 추가</button>`:'');return `<div style="display:flex;gap:5px;overflow-x:auto;margin:-2px 0 8px;padding-bottom:2px">${tb}</div>`;},
  listView(){const L=this.list,P=L.pets||[];
   const ic=x=>x.done&&x.final?petSVG({...x.final,uid:'l'+x.id},{size:64,anim:false,cls:''}):x.stage==='알'?'<div style="font-size:40px;line-height:64px;width:64px;text-align:center">🥚</div>':x.runaway?'<div style="font-size:36px;line-height:64px;width:64px;text-align:center">🏠</div>':petSVG({...petForm(x),uid:'l'+x.id},{size:64,anim:false,cls:'',sick:x.sick,sleep:x.asleep});
   const card=x=>{const nd=[];if(x.runaway)nd.push('😢');else if(!x.done&&x.stage!=='알'){if(x.hunger<30)nd.push('🍚');if(x.happy<30)nd.push('🎾');if(x.poop)nd.push('💩');if((x.dirt||0)>=60)nd.push('🛁');if(x.sick)nd.push('💊');}
@@ -2079,7 +2078,7 @@ G.push({k:'pet',cat:'펫',e:'🐣',n:'뚝섬펫',d:'7일 동안 키우는 다마
   return `<div class="card"><div class="row"><b>🐾 내 펫</b><span class="m">${L.alive} / ${L.max}마리 키우는 중</span></div></div>${P.map(card).join('')}`
    +(L.canAdd?`<button class="btn g" style="width:100%;margin-top:6px" onclick="CUR.toAdd()">＋ 펫 추가하기 (${L.alive}/${L.max})</button>`:`<div class="card m" style="font-size:12.5px;line-height:1.6">펫은 최대 ${L.max}마리까지 키울 수 있어요 · 한 마리가 다 크면 새 알을 받을 수 있어요</div>`);},
  addView(){const L=this.list;
-  const back=(L&&(L.pets||[]).length)?`<div style="margin:-2px 0 6px"><button class="btn" style="padding:3px 10px;font-size:12.5px" onclick="CUR.toList()">← 내 펫 목록</button></div>`:'';
+  const back=this.navBar('');
   return back+this.pick()+`<div class="card"><div class="m" style="margin-bottom:6px">새 알의 이름을 지어주세요 (7일 동안 키워요 · 등급 ★1~10)</div><div style="display:flex;gap:6px"><input class="q" maxlength="10" placeholder="이름 (예: 몽실이)" value="${esc(this.fl||'')}" oninput="CUR.fl=this.value" style="flex:1;min-width:0"><button class="btn g" onclick="CUR.addPet()">✨ 알 받기</button></div></div>`;},
 
  nickBox(){if(typeof MEM!=='undefined'&&MEM.tok)return '';   // 👤 회원은 펫이 자동으로 회원 닉네임에 연결됨 (load)
