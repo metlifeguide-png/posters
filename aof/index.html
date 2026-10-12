@@ -1017,38 +1017,9 @@ function deepOpen(){
 // 오픈한 사람 범위 = 그 자리 일반 오픈 범위(성향 반영). 내 올인에 오픈한 사람이 콜하는 범위와 내 올인 범위를 번갈아 맞춰요
 function drawQuickC(r){
   if(!r){window.QC=null; drawVerdict(); return;}
-  const c=r.callers.indexOf(st.hero); if(c<0){window.QC=null; drawVerdict(); return;}
-  const I=r.info[c], E=EUI(), W=SAT.W, n=st.tsize;
-  if(!r.canRaise){ window.QC={noRaise:true}; drawVerdict(); drawProC(); return; }
-  const op=Math.min(0.9,openPct(st.qvil)*tendF(st.qvil)*(tsty().shove>=1?1.15:tsty().shove<0.7?0.85:1));
-  const Ra=topBy(playOrder(),op);
-  const eqv=(h,rng)=>{let a=0,w=0;for(let k=0;k<169;k++) if(rng[k]){a+=W[k]*E[h][k]*rng[k];w+=W[k]*rng[k];} return w>0?a/w:0.5;};
-  // 실전 보정: ICM 계산은 오픈한 사람이 콜을 너무 안 한다고 봐서, 테이블 성향만큼(보통 상위 6%)은 무조건 콜한다고 봐요
-  const FLOOR=SAT.topRange(Math.max(tsty().floor, st.mode==="icm"?0.04:0),E);
-  // 20BB 이하에서 콜(플랍 보기)은 BB만: 짧으면 플랍에서 결국 다 들어가서 '오픈 금액만 걸고 본다'는 계산이 너무 후해져요
-  const isBB=st.hero===n-1, flatOK=isBB||I.eff>25;
-  if(I.eff>DEEP_BB){   // 딥스택: 올인 계산 대신 일반 3벳/콜 범위
-    const icm=st.mode==="icm"?0.75:1, v=Math.max(0.025,Math.min(0.05,op*0.22))*icm;
-    const tb=SAT.topRange(v,E), cl=topBy(playOrder(),Math.min(0.5,op*(isBB?1.1:0.7)*icm));
-    const rs=new Float64Array(169), fl=new Float64Array(169); for(let h=0;h<169;h++){ if(tb[h]) rs[h]=1; else if(cl[h]) fl[h]=1; }
-    let pct=a=>{let p=0;for(let k=0;k<169;k++)p+=W[k]*a[k];return p;};
-    window.QC={rs,fl,op,eff:I.eff,R:r.R,rsPct:pct(rs),flPct:pct(fl),vcPct:0,deep:true}; drawVerdict(); drawProC(); return;
-  }
-  let rs=SAT.topRange(0.05,E), vc=new Float64Array(169), fl=new Float64Array(169);
-  for(let it=0;it<25;it++){
-    // 오픈한 사람: 내 올인 범위 상대로 승률이 필요 승률(oNeed)보다 높으면 콜
-    const nvc=new Float64Array(169); for(let h=0;h<169;h++) if(Ra[h]) nvc[h]=(eqv(h,rs)>=I.oNeed||FLOOR[h])?1:0;
-    vc=nvc; let pr=0,pc=0; for(let h=0;h<169;h++){pr+=W[h]*Ra[h]; pc+=W[h]*vc[h];} const pf=pr>0?1-pc/pr:1;
-    const nrs=new Float64Array(169), nfl=new Float64Array(169);
-    for(let h=0;h<169;h++){ const e=eqv(h,vc), evRs=pf*I.RSw+(1-pf)*(e*I.CW+(1-e)*I.CL);
-      const ei=eqv(h,Ra)*I.real, evFc=flatOK?ei*I.FWi+(1-ei)*I.FLi:-1e18, best=Math.max(evRs,evFc,I.CF);
-      if(best>I.CF+1e-12){ if(evRs>=evFc) nrs[h]=1; else nfl[h]=1; } }
-    rs=nrs; fl=nfl;
-  }
-  let pct=a=>{let p=0;for(let k=0;k<169;k++)p+=W[k]*a[k];return p;};
-  window.QC={rs,fl,op,eff:I.eff,need:I.need,oNeed:I.oNeed,R:r.R,rsPct:pct(rs),flPct:pct(fl),vcPct:pct(vc)/Math.max(1e-9,pct(Ra)),deep:I.eff>DEEP_BB};
-  drawVerdict(); drawProC();
+  window.QC=vrCalc(r,st.qvil); drawVerdict(); if(window.QC) drawProC();
 }
+
 function drawProC(){
   const q=window.QC, P=POSN(), el=$("qcSum"); if(!el) return; const pp=x=>(x*100).toFixed(1)+"%";
   if(!q){el.innerHTML="계산 중…"; $("qcChart").innerHTML=""; return;}
@@ -1061,10 +1032,10 @@ function drawProC(){
   paint("qcChart",[[q.rs,COL.push,q.deep?"3벳":"올인"],[q.fl,COL.flat,"콜"]]);
 }
 let lastQB=null;
-function drawQuickA(r){
-  if(r) lastQA=r; else r=null;
-  const P=POSN(), f1=x=>(x*100).toFixed(1)+"%";
-  if(!r){window.QA=null; drawVerdict(); $("qaSum").innerHTML=`<b>앞이 다 폴드 → 내 액션</b><br><span class="note">BB는 앞이 다 폴드하면 이긴 판이라 차트가 없어요.</span>`;$("qaChart").innerHTML="";return;}
+/*openadj*/
+// 💡 앞 모두 폴드: 실전 보정(레귤러 기준·성향) + 올인 좁힘 + 15BB 이하 정리 + 레이즈 상한. 빠른 차트와 자세히 보기가 같이 씀
+function openAdjust(r){
+  const P=POSN();
   const factors={}; let adj=[]; const baseFloor=tsty().floor;
   const bbF=eff=>Math.min(0.40,Math.max(0.10,0.48-0.015*eff));   // 블라인드는 이미 낸 칩이 있어 콜이 넓어요 (짧을수록 더 넓게)
   const floor= baseFloor ? ((seat,I)=>{ const n=st.tsize, e=I&&I.eff?I.eff:20; return seat===n-1?Math.max(baseFloor,bbF(e)):seat===n-2?Math.max(baseFloor,0.7*bbF(e)):baseFloor; }) : 0;
@@ -1090,6 +1061,86 @@ function drawQuickA(r){
     if(used+raw>cap+1e-6){ for(const h of playOrder()){ const w=rc[h]+rf[h]; if(!w) continue;
         if(used+W[h]*w<=cap+1e-6){ used+=W[h]*w; } else { rc[h]=0; rf[h]=0; } }
       capNote=`<br><span class="note">레이즈는 이 자리 일반 오픈 범위(상위 ${Math.round(cap*100)}%)까지만 보여줘요 — 계산상 더 넓게 나와도 실제로는 뒤에서 콜·작은 3벳이 들어와서 손해예요.</span>`; } }
+  return {sh,ra,rc,rf,adj,capNote,callPcts};
+}
+function openDetailView(r,mode){   // 자세히 보기용: 빠른 차트와 같은 올인 / 오픈 후 콜 / 오픈 후 폴드
+  if(!r||deepOpen()) return null;   // 딥스택(25BB 초과)은 기존 표시 그대로
+  const P=POSN(), f1=x=>(x*100).toFixed(1)+"%", OA=openAdjust(r), W=SAT.W, pct=a=>{let p=0;for(let k=0;k<169;k++)p+=W[k]*a[k];return p;};
+  const c=r.callers.indexOf(st.vil), x=r.info[c];
+  const sum=`[${mode}] <b>${P[st.hero]}</b>(나 ${st.heroStack}BB) 앞이 다 폴드 → 올인 <b>${f1(pct(OA.sh))}</b>`+
+    (r.canRaise?` · 오픈 후 올인 받으면 콜 <b>${f1(pct(OA.rc))}</b> · 오픈 후 폴드 <b>${f1(pct(OA.rf))}</b> <span class="note">[근사]</span>`:"")+
+    (x?`<br><span class="note">${P[st.vil]}(빌런 ${st.vilStack}BB)가 내 올인에 콜 ${f1(r.csPct[c])} · 콜 필요 승률 ${Math.round(x.need*100)}%</span>`:"")+
+    (OA.adj.length?`<br><span class="note">실전 보정(빠른 차트와 같음): ${OA.adj.join(", ")}</span>`:"")+OA.capNote+
+    (!r.canRaise?`<br><span class="note">스택 10BB 미만 → 올인·폴드만 계산</span>`:"");
+  return {layers:[[OA.sh,COL.push,"올인"],[OA.rc,COL.call,"오픈 후 콜"],[OA.rf,COL.fold2,"오픈 후 폴드"]], sum,
+    legend:[["올인",COL.push],["오픈 후 콜",COL.call],["오픈 후 폴드",COL.fold2],["폴드","var(--cell)"]]};
+}
+/*openadj2*/
+// 💡 앞에서 올인 → 나: 콜 범위(성향 보정 + 12% 좁힘). 빠른 차트(drawQuickB)와 자세히 보기가 같이 씀
+function vsAdjust(r,c,seat){
+  const f=tendF(seat)*tsty().shove;
+  let call=r.cs[c], callPct=r.csPct[c], shPct=r.shPct;
+  if(f!==1){const y=SAT.exploitCaller(r,EUI(),c,f); call=y.call; callPct=y.callPct; shPct=y.shPct;}
+  { const Wq=SAT.W; call=shrinkRange(call,CALL_TIGHT); let pq=0; for(let k=0;k<169;k++) pq+=Wq[k]*call[k]; callPct=pq; }
+  return {call,callPct,shPct,f};
+}
+// 💡 앞에서 오픈 → 나: 3벳 올인 / 콜 / 폴드 계산. 빠른 차트(drawQuickC)와 자세히 보기가 같이 씀. seat = 오픈한 사람 자리
+function vrCalc(r,seat){
+  const c=r.callers.indexOf(st.hero); if(c<0) return null;
+  const I=r.info[c], E=EUI(), W=SAT.W, n=st.tsize;
+  if(!r.canRaise) return {noRaise:true};
+  const op=Math.min(0.9,openPct(seat)*tendF(seat)*(tsty().shove>=1?1.15:tsty().shove<0.7?0.85:1));
+  const Ra=topBy(playOrder(),op);
+  const eqv=(h,rng)=>{let a=0,w=0;for(let k=0;k<169;k++) if(rng[k]){a+=W[k]*E[h][k]*rng[k];w+=W[k]*rng[k];} return w>0?a/w:0.5;};
+  // 실전 보정: ICM 계산은 오픈한 사람이 콜을 너무 안 한다고 봐서, 테이블 성향만큼(보통 상위 6%)은 무조건 콜한다고 봐요
+  const FLOOR=SAT.topRange(Math.max(tsty().floor, st.mode==="icm"?0.04:0),E);
+  // 20BB 이하에서 콜(플랍 보기)은 BB만: 짧으면 플랍에서 결국 다 들어가서 '오픈 금액만 걸고 본다'는 계산이 너무 후해져요
+  const isBB=st.hero===n-1, flatOK=isBB||I.eff>25;
+  if(I.eff>DEEP_BB){   // 딥스택: 올인 계산 대신 일반 3벳/콜 범위
+    const icm=st.mode==="icm"?0.75:1, v=Math.max(0.025,Math.min(0.05,op*0.22))*icm;
+    const tb=SAT.topRange(v,E), cl=topBy(playOrder(),Math.min(0.5,op*(isBB?1.1:0.7)*icm));
+    const rs=new Float64Array(169), fl=new Float64Array(169); for(let h=0;h<169;h++){ if(tb[h]) rs[h]=1; else if(cl[h]) fl[h]=1; }
+    let pct=a=>{let p=0;for(let k=0;k<169;k++)p+=W[k]*a[k];return p;};
+    return {rs,fl,op,eff:I.eff,R:r.R,rsPct:pct(rs),flPct:pct(fl),vcPct:0,deep:true};
+  }
+  let rs=SAT.topRange(0.05,E), vc=new Float64Array(169), fl=new Float64Array(169);
+  for(let it=0;it<25;it++){
+    // 오픈한 사람: 내 올인 범위 상대로 승률이 필요 승률(oNeed)보다 높으면 콜
+    const nvc=new Float64Array(169); for(let h=0;h<169;h++) if(Ra[h]) nvc[h]=(eqv(h,rs)>=I.oNeed||FLOOR[h])?1:0;
+    vc=nvc; let pr=0,pc=0; for(let h=0;h<169;h++){pr+=W[h]*Ra[h]; pc+=W[h]*vc[h];} const pf=pr>0?1-pc/pr:1;
+    const nrs=new Float64Array(169), nfl=new Float64Array(169);
+    for(let h=0;h<169;h++){ const e=eqv(h,vc), evRs=pf*I.RSw+(1-pf)*(e*I.CW+(1-e)*I.CL);
+      const ei=eqv(h,Ra)*I.real, evFc=flatOK?ei*I.FWi+(1-ei)*I.FLi:-1e18, best=Math.max(evRs,evFc,I.CF);
+      if(best>I.CF+1e-12){ if(evRs>=evFc) nrs[h]=1; else nfl[h]=1; } }
+    rs=nrs; fl=nfl;
+  }
+  let pct=a=>{let p=0;for(let k=0;k<169;k++)p+=W[k]*a[k];return p;};
+  return {rs,fl,op,eff:I.eff,need:I.need,oNeed:I.oNeed,R:r.R,rsPct:pct(rs),flPct:pct(fl),vcPct:pct(vc)/Math.max(1e-9,pct(Ra)),deep:I.eff>DEEP_BB};
+}
+function vsDetailView(r,mode){
+  const c=r.callers.indexOf(st.hero); if(!r||c<0) return null;
+  const P=POSN(), f1=x=>(x*100).toFixed(1)+"%", x=r.info[c], V=vsAdjust(r,c,st.vil);
+  return {layers:[[V.call,COL.call,"콜"]],
+    sum:`[${mode}] <b>${P[st.vil]}</b>(빌런 ${st.vilStack}BB) 올인 → <b>${P[st.hero]}</b>(나 ${st.heroStack}BB) 콜 <b>${f1(V.callPct)}</b><br>`+
+      `필요 승률 <b>${(x.need*100).toFixed(1)}%</b> <span class="note">(칩 기준 ${(x.chipNeed*100).toFixed(1)}%) · 빌런 올인 범위 `+(V.f!==1?`계산 ${f1(r.shPct)} → <b>${f1(V.shPct)}</b>`:`${f1(V.shPct)}로 계산`)+`</span>`+
+      `<br><span class="note">빠른 차트와 같은 보정: 콜 범위를 실전 기준으로 12% 좁혔어요</span>`,
+    legend:[["콜",COL.call],["폴드","var(--cell)"]]};
+}
+function vrDetailView(r,mode){
+  if(!r||!r.canRaise) return null;   // 빌런 스택 10BB 미만(올인 계산)은 기존 표시 그대로
+  const Q=vrCalc(r,st.vil); if(!Q||Q.noRaise) return null;
+  const P=POSN(), pp=x=>(x*100).toFixed(1)+"%", pr=x=>Math.round(x*100)+"%";
+  return {layers:[[Q.rs,COL.push,Q.deep?"3벳":"올인"],[Q.fl,COL.flat,"콜"]],
+    sum:`[${mode}] <b>${P[st.vil]}</b>(빌런 ${st.vilStack}BB) ${Q.R}BB 오픈 → <b>${P[st.hero]}</b>(나 ${st.heroStack}BB)<br>`+
+      `${Q.deep?"3벳 (크게)":"올인 (3벳 셔브)"} <b>${pp(Q.rsPct)}</b> · 콜 (플랍 보기) <b>${pp(Q.flPct)}</b> <span class="note">[근사] · 상대 오픈 범위 상위 ${pr(Q.op)}로 봄 · 유효 스택 ${r1(Q.eff)}BB</span>`+
+      `<br><span class="note">빠른 차트와 같은 계산이에요 (25BB 이하에선 BB만 콜이 나와요)</span>`,
+    legend:[[Q.deep?"3벳 (크게)":"올인 (3벳 셔브)",COL.push],["콜 (플랍 보기)",COL.flat],["폴드","var(--cell)"]]};
+}
+function drawQuickA(r){
+  if(r) lastQA=r; else r=null;
+  const P=POSN(), f1=x=>(x*100).toFixed(1)+"%";
+  if(!r){window.QA=null; drawVerdict(); $("qaSum").innerHTML=`<b>앞이 다 폴드 → 내 액션</b><br><span class="note">BB는 앞이 다 폴드하면 이긴 판이라 차트가 없어요.</span>`;$("qaChart").innerHTML="";return;}
+  const OA=openAdjust(r), {sh,rc,rf,adj,capNote,callPcts}=OA, W=SAT.W, pct=a=>{let p=0;for(let k=0;k<169;k++)p+=W[k]*a[k];return p;};
   const D=deepOpen();
   if(D){ const pp=x=>Math.round(x*100)+"%";
     $("qaSum").innerHTML=`<b>앞이 다 폴드 → ${P[st.hero]}(나 ${st.heroStack}BB) · 딥스택</b><br>${DEEP_BB}BB가 넘으면 올인/폴드 계산이 안 맞아서 <b>일반 오픈 범위(상위 ${pp(D.op)})</b>로 보여줘요.<br><span class="note">올인 받으면: 유효 스택 ${r1(D.eff)}BB(${D.vilKnown?"입력한 상대 스택":"뒤 자리 중 가장 큰 스택"}) 기준 · 상대 올인 범위 상위 ${pp(D.X)} 가정 · 콜에 필요한 승률 ${pp(D.need)}</span>`+
@@ -1111,9 +1162,7 @@ function drawQuickB(r){
   if(!r){window.QB=null; drawVerdict(); $("qbSum").innerHTML="";$("qbChart").innerHTML="";return;}
   const c=r.callers.indexOf(st.hero); if(c<0){window.QB=null; drawVerdict(); return;}
   const x=r.info[c], f=tendF(st.qvil)*tsty().shove;
-  let call=r.cs[c], callPct=r.csPct[c], shPct=r.shPct;
-  if(f!==1){const y=SAT.exploitCaller(r,EUI(),c,f); call=y.call; callPct=y.callPct; shPct=y.shPct;}
-  { const Wq=SAT.W; call=shrinkRange(call,CALL_TIGHT); let pq=0; for(let k=0;k<169;k++) pq+=Wq[k]*call[k]; callPct=pq; }
+  const VA=vsAdjust(r,c,st.qvil); let {call,callPct,shPct}=VA;
   const vs=+st.qvStack>0?+st.qvStack:r1(avgBB());
   $("qbSum").innerHTML=`<b>${P[st.qvil]}(${+st.qvStack>0?"":"평균 "}${vs}BB) 올인 → ${P[st.hero]}(나 ${st.heroStack}BB) 콜</b> <b>${f1(callPct)}</b><br>`+
     `<span class="note">필요 승률 ${(x.need*100).toFixed(1)}% (칩 기준 ${(x.chipNeed*100).toFixed(1)}%) · ${P[st.qvil]} 올인 범위 `+
@@ -1497,8 +1546,8 @@ function drawResult(){
     }else{
       if(!r.canRaise){layers=[[r.sh,COL.push,"올인"]];sum=`내 스택이 10BB 미만이라 레이즈 없이 올인·폴드만 계산했어요. 올인 <b>${f1(r.shPct)}</b>`;legend=[["올인",COL.push],["폴드","var(--cell)"]];}
       else{
-      const call=new Float64Array(169),fold=new Float64Array(169);
-      for(let h=0;h<169;h++){call[h]=r.ra[h]*r.rc[c][h];fold[h]=r.ra[h]*(1-r.rc[c][h]);}
+      const call=rcCallArr(r,c),fold=new Float64Array(169);
+      for(let h=0;h<169;h++){fold[h]=Math.max(0,r.ra[h]-call[h]);}
       layers=[[call,COL.call,"콜"],[fold,COL.fold2,"레이즈 후 폴드"]]; dimMask=r.ra;
       let pc=0,pr=0;for(let h=0;h<169;h++){pc+=SAT.W[h]*call[h];pr+=SAT.W[h]*r.ra[h];}
       sum=`[${mode}] 내가 <b>${P[st.hero]}</b>에서 ${r.R}BB 레이즈 → <b>${P[st.vil]}</b>(빌런 ${st.vilStack}BB) 올인<br>`+
@@ -1506,6 +1555,10 @@ function drawResult(){
       legend=[["콜",COL.call],["레이즈 후 폴드",COL.fold2],["레이즈 안 함","var(--dim)"]];}
     }
   }
+  if(sc==="open"){ const V=openDetailView(r,mode); if(V){ layers=V.layers; sum=V.sum; legend=V.legend; dimMask=null; } }
+  if(sc==="vs"){ const V=vsDetailView(r,mode); if(V){ layers=V.layers; sum=V.sum; legend=V.legend; dimMask=null; } }
+  else if(sc==="vr"){ const V=vrDetailView(r,mode); if(V){ layers=V.layers; sum=V.sum; legend=V.legend; dimMask=null; } }
+  else if(sc==="rc" && r.canRaise){ sum+=`<br><span class="note">빠른 차트와 같은 보정: 콜 범위를 실전 기준으로 12% 좁혔어요</span>`; }
   $("summary").innerHTML=sum;
   $("legend").innerHTML=legend.map(([t,c])=>`<span><i class="sw" style="background:${c}"></i>${t}</span>`).join("")+`<span>칸 높이 = 빈도</span>`;
   paint("chart",layers,dimMask);
