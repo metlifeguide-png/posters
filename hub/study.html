@@ -967,6 +967,25 @@ function huPfLoad(S,cb){if(HU_PF[S]||!API){cb&&cb();return;}if(HU_PF_WAIT[S]){HU
   this.step();};
 })();
 // ===================== 📊 헤즈업 레인지 뷰어 (프리플랍 솔버 트리 + 플랍 솔버 DB) =====================
+// 무늬별 빈도 타일 (솔버 화면처럼) /*suitgrid*/ — cx: {'AsQh':[액션별 %]}, m: 'AQo'·'AQs'·'AA', nm: 액션 이름 함수
+function hvSuitGrid(cx,acts,cols,m,nm,same){
+ const SC={s:'#222',h:'#d33232',d:'#1f5fd6',c:'#1a9a3a'},SY={s:'♠',h:'♥',d:'♦',c:'♣'},SS='shdc';
+ const rk=r=>rkCh(HV_RK.length+1-HV_RK.indexOf(r)),card=(r,u,dim)=>`<span style="color:${dim?'#9a9a9a':SC[u]}">${rk(r)}${SY[u]}</span>`;
+ const norm=k=>HV_RK.indexOf(k[0])<=HV_RK.indexOf(k[2])?k:k.slice(2)+k.slice(0,2);
+ const got={};for(const [k,v] of cx)got[norm(k)]=v;
+ const hi=m[0],lo=m[1],L=[];
+ for(let i=0;i<4;i++)for(let j=0;j<4;j++){
+  if(m.length===2){if(j<=i)continue;}else if(m[2]==='s'){if(i!==j)continue;}else if(i===j)continue;
+  L.push(hi+SS[i]+lo+SS[j]);}
+ const tile=k=>{const v=got[k];
+  if(!v)return `<div style="border-radius:8px;background:#e6e6e6;padding:4px 6px;opacity:.75"><div style="font-weight:900;font-size:15px">${card(k[0],k[1],1)}${card(k[2],k[3],1)}</div><div style="font-size:11px;color:#888;margin-top:2px">보드와 겹침</div></div>`;
+  const tot=v.reduce((a,x)=>a+(+x||0),0)||1;
+  return `<div style="border:1px solid #d8d8d8;border-radius:8px;overflow:hidden;background:#fff">
+   <div style="padding:3px 6px;font-weight:900;font-size:15px">${card(k[0],k[1])}${card(k[2],k[3])}</div>
+   <div style="display:flex;height:16px">${v.map((x,i)=>x>0?`<div style="width:${x/tot*100}%;background:${cols[i]}"></div>`:'').join('')}</div>
+   <div style="padding:2px 6px 4px;font-size:11.5px;line-height:1.35;color:#333">${v.map((x,i)=>x>0?`<div style="display:flex;justify-content:space-between;gap:4px"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis"><i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${cols[i]};margin-right:3px"></i>${nm(acts[i])}</span><b>${x}%</b></div>`:'').join('')}</div></div>`;};
+ const extra=Object.keys(got).filter(k=>!L.includes(k));   // 혹시 위 목록에 없는 조합도 빠뜨리지 않게
+ return `<div class="m" style="margin-top:8px">무늬별${same?'':' (대표 보드 무늬 기준)'}</div><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:5px;margin-top:4px">${L.concat(extra).map(tile).join('')}</div>`;}
 const HV_RK='AKQJT98765432';
 const HV_COL={f:'#9aa5b1',c:'#3a9d3f',r:'#e0663a',a:'#8b1a1a'};
 const hvCls=(i,j)=>i===j?HV_RK[i]+HV_RK[j]:i<j?HV_RK[i]+HV_RK[j]+'s':HV_RK[j]+HV_RK[i]+'o';
@@ -1078,7 +1097,7 @@ G.push({k:'huview',cat:'홀덤',e:'📊',n:'헤즈업 레인지 뷰어',d:'프�
   const grid=this.grid(c=>nd.cls[mc(c)],c=>nd.cls[mc(c)]?(R[c]||0):0,cols,c=>hvClose((nd.ev||{})[mc(c)])!=null);
   let det='';const c=this.sel,m=c?mc(c):null;if(c&&nd.cls[m]){const cx=Object.entries(nd.cx||{}).filter(([k])=>{const a=k.slice(0,2),b=k.slice(2);const ra=HV_RK.indexOf(a[0]),rb=HV_RK.indexOf(b[0]);const hi=ra<=rb?a:b,lo=hi===a?b:a;return (hi[0]+lo[0]+(hi[0]===lo[0]?'':hi[1]===lo[1]?'s':'o'))===m;});
    det=`<div class="card" style="font-size:15px;line-height:1.7"><b style="font-size:17px">${c}</b>${m!==c?` <span class="m">(대표 보드의 ${m})</span>`:''} <span class="m">(여기까지 올 확률 ${Math.round((R[c]||0)*100)}%)</span><br>${nd.acts.map((a,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:${cols[i]}"></span> ${svActName(a,F.pot,F.stack)} <b>${nd.cls[m][i]}%</b>${nd.ev&&nd.ev[m]?` · EV <b>${nd.ev[m][i].toFixed(2)}</b>BB`:''}`).join('<br>')}${hvEvLines(nd.acts,(nd.ev||{})[m],a=>svActName(a,F.pot,F.stack))}
-    ${cx.length?`<div class="m" style="margin-top:6px">무늬별${same?'':' (대표 보드 무늬 기준)'}: ${cx.map(([k,v])=>`${rkCh(HV_RK.length+1-HV_RK.indexOf(k[0]))}${SU['shdc'.indexOf(k[1])]}${rkCh(HV_RK.length+1-HV_RK.indexOf(k[2]))}${SU['shdc'.indexOf(k[3])]} ${v.map((x,i)=>x?svActName(nd.acts[i],F.pot,F.stack)+' '+x+'%':'').filter(Boolean).join('·')}`).join('<br>')}</div>`:''}</div>`;}
+    ${cx.length?hvSuitGrid(cx,nd.acts,cols,m,a=>svActName(a,F.pot,F.stack),same):''}</div>`;}
   return hdr+inp+crumbs+`<div style="font-size:15px;font-weight:800;margin:6px 2px">${who(nd.p)} 차례 · 레인지 전체</div>`+acts+grid+det+
    `<div class="card m" style="font-size:13px;line-height:1.6">이 스팟은 대표 보드 ${(this.spots[key]||{boards:[]}).boards.length}판을 직접 푼 결과예요 (전체 ${Object.values(this.spots).reduce((a,s)=>a+s.boards.length,0)}판 · 계속 늘어나요). 플랍 시작 레인지는 솔버 스팟의 프리플랍 레인지를 써요. ${nd.ev?'EV = 지금 폴드하는 것(0) 대비 이 액션의 기대 수익(BB). 사이즈끼리 EV가 거의 같으면 어느 쪽이든 괜찮아요.':'이 보드는 EV 없음 (새 엔진으로 푼 보드부터 EV가 나와요).'}</div>`;},
  // ---------- 스택별 플랍 풀이 가능 목록 ----------
