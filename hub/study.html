@@ -1403,6 +1403,38 @@ function apRndData(gk){const [a,b]=AP_RND[gk],C=AP_G[gk];const e=a+Math.floor(Ma
 const AP_T={pm:12,hg:15,wpl:15},AP_BANK=30,AP_BANKS=3;
 const apEsc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const AP_ACT=['폴드','오픈 레이즈 (2BB)','올인'];
+// ===== 실전 보정 (aof.html 의 drawQuickA 와 같은 순서) — 엔진 원본은 ICM 버블에서 '상대가 거의 안 받아줘서' 아무 패나 올인이 나옴 =====
+// 1) 뒤 사람 콜 하한(보통 8%, SB·BB는 스택이 짧을수록 더 넓게)  2) 6~25BB 올인 7% 축소  3) 15BB 이하는 오픈 대신 올인
+// 4) 오픈은 그 자리 일반 오픈 범위×1.25까지만  5) 25BB 초과는 올인 없이 일반 오픈 범위
+const AP_DEEP=25,AP_SHORT=15,AP_SHOVE_TIGHT=.93;let AP_ORD=null;
+function apOrder(E,W){if(AP_ORD)return AP_ORD;const sc=new Float64Array(169);
+ for(let h=0;h<169;h++){let a=0;for(let k=0;k<169;k++)a+=W[k]*E[h][k];
+  const r=Math.floor(h/13),c=h%13,hi=Math.min(r,c),lo=Math.max(r,c),gap=lo-hi-1,suited=r<c,pair=r===c;
+  if(pair)a+=.05;else if(suited){a+=.035;if(gap===0)a+=.03;else if(gap===1)a+=.018;else if(gap===2)a+=.008;if(hi===0)a+=.02;}
+  else{if(hi>0&&lo>=6)a-=.03;if(gap===0&&lo<=8)a+=.01;}
+  sc[h]=a;}
+ AP_ORD=[...Array(169).keys()].sort((x,y)=>sc[y]-sc[x]);return AP_ORD;}
+function apTop(ord,p,W){const o=new Float64Array(169);let acc=0;for(const h of ord){if(acc>=p-1e-9)break;o[h]=1;acc+=W[h];}return o;}
+function apShrink(a,f,ord,W){const o=Float64Array.from(a);let tot=0;for(let k=0;k<169;k++)tot+=W[k]*o[k];
+ let cut=tot*(1-f);for(let i=ord.length-1;i>=0&&cut>1e-9;i--){const h=ord[i],m=W[h]*o[h];if(!m)continue;if(m<=cut){cut-=m;o[h]=0;}else{o[h]-=cut/W[h];cut=0;}}return o;}
+function apOpenPct(n,i){const btn=n-3,OPEN=[.45,.29,.23,.19,.16,.14,.12,.11];return (i===n-2?.40:OPEN[Math.min(OPEN.length-1,Math.max(0,btn-i))])*.8;}
+function apAdjust(r,n,idx,m,E){
+ const SAT=window.AOFENG.SAT,W=SAT.W,ord=apOrder(E,W);
+ const bbF=e=>Math.min(.4,Math.max(.1,.48-.015*e)),base=.08;
+ const floor=(seat,I)=>{const e=I&&I.eff?I.eff:20;return seat===n-1?Math.max(base,bbF(e)):seat===n-2?Math.max(base,.7*bbF(e)):base;};
+ let sh,ra,rcall;
+ if(r.csPct.some((p,c)=>p<floor(r.callers[c],r.info[c]))){const x=SAT.exploitOpener(r,E,{},floor);sh=x.sh;ra=x.ra;rcall=x.rcall;}
+ else{sh=r.sh;ra=r.ra;rcall=SAT.raiseCallMix(r);}
+ const op=apOpenPct(n,idx);
+ if(m>AP_DEEP&&idx<n-1)return {sh:new Float64Array(169),ra:apTop(ord,op,W)};   // 딥스택: 올인 없음, 일반 오픈 범위
+ if(m>6&&m<=AP_DEEP)sh=apShrink(sh,AP_SHOVE_TIGHT,ord,W);
+ const rc=new Float64Array(169),rf=new Float64Array(169);
+ for(let h=0;h<169;h++){rc[h]=ra[h]*rcall[h];rf[h]=ra[h]*(1-rcall[h]);}
+ if(r.canRaise&&m<=AP_SHORT){sh=Float64Array.from(sh);for(let h=0;h<169;h++){if(rc[h]>0)sh[h]=Math.max(sh[h],rc[h]);rc[h]=0;rf[h]=0;}}
+ if(r.canRaise){const cap=op*1.25;let used=0,raw=0;for(let h=0;h<169;h++){used+=W[h]*sh[h];raw+=W[h]*(rc[h]+rf[h]);}
+  if(used+raw>cap+1e-6){for(const h of ord){const w=rc[h]+rf[h];if(!w)continue;if(used+W[h]*w<=cap+1e-6)used+=W[h]*w;else{rc[h]=0;rf[h]=0;}}}}
+ const out=new Float64Array(169);for(let h=0;h<169;h++)out[h]=Math.min(1-sh[h],rc[h]+rf[h]);
+ return {sh:sh,ra:out};}
 function apMk(gk,d){
  const C=AP_G[gk],E=window.AOFENG,SAT=E.SAT;
  if(!E._e)E._e=E.E();
@@ -1422,7 +1454,7 @@ function apMk(gk,d){
  const stacks=Array(n).fill(avg);stacks[idx]=m+posted;
  const cfg={pay:C.pay,players:N,avg:+avg.toFixed(1),ante:.1,mode:'icm',iters:300,pressure:(1.5+.1*n)/4,
   stacks,opener:idx,raise:2,off:Array(offN).fill(offAvg)};
- const t0=Date.now(),r=SAT.solve(cfg,E._e),sm=Date.now()-t0;
+ const t0=Date.now(),r=apAdjust(SAT.solve(cfg,E._e),n,idx,m,E._e),sm=Date.now()-t0;
  // 헤드: 경계 핸드(섞인 전략)를 자주 내기
  const all=[],mix=[];
  for(let k=0;k<169;k++){const nm=SAT.handName(k),w=apW(nm),sh=apF(r.sh[k]),ra=apF(r.ra[k]);
@@ -1510,7 +1542,7 @@ G.push({k:'aofprac',cat:'홀덤',e:'🎯',n:'실전 AOF 연습',d:'새틀 레지
  view(){if(!this.gk)return this.menu();const q=this.q;
   if(!q)return `<div class="card"><div class="m">문제를 만들지 못했어요${this.err?' ('+this.err+')':''}.</div></div><button class="btn full gr" onclick="CUR.start()">처음으로</button>`;
   const hd=`<div class="gst"><span>${Math.min(this.i+(this.fb||this.over?0:1),this.N)} / ${this.N} · 정답 <b>${this.ok}</b> · 타임뱅크 <b>${this.banks}</b>/${AP_BANKS}</span><span><a onclick="CUR.start()" style="color:var(--blue);cursor:pointer">게임 선택</a></span></div>`;
-  const rule=`<div class="m" style="text-align:center;margin-top:8px">9인 기준 · 앤티 BB의 10% · 오픈 2BB · ICM 계산 · 앞은 모두 폴드 · 시간 초과하면 자동 폴드</div>`;
+  const rule=`<div class="m" style="text-align:center;margin-top:8px">9인 기준 · 앤티 BB의 10% · 오픈 2BB · ICM 계산 + 상대 콜 하한 8% 보정 · 앞은 모두 폴드 · 시간 초과하면 자동 폴드</div>`;
   const fbCard=L=>`<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:16px">${L.ok?'✅ 정답':'❌ 오답 · 정답 '+AP_ACT[L.q.a]} · ${L.t.toFixed(1)}초${L.to?' · ⏰ 시간 초과 (자동 폴드)':L.q.usedBank?' · 타임뱅크 사용':''}</div><div style="font-size:14.5px;line-height:1.75;margin-top:6px">${this.expl(L)}</div></div>`;
   if(this.over){const L=this.fb;
    return hd+(L?fbCard(L):'')+`<div class="gbig">${this.ok}/${this.N}</div><div class="card" style="text-align:center;font-size:15px;line-height:1.8">총 ${this.tsum.toFixed(1)}초 · 평균 ${(this.tsum/this.N).toFixed(1)}초<br><span class="m">랭킹 없음</span></div>`
