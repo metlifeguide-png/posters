@@ -198,6 +198,27 @@ const catName=h=>h[0]===8&&h[1]===14?'로열 플러시':CAT[h[0]];
 let CUR=null,ST=null;
 function stage(){return $('app');}
 function setTitle(t){$('tt').textContent=t;}
+
+/*lockmem*/ // 📚 홀덤학습 회원 전용: 로그인 안 했으면 화면을 가리고 그 자리에서 로그인·회원가입 (lock_study.js, build.bat 학습 줄 p1.html 다음)
+(function(){
+ function on(){try{return !!(typeof MEM!=='undefined'&&MEM.tok);}catch(e){return false;}}
+ function draw(){let o=document.getElementById('lockMem');
+  if(on()){if(o){o.remove();document.documentElement.style.overflow='';}return;}
+  if(o||!document.body)return;
+  o=document.createElement('div');o.id='lockMem';
+  o.style.cssText='position:fixed;inset:0;z-index:9000;background:var(--paper);display:flex;align-items:center;justify-content:center;padding:20px';
+  o.innerHTML=`<div style="max-width:340px;width:100%;text-align:center;background:var(--paper2);border:1.5px solid var(--line);border-radius:16px;padding:22px 18px">
+   <div style="font-size:40px">🔒</div><div style="font-weight:900;font-size:18px;margin:6px 0">홀덤학습은 회원 전용이에요</div>
+   <div class="m" style="line-height:1.6;margin-bottom:10px">뚝섬 회원은 무료예요. 로그인하면 바로 열리고<br>학습 기록·오답노트도 저장돼요.</div>
+   <button class="btn full" id="lkL">로그인</button>
+   <button class="btn g full" style="margin-top:8px" id="lkR">회원가입</button>
+   <button class="btn gr full" style="margin-top:8px" id="lkH">← 홈으로</button></div>`;
+  document.body.appendChild(o);document.documentElement.style.overflow='hidden';
+  o.querySelector('#lkL').onclick=()=>memOpen('login');
+  o.querySelector('#lkR').onclick=()=>memOpen('reg');
+  o.querySelector('#lkH').onclick=()=>{if(window.top!==window.self)parent.postMessage({t:'ttuk-back'},'*');else location.href=$('homeBtn').href;};}
+ draw();setInterval(draw,800);window.addEventListener('storage',draw);
+})();
 function show(h){stage().innerHTML=h;}
 function rr(){if(CUR&&CUR.view)show(CUR.view());}
 const POS9=["UTG","UTG+1","MP","LJ","HJ","CO","BTN","SB","BB"];
