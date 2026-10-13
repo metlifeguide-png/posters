@@ -1652,5 +1652,27 @@ setInterval(()=>{
   const el=document.getElementById("ezClk"); if(el) el.innerHTML=clkText();
 },1000);
 </script>
+<script>/*lockmem*/(function(){
+ var NAME="AOF 차트",DESC="올인·콜 범위를 계산해 주는 AOF 차트예요.";
+ function tok(){try{return localStorage.getItem('mtok')||'';}catch(e){return '';}}
+ function hub(h){try{return new URL('../hub/?home'+(h||''),location.href).href;}catch(e){return '../hub/?home'+(h||'');}}
+ function goTop(u){try{(window.top||window).location.href=u;}catch(e){location.href=u;}}
+ function home(){if(window.top!==window.self){try{parent.postMessage({t:'ttuk-back'},'*');return;}catch(e){}}location.href=hub('');}
+ function draw(){var o=document.getElementById('lockMem');
+  if(tok()){if(o){o.remove();document.documentElement.style.overflow='';}return;}
+  if(o||!document.body)return;
+  o=document.createElement('div');o.id='lockMem';
+  o.style.cssText='position:fixed;inset:0;z-index:99990;background:#f3efe4;display:flex;align-items:center;justify-content:center;padding:20px;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#26303d';
+  var b='display:block;width:100%;border:0;border-radius:11px;padding:12px;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px;color:#fff';
+  o.innerHTML='<div style="max-width:340px;width:100%;text-align:center;background:#fbf9f3;border:1.5px solid #e2dccb;border-radius:16px;padding:22px 18px">'
+   +'<div style="font-size:40px">🔒</div><div style="font-weight:900;font-size:18px;margin:6px 0">'+NAME+'은(는) 회원 전용이에요</div>'
+   +'<div style="font-size:13.5px;color:#6b6f76;line-height:1.6;margin-bottom:10px">'+DESC+'<br>뚝섬 회원은 무료예요. 로그인하면 바로 열려요.</div>'
+   +'<button id="lkL" style="'+b+';background:#1f5fae">로그인 · 회원가입 하러 가기</button>'
+   +'<button id="lkH" style="'+b+';background:#8a8f98">← 홈으로</button></div>';
+  document.body.appendChild(o);document.documentElement.style.overflow='hidden';
+  document.getElementById('lkL').onclick=function(){goTop(hub('#me'));};
+  document.getElementById('lkH').onclick=home;}
+ draw();setInterval(draw,1000);window.addEventListener('storage',draw);window.addEventListener('pageshow',draw);
+})();</script>
 </body>
 </html>
