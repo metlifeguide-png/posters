@@ -201,7 +201,7 @@ ABAR.go=a=>{if(a.go==='url'){window.open(a.val,'_blank','noopener');return;}
  location.href='../hub/?home#'+a.val;};
 if(API)fetch(API+'/api/ads/live',{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{if(r&&r.ok){abarSet(r.ads);abarShow(true);}}).catch(()=>{});
 
-const POS={6:["LJ","HJ","CO","BTN","SB","BB"],7:["UTG","LJ","HJ","CO","BTN","SB","BB"],8:["UTG","UTG+1","LJ","HJ","CO","BTN","SB","BB"],9:["UTG","UTG+1","UTG+2","LJ","HJ","CO","BTN","SB","BB"]};
+const POS={/*hu2*/2:["BTN/SB","BB"],3:["BTN","SB","BB"],4:["CO","BTN","SB","BB"],5:["HJ","CO","BTN","SB","BB"],6:["LJ","HJ","CO","BTN","SB","BB"],7:["UTG","LJ","HJ","CO","BTN","SB","BB"],8:["UTG","UTG+1","LJ","HJ","CO","BTN","SB","BB"],9:["UTG","UTG+1","UTG+2","LJ","HJ","CO","BTN","SB","BB"]};
 const RK="AKQJT98765432", SU=[["s","♠"],["h","♥"],["d","♦"],["c","♣"]];
 const STAGES=["초반","중반","버블 근처","ITM 후","파이널","데이 마감 직전"], ICM_ST=["버블 근처","ITM 후","파이널"];
 const STREETS=["pre","flop","turn","river"], SNAME={pre:"프리플랍",flop:"플랍",turn:"턴",river:"리버"};
@@ -240,7 +240,7 @@ function replay(){
   let pot=dead+Object.values(pl).reduce((a,p)=>a+(p.inv-p.bet),0); // 앤티+죽은 돈 (블라인드는 bet에)
   const R={streets:[],cur:null,done:false,pot,pl,error:null};
   let street=0, curBet=bb, lastRaise=bb, need=new Set(parts.filter(i=>!pl[i].allin)), lastActor=-1;
-  const order=st=> st===0 ? [...Array(T).keys()] : [T-2,T-1,...Array(T-2).keys()];
+  const order=st=> st===0 ? [...Array(T).keys()] : T===2 ? [1,0] : [T-2,T-1,...Array(T-2).keys()];   // 헤즈업: 프리플랍은 BTN/SB 먼저, 플랍부터는 BB 먼저
   const snap=()=>{ const o={}; for(const i of parts) if(!pl[i].fold) o[i]=pl[i].stack+pl[i].bet; return o; };
   let sInfo={name:STREETS[0],potStart:pot+parts.reduce((x,i)=>x+pl[i].bet,0),players:parts.filter(i=>!pl[i].fold).length,stk:snap(),log:[]};
   const active=()=>parts.filter(i=>!pl[i].fold);
@@ -297,7 +297,7 @@ function render(){
   chipsHTML("reg",[["open","레지 중 (재바인 가능)"],["closed","레지 마감 후"]],S.reg,"rg");
   chipsHTML("stage",STAGES.map(s=>[s,s]),S.stage,"stg");
   $("icmBox").style.display=ICM_ST.includes(S.stage)?"":"none";
-  chipsHTML("tsize",[6,7,8,9].map(n=>[n,n+"명"]),S.T,"ts");
+  chipsHTML("tsize",[2,3,4,5,6,7,8,9].map(n=>[n,n===2?"2명 (헤즈업)":n+"명"]),S.T,"ts");
   $("heroPos").innerHTML=P().map((p,i)=>`<button class="chip ${i===S.hero?"me":""}" data-hp="${i}">${p}</button>`).join("");
   $("parts").innerHTML=P().map((p,i)=>`<button class="chip ${i===S.hero?"me":S.parts.includes(i)?"vil":""}" data-pt="${i}">${p}${i===S.hero?" · 나":""}</button>`).join("");
   $("unitSeg").innerHTML=`<button class="${S.unit==="chip"?"on":""}" data-un="chip">칩</button><button class="${S.unit==="bb"?"on":""}" data-un="bb">BB</button>`;
