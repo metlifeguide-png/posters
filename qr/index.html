@@ -19,7 +19,7 @@ input[type=text],input[type=number],select{background:var(--pn);border:1px solid
 .row{display:flex;gap:8px;align-items:center}
 .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
 .pn{background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:10px;margin-bottom:10px}
-.tc{display:flex;justify-content:space-between;padding:12px;border:1px solid var(--ln);border-radius:12px;background:var(--pn);margin-top:8px;cursor:pointer}
+.tc{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px;border:1px solid var(--ln);border-radius:12px;background:var(--pn);margin-top:8px;cursor:pointer}
 .ses{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ses label{font-size:12px;color:var(--mu)}
 .lv{display:flex;align-items:center;gap:8px;grid-column:1/-1}.lv b{flex:1;text-align:center}
 .bl3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;grid-column:1/-1}
@@ -192,7 +192,7 @@ const dk=()=>'hrd_'+U.login.toLowerCase();
 function sv(){if(!U)return;try{localStorage.setItem(ck(),JSON.stringify(D));localStorage.setItem(dk(),'1')}catch(e){}clearTimeout(pend);pend=setTimeout(()=>{pend=null;push()},800);$('#sst').textContent='저장 중…'}
 function flush(){if(pend){clearTimeout(pend);pend=null;push(true)}}
 window.__qrFlush=flush;addEventListener('pagehide',flush);document.addEventListener('visibilitychange',()=>{if(document.hidden)flush()});
-async function push(ka){if(!U)return;try{const body=JSON.stringify({data:D}),go=k=>fetch(API+'/api/qr/data',{method:'PUT',headers:{...H,'X-QR-Token':U.token},body,keepalive:k});let r;try{r=await go(!!ka&&body.length<60000)}catch(e){if(!ka)throw e;r=await go(false)}
+async function push(ka){if(!U)return;try{const body=JSON.stringify({token:U.token,data:D}),go=k=>fetch(API+'/api/qr/save',{method:'POST',headers:H,body,keepalive:k});let r;try{r=await go(!!ka&&body.length<60000)}catch(e){if(!ka)throw e;r=await go(false)}
  if(r.status===401){logout(true);return}if(!r.ok)throw 0;try{localStorage.removeItem(dk())}catch(e){}$('#sst').textContent='자동 저장'}catch(e){$('#sst').textContent='오프라인 · 기기에 저장됨'}}
 async function authGo(kind){const login=$('#lg').value.trim(),pw=$('#pw').value;$('#am').textContent='';
  try{const r=await fetch(API+'/api/qr/'+kind,{method:'POST',headers:H,body:JSON.stringify({login,pw,mtok:MTOK})}),j=await r.json().catch(()=>({}));
@@ -200,10 +200,10 @@ async function authGo(kind){const login=$('#lg').value.trim(),pw=$('#pw').value;
   U={login:j.login,token:j.token};try{localStorage.setItem('qr_sess',JSON.stringify(U))}catch(e){}$('#pw').value='';await boot()}
  catch(e){$('#am').textContent='서버에 연결할 수 없어요'}}
 async function boot(){let loc=null;try{loc=JSON.parse(localStorage.getItem(ck())||'null')||JSON.parse(localStorage.getItem('hr1')||'null')}catch(e){}
- try{const r=await fetch(API+'/api/qr/data',{headers:{...H,'X-QR-Token':U.token}});if(r.status===401){logout(true);return}
-  const j=await r.json();D=j.data&&j.data.tours?j.data:{tours:[]};
+ try{const r=await fetch(API+'/api/qr/load',{method:'POST',headers:H,body:JSON.stringify({token:U.token})});if(r.status===401){logout(true);return}
+  if(!r.ok)throw 0;const j=await r.json();D=j.data&&j.data.tours?j.data:{tours:[]};
   let dirty=false;try{dirty=localStorage.getItem(dk())==='1'}catch(e){}
-  if((dirty||!D.tours.length)&&loc&&loc.tours&&loc.tours.length){D=loc;push()}}
+  if(loc&&loc.tours&&(dirty||(!D.tours.length&&loc.tours.length))){D=loc;push()}}   // 서버에 못 보낸 변경(삭제 포함)이 있으면 기기 것을 올림
  catch(e){D=loc&&loc.tours?loc:{tours:[]}}
  $('#auth').hidden=true;$('#who').textContent=U.login;home()}
 function logout(exp){if(exp&&MTOK&&!window._qrRetry){window._qrRetry=1;qrMember();return}U=null;D={tours:[]};T=null;try{localStorage.removeItem('qr_sess')}catch(e){}$('#app').hidden=true;$('#home').hidden=true;$('#auth').hidden=false;sync();$('#am').textContent=exp?'다시 로그인해 주세요':''}
@@ -326,7 +326,7 @@ function cp(t){const ok=()=>toast('복사됨');function fb(){const a=document.cr
 /* ---------- 화면 ---------- */
 function home(){flush();T=null;$('#app').hidden=true;$('#home').hidden=false;sync();
  const l=[...D.tours].sort((a,b)=>b.ts-a.ts);$('#tlh').hidden=!l.length;
- $('#tl').innerHTML=l.map(t=>`<div class="tc" data-id="${t.id}"><b>${esc(t.name)}</b><span class="mu">${t.hands.length}핸드</span></div>`).join('')}
+ $('#tl').innerHTML=l.map(t=>`<div class="tc" data-id="${t.id}"><b style="flex:1;min-width:0;overflow-wrap:anywhere">${esc(t.name)}</b><span class="mu" style="white-space:nowrap">${t.hands.length}핸드</span><span style="display:flex;gap:4px;flex-shrink:0"><button class="btn" data-a="ren" style="font-size:13px;padding:6px 9px" aria-label="대회 이름 수정">✏️ 수정</button><button class="btn" data-a="del" style="font-size:13px;padding:6px 9px" aria-label="대회 삭제">🗑 삭제</button></span></div>`).join('')}
 function conv(L,bb){L={...L};['stack','pre','flop','turn','river'].forEach(k=>{if(L[k])L[k]=L[k].split(',').map(x=>x.replace(/^(\s*\S+\s+)(\d+(?:\.\d+)?)(bb)?/i,(m,a,n)=>a+f(n*bb))).join(',')});return L}
 function enter(t){if(t.S.v!==2){if(t.S.bb>0&&t.form)t.form=conv(norm(t.form),t.S.bb);t.S.v=2}try{if(window.top===window&&!(history.state&&history.state.qr==='app'))history.pushState({qr:'app'},'')}catch(e){}T=t;ed=null;$('#home').hidden=true;$('#app').hidden=false;kOn=true;sync();$('#tt').textContent=t.name;ses();setL(t.form||{});aK='stack';upd();hands();window.scrollTo(0,0)}
 function bparse(S){const n=(S.blind||'').match(/\d+(?:\.\d+)?/g)||[];S.sb=+n[0]||0;S.bb=+n[1]||0;S.at=+n[2]||0}
@@ -391,7 +391,16 @@ function init(){mk();kp();
   if(!t){t={id:'t'+Date.now(),name:n,ts:Date.now(),S:{v:2,max:9,ante:'bb',blind:'',sb:0,bb:0,at:0},hands:[],form:{}};D.tours.push(t)}
   t.ts=Date.now();sv();$('#tn').value='';enter(t)};
  $('#go').onclick=go;$('#tn').onkeydown=e=>{if(e.key==='Enter')go()};
- $('#tl').onclick=e=>{const c=e.target.closest('.tc');if(c)enter(D.tours.find(t=>t.id===c.dataset.id))};
+ $('#tl').onclick=e=>{const c=e.target.closest('.tc');if(!c)return;const t=D.tours.find(x=>x.id===c.dataset.id);if(!t)return;
+  const b=e.target.closest('button[data-a]');
+  if(!b){enter(t);return}
+  if(b.dataset.a==='ren'){   // 대회 이름 수정
+   const n=(prompt('대회 이름을 바꿔 주세요',t.name)||'').trim();if(!n||n===t.name)return;
+   if(D.tours.some(x=>x!==t&&x.name.toLowerCase()===n.toLowerCase())){toast('같은 이름의 대회가 이미 있어요');return}
+   t.name=n;sv();home();toast('이름을 바꿨어요')}
+  else if(b.dataset.a==='del'){   // 대회 삭제 (안에 있는 핸드도 함께)
+   if(!confirm(`'${t.name}' 대회를 삭제할까요?`+(t.hands.length?`\n안에 저장한 핸드 ${t.hands.length}개도 함께 지워지고 되돌릴 수 없어요.`:'')))return;
+   D.tours=D.tours.filter(x=>x!==t);sv();home();toast('삭제했어요')}};
  $('#back').onclick=()=>{if(window.top===window&&history.state&&history.state.qr==='app'){history.back()}else home()};window.__qrBack=()=>{if(!$('#app').hidden){home();return true}return false};addEventListener('popstate',()=>{if(!$('#app').hidden)home()});$('#bi').oninput=e=>{T.S.blind=e.target.value;bparse(T.S);sv();upd()};
  $('#mx').onchange=e=>{T.S.max=+e.target.value;sv();upd()};$('#an').onchange=e=>{T.S.ante=e.target.value;sv();upd()};
  $('#kx').onclick=()=>{setKb(false);const a=document.activeElement;if(a&&a.closest&&a.closest('#form'))a.blur()};
