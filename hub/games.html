@@ -2945,12 +2945,14 @@ const PATH=[
 ];
 const ico=(i,px)=>`<svg viewBox="0 0 100 100" width="${px}" height="${px}" fill="currentColor" role="img" aria-label="${NM[i]}" style="display:block">${PATH[i]}</svg>`;
 const SP={'쉬움':[800,250],'보통':[600,200],'어려움':[450,150],'극악':[300,120]};   // [무늬 보여주는 시간, 사이 간격] ms
+const TL={'쉬움':3500,'보통':2500,'어려움':2000,'극악':1500};   // 두 번째부터: 앞 무늬를 누른 뒤 다음 무늬를 누르기까지 제한 시간(ms)
+const TF={'쉬움':2000,'보통':1500,'어려움':1200,'극악':1000};   // 첫 입력 제한 시간(ms): 외웠으면 바로 누를 수 있으니 더 짧게(메모 보고 누르는 시간 방지)
 const MAXL=100, COL='var(--navy,#1e293b)';
 // 무늬 균형 셔플백(4개씩 섞어 이어붙임 → 같은 무늬 연속 최대 2). 자체 PRNG 사용(Math.random 안 바꿈)
 function mk(seed){const r=mulberry(seed>>>0),out=[];while(out.length<MAXL){const b=[0,1,2,3];for(let i=3;i>0;i--){const j=Math.floor(r()*(i+1));const t=b[i];b[i]=b[j];b[j]=t;}for(const x of b)out.push(x);}return out.slice(0,MAXL);}
 // 서버 호출: memPost가 Response를 주든 JSON을 주든 JSON으로 맞춤
 const mp=(p,b)=>{try{return Promise.resolve(memPost(p,b)).then(r=>r&&typeof r.json==='function'?r.json():r);}catch(e){return Promise.reject(e);}};
-const CSS=`<style>@keyframes msShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}@keyframes msPop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}.msb{aspect-ratio:1;border:2.5px solid ${COL};border-radius:14px;background:var(--card,#fff);color:${COL};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;font-weight:800;font-size:12px}.msb:active{background:${COL};color:#fff}</style>`;
+const CSS=`<style>@keyframes msShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}@keyframes msTime{from{width:100%}to{width:0}}@keyframes msPop{0%{transform:scale(.6);opacity:0}100%{transform:scale(1);opacity:1}}.msb{aspect-ratio:1;border:2.5px solid ${COL};border-radius:14px;background:var(--card,#fff);color:${COL};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:0;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;font-weight:800;font-size:12px}.msb:active{background:${COL};color:#fff}</style>`;
 
 G.push({k:'memseq',cat:'카드',e:'🃏',n:'무늬 기억력',d:'무늬 순서 외우기 · 난이도 4단계 · 오늘의 기록',
  // ph: menu · dinfo(오늘의 기록 안내) · ready · show · in · ok · over
@@ -2960,20 +2962,21 @@ G.push({k:'memseq',cat:'카드',e:'🃏',n:'무늬 기억력',d:'무늬 순서 �
  stop(){this.clr();if(this.live&&this.mode==='d'){this.live=false;this.sub(this.score||0,true);}this.live=false;},
  // ── 시작 ──
  go(lv){if(!SP[lv])lv='보통';this.clr();this.lv=lv;this.mode='r';this.seq=mk((Date.now()^Math.floor(Math.random()*4294967296))>>>0);this.begin();},
- begin(){this.L=1;this.score=0;this.pos=0;this.bad=-1;this.res=null;this.live=true;this.ph='ready';rr();this.at(()=>this.play(),700);},
+ begin(){this.L=1;this.score=0;this.pos=0;this.bad=-1;this.to=false;this.res=null;this.live=true;this.ph='ready';rr();this.at(()=>this.play(),700);},
  play(){this.ph='show';this.pos=0;rr();const [sh,gap]=SP[this.lv],L=this.L;
   for(let k=0;k<L;k++){const t0=500+k*(sh+gap);
    this.at(()=>{const el=$('msShow');if(el)el.innerHTML=`<div style="animation:msPop .15s;color:${COL}">${ico(this.seq[k],110)}</div>`;},t0);
    this.at(()=>{const el=$('msShow');if(el)el.innerHTML='';},t0+sh);}
-  this.at(()=>{this.ph='in';rr();},500+L*(sh+gap));},
+  this.at(()=>{this.ph='in';this.tmr(1);rr();},500+L*(sh+gap));},
+ tmr(first){clearTimeout(this.tt);this.tms=first?TF[this.lv]:TL[this.lv];this.tt=setTimeout(()=>{if(this.ph!=='in')return;this.to=true;this.bad=-1;this.fin();},this.tms);this.tm.push(this.tt);},
  // ── 입력 ──
- tap(i){if(this.ph!=='in')return;const want=this.seq[this.pos];
+ tap(i){if(this.ph!=='in')return;clearTimeout(this.tt);const want=this.seq[this.pos];
   if(i!==want){this.bad=i;this.fin();return;}
   this.pos++;
   if(this.pos>=this.L){this.score=this.L;if(this.mode==='d')this.sub(this.score,false);
    if(this.L>=MAXL){this.fin();return;}
    this.L++;this.ph='ok';rr();this.at(()=>this.play(),650);return;}
-  rr();},
+  this.tmr(0);rr();},
  fin(){this.clr();this.live=false;this.ph='over';
   if(this.mode==='d')this.sub(this.score,true);
   else if(this.score>0)record('memseq',this.score,this.lv);
@@ -3000,18 +3003,19 @@ G.push({k:'memseq',cat:'카드',e:'🃏',n:'무늬 기억력',d:'무늬 순서 �
   return CSS+lvPick('CUR.go',`<button class="btn gr" onclick="CUR.go('극악')">극악</button>`)
    +`<button class="btn full b2" style="margin-top:12px" onclick="CUR.dOpen()">📅 오늘의 기록 (어려움 · 하루 한 번)</button>`
    +`<div style="margin-top:12px;text-align:center"><label style="font-size:13px;cursor:pointer"><input type="checkbox" ${lab?'checked':''} onchange="CUR.tgLab()"> 무늬 이름 표시 (스페이드·하트·다이아·클로버)</label></div>`
-   +`<div style="margin-top:10px;font-size:12px;opacity:.7;text-align:center">보여준 무늬 순서를 그대로 눌러요. 한 번 틀리면 끝! 단계가 오를수록 하나씩 늘어나요.</div>`;},
+   +`<div style="margin-top:10px;font-size:12px;opacity:.7;text-align:center">보여준 무늬 순서를 그대로 눌러요. 한 번 틀리거나 시간이 지나면 끝! 단계가 오를수록 하나씩 늘어나요. (제한 시간: 첫 입력 쉬움 2초·보통 1.5초·어려움 1.2초·극악 1초 / 이후 무늬마다 3.5·2.5·2·1.5초)</div>`;},
  playV(){const lab=lsGet('mslab','0')==='1',inp=this.ph==='in';
-  const msg=this.ph==='ready'?'준비…':this.ph==='show'?'👀 순서를 외우세요':this.ph==='ok'?'✓ 성공!':`눌러 주세요 (${this.pos}/${this.L})`;
+  const msg=this.ph==='ready'?'준비…':this.ph==='show'?'👀 순서를 외우세요':this.ph==='ok'?'✓ 성공!':`눌러 주세요 (${this.pos}/${this.L}) · 제한 시간 있어요`;
   const btns=[0,1,2,3].map(i=>`<button class="msb" aria-label="${NM[i]}" onclick="CUR.tap(${i})" ${inp?'':'disabled style="opacity:.45"'}>${ico(i,54)}${lab?`<span>${SH[i]} ${NM[i]}</span>`:''}</button>`).join('');
   const bar=`<div style="height:8px;border-radius:99px;background:rgba(127,127,127,.2);overflow:hidden;max-width:360px;margin:8px auto 0"><div style="height:100%;width:${inp?Math.round(this.pos/this.L*100):0}%;background:${COL}"></div></div>`;
+  const tb=inp?`<div style="height:5px;border-radius:99px;background:rgba(127,127,127,.2);overflow:hidden;max-width:360px;margin:4px auto 0"><div style="height:100%;background:${COL};animation:msTime ${this.tms}ms linear forwards"></div></div>`:'';
   const mid=this.ph==='ok'?`<div style="font-size:64px;color:${COL};animation:msPop .2s">✓</div>`:'';
   return CSS+`<div class="gst"><span>${this.mode==='d'?'📅 오늘의 기록':this.lv}</span><span>${this.L}단계</span></div>
   <div style="text-align:center;font-weight:800;margin-top:8px">${msg}</div>
-  <div id="msShow" style="height:140px;display:flex;align-items:center;justify-content:center">${mid}</div>${bar}
+  <div id="msShow" style="height:140px;display:flex;align-items:center;justify-content:center">${mid}</div>${bar}${tb}
   <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:360px;margin:14px auto 0">${btns}</div>`;},
  overV(){const lab=lsGet('mslab','0')==='1',s=this.score;
-  const bad=this.bad>=0?`<div style="display:flex;gap:18px;justify-content:center;align-items:center;margin:10px 0;color:${COL}"><div style="text-align:center;font-size:12px">정답${ico(this.seq[this.pos],44)}${lab?NM[this.seq[this.pos]]:''}</div><div style="text-align:center;font-size:12px;animation:msShake .4s">✗ 내 선택${ico(this.bad,44)}${lab?NM[this.bad]:''}</div></div>`:`<div style="text-align:center;margin:10px 0">🎉 ${MAXL}단계 완주!</div>`;
+  const bad=this.to?`<div style="text-align:center;margin:10px 0;font-weight:800">⏰ 시간 초과! (첫 입력 ${Math.round(TF[this.lv]/100)/10}초 · 이후 한 개당 ${Math.round(TL[this.lv]/100)/10}초)</div>`:this.bad>=0?`<div style="display:flex;gap:18px;justify-content:center;align-items:center;margin:10px 0;color:${COL}"><div style="text-align:center;font-size:12px">정답${ico(this.seq[this.pos],44)}${lab?NM[this.seq[this.pos]]:''}</div><div style="text-align:center;font-size:12px;animation:msShake .4s">✗ 내 선택${ico(this.bad,44)}${lab?NM[this.bad]:''}</div></div>`:`<div style="text-align:center;margin:10px 0">🎉 ${MAXL}단계 완주!</div>`;
   if(this.mode==='d'){const r=this.res;
    const rk=r===null?'기록을 저장하는 중…':(r&&r.ok&&r.rank)?`오늘 ${r.rank}위 / 참가 ${r.total}명`:'기록 저장 결과를 확인하지 못했어요 (오늘의 기록에서 확인)';
    return CSS+`<div class="card" style="text-align:center"><div style="font-size:13px;opacity:.7">📅 오늘의 기록 · 어려움</div><div class="gbig">${s}단계</div><div style="font-weight:700">${rk}</div>${bad}</div>
