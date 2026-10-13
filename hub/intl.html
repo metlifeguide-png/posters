@@ -13,7 +13,7 @@
 <meta property="og:image" content="https://metlifeguide-png.github.io/posters/hub/banner.jpg">
 <!--
   🌏 해외대회일정 독립 페이지 (templates/intl.html → 깃허브 hub/intl.html)
-  · 서버가 {"sch": [], "schc": [], "updated": "10/13 14:14"} 자리에 관리자 🏠 홈 관리 → 🌏 해외대회일정 의 내용을 넣어요
+  · 서버가 {"sch": [], "schc": [], "updated": "10/13 14:15"} 자리에 관리자 🏠 홈 관리 → 🌏 해외대회일정 의 내용을 넣어요
       D.sch  = [{kind, name, color, s:'YYYY-MM-DD', e:'YYYY-MM-DD', t:'막대 글자(생략하면 날짜)'}]
       D.schc = [{title, badge, color, lines:[...]}]
   · 관리자에 아직 아무것도 안 넣었으면 아래 FALL(기본 일정)이 대신 나와요.
@@ -36,11 +36,11 @@ html,body{background:var(--paper);color:var(--ink);font:15px/1.5 system-ui,"Appl
 .e{color:var(--sub);text-align:center;padding:26px 6px;font-size:13.5px}
 .sch-hint{font-size:11.5px;color:#0284c7;background:#e0f2fe;text-align:center;padding:5px 6px;border-radius:8px;margin-bottom:8px;font-weight:700}
 @media(min-width:760px){.sch-hint{display:none}}
-.sch-box{--lw:112px;background:#fff;border:1.5px solid var(--line);border-radius:14px;overflow-x:auto;-webkit-overflow-scrolling:touch}
-@media(min-width:760px){.sch-box{--lw:190px}}
+.sch-box{--lw:128px;background:#fff;border:1.5px solid var(--line);border-radius:14px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+@media(min-width:760px){.sch-box{--lw:210px}}
 .sch-in{position:relative;padding-bottom:6px}
-.sch-r{display:grid;grid-template-columns:var(--lw) 1fr;height:36px;border-bottom:1px solid #eef0f3}
-.sch-l{position:sticky;left:0;z-index:5;background:#f8fafc;border-right:1px solid #cbd5e1;display:flex;align-items:center;padding:0 8px;font-size:11.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sch-r{display:grid;grid-template-columns:var(--lw) 1fr;height:46px;border-bottom:1px solid #eef0f3}
+.sch-l{position:sticky;left:0;z-index:5;background:#f8fafc;border-right:1px solid #cbd5e1;display:flex;align-items:center;padding:0 8px;font-size:11px;line-height:1.2;font-weight:800;white-space:normal;word-break:keep-all;overflow-wrap:anywhere}
 .sch-t{position:relative;height:100%}
 .sch-t .bg{position:absolute;inset:0;display:grid;pointer-events:none}
 .sch-t .bg div{border-right:1px dashed #e5e7eb}
@@ -61,14 +61,12 @@ html,body{background:var(--paper);color:var(--ink);font:15px/1.5 system-ui,"Appl
 .sch-c li{padding-left:9px;position:relative}
 .sch-c li:before{content:"•";position:absolute;left:0;color:var(--sub)}
 .foot{text-align:center;margin-top:10px;font-size:12px;color:var(--sub)}
-.foot a{color:var(--sub)}
-.inframe .home{display:none}
 </style>
 </head>
 <body>
 <div class="wrap" id="app"></div>
 <script>
-let D={"sch": [], "schc": [], "updated": "10/13 14:14"}; const B="https://metlifeguide-png.github.io/posters";
+let D={"sch": [], "schc": [], "updated": "10/13 14:15"}; const B="https://metlifeguide-png.github.io/posters";
 try{if(window.self!==window.top)document.documentElement.classList.add('inframe');}catch(e){document.documentElement.classList.add('inframe');}
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const head=(t,m)=>`<div class="h"><h2>${t}</h2><div class="m">${m||''}</div></div>`;
@@ -137,7 +135,7 @@ function draw(){
   /* 카드: 이미 끝난 대회는 숨기고, 진행 중이면 표시 */
   const C=(D.schc||[]).filter(c=>!c.e||c.e>=today0).map(c=>[c.title,c.badge||'',c.color||'#64748b',c.lines||[],c.s&&c.e&&c.s<=today0&&c.e>=today0]);
   const title='🌏 해외대회일정';
-  const foot=`<div class="foot"><a class="home" href="${B}/hub/">🏝 뚝섬 홈으로</a><span class="home"> · </span>📌 자료 출처 : 카카오톡 오픈채팅방 뚝섬유원지${D.updated?' · '+esc(D.updated)+' 업데이트':''}</div>`;
+  const foot=`<div class="foot">📌 자료 출처 : 뚝섬유원지 X ZERO${D.updated?' · '+esc(D.updated)+' 업데이트':''}</div>`;
   if(!R.length&&!C.length){document.getElementById('app').innerHTML=head(title,'')+'<div class="card e">아직 등록된 해외 대회 일정이 없어요<br>곧 올라와요 ✈️</div>'+foot;return;}
   const s=new Date(sp.y,sp.m-1,1),e=new Date(sp.y,sp.m-1+sp.n,1),p=(Date.now()-s)/(e-s);
   const cols=`grid-template-columns:repeat(${sp.n},1fr)`;
