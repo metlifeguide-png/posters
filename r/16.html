@@ -1,0 +1,76 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>핸드리뷰 #16</title><style>
+:root{--bg:#f4f1ea;--c:#fff;--b:#e2ddd2;--t:#1b1b1b;--s:#6b6b6b;--ok:#2e7d32;--warn:#e08a00;--bad:#d32f2f;--acc:#1f6feb;--soft:#ece8df;--hero:#e8f3ff}
+@media (prefers-color-scheme:dark){:root{--bg:#161616;--c:#212121;--b:#343434;--t:#f1f1f1;--s:#a8a8a8;--soft:#2b2b2b;--hero:#1c2b3d}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--t);font:17px/1.7 system-ui,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;-webkit-text-size-adjust:100%}
+.w{max-width:680px;margin:0 auto;padding:16px 14px 40px}
+h1{font-size:26px;margin:6px 0 2px;font-weight:800}
+.meta{color:var(--s);font-size:14px;margin-bottom:12px}
+.c{background:var(--c);border:1px solid var(--b);border-radius:18px;padding:16px;margin-bottom:14px}
+.c>.ct{font-size:19px;font-weight:800;margin-bottom:10px}
+.ct small{font-weight:500;color:var(--s);font-size:13px}
+.ttl{font-size:21px;font-weight:800;line-height:1.35}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.pill{background:var(--soft);border-radius:999px;padding:3px 11px;font-size:14.5px;font-weight:600}
+.hero{background:var(--hero);border-radius:14px;padding:12px 14px;margin:10px 0;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.hero .hl{font-size:15px;color:var(--s);font-weight:600}.hero .hp{font-size:20px;font-weight:800}
+.cards{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
+.pc{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:42px;height:58px;border-radius:8px;background:#fff;border:2px solid #c9c9c9;font-weight:800;line-height:1;box-shadow:0 1px 2px rgba(0,0,0,.18)}
+.pc i{font-style:normal;font-size:22px}.pc b{font-size:22px;margin-top:3px}
+.pc.r{color:#d32f2f}.pc.k{color:#111}
+.pc.new{border-color:var(--acc);box-shadow:0 0 0 2px var(--acc)}
+.hero .pc{width:50px;height:70px}.hero .pc i,.hero .pc b{font-size:27px}
+.ic{display:inline-block;background:#fff;border:1.5px solid #cfcfcf;border-radius:6px;padding:0 5px;margin:0 1px;font-weight:800;line-height:1.35}
+.ic.r{color:#d32f2f}.ic.k{color:#111}
+.st{border-top:2px solid var(--b);padding-top:12px;margin-top:12px}
+.sth{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.stn{background:var(--t);color:var(--bg);border-radius:8px;padding:2px 12px;font-size:16px;font-weight:800}
+.pot{margin-left:auto;font-weight:700;color:var(--s);font-size:15px}
+.act{display:flex;gap:8px;padding:5px 10px;border-radius:10px;margin:3px 0;font-size:17px}
+.act .who{font-weight:800;min-width:66px}.act .v{font-weight:800}
+.act.me{background:var(--hero);border-left:5px solid var(--acc)}
+.act.fold{color:var(--s)}.act.big .v{color:var(--bad)}
+.note{color:var(--s);font-size:15px;margin:8px 0}
+.show{display:flex;align-items:center;gap:10px;background:var(--soft);border-radius:12px;padding:10px 14px;margin-top:12px;font-weight:700;flex-wrap:wrap}
+.q{background:#fff8e1;color:#222;border-left:6px solid #f5b400;border-radius:12px;padding:12px 14px;margin-top:14px;font-size:17px}
+.q .ql{font-weight:800;margin-bottom:4px}
+@media (prefers-color-scheme:dark){.q{background:#3a3220;color:#f1f1f1}}
+details{margin-top:12px}summary{cursor:pointer;font-weight:700;color:var(--s);font-size:15px}
+.calc{margin-top:8px}.cr{padding:7px 0;border-bottom:1px dashed var(--b);font-size:15.5px}
+.cr .cl{font-weight:800;display:block}.cr .tk{display:inline-block;background:var(--soft);border-radius:8px;padding:0 8px;margin:2px 4px 2px 0}
+.cr .dc{font-weight:800;color:var(--acc)}
+pre{white-space:pre-wrap;font:14px/1.6 ui-monospace,Menlo,monospace;background:var(--soft);border-radius:10px;padding:10px;margin:8px 0 0}
+.a .hd{font-size:20px;font-weight:800;margin-bottom:10px}
+.a .row{border-left:7px solid var(--b);background:var(--soft);border-radius:12px;padding:10px 13px;margin:9px 0;font-size:17.5px;font-weight:600}
+.a .row.ok{border-left-color:var(--ok)}.a .row.warn{border-left-color:var(--warn)}.a .row.bad{border-left-color:var(--bad)}
+.a .lb{font-weight:800}
+.a .sub{font-size:16.5px;font-weight:500;margin:6px 0 0 6px;padding-left:10px;border-left:3px solid var(--b)}
+.a .qa{background:#fff8e1;color:#222;border-radius:12px;border-left:7px solid #f5b400;padding:10px 13px;margin:9px 0;font-size:17.5px;font-weight:700}
+@media (prefers-color-scheme:dark){.a .qa{background:#3a3220;color:#f1f1f1}}
+.a .sum{background:var(--t);color:var(--bg);border-radius:14px;padding:13px 15px;margin:12px 0;font-size:18px;font-weight:800;line-height:1.6}
+.a .sum .ic{border-color:transparent}
+.a .fix{color:var(--s);font-size:15px;border-top:1px dashed var(--b);padding-top:8px;margin-top:10px}
+.a .brd{margin:8px 0;font-weight:700}
+.a .conf,.a .ft{color:var(--s);font-size:14.5px;margin:8px 0;font-weight:500}
+.a p{margin:6px 0}
+.owner{border:3px solid var(--ok)}
+</style></head><body><div class="w"><h1>✍️ 핸드리뷰 #16</h1><div class="meta">crying · 2026-10-14 11:37:54</div><div class="c"><div class="ct">핸드</div><div class="ttl">일산 키키 10/3</div><div class="pills"><span class="pill">6,000/12,000 (BB앤티 12,000)</span><span class="pill">레지 마감 후</span><span class="pill">중반</span></div><div class="hero"><div><div class="hl">내 포지션</div><div class="hp">UTG</div></div><div><div class="hl">스택</div><div class="hp">70BB</div></div><span class="cards"><span class="pc k"><i>A</i><b>♣</b></span><span class="pc r"><i>A</i><b>♥</b></span></span></div><div class="pills"><span class="pill">👥 UTG+1 104.2BB</span><span class="pill">👥 BTN 16.7BB</span></div><div class="st"><div class="sth"><span class="stn">프리플랍</span><span class="pot">팟 2.5BB</span></div><div class="act me"><span class="who">UTG(나)</span><span><span class="v">오픈</span> 2.1BB (25,000)</span></div><div class="act"><span class="who">UTG+1</span><span><span class="v">콜</span> 2.1BB</span></div><div class="act"><span class="who">BTN</span><span><span class="v">콜</span> 2.1BB</span></div></div><div class="st"><div class="sth"><span class="stn">플랍</span><span class="cards"><span class="pc k"><i>A</i><b>♠</b></span><span class="pc k"><i>K</i><b>♣</b></span><span class="pc k"><i>4</i><b>♠</b></span></span><span class="pot">팟 8.8BB</span></div><div class="act me big"><span class="who">UTG(나)</span><span><span class="v">벳</span> 2.9BB (35,000)</span></div><div class="act"><span class="who">UTG+1</span><span><span class="v">콜</span> 2.9BB</span></div><div class="act big"><span class="who">BTN</span><span><span class="v">올인</span> 14.6BB (175,000)</span></div><div class="act me"><span class="who">UTG(나)</span><span><span class="v">콜</span> 11.7BB</span></div><div class="act"><span class="who">UTG+1</span><span><span class="v">콜</span> 11.7BB</span></div></div><div class="st"><div class="sth"><span class="stn">턴</span><span class="cards"><span class="pc k"><i>A</i><b>♠</b></span><span class="pc k"><i>K</i><b>♣</b></span><span class="pc k"><i>4</i><b>♠</b></span><span class="pc r new"><i>8</i><b>♦</b></span></span><span class="pot">팟 52.5BB</span></div><div class="act me big"><span class="who">UTG(나)</span><span><span class="v">벳</span> 16.7BB (200,000)</span></div><div class="act"><span class="who">UTG+1</span><span><span class="v">콜</span> 16.7BB</span></div></div><div class="st"><div class="sth"><span class="stn">리버</span><span class="cards"><span class="pc k"><i>A</i><b>♠</b></span><span class="pc k"><i>K</i><b>♣</b></span><span class="pc k"><i>4</i><b>♠</b></span><span class="pc r"><i>8</i><b>♦</b></span><span class="pc k new"><i>Q</i><b>♠</b></span></span><span class="pot">팟 85.8BB</span></div><div class="act me"><span class="who">UTG(나)</span><span><span class="v">체크</span> </span></div><div class="act big"><span class="who">UTG+1</span><span><span class="v">벳</span> 25BB (300,000)</span></div><div class="act me"><span class="who">UTG(나)</span><span><span class="v">콜</span> 25BB</span></div></div><div class="show">🂠 상대가 보여준 패 · UTG+1 <span class="cards"><span class="pc k"><i>K</i><b>♠</b></span><span class="pc k"><i>10</i><b>♠</b></span><span class="pc k"><i>6</i><b>♠</b></span><span class="pc k"><i>7</i><b>♠</b></span></span></div><div class="q"><div class="ql">❓ 참가자 질문</div>플랍 체크 스타트와 벳을 했을때 저기서 셔브를 해야되는지<br>턴 셔브가 가장 좋은 판단이었는지<br>리버는 첵 폴드를 할수 있는지</div><details><summary>📐 결정 시점 계산 보기</summary><div class="calc"><div class="cr"><span class="cl">프리플랍 (3명)</span><span class="tk">팟 2.5BB</span><span class="tk">먼저 액션(오픈/림프/폴드)</span><span class="dc">→ 벳/레이즈</span></div><div class="cr"><span class="cl">플랍 (3명)</span><span class="tk">팟 8.8BB</span><span class="tk">체크/벳 선택</span><span class="tk">SPR 7.8</span><span class="dc">→ 벳/레이즈</span></div><div class="cr"><span class="cl">플랍 (3명)</span><span class="tk">팟 29.2BB</span><span class="tk">콜 11.7BB</span><span class="tk">필요 승률 28.6%</span><span class="tk">SPR 2.3</span><span class="dc">→ 콜</span></div><div class="cr"><span class="cl">턴 (3명)</span><span class="tk">팟 52.5BB</span><span class="tk">체크/벳 선택</span><span class="tk">SPR 1</span><span class="dc">→ 벳/레이즈</span></div><div class="cr"><span class="cl">리버 (3명)</span><span class="tk">팟 85.8BB</span><span class="tk">체크/벳 선택</span><span class="tk">SPR 0.4</span><span class="dc">→ 체크</span></div><div class="cr"><span class="cl">리버 (3명)</span><span class="tk">팟 110.8BB</span><span class="tk">콜 25BB</span><span class="tk">필요 승률 18.4%</span><span class="tk">SPR 0.3</span><span class="dc">→ 콜</span></div></div></details><details><summary>원문 텍스트 보기</summary><pre>[✍️ 핸드리뷰] 일산 키키 10/3
+6,000/12,000 (BB앤티 12,000) · 레지 마감 후 · 중반
+🃏 나 UTG 70BB  A♣ A♥
+👥 UTG+1 104.2BB · BTN 16.7BB
+[프리플랍] (팟 2.5BB) UTG(나) 오픈 2.1BB (25,000) → UTG+1 콜 2.1BB → BTN 콜 2.1BB
+[플랍] A♠ K♣ 4♠ (팟 8.8BB) UTG(나) 벳 2.9BB (35,000) → UTG+1 콜 2.9BB → BTN 올인 14.6BB (175,000) → UTG(나) 콜 11.7BB → UTG+1 콜 11.7BB
+[턴] 8♦ (팟 52.5BB) UTG(나) 벳 16.7BB (200,000) → UTG+1 콜 16.7BB
+[리버] Q♠ (팟 85.8BB) UTG(나) 체크 → UTG+1 벳 25BB (300,000) → UTG(나) 콜 25BB
+[상대가 보여준 패] UTG+1 K♠T♠ · BTN 6♠7♠
+[📐 계산 · 내 결정 시점]
+- 프리플랍 (3명): 팟 2.5BB · 먼저 액션(오픈/림프/폴드) → 벳/레이즈
+- 플랍 (3명): 팟 8.8BB · 체크/벳 선택 · SPR 7.8 → 벳/레이즈
+- 플랍 (3명): 팟 29.2BB · 콜 11.7BB · 필요 승률 28.6% · SPR 2.3 → 콜
+- 턴 (3명): 팟 52.5BB · 체크/벳 선택 · SPR 1 → 벳/레이즈
+- 리버 (3명): 팟 85.8BB · 체크/벳 선택 · SPR 0.4 → 체크
+- 리버 (3명): 팟 110.8BB · 콜 25BB · 필요 승률 18.4% · SPR 0.3 → 콜
+❓ 플랍 체크 스타트와 벳을 했을때 저기서 셔브를 해야되는지 
+턴 셔브가 가장 좋은 판단이었는지
+리버는 첵 폴드를 할수 있는지 
+— crying · 공개</pre></details></div><div class="c"><div class="ct">답변<small> · 2026-10-14 11:38:47</small></div><div class="a"><div class="hd">🃏 핸드 리뷰 · UTG <span class="ic k">A♣</span><span class="ic r">A♥</span></div><div class="brd">보드 <span class="ic k">A♠</span><span class="ic k">K♣</span><span class="ic k">4♠</span> <span class="ic r">8♦</span> <span class="ic k">Q♠</span></div><div class="qa"><span class="lb">❓ 질문 답</span> 플랍은 벳 후 리레이즈 올인보다 콜이 좋고 턴은 남아있는 스택 대비 올인 잼이 더 효율적이며 리버는 요구 승률이 낮아 첵 폴드가 불가능합니다.</div><div class="row ok"><span class="lb">프리플랍:</span> ✅ AA · 상위 16% 레인지 안쪽 항상 오픈 · 사이즈 실제 2.1BB vs 권장 2BB</div><div class="row ok">플랍 <span class="ic k">A♠</span><span class="ic k">K♣</span><span class="ic k">4♠</span>: ✅ UTG 벳 2.9BB 후 올인에 콜 (내 승률 89% vs 필요 29%)</div><div class="row ok"><span class="lb">턴 <span class="ic r">8♦</span>:</span> ✅ UTG 벳 16.7BB (남은 스택 대비 턴 올인이 더 확실한 밸류 추출 가능)</div><div class="row ok"><span class="lb">리버 <span class="ic k">Q♠</span>:</span> ✅ UTG 체크 후 콜 25BB (내 승률 82% vs 필요 18.4%)<div class="sub">나를 이기는 패: <span class="ic k">K♠</span><span class="ic k">10♠</span>, <span class="ic k">J♠</span><span class="ic k">10♠</span>, <span class="ic k">9♠</span><span class="ic k">8♠</span>, <span class="ic k">7♠</span><span class="ic k">6♠</span>, <span class="ic k">J♠</span><span class="ic k">9♠</span>, <span class="ic k">Q♠</span><span class="ic k">J♠</span>, <span class="ic k">Q♠</span><span class="ic k">10♠</span>, <span class="ic k">8♠</span><span class="ic k">7♠</span></div><div class="sub">내가 이기는 패: <span class="ic k">A♣</span><span class="ic k">K♠</span>, <span class="ic k">A♠</span><span class="ic k">Q♣</span>, <span class="ic k">K♣</span><span class="ic k">Q♣</span>, <span class="ic k">K♣</span><span class="ic r">K♦</span>, <span class="ic k">4♣</span><span class="ic r">4♦</span>, <span class="ic k">A♣</span><span class="ic k">4♣</span>, <span class="ic k">K♣</span><span class="ic k">J♣</span>, <span class="ic k">K♣</span><span class="ic k">10♣</span></div></div><div class="sum">💡 턴에서 남은 스택으로 올인을 하지 않아 상대 스페이드 플러시 드로우에 적은 비용으로 리버를 보여준 것이 아쉬운 핸드입니다.</div><div class="ft">ℹ️ 이 리뷰는 추정한 상대 범위를 바탕으로 한 참고용이에요. 이상한 부분이 있으면 !@리뷰문의 16 내용 으로 알려주시면 방장이 다시 확인해 드려요.</div></div></div></div></body></html>
