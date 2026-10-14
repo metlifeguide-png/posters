@@ -487,7 +487,10 @@ function key(k){
  const e=el(aK);if(!e)return;if(kLocked(aK)){toast('위 칸부터 먼저 입력해 주세요');return}e.focus();const k0=aK,s=e.selectionStart==null?e.value.length:e.selectionStart,en=e.selectionEnd==null?s:e.selectionEnd,v=e.value,b=v.slice(0,s).trimEnd();
  const put=t=>e.setRangeText(t,s,en,'end'),isB=BK.includes(k0);
  if(k==='↵'){next();return}
- if(k==='⌫'){if(s!==en)e.setRangeText('',s,en,'end');else if(s>0)e.setRangeText('',s-1,s,'end')}
+ if(k==='⌫'){if(s!==en)e.setRangeText('',s,en,'end');
+  else if(s>0){const pm=v.slice(0,s).match(/(,\s*)?([^\s,]+)\s+$/);   // 방금 누른 포지션(예: 'BTN ', ', BB ')은 한 번에 통째로 지움 (앞의 쉼표까지)
+   if(pm&&k0!=='memo'&&pos(pm[2]))e.setRangeText('',s-pm[0].length,s,'end');
+   else e.setRangeText('',s-1,s,'end')}}
  else if(PK.includes(k)){let p='';if(b&&k0!=='card'&&!isB)p=/,$/.test(b)?' ':', ';put(p+k+' ')}
  else if(['f','x','c','jam','?'].includes(k))put((!v.slice(0,s)||/\s$/.test(v.slice(0,s))?'':' ')+k);
  else if(isB&&/^[2-9TJQKA]$/.test(k)&&/[♠♥♦♣]$/.test(v.slice(0,s)))put(' '+k);
