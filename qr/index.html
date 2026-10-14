@@ -23,9 +23,9 @@ input[type=text],input[type=number],select{background:var(--pn);border:1px solid
 .ses{display:grid;grid-template-columns:1fr 1fr;gap:8px}.ses label{font-size:12px;color:var(--mu)}
 .lv{display:flex;align-items:center;gap:8px;grid-column:1/-1}.lv b{flex:1;text-align:center}
 .bl3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;grid-column:1/-1}
-.blw{margin-bottom:8px}.blh{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:6px}.blh b{color:var(--mu);font-size:14px}
+.blw{margin-bottom:8px}.blsel{font-size:14px;padding:6px 8px;max-width:60%}.blh{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:6px}.blh b{color:var(--mu);font-size:14px}
 .blf{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}.blf label{font-size:12px;color:var(--mu);display:flex;flex-direction:column;gap:2px}
-.blf input{font-size:19px;padding:8px;font-variant-numeric:tabular-nums}.blf input.au{color:var(--mu)}
+.blf input{font-size:19px;padding:8px;font-variant-numeric:tabular-nums}.blf input.au{color:var(--ac);font-style:italic}
 .blq{display:flex;gap:6px;overflow-x:auto;margin-top:8px;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
 .blq button{flex:none;border:1px solid var(--ln);background:var(--bg);border-radius:16px;padding:5px 10px;font-size:13px;cursor:pointer;white-space:nowrap;font-variant-numeric:tabular-nums}
 .blq button.on{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}
@@ -80,9 +80,10 @@ input[type=text],input[type=number],select{background:var(--pn);border:1px solid
 <div class="top"><div class="row"><button class="btn" id="back" style="padding:10px 18px;font-size:22px">←</button><div><h2 id="tt"></h2><span class="mu">새 핸드</span></div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><button class="btn" id="fresh" style="font-size:13px;padding:7px 12px">↺ 새로쓰기</button><span class="mu" id="sst" style="font-size:12px">자동 저장</span></div></div>
 <div class="pn ses"><div><label>테이블</label><select id="mx"><option value="9">9max</option><option value="8">8max</option><option value="7">7max</option><option value="6">6max</option><option value="5">5max</option><option value="4">4max</option><option value="3">3max</option><option value="2">2max (헤즈업)</option></select></div>
 <div><label>앤티 방식</label><select id="an"><option value="bb">BB앤티</option><option value="all">올앤티</option><option value="none">앤티 없음</option></select></div></div>
-<div class="pn blw" id="blw"><div class="blh"><b>blind</b><span class="mu" style="font-size:12px">BB만 넣으면 SB·앤티는 자동 · 아래에서 골라도 돼요</span></div>
+<div class="pn blw" id="blw"><div class="blh"><b>blind</b><select id="blsel" class="blsel"></select></div>
+<div class="mu" style="font-size:12px;margin:-2px 0 6px">BB만 넣으면 SB·앤티는 자동으로 채워져요 · 오른쪽 목록에서 골라도 돼요</div>
 <div class="blf"><label>SB<input id="bsb" type="text" inputmode="numeric" autocomplete="off" placeholder="500"></label><label>BB<input id="bbb" type="text" inputmode="numeric" autocomplete="off" placeholder="1000"></label><label>앤티<input id="bat" type="text" inputmode="numeric" autocomplete="off" placeholder="1000"></label></div>
-<div class="blq" id="blq"></div><input id="bi" type="hidden"></div>
+<input id="bi" type="hidden"></div>
 <div id="form"></div>
 <div class="pn pa" id="pa" style="margin-top:8px"></div>
 <div class="sv"><button class="btn" id="later">나중에</button><button class="btn pri" id="save">저장</button></div>
@@ -99,7 +100,7 @@ const cards=s=>{const r=[];String(s).replace(/([2-9TJQKA])([♠♥♦♣shdc])/g
 const dc=c=>c[0]+SR[c[1]],cH=a=>a.map(c=>{const x=dc(c);return /[♥♦]/.test(x)?`<span class="red">${x}</span>`:x}).join('');
 const FD=[
  {k:'stack',lb:'stack',ph:'포지션 스택 예) BTN 40000, BB 25000',hint:'포지션 + 스택(칩 그대로), 쉼표로 구분. 예) BTN 40000, BB 25000'},
- {k:'card',lb:'card',ph:'포지션 카드 예) BTN AsKd',hint:'내 포지션 + 내 카드. 예) BTN AsKd'},
+ {k:'card',lb:'hero card',ph:'포지션 카드 예) BTN AsKd',hint:'내 포지션 + 내 카드. 예) BTN AsKd'},
  {k:'pre',lb:'pre action',ph:'액션 예) CO 2500, BTN c, BB c',hint:'프리플랍 액션: 포지션 + 칩 금액/f/c/x/jam. 예) CO 2500, BTN c, BB c'},
  {k:'flopb',lb:'flop board',ph:'보드 3장 예) Ks7d2c',hint:'플랍 보드 3장. 예) Ks7d2c'},
  {k:'flop',lb:'flop action',ph:'액션 예) BB x, CO 3000, BB c',hint:'플랍 액션. 예) BB x, CO 3000, BB c'},
@@ -350,9 +351,9 @@ function blFill(){const S=T.S;$('#bsb').value=S.sb||'';$('#bbb').value=S.bb||'';
 function blSave(){const sb=blN($('#bsb').value),bb=blN($('#bbb').value),at=blN($('#bat').value);
  T.S.blind=bb?`${sb} ${bb} ${at}`:'';$('#bi').value=T.S.blind;bparse(T.S);sv();upd();blChips()}
 function blChips(){const S=T.S,an=$('#an').value;
- $('#blq').innerHTML=BLV.map(([a,b])=>`<button type="button" data-b="${a},${b}" class="${S.sb===a&&S.bb===b?'on':''}">${a.toLocaleString()}/${b.toLocaleString()}${an==='bb'?'('+b.toLocaleString()+')':''}</button>`).join('')
- const q=$('#blq'),on=q.querySelector('.on');if(on){const r=on.getBoundingClientRect(),w=q.getBoundingClientRect();q.scrollLeft+=r.left-w.left-(w.width-r.width)/2}}   // 고른 블라인드를 가운데로
-function blInput(e){const id=e.target.id;blMan[id]=1;e.target.classList.remove('au');
+ $('#blsel').innerHTML='<option value="">자동입력 ▼</option>'+BLV.map(([a,b])=>`<option value="${a},${b}">${a.toLocaleString()} / ${b.toLocaleString()}${an==='bb'?' (앤티 '+b.toLocaleString()+')':''}</option>`).join('');$('#blsel').value=BLV.some(([a,b])=>S.sb===a&&S.bb===b)?S.sb+','+S.bb:''
+ }   // 고른 블라인드를 가운데로
+function blInput(e){const id=e.target.id;blMan[id]=e.target.value.trim()?1:0;e.target.classList.remove('au');
  if(id==='bbb'){const bb=blN(e.target.value);
   if(!blMan.bsb){$('#bsb').value=bb?f(bb/2):'';$('#bsb').classList.add('au')}
   if(!blMan.bat&&$('#an').value!=='all'){$('#bat').value=bb?blAnte(bb):'';$('#bat').classList.add('au')}}
@@ -520,7 +521,7 @@ function init(){mk();kp();
    if(!confirm(`'${t.name}' 대회를 삭제할까요?`+(t.hands.length?`\n안에 저장한 핸드 ${t.hands.length}개도 함께 지워지고 되돌릴 수 없어요.`:'')))return;
    D.tours=D.tours.filter(x=>x!==t);sv();home();toast('삭제했어요')}};
  $('#back').onclick=()=>{if(window.top===window&&history.state&&history.state.qr==='app'){history.back()}else home()};window.__qrBack=()=>{if(!$('#app').hidden){home();return true}return false};addEventListener('popstate',()=>{if(!$('#app').hidden)home()});['bsb','bbb','bat'].forEach(i=>{$('#'+i).oninput=blInput;$('#'+i).addEventListener('focus',()=>setKb(false))});
- $('#blq').onclick=e=>{const b=e.target.closest('button[data-b]');if(!b)return;const [a,c]=b.dataset.b.split(',').map(Number);
+ $('#blsel').onchange=e=>{const v=e.target.value;if(!v)return;const [a,c]=v.split(',').map(Number);
   $('#bsb').value=a;$('#bbb').value=c;if($('#an').value!=='all'||!blN($('#bat').value))$('#bat').value=blAnte(c);blMan={};blSave()};
  $('#mx').onchange=e=>{T.S.max=+e.target.value;sv();upd()};$('#an').onchange=e=>{T.S.ante=e.target.value;const bb=blN($('#bbb').value);if(bb&&!blMan.bat){$('#bat').value=e.target.value==='bb'?bb:e.target.value==='none'?0:$('#bat').value;blSave()}else{sv();upd();blChips()}};
  if(PC){$('#kx').textContent='✕ 키패드 끄기 (직접 입력)';$('#kx').title='키패드 창을 끄고 키보드로 직접 입력해요. 아래 [⌨ 키패드 켜기]로 다시 켤 수 있어요'}
@@ -533,7 +534,7 @@ function init(){mk();kp();
   h.addEventListener('pointerup',end);h.addEventListener('pointercancel',end)}
  $('#kt').onclick=()=>{if(kOff)setKOff(false);if(aK==='memo')aK='show';el(aK).focus();setKb(true)};addEventListener('resize',sync);
  $('#later').onclick=()=>saveH(true);
- $('#fresh').onclick=()=>{if(K.some(k=>el(k).value.trim())&&!confirm('입력한 내용을 모두 지우고 새로 쓸까요?'))return;ed=null;T.form={};setL({});aK='stack';sv();upd();window.scrollTo(0,0);el('stack').focus();toast('새로 쓰기')};$('#save').onclick=()=>saveH(false);
+ $('#fresh').onclick=()=>{if(K.some(k=>el(k).value.trim())&&!confirm('입력한 내용을 모두 지우고 새로 쓸까요?'))return;ed=null;T.form={};setL({});T.S.blind='';T.S.sb=0;T.S.bb=0;T.S.at=0;$('#bi').value='';blFill();aK='stack';sv();upd();window.scrollTo(0,0);el('stack').focus();toast('새로 쓰기 · 블라인드도 초기화')};$('#save').onclick=()=>saveH(false);
  $('#exp').onclick=()=>{const hs=T.hands.filter(h=>!h.d&&h.S.bb).reverse(),t=hs.map(ps).join('\n\n\n');if(hs.length<T.hands.filter(h=>!h.d).length)toast('BB를 안 적은 핸드는 빼고 복사했어요');if(!t){toast('내보낼 핸드가 없습니다');return}cp(t);
   try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));a.download=T.name+'.txt';a.click()}catch(e){}};
  $('#hands').onclick=e=>{const b=e.target.closest('button[data-a]');if(!b)return;const id=b.closest('.hc').dataset.id,h=T.hands.find(x=>x.id===id),a=b.dataset.a;
