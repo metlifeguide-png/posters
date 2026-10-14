@@ -58,6 +58,9 @@ input[type=text],input[type=number],select{background:var(--pn);border:1px solid
 #kh{display:flex;align-items:center;gap:8px;padding:2px 2px 6px;font-size:12.5px;color:var(--mu);line-height:1.3;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}#kg{flex:none;font-size:18px;color:var(--mu)}#kl{flex:1;min-width:0}
 #kh b{color:var(--ac)}#kx{flex:none;font-size:12.5px;padding:4px 10px}
 #kt{position:fixed;left:12px;bottom:calc(14px + env(safe-area-inset-bottom,0px));z-index:20;box-shadow:0 2px 10px rgba(0,0,0,.25);padding:12px 16px;font-weight:700}
+.seg{display:flex;gap:6px;margin:8px 0}.seg .btn{flex:1;padding:11px 0;font-size:16px}.seg .btn.on{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}
+.pubh{margin:6px 0 2px;font-size:14px}.pubh b{color:var(--tx)}.vl{font-size:13.5px;margin:0 0 8px;color:var(--mu);line-height:1.6}.pubadd{font-size:13px;padding:6px 12px;margin:2px 0 4px}
+.rv{margin-top:8px;border-top:1px solid var(--ln);padding-top:8px}.rv .rr{padding:6px 0;border-bottom:1px solid var(--ln);font-size:15px}.rv .rr:last-child{border:0}.rv .rr b{display:inline-block;min-width:38px;color:var(--ac)}.rv .eq{font-weight:700;color:var(--gd)}.rv .nt{font-size:13px;color:var(--mu)}
 [hidden]{display:none!important}
 </style></head><body><main>
 <section id="auth">
@@ -78,7 +81,8 @@ input[type=text],input[type=number],select{background:var(--pn);border:1px solid
 </section>
 <section id="app" hidden>
 <div class="top"><div class="row"><button class="btn" id="back" style="padding:10px 18px;font-size:22px">←</button><div><h2 id="tt"></h2><span class="mu">새 핸드</span></div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><button class="btn" id="fresh" style="font-size:13px;padding:7px 12px">↺ 새로쓰기</button><span class="mu" id="sst" style="font-size:12px">자동 저장</span></div></div>
-<div class="pn ses"><div><label>테이블</label><select id="mx"><option value="9">9max</option><option value="8">8max</option><option value="7">7max</option><option value="6">6max</option><option value="5">5max</option><option value="4">4max</option><option value="3">3max</option><option value="2">2max (헤즈업)</option></select></div>
+<div class="seg"><button class="btn on" id="tb0">✍️ 기록</button><button class="btn" id="tb1">🔍 복기</button></div>
+<div id="rec"><div class="pn ses"><div><label>테이블</label><select id="mx"><option value="9">9max</option><option value="8">8max</option><option value="7">7max</option><option value="6">6max</option><option value="5">5max</option><option value="4">4max</option><option value="3">3max</option><option value="2">2max (헤즈업)</option></select></div>
 <div><label>앤티 방식</label><select id="an"><option value="bb">BB앤티</option><option value="all">올앤티</option><option value="none">앤티 없음</option></select></div></div>
 <div class="pn blw" id="blw"><div class="blh"><b>blind</b><select id="blsel" class="blsel"></select></div>
 <div class="mu" style="font-size:12px;margin:-2px 0 6px">BB만 넣으면 SB·앤티는 자동으로 채워져요 · 오른쪽 목록에서 골라도 돼요</div>
@@ -87,8 +91,9 @@ input[type=text],input[type=number],select{background:var(--pn);border:1px solid
 <div id="form"></div>
 <div class="pn pa" id="pa" style="margin-top:8px"></div>
 <div class="sv"><button class="btn" id="later">나중에</button><button class="btn pri" id="save">저장</button></div>
-<div class="top"><h2 id="hh">저장한 핸드</h2><button class="btn" id="exp" style="font-size:13px;padding:7px 10px">전체 .txt 복사·내보내기</button></div>
-<div id="hands"></div>
+</div>
+<div id="rev" hidden><div class="top"><h2 id="hh">저장한 핸드</h2><button class="btn" id="exp" style="font-size:13px;padding:7px 10px">전체 .txt 복사·내보내기</button></div>
+<div id="hands"></div></div>
 </section></main><div id="kw" hidden><div id="kh"><span id="kg">⠿</span><span id="kl"></span><button class="btn" id="kx">▼ 접기</button></div><div id="kp"></div></div><button class="btn pri" id="kt" hidden>⌨ 키패드</button><div id="ts"></div>
 <script>
 const $=s=>document.querySelector(s),f=x=>String(+(+x).toFixed(2)),esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
@@ -99,8 +104,10 @@ const pos=t=>AL[String(t).toUpperCase()];
 const cards=s=>{const r=[];String(s).replace(/([2-9TJQKA])([♠♥♦♣shdc])/gi,(m,a,b)=>{r.push(a.toUpperCase()+(SY[b]||b.toLowerCase()))});return r};
 const dc=c=>c[0]+SR[c[1]],cH=a=>a.map(c=>{const x=dc(c);return /[♥♦]/.test(x)?`<span class="red">${x}</span>`:x}).join('');
 const FD=[
+ {k:'card',lb:'Hero',ph:'내 포지션 + 카드 예) BTN AsKd',hint:'내 포지션 + 내 카드. 예) BTN AsKd'},
+ {k:'show',lb:'Villain',ph:'모르면 비움 · 예) BB AhKh',hint:'공개된 상대 카드 (모르면 비워 두세요). 여러 명이면 [＋ 상대 추가]. 예) BB AhKh, SB QdQc'},
  {k:'stack',lb:'stack',ph:'포지션 스택 예) BTN 40000, BB 25000',hint:'포지션 + 스택(칩 그대로), 쉼표로 구분. 예) BTN 40000, BB 25000'},
- {k:'card',lb:'hero card',ph:'포지션 카드 예) BTN AsKd',hint:'내 포지션 + 내 카드. 예) BTN AsKd'},
+ 
  {k:'pre',lb:'pre action',ph:'액션 예) CO 2500, BTN c, BB c',hint:'프리플랍 액션: 포지션 + 칩 금액/f/c/x/jam. 예) CO 2500, BTN c, BB c'},
  {k:'flopb',lb:'flop board',ph:'보드 3장 예) Ks7d2c',hint:'플랍 보드 3장. 예) Ks7d2c'},
  {k:'flop',lb:'flop action',ph:'액션 예) BB x, CO 3000, BB c',hint:'플랍 액션. 예) BB x, CO 3000, BB c'},
@@ -108,7 +115,7 @@ const FD=[
  {k:'turn',lb:'turn action',ph:'액션 예) BB x, CO 8000, BB c',hint:'턴 액션. 예) BB x, CO 8000, BB c'},
  {k:'riverb',lb:'river board',ph:'보드 1장 예) 2s',hint:'리버 카드 1장. 예) 2s'},
  {k:'river',lb:'river action',ph:'액션 예) BB x, CO 20000, BB c',hint:'리버 액션. 예) BB x, CO 20000, BB c'},
- {k:'show',lb:'show',ph:'쇼다운 카드 예) BB AhKh (멀티=쉼표)',hint:'쇼다운된 상대 카드. 멀티면 쉼표로. 예) BB AhKh, SB QdQc'},
+ 
  {k:'memo',lb:'memo',ph:'메모 (일반 키보드)',hint:'자유 메모 · 일반 키보드로 입력'}
 ],K=FD.map(d=>d.k),BK=['flopb','turnb','riverb'],NM=['프리','플랍','턴','리버'];
 /* 예전 저장 형식(hero, 'Ks7d2c: BTN x' 한 줄)을 새 형식으로 변환 */
@@ -117,7 +124,7 @@ function norm(L){L={...L};if(L.card===undefined&&L.hero!==undefined)L.card=L.her
   if(raw){const ci=raw.indexOf(':');if(ci>=0){l=raw.slice(0,ci);r=raw.slice(ci+1)}else if(cards(raw.split(/[\s,]/)[0]).length){l=raw;r=''}}
   L[s+'b']=l.trim();L[s]=r.trim()}});return L}
 const BLV=[[50,100],[100,200],[150,300],[200,400],[300,600],[400,800],[500,1000],[600,1200],[800,1600],[1000,2000],[1500,3000],[2000,4000],[2500,5000],[3000,6000],[4000,8000],[5000,10000]];
-let D={tours:[]},T=null,ed=null,aK='stack',R=null,U=null,pend=null;
+let D={tours:[]},T=null,ed=null,aK='card',R=null,U=null,pend=null;
 const MTOK=(()=>{try{return localStorage.getItem("mtok")||""}catch(e){return ""}})();   // 👤 뚝섬 회원 token (홈 로그인)
 const API="https://211-233-211-164.sslip.io",H={"Content-Type":"application/json","ngrok-skip-browser-warning":"true"};
 // 📣 광고 띠 (광고 자리 'bar' = 휴대폰 하단 고정 띠, 'side' = PC 좌우 여백 세로 배너)
@@ -280,6 +287,78 @@ function sim(L,S){
  return{u,rows,W,ev,done,dim,q:[...new Set(q)],board,hp,hc,st,sh,alive,pot:settled,unc,order,ended,vil,es,bbv,sbv,at,ante};
 }
 
+/*eqrv*/ // 🔍 복기 탭 전용 에퀴티 계산 (기록 화면에서는 쓰지 않음): 카드 7장 평가 + 전수 계산
+const EQR='23456789TJQKA',EQS='shdc',eqI=c=>EQR.indexOf(c[0])*4+EQS.indexOf(c[1]);
+function eqTop(m){const y=(m<<1)|((m>>12)&1);for(let t=13;t>=4;t--)if(((y>>(t-4))&31)===31)return t-1;return -1}
+function eqPack(m,n){let v=0,c=0;for(let r=12;r>=0&&c<n;r--)if((m>>r)&1){v=v*16+r;c++}return v}
+function ev7(a){
+ const rc=[0,0,0,0,0,0,0,0,0,0,0,0,0],sc=[0,0,0,0],sm=[0,0,0,0];let m=0;
+ for(let i=0;i<7;i++){const r=a[i]>>2,s=a[i]&3;rc[r]++;sc[s]++;sm[s]|=1<<r;m|=1<<r}
+ let fl=-1;for(let s=0;s<4;s++)if(sc[s]>=5){fl=s;const t=eqTop(sm[s]);if(t>=0)return 8*1048576+t}
+ let q=-1;const t3=[],p2=[];
+ for(let r=12;r>=0;r--){const c=rc[r];if(c===4)q=r;else if(c===3)t3.push(r);else if(c===2)p2.push(r)}
+ if(q>=0){let k=-1;for(let r=12;r>=0;r--)if(r!==q&&rc[r]){k=r;break}return 7*1048576+q*16+k}
+ if(t3.length&&(t3.length>1||p2.length)){const p=Math.max(t3.length>1?t3[1]:-1,p2.length?p2[0]:-1);return 6*1048576+t3[0]*16+p}
+ if(fl>=0)return 5*1048576+eqPack(sm[fl],5);
+ const st=eqTop(m);if(st>=0)return 4*1048576+st;
+ if(t3.length){let v=t3[0],n=0;for(let r=12;r>=0&&n<2;r--)if(r!==t3[0]&&rc[r]){v=v*16+r;n++}return 3*1048576+v}
+ if(p2.length>=2){let k=-1;for(let r=12;r>=0;r--)if(r!==p2[0]&&r!==p2[1]&&rc[r]){k=r;break}return 2*1048576+p2[0]*256+p2[1]*16+k}
+ if(p2.length===1){let v=p2[0],n=0;for(let r=12;r>=0&&n<3;r--)if(r!==p2[0]&&rc[r]){v=v*16+r;n++}return 1*1048576+v}
+ return eqPack(m,5)}
+// hands: [[a,b],...] 정수 카드 · board: 정수 카드 0~5장 → 사람별 에퀴티(0~1) 배열 (남은 카드를 전부 세는 정확한 계산)
+function eqCalc(hands,board){
+ const used=new Set();hands.forEach(h=>h.forEach(c=>used.add(c)));board.forEach(c=>used.add(c));
+ const deck=[];for(let c=0;c<52;c++)if(!used.has(c))deck.push(c);
+ const n=hands.length,need=5-board.length,win=new Float64Array(n),sv=hands.map(h=>[h[0],h[1],0,0,0,0,0]),sc=new Array(n);let tot=0;
+ const bd=[0,0,0,0,0];board.forEach((c,i)=>bd[i]=c);
+ const fin=()=>{let best=-1,cnt=0;for(let i=0;i<n;i++){const a=sv[i];for(let j=0;j<5;j++)a[2+j]=bd[j];const s=ev7(a);sc[i]=s;if(s>best){best=s;cnt=1}else if(s===best)cnt++}
+  for(let i=0;i<n;i++)if(sc[i]===best)win[i]+=1/cnt;tot++};
+ const rec=(st,k)=>{if(k===need){fin();return}for(let i=st;i<deck.length;i++){bd[5-need+k]=deck[i];rec(i+1,k+1)}};
+ rec(0,0);return Array.from(win,x=>x/tot)}
+
+/*pubcard*/ // 🃏 맨 위 '공개된 카드' 블록(Hero + Villain 여러 명, 모르면 비움) · 🔍 기록/복기 탭
+function mkPub(F){
+ const c=F.querySelector('.ln[data-k="card"]'),s=F.querySelector('.ln[data-k="show"]');if(!c||!s)return;
+ const h=document.createElement('div');h.className='pubh';h.innerHTML='<b>공개된 카드</b> <span class="mu">알고 있는 카드만 적어 두세요 · 모르면 비움</span>';F.insertBefore(h,c);
+ const v=document.createElement('div');v.id='vl';v.className='vl';s.after(v);
+ const a=document.createElement('button');a.type='button';a.className='btn pubadd';a.id='vadd';a.textContent='＋ 상대 추가';s.after(a);
+ a.onclick=()=>{const i=el('show'),t=i.value.trim();
+  if(t&&!/,$/.test(t)){const pm=t.split(',').pop().trim().match(/^(\S+)\s+(.*)$/);if(pm&&cards(pm[2]).length>=2)i.value=t+','}
+  i.focus();const n=i.value.length;try{i.setSelectionRange(n,n)}catch(e){}chg()}}
+function vlDraw(){const e=$('#vl');if(!e||!R)return;const sh=Object.entries(R.sh||{}),a=[];
+ if(R.hp)a.push(`Hero ${R.hp} ${R.hc.length?cH(R.hc):'<span class="mu">카드 비움</span>'}`);else a.push('<span class="mu">Hero 포지션·카드를 먼저 적어 주세요</span>');
+ sh.forEach(([p,c],i)=>a.push(`Villain${i+1} ${p} ${cH(c)}`));
+ if(!sh.length)a.push('<span class="mu">Villain 비움</span>');
+ e.innerHTML=a.join(' · ')}
+function tab(n){TAB=n;const r=$('#rec'),v=$('#rev');if(!r||!v)return;r.hidden=n!==0;v.hidden=n!==1;
+ $('#tb0').classList.toggle('on',n===0);$('#tb1').classList.toggle('on',n===1);if(n===1&&T)hands();sync();window.scrollTo(0,0)}
+function revToggle(b,h){const hc=b.closest('.hc');let d=hc.querySelector('.rv');
+ if(d){d.remove();b.textContent='🔍 스트리트별 보기';return}
+ d=document.createElement('div');d.className='rv';d.innerHTML='<span class="nt">계산 중…</span>';hc.appendChild(d);b.textContent='▲ 접기';
+ setTimeout(()=>{try{d.innerHTML=revView(h)}catch(e){d.innerHTML='<span class="nt">계산 중 오류: '+esc(e.message)+'</span>'}},30)}
+function revView(h){   // 저장한 핸드를 다시 보여 주고, 스트리트 시작 시점의 내 승률을 계산 (상대 카드를 다 알 때만)
+ const Q=sim(h.L,h.S),KB=[0,3,4,5],out=[],hero=Q.hp,hc=Q.hc||[],sh=Q.sh||{},eqs=[];
+ const fold=(i,p)=>Q.ev.some(e=>e.k==='f'&&e.p===p&&(i===0?e.st<=0:e.st<i));
+ const seats=new Set([...Object.keys(Q.st),...Q.ev.map(e=>e.p),...Object.keys(sh)]);if(hero)seats.add(hero);
+ const all=[...hc,...Object.values(sh).flat(),...Q.board],dup=all.length!==new Set(all).size;
+ let hdr=`<div class="rr"><b>Hero</b> ${hero||'?'} ${hc.length?cH(hc):'<span class="nt">카드 없음</span>'}</div>`;
+ hdr+=Object.keys(sh).length?Object.entries(sh).map(([p,c],i)=>`<div class="rr"><b>V${i+1}</b> ${p} ${cH(c)}</div>`).join(''):'<div class="rr nt">공개된 상대 카드가 없어서 승률은 계산하지 않아요 (상대 패를 알면 기록 화면 맨 위에 적어 두세요)</div>';
+ for(let i=0;i<4;i++){
+  if(Q.board.length<KB[i])break;
+  const row=Q.rows.find(r=>r.s===NM[i]),bd=Q.board.slice(0,KB[i]);let msg='';
+  if(dup)msg='<span class="nt">중복 카드가 있어요</span>';
+  else if(!hero||hc.length<2)msg='<span class="nt">Hero 카드가 없어요</span>';
+  else if(fold(i,hero))msg='<span class="nt">이미 폴드</span>';
+  else{const opp=[...seats].filter(p=>p!==hero&&!fold(i,p)),unk=opp.filter(p=>!(sh[p]&&sh[p].length>=2));
+   if(!opp.length)msg='<span class="nt">상대 없음</span>';
+   else if(unk.length)msg=Object.keys(sh).length?`<span class="nt">패를 모르는 상대(${unk.join(', ')})가 있어요</span>`:'';
+   else{const r=eqCalc([hc.map(eqI),...opp.map(p=>sh[p].map(eqI))],bd.map(eqI));eqs.push({i,v:r[0]});
+    msg=`<span class="eq">내 승률 ${Math.round(r[0]*100)}%</span>`+(opp.length>1?` <span class="nt">(${opp.length+1}명)</span>`:'')}}
+  out.push(`<div class="rr"><b>${NM[i]}</b> ${bd.length?cH(bd):''} ${msg}${row?`<div class="nt">${esc(row.t||'')} · 팟 ${f(row.pot*Q.u)}${row.rq||''}</div>`:''}</div>`)}
+ let note='';for(let k=1;k<eqs.length;k++){const a=eqs[k-1].v,b=eqs[k].v;if(Math.abs(a-b)>=0.2)note+=`<div class="rr nt">${NM[eqs[k].i]}에서 내 승률이 ${Math.round(a*100)}% → ${Math.round(b*100)}%로 ${b<a?'크게 떨어졌어요':'크게 올랐어요'}</div>`}
+ const memo=h.L.memo?`<div class="rr nt">메모: ${esc(h.L.memo)}</div>`:'';
+ return `<div class="nt" style="margin-bottom:4px">승률은 '그 스트리트가 시작될 때' 기준이고, 공개된 카드로만 계산해요</div>${hdr}${out.join('')}${note}${memo}`}
+
 /* ---------- 내보내기 ---------- */
 const rom=n=>{let r='';[[50,'L'],[40,'XL'],[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']].forEach(([v,s])=>{while(n>=v){r+=s;n-=v}});return r};
 const hash=s=>{let h=7;for(const c of s)h=(h*31+c.charCodeAt(0))%900000000;return 100000000+h};
@@ -339,7 +418,7 @@ function home(){flush();T=null;$('#app').hidden=true;$('#home').hidden=false;syn
  const l=[...D.tours].sort((a,b)=>b.ts-a.ts);$('#tlh').hidden=!l.length;
  $('#tl').innerHTML=l.map(t=>`<div class="tc" data-id="${t.id}"><b style="flex:1;min-width:0;overflow-wrap:anywhere">${esc(t.name)}</b><span class="mu" style="white-space:nowrap">${t.hands.length}핸드</span><span style="display:flex;gap:4px;flex-shrink:0"><button class="btn" data-a="ren" style="font-size:13px;padding:6px 9px" aria-label="대회 이름 수정">✏️ 수정</button><button class="btn" data-a="del" style="font-size:13px;padding:6px 9px" aria-label="대회 삭제">🗑 삭제</button></span></div>`).join('')}
 function conv(L,bb){L={...L};['stack','pre','flop','turn','river'].forEach(k=>{if(L[k])L[k]=L[k].split(',').map(x=>x.replace(/^(\s*\S+\s+)(\d+(?:\.\d+)?)(bb)?/i,(m,a,n)=>a+f(n*bb))).join(',')});return L}
-function enter(t){if(t.S.v!==2){if(t.S.bb>0&&t.form)t.form=conv(norm(t.form),t.S.bb);t.S.v=2}try{if(window.top===window&&!(history.state&&history.state.qr==='app'))history.pushState({qr:'app'},'')}catch(e){}T=t;ed=null;$('#home').hidden=true;$('#app').hidden=false;kOn=true;sync();$('#tt').textContent=t.name;ses();setL(t.form||{});aK='stack';upd();hands();window.scrollTo(0,0)}
+function enter(t){if(t.S.v!==2){if(t.S.bb>0&&t.form)t.form=conv(norm(t.form),t.S.bb);t.S.v=2}try{if(window.top===window&&!(history.state&&history.state.qr==='app'))history.pushState({qr:'app'},'')}catch(e){}T=t;ed=null;$('#home').hidden=true;$('#app').hidden=false;kOn=true;sync();$('#tt').textContent=t.name;ses();setL(t.form||{});aK='card';tab(0);upd();hands();window.scrollTo(0,0)}
 function bparse(S){const n=(S.blind||'').match(/\d+(?:\.\d+)?/g)||[];S.sb=+n[0]||0;S.bb=+n[1]||0;S.at=+n[2]||0}
 function ses(){const S=T.S;if(S.blind===undefined)S.blind=S.bb?`${S.sb} ${S.bb} ${S.at}`:'';bparse(S);$('#mx').value=S.max;$('#an').value=S.ante;$('#bi').value=S.blind;blFill()}
 /*blind3*/ // 🎚 blind: SB · BB · 앤티 세 칸 + 자주 쓰는 블라인드 버튼 (10/14) · 저장 형식은 그대로 S.blind = "SB BB 앤티"
@@ -359,15 +438,15 @@ function blInput(e){const id=e.target.id;blMan[id]=e.target.value.trim()?1:0;e.t
   if(!blMan.bat&&$('#an').value!=='all'){$('#bat').value=bb?blAnte(bb):'';$('#bat').classList.add('au')}}
  blSave()}
 function mk(){const F=$('#form');F.innerHTML=FD.map(d=>`<div class="ln" data-k="${d.k}"><b>${d.lb}:</b><input data-k="${d.k}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${d.ph}" ${d.k==='memo'?'type="text"':'type="text" inputmode="none"'}></div>`).join('');
- F.addEventListener('focusin',e=>{const k=e.target.dataset.k;if(K.includes(k)){if(kLocked(k)){aK=kFirst();setTimeout(()=>el(aK).focus(),0);toast('위 칸부터 먼저 입력해 주세요');return}aK=k;mark();setKb(k!=='memo');if(k!=='memo')setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}});F.addEventListener('input',chg);F.addEventListener('click',()=>setTimeout(kpApply,0));F.addEventListener('keyup',kpApply);F.addEventListener('keydown',e=>{if(PC&&e.key==='Enter'&&e.target.dataset&&e.target.dataset.k){e.preventDefault();next()}});F.addEventListener('click',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k&&K.includes(k)&&k!=='memo'&&!kOn&&!kLocked(k)){aK=k;mark();setKb(true);setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}})}
-let kOn=true;
+ mkPub(F);F.addEventListener('focusin',e=>{const k=e.target.dataset.k;if(K.includes(k)){if(kLocked(k)){aK=kFirst();setTimeout(()=>el(aK).focus(),0);toast('위 칸부터 먼저 입력해 주세요');return}aK=k;mark();setKb(k!=='memo');if(k!=='memo')setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}});F.addEventListener('input',chg);F.addEventListener('click',()=>setTimeout(kpApply,0));F.addEventListener('keyup',kpApply);F.addEventListener('keydown',e=>{if(PC&&e.key==='Enter'&&e.target.dataset&&e.target.dataset.k){e.preventDefault();next()}});F.addEventListener('click',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k&&K.includes(k)&&k!=='memo'&&!kOn&&!kLocked(k)){aK=k;mark();setKb(true);setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}})}
+let kOn=true,TAB=0;
 const PC=matchMedia('(hover:hover) and (pointer:fine)').matches; /* PC(마우스+키보드): 플로팅 키패드도 뜨고, [키패드 끄기]를 누르면 실제 키보드로 직접 입력 (10/14) */
 let kOff=false;try{kOff=PC&&localStorage.getItem('qr_kpoff')==='1'}catch(e){}   // PC에서 키패드를 끈 상태 (다른 칸을 눌러도 안 뜸, 기기에 기억)
 function setKOff(v){kOff=v;try{localStorage.setItem('qr_kpoff',v?'1':'0')}catch(e){}}
 let ky=null;try{ky=JSON.parse(localStorage.getItem('qr_ky')||'null')}catch(e){}
 function yClamp(y,h){return Math.min(Math.max(4,innerHeight-h),Math.max(4,y))}   // 아래 끝 = 화면(홈 안에선 아래 탭 위) 맨 아래까지 붙일 수 있음 (10/11, 예전엔 70px 띄움)
 function placeKb(){const w=$('#kw');if(w.hidden)return;const h=w.offsetHeight;w.style.top=yClamp(ky==null?(PC?innerHeight-h:(innerHeight-h)/2):ky*innerHeight,h)+'px'}   // PC는 처음엔 화면 아래쪽
-function sync(){const a=!$('#app').hidden,on=a&&kOn&&!kOff;$('#kw').hidden=!on;$('#kt').hidden=!(a&&!on);
+function sync(){const a=!$('#app').hidden&&TAB===0,on=a&&kOn&&!kOff;$('#kw').hidden=!on;$('#kt').hidden=!(a&&!on);
  $('#kt').textContent=kOff?'⌨ 키패드 켜기':'⌨ 키패드';
  placeKb();abarHide('kp',!!on);document.documentElement.style.setProperty('--kh',(on?Math.max(0,innerHeight-$('#kw').getBoundingClientRect().top):0)+'px')}
 function setKb(v){kOn=v;sync()}
@@ -439,9 +518,9 @@ function kpState(){
  if(k0==='show'){
   const hp=pos((el('card').value.trim().split(/\s+/)[0])||''),used=prev.map(x=>pos(x.split(/\s+/)[0])).filter(Boolean);
   const cand=seat.filter(p=>p!==hp&&!used.includes(p)&&p!==P);
-  if(!pm)return wantPos(cand,prev.length?'다른 상대도 보여줬으면 <span class="st">포지션</span> · 아니면 ↵':'① 패를 보여준 상대 <span class="st">포지션</span>을 누르세요');
+  if(!pm)return wantPos(cand,prev.length?'다른 상대 카드도 알면 <span class="st">포지션</span> · 모르면 비우고 ↵':'① 카드를 아는 상대 <span class="st">포지션</span> (모르면 비우고 ↵)');
   const c=kpCards(rest,2,kpUsed(k0,b));if(!c)return bad;add(c.en);if(c.done)add(cand.map(kpLab));
-  return{en,msg:c.done?'✅ 다른 상대도 있으면 <span class="st">포지션</span> · 아니면 ↵':`② ${pm[1]} 카드: `+c.msg}}
+  return{en,msg:c.done?'✅ 다른 상대 카드도 알면 <span class="st">포지션</span> · 아니면 ↵':`② ${pm[1]} 카드: `+c.msg}}
  if(KACT.includes(k0)){   /*kpturn*/ // 🔁 차례대로: 프리 UTG→BB · 플랍부터 SB→BTN (stack 칸에 적은 사람만 · 폴드·올인한 사람 빼고)
   const lastDone=pm&&rest&&/^(\d+(\.\d*)?|f|x|c|jam)\s*\??$/i.test(rest);
   const TN=kpTurn(k0,lastDone?[...prev,last]:prev);
@@ -469,16 +548,16 @@ function kpPos(){const w=document.querySelector('#kp .k9');if(!w)return;const n=
  w.style.gridTemplateColumns=`repeat(${n},1fr)`;
  w.querySelectorAll('button').forEach((b,i)=>{b.style.display=i<9-n?'none':'';if(b.dataset.k==='SB')b.textContent=n===2?'SB(BTN)':'SB'})}
 /*lock*/ // 🔒 위에서부터 차례로: stack → card → pre(액션 한 바퀴 끝) → flop board(3장) → flop → turn board → turn → river board → river → show (핸드가 끝나 흐려진 칸은 건너뜀 · memo는 항상 열림)
-const KC=['stack','card','pre','flopb','flop','turnb','turn','riverb','river','show'];
+const KC=['card','show','stack','pre','flopb','flop','turnb','turn','riverb','river'];
 function kOk(k){if(!R)return true;
  if(k==='stack')return !!(R.st&&Object.keys(R.st).length);
  if(k==='card')return !!(R.hp&&R.hc&&R.hc.length>=2);
  if(k==='pre'||k==='flop'||k==='turn'||k==='river')return !!(R.done&&R.done[k]);
  if(k==='show')return true;
  return cards((el(k)||{}).value||'').length>=(k==='flopb'?3:1)}
-function kFirst(){for(const k of KC){if(k==='show')break;if(R&&R.dim&&R.dim[k])continue;if(!kOk(k))return k}return 'stack'}
+function kFirst(){for(const k of KC){if(k==='show')continue;if(R&&R.dim&&R.dim[k])continue;if(!kOk(k))return k}return 'stack'}
 function kLocked(k){if(!R||k==='stack'||k==='memo')return false;const i=KC.indexOf(k);if(i<0)return false;for(let j=0;j<i;j++){const q=KC[j];if(R.dim&&R.dim[q])continue;if(!kOk(q))return true}return false}
-function upd(){R=sim(getL(),T.S);kpPos();
+function upd(){R=sim(getL(),T.S);kpPos();vlDraw();
  $('#pa').innerHTML=(R.rows.length?R.rows.map(r=>`<div class="r"><b>${r.s}</b>${r.board?cH(cards(r.board))+' ':''}${esc(r.t)} · 팟 ${f(r.pot*R.u)}${r.rq}</div>`).join(''):'<span class="mu">입력하면 여기에 해석이 나옵니다</span>')+R.W.map(w=>`<div class="w">⚠ ${esc(w)}</div>`).join('');
  document.querySelectorAll('.ln').forEach(n=>{n.classList.toggle('dim',!!R.dim[n.dataset.k]);const lk=kLocked(n.dataset.k);n.classList.toggle('lock',lk);const i=n.querySelector('input');if(i)i.readOnly=lk});
  if(kLocked(aK)){const was=document.activeElement===el(aK);aK=kFirst();if(was)el(aK).focus()}mark()}
@@ -507,18 +586,18 @@ function kp(){const B=(k,c='')=>`<button class="${c}" data-k="${k}">${k}</button
  {let t1=null,t2=null;const stop=()=>{clearTimeout(t1);clearInterval(t2);t1=t2=null};
   $('#kp').addEventListener('pointerdown',e=>{const b=e.target.closest('button');if(!b||b.dataset.k!=='⌫')return;e.preventDefault();stop();key('⌫');t1=setTimeout(()=>{t2=setInterval(()=>{const x=el(aK);if(!x||!x.value){stop();return}key('⌫')},55)},350)});
   ['pointerup','pointercancel','pointerleave'].forEach(n=>$('#kp').addEventListener(n,stop));addEventListener('blur',stop)}}
-function hands(){const H=T.hands;$('#hh').textContent=`저장한 핸드 (${H.length})`;
+function hands(){const H=T.hands;$('#tb1').textContent='🔍 복기 ('+H.length+')';$('#hh').textContent=`저장한 핸드 (${H.length})`;
  $('#hands').innerHTML=H.length?H.map(h=>{const Q=sim(h.L,h.S),miss=!Q.hp||!Object.keys(Q.st).length||h.d,qs=Q.q.length;
   return `<div class="hc" data-id="${h.id}"><div class="t">${Q.hp||'?'} vs ${Q.vil.join(', ')||'?'} ${h.S.blind?'· '+esc(h.S.blind):''}</div>
   <div>${cH(Q.hc)} ${Q.board.length?'· '+cH(Q.board):''}</div>
   <div class="mu">${Q.es!=null?'유효 스택 '+f(Q.es*Q.u)+' ('+f(Q.es)+'bb)':''} ${qs?`<span class="tag">고민: ${Q.q.join('·')}</span>`:''}${miss?'<span class="tag">입력 누락</span>':''}</div>
   ${h.L.memo?`<div class="mu">${esc(h.L.memo)}</div>`:''}
-  <div class="bt"><button class="btn" data-a="gto">GTO Wizard 복사</button><button class="btn" data-a="cl">Claude 복기용 복사</button><button class="btn" data-a="rv">✍️ 리뷰 작성</button><button class="btn" data-a="ed">${h.d?'이어서 쓰기':'수정'}</button><button class="btn" data-a="del">삭제</button></div></div>`}).join(''):'<p class="mu">아직 저장한 핸드가 없습니다. 위에서 기록하고 [저장]을 눌러 보세요.</p>'}
+  <div class="bt"><button class="btn" data-a="eq">🔍 스트리트별 보기</button><button class="btn" data-a="gto">GTO Wizard 복사</button><button class="btn" data-a="cl">Claude 복기용 복사</button><button class="btn" data-a="rv">✍️ 리뷰 작성</button><button class="btn" data-a="ed">${h.d?'이어서 쓰기':'수정'}</button><button class="btn" data-a="del">삭제</button></div></div>`}).join(''):'<p class="mu">아직 저장한 핸드가 없습니다. 위에서 기록하고 [저장]을 눌러 보세요.</p>'}
 function saveH(d){const L=getL();if(!K.some(k=>L[k].trim())){toast('입력된 내용이 없습니다');return}
  const old=ed&&T.hands.find(h=>h.id===ed),h={id:ed||'h'+Date.now(),hid:old?old.hid:String(Date.now()).slice(-9)+Math.floor(Math.random()*90+10),ts:old?old.ts:Date.now(),L,S:{...T.S},d};
  if(old)T.hands[T.hands.indexOf(old)]=h;else T.hands.unshift(h);
- ed=null;T.form={};setL({});aK='stack';sv();upd();hands();toast(d?'나중에 이어 쓰기로 저장':'저장됨');el('stack').focus()}
-function init(){mk();kp();
+ ed=null;T.form={};setL({});aK='card';sv();upd();hands();toast(d?'나중에 이어 쓰기로 저장':'저장됨');el('card').focus()}
+function init(){mk();kp();$('#tb0').onclick=()=>tab(0);$('#tb1').onclick=()=>tab(1);
  const go=()=>{const n=$('#tn').value.trim();if(!n){toast('대회 이름을 적어 주세요');return}
   let t=D.tours.find(x=>x.name.toLowerCase()===n.toLowerCase());
   if(!t){t={id:'t'+Date.now(),name:n,ts:Date.now(),S:{v:2,max:9,ante:'bb',blind:'',sb:0,bb:0,at:0},hands:[],form:{}};D.tours.push(t)}
@@ -546,14 +625,14 @@ function init(){mk();kp();
   h.addEventListener('pointermove',e=>{if(!d)return;const w=$('#kw'),y=yClamp(e.clientY-d.dy,w.offsetHeight);ky=y/innerHeight;w.style.top=y+'px';document.documentElement.style.setProperty('--kh',Math.max(0,innerHeight-y)+'px')});
   const end=()=>{if(!d)return;d=null;try{localStorage.setItem('qr_ky',JSON.stringify(ky))}catch(_){}sync()};
   h.addEventListener('pointerup',end);h.addEventListener('pointercancel',end)}
- $('#kt').onclick=()=>{if(kOff)setKOff(false);if(aK==='memo')aK='show';el(aK).focus();setKb(true)};addEventListener('resize',sync);
+ $('#kt').onclick=()=>{if(kOff)setKOff(false);if(aK==='memo')aK='river';el(aK).focus();setKb(true)};addEventListener('resize',sync);
  $('#later').onclick=()=>saveH(true);
- $('#fresh').onclick=()=>{if(K.some(k=>el(k).value.trim())&&!confirm('입력한 내용을 모두 지우고 새로 쓸까요?'))return;ed=null;T.form={};setL({});T.S.blind='';T.S.sb=0;T.S.bb=0;T.S.at=0;$('#bi').value='';blFill();aK='stack';sv();upd();window.scrollTo(0,0);el('stack').focus();toast('새로 쓰기 · 블라인드도 초기화')};$('#save').onclick=()=>saveH(false);
+ $('#fresh').onclick=()=>{if(K.some(k=>el(k).value.trim())&&!confirm('입력한 내용을 모두 지우고 새로 쓸까요?'))return;ed=null;T.form={};setL({});T.S.blind='';T.S.sb=0;T.S.bb=0;T.S.at=0;$('#bi').value='';blFill();aK='card';sv();upd();window.scrollTo(0,0);el('card').focus();toast('새로 쓰기 · 블라인드도 초기화')};$('#save').onclick=()=>saveH(false);
  $('#exp').onclick=()=>{const hs=T.hands.filter(h=>!h.d&&h.S.bb).reverse(),t=hs.map(ps).join('\n\n\n');if(hs.length<T.hands.filter(h=>!h.d).length)toast('BB를 안 적은 핸드는 빼고 복사했어요');if(!t){toast('내보낼 핸드가 없습니다');return}cp(t);
   try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));a.download=T.name+'.txt';a.click()}catch(e){}};
  $('#hands').onclick=e=>{const b=e.target.closest('button[data-a]');if(!b)return;const id=b.closest('.hc').dataset.id,h=T.hands.find(x=>x.id===id),a=b.dataset.a;
-  if(a==='gto'){if(!h.S.bb){toast('blind 줄에 BB를 입력하면 GTO Wizard 복사가 돼요');return}cp(ps(h))}else if(a==='cl')cp(cl(h));else if(a==='rv')toReview(h);
-  else if(a==='ed'){ed=id;T.S={...h.S};let L2=h.L;if(T.S.v!==2){if(T.S.bb>0)L2=conv(norm(h.L),T.S.bb);T.S.v=2}T.form=L2;ses();setL(L2);sv();upd();window.scrollTo(0,0);toast('불러왔습니다. 저장하면 덮어씁니다')}
+  if(a==='gto'){if(!h.S.bb){toast('blind 줄에 BB를 입력하면 GTO Wizard 복사가 돼요');return}cp(ps(h))}else if(a==='cl')cp(cl(h));else if(a==='eq')revToggle(b,h);else if(a==='rv')toReview(h);
+  else if(a==='ed'){ed=id;T.S={...h.S};let L2=h.L;if(T.S.v!==2){if(T.S.bb>0)L2=conv(norm(h.L),T.S.bb);T.S.v=2}T.form=L2;ses();setL(L2);sv();upd();window.scrollTo(0,0);tab(0);toast('불러왔습니다. 저장하면 덮어씁니다')}
   else if(a==='del'&&confirm('이 핸드를 삭제할까요?')){T.hands=T.hands.filter(x=>x.id!==id);sv();hands()}};
  $('#li').onclick=()=>authGo('login');$('#su').onclick=()=>authGo('signup');$('#lo').hidden=true;   // 로그아웃은 뚝섬 홈에서
  $('#pw').onkeydown=e=>{if(e.key==='Enter')authGo('login')};
