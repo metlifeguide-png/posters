@@ -61,8 +61,7 @@ label.f{display:block;font-size:12px;color:var(--sub)}label.f input{margin-top:3
  <div style="position:relative"><input id="tsearch" placeholder="🔍 대회 검색 (예: 피망, 뉴스톤, WPL)" autocomplete="off"><div id="tres"></div></div>
  <div class="note" style="margin-bottom:6px">검색에 없으면 아래에 직접 입력하세요</div>
  <div class="g2"><label class="f">대회명 <span class="req">필수</span><input id="tname" placeholder="예: WPL 부산 메인"></label><label class="f">바이인<input id="tbuy" placeholder="예: 20만"></label></div>
- <div class="k">블라인드 (칩) <span class="req">필수</span> <small>SB만 넣으면 BB·앤티 자동 · 구조표가 있으면 레벨만 고르기</small></div>
- <div class="g2" id="structRow" style="margin-bottom:6px;display:none"><select id="structSel"><option value="">📋 구조표에서 고르기</option></select><select id="lvSel" disabled><option value="">레벨</option></select></div>
+ <div class="k">블라인드 (칩) <span class="req">필수</span> <small>SB만 넣으면 BB·앤티 자동</small></div>
  <div class="g3"><label class="f">SB<input id="sb" inputmode="numeric" placeholder="1000"></label><label class="f">BB<input id="bb" inputmode="numeric" placeholder="2000"></label><label class="f">앤티<input id="ante" inputmode="numeric" placeholder="2000"></label></div>
  <div class="chips" style="margin-top:6px" id="anteType"></div>
  <div class="k">레지</div><div class="chips" id="reg"></div>
@@ -422,7 +421,7 @@ document.addEventListener("input",e=>{ const t=e.target;
     if(t.id==="sb"){ const sb=num(t.value); if(sb>0){ if(!num(S.bb)||S._autoBB){ S.bb=String(sb*2); S._autoBB=true; } if(!num(S.ante)||S._autoAnte){ S.ante=String(autoAnte()); S._autoAnte=true; } } }
     if(t.id==="bb"){ S._autoBB=false; if(S._autoAnte) S.ante=String(autoAnte()); }
     if(t.id==="ante") S._autoAnte=false;
-    if(["sb","bb","ante"].includes(t.id)){ S.struct=null; if($("structSel")) $("structSel").value=""; if($("lvSel")){ $("lvSel").value=""; $("lvSel").disabled=true; } render(); } else {drawPreview(); save();} return; }
+    if(["sb","bb","ante"].includes(t.id)){ render(); } else {drawPreview(); save();} return; }
   if(t.dataset.st!=null){ const i=+t.dataset.st, v=num(t.value); S.stacks[i]=S.unit==="bb"?v*BB():v; clearTimeout(t._t); t._t=setTimeout(()=>{ const f=document.activeElement===t; drawActions(); drawPreview(); save(); const s=t.parentElement.querySelector("small"); if(s){const c=num(S.stacks[i]); s.textContent=c?(S.unit==="bb"?fmt(c):bbs(c)):"";} const h=num(S.stacks[S.hero]); },300); }
 });
 document.addEventListener("click",e=>{ const t=e.target.closest("button"); if(!t) return; const d=t.dataset;
@@ -450,19 +449,6 @@ document.addEventListener("click",e=>{ const t=e.target.closest("button"); if(!t
   else return;
   render();
 });
-// ---------- 구조표 ----------
-let STRUCTS=[];
-(async()=>{ try{ const r=await fetch(API+"/api/review/structures",{headers:{"ngrok-skip-browser-warning":"true"}}); STRUCTS=(await r.json()).structures||[];
-  if(STRUCTS.length){ $("structRow").style.display=""; $("structSel").innerHTML=`<option value="">📋 구조표에서 고르기</option>`+STRUCTS.map((x,i)=>`<option value="${i}">${x.org?`[${x.org}] `:""}${x.title}</option>`).join(""); drawStructSel(); } }catch(e){} })();
-function drawStructSel(){ const st=S.struct; if(!st||!STRUCTS.length) return; const i=STRUCTS.findIndex(x=>x.id===st.id); if(i<0) return;
-  $("structSel").value=String(i); fillLv(i); if(st.lv!=null) $("lvSel").value=String(st.lv); }
-function fillLv(i){ const x=STRUCTS[i]; $("lvSel").disabled=!x; if(!x){ $("lvSel").innerHTML=`<option value="">레벨</option>`; return; }
-  $("lvSel").innerHTML=`<option value="">레벨 고르기</option>`+x.levels.map((l,k)=>`<option value="${k}">Lv ${l.lv} · ${fmt(l.sb)}/${fmt(l.bb)}${l.ante?` (앤티 ${fmt(l.ante)})`:""}</option>`).join(""); }
-$("structSel").addEventListener("change",e=>{ const i=e.target.value; fillLv(i===""?-1:+i); S.struct=i===""?null:{id:STRUCTS[+i].id,lv:null}; save(); });
-$("lvSel").addEventListener("change",e=>{ const i=+$("structSel").value, k=e.target.value; if(k==="") return; const x=STRUCTS[i], l=x.levels[+k];
-  S.sb=String(l.sb); S.bb=String(l.bb); S.ante=String(l.ante||0); S._autoBB=false; S._autoAnte=false;
-  if(x.ante_type==="all") S.anteType="all"; else if(x.ante_type==="bb") S.anteType="bb";
-  S.struct={id:x.id,lv:+k}; render(); });
 // ---------- 대회 검색 ----------
 let _stT=null;
 $("tsearch").addEventListener("input",e=>{ clearTimeout(_stT); const q=e.target.value.trim(); if(!q){$("tres").style.display="none";return;}
@@ -490,7 +476,7 @@ $("submit").addEventListener("click",async()=>{
 });
 function newReview(ask){ if(ask && !confirm("지금 쓴 내용을 지우고 새로 쓸까요? (닉네임은 남겨둬요)")) return;
   const nick=S.nick; S=blank(); S.nick=nick; $("submit").disabled=false; $("submit").textContent="제출하기"; $("submitMsg").innerHTML="";
-  if($("structSel")){ $("structSel").value=""; $("lvSel").value=""; $("lvSel").disabled=true; } render(); window.scrollTo(0,0); }
+  render(); window.scrollTo(0,0); }
 $("newReview").addEventListener("click",()=>newReview(true));
 // 솔버용 핸드 구조 (서버가 헤즈업 구간을 찾아 범위를 추정하고 풀어요)
 function handData(){ if(!setupOK()) return null; const R=replay();
@@ -511,7 +497,6 @@ render();
  const busy=(S.acts&&S.acts.length)||String(S.tname||"").trim()||String(S.q||"").trim();
  if(busy&&!confirm("쓰던 리뷰가 있어요. 빠른복기 핸드로 바꿔 쓸까요?\n(취소하면 쓰던 리뷰를 그대로 둬요)")) return;
  const nick=S.nick; S=Object.assign(blank(),d.S); if(nick) S.nick=nick;
- if($("structSel")){ $("structSel").value=""; $("lvSel").value=""; $("lvSel").disabled=true; }
  let msg="";
  if(setupOK()&&Array.isArray(d.exp)){ const R=replay(),got=[]; R.streets.forEach(s=>s.log.forEach(r=>got.push(r.seat)));
    let k=0; while(k<d.exp.length&&got[k]===d.exp[k]) k++;
