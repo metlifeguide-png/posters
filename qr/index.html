@@ -34,6 +34,8 @@ input[type=text],input[type=number],select{background:var(--pn);border:1px solid
 .pa .w{color:var(--rd);font-size:14px}
 #kp button{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;height:46px;font-size:19px;border-radius:10px;border:1px solid var(--ln);background:var(--pn);cursor:pointer;padding:0;touch-action:manipulation}
 #kp button:active{background:var(--ln)}
+#kp button:disabled{opacity:.18;cursor:default;filter:grayscale(1)}#kp button:disabled:active{background:var(--pn)}
+#kl .st{color:var(--tx);font-weight:700}#kl .bad{color:var(--rd);font-weight:700}
 #kp .p{font-size:12.5px;color:var(--gd);font-weight:700}
 #kp .u{color:var(--bl);font-weight:700}#kp .a{font-weight:700;font-size:15px}#kp .e b,#kp .d b{font-size:24px}#kp .e{background:var(--ac);color:#fff;grid-column:6;grid-row:3/5;height:auto;font-size:13px;font-weight:700;line-height:1.4;white-space:nowrap}
 .k9{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;margin-bottom:12px}
@@ -332,7 +334,7 @@ function enter(t){if(t.S.v!==2){if(t.S.bb>0&&t.form)t.form=conv(norm(t.form),t.S
 function bparse(S){const n=(S.blind||'').match(/\d+(?:\.\d+)?/g)||[];S.sb=+n[0]||0;S.bb=+n[1]||0;S.at=+n[2]||0}
 function ses(){const S=T.S;if(S.blind===undefined)S.blind=S.bb?`${S.sb} ${S.bb} ${S.at}`:'';bparse(S);$('#mx').value=S.max;$('#an').value=S.ante;$('#bi').value=S.blind}
 function mk(){const F=$('#form');F.innerHTML=FD.map(d=>`<div class="ln" data-k="${d.k}"><b>${d.lb}:</b><input data-k="${d.k}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${d.ph}" ${d.k==='memo'?'type="text"':'type="text" inputmode="none"'}></div>`).join('');
- F.addEventListener('focusin',e=>{const k=e.target.dataset.k;if(K.includes(k)){aK=k;mark();setKb(k!=='memo');if(k!=='memo')setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}});F.addEventListener('input',chg);F.addEventListener('keydown',e=>{if(PC&&e.key==='Enter'&&e.target.dataset&&e.target.dataset.k){e.preventDefault();next()}});F.addEventListener('click',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k&&K.includes(k)&&k!=='memo'&&!kOn){aK=k;mark();setKb(true);setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}})}
+ F.addEventListener('focusin',e=>{const k=e.target.dataset.k;if(K.includes(k)){aK=k;mark();setKb(k!=='memo');if(k!=='memo')setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}});F.addEventListener('input',chg);F.addEventListener('click',()=>setTimeout(kpApply,0));F.addEventListener('keyup',kpApply);F.addEventListener('keydown',e=>{if(PC&&e.key==='Enter'&&e.target.dataset&&e.target.dataset.k){e.preventDefault();next()}});F.addEventListener('click',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k&&K.includes(k)&&k!=='memo'&&!kOn){aK=k;mark();setKb(true);setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}})}
 let kOn=true;
 const PC=matchMedia('(hover:hover) and (pointer:fine)').matches; /* PC(마우스+키보드)에서는 플로팅 키패드 없이 실제 키보드로 입력 */
 let ky=null;try{ky=JSON.parse(localStorage.getItem('qr_ky')||'null')}catch(e){}
@@ -342,7 +344,65 @@ function sync(){const a=!$('#app').hidden&&!PC;$('#kw').hidden=!(a&&kOn);$('#kt'
 function setKb(v){kOn=v;sync()}
 const el=k=>$(`#form input[data-k="${k}"]`),getL=()=>Object.fromEntries(K.map(k=>[k,el(k).value]));
 function setL(L){L=norm(L);K.forEach(k=>el(k).value=L[k]||'')}
-function mark(){document.querySelectorAll('.ln').forEach(n=>n.classList.toggle('on',n.dataset.k===aK));const d=FD.find(x=>x.k===aK);if(d)$('#kl').innerHTML=`<span><b>${d.lb}:</b> ${d.hint}</span>`}
+function mark(){document.querySelectorAll('.ln').forEach(n=>n.classList.toggle('on',n.dataset.k===aK));const d=FD.find(x=>x.k===aK);if(d)$('#kl').innerHTML=`<span><b>${d.lb}:</b> ${d.hint}</span>`;kpApply()}
+
+/*kpstep*/ // 🧭 단계별 키패드 (10/14): 지금 칸·지금까지 적은 글자를 보고 '다음에 눌러야 할 키'만 켜고 나머지는 끔
+// stack: 포지션 → 스택 숫자 · card: 포지션 → 숫자/문자 → 무늬 ×2 · 보드: 숫자/문자 → 무늬 · 액션: 포지션 → f/x/c/jam 또는 금액 → (?) · show: 포지션 → 카드 2장
+const KRK=['A','K','Q','J','T','9','8','7','6','5','4','3','2'],KST=['♠','♥','♦','♣'],KD19=['1','2','3','4','5','6','7','8','9'],KD09=['0',...KD19],KACT=['pre','flop','turn','river'];
+const kpLab=p=>PK[P9.indexOf(p)];   // UTG+1 -> U+1 (키패드 글자)
+function kpUsed(k0,b){   // 이미 쓴 카드 (다른 칸 전체 + 지금 칸은 커서 앞까지)
+ const u=new Set();K.forEach(k=>{if(k==='memo'||k==='pre'||KACT.includes(k))return;cards(k===k0?b:el(k).value).forEach(c=>u.add(c))});return u}
+function kpCards(str,need,used){   // 카드 줄 상태 → {en:[키], msg} · 형식이 틀리면 null
+ const t=str.replace(/\s+/g,'');const m=t.match(/^((?:[2-9TJQKA][♠♥♦♣shdc])*)([2-9TJQKA])?$/i);if(!m)return null;
+ const n=cards(m[1]).length,r=m[2]&&m[2].toUpperCase();
+ if(r)return{en:KST.filter(x=>!used.has(r+SY[x])),msg:`<span class="st">${r}</span>의 무늬를 고르세요 (♠♥♦♣)`};
+ if(n<need)return{en:KRK.filter(x=>KST.some(y=>!used.has(x+SY[y]))),msg:`${need>1?(n+1)+'번째 ':''}카드 숫자/문자를 누르세요 (A K Q J T 9~2)`};
+ return{en:[],done:true,msg:'✅ 다 적었어요'}}
+function kpState(){
+ const k0=aK,e=el(k0);if(!e||k0==='memo'||!T)return null;
+ const s=e.selectionStart==null?e.value.length:e.selectionStart,b=e.value.slice(0,s),atEnd=!e.value.slice(s).trim();
+ const n=+T.S.max||9,tbl=P9.slice(9-n),en=new Set(['⌫','↵']),add=a=>a.forEach(x=>en.add(x)),posOK=p=>p&&tbl.includes(p);
+ const stP=[...new Set((el('stack').value||'').split(',').map(x=>pos((x.trim().split(/\s+/)[0])||'')).filter(posOK))];
+ const seat=stP.length?stP:tbl;   // 스택을 적은 자리만 (안 적었으면 테이블 전체)
+ const items=b.split(','),last=items.pop().replace(/^\s+/,''),prev=items.map(x=>x.trim()).filter(Boolean);
+ const pm=last.match(/^(\S+)(\s+)?(.*)$/),P=pm&&pos(pm[1]),rest=pm?(pm[3]||'').trim():'';
+ const bad={en,msg:'<span class="bad">⚠ 형식이 맞지 않아요.</span> ⌫로 지우고 다시 눌러 주세요'};
+ const wantPos=(list,msg)=>{add(list.map(kpLab));return{en,msg:list.length?msg:'✅ 더 적을 자리가 없어요 → ↵ 다음 줄'}};
+ if(pm&&(!posOK(P)||!pm[2])&&!(BK.includes(k0)))return bad;   // 포지션 자리에 이상한 글자
+ if(BK.includes(k0)){const need=k0==='flopb'?3:1,c=kpCards(b,need,kpUsed(k0,b));if(!c)return bad;add(c.en);return{en,msg:c.done?'✅ 다 적었어요 → ↵ 다음 줄':c.msg}}
+ if(k0==='stack'){
+  const used=prev.map(x=>pos(x.split(/\s+/)[0])).filter(Boolean);
+  if(!pm)return wantPos(tbl.filter(p=>!used.includes(p)),prev.length?'다음 <span class="st">포지션</span>을 누르세요 (다 적었으면 ↵)':'① <span class="st">포지션</span>을 누르세요');
+  if(!rest){add(KD19);return{en,msg:`② <span class="st">${pm[1]}</span> 스택을 숫자(칩)로 누르세요`}}
+  if(!/^\d+(\.\d*)?$/.test(rest))return bad;
+  add(KD09);en.add('00');if(!rest.includes('.'))en.add('.');add(tbl.filter(p=>p!==P&&!used.includes(p)).map(kpLab));
+  return{en,msg:`숫자를 더 누르거나, 다음 <span class="st">포지션</span> · 다 적었으면 ↵`}}
+ if(k0==='card'){
+  if(!pm)return wantPos(seat,'① 내 <span class="st">포지션</span>을 누르세요');
+  if(prev.length)return bad;
+  const c=kpCards(rest,2,kpUsed(k0,b));if(!c)return bad;add(c.en);return{en,msg:c.done?'✅ 다 적었어요 → ↵ 다음 줄':'② 내 카드: '+c.msg}}
+ if(k0==='show'){
+  const hp=pos((el('card').value.trim().split(/\s+/)[0])||''),used=prev.map(x=>pos(x.split(/\s+/)[0])).filter(Boolean);
+  const cand=seat.filter(p=>p!==hp&&!used.includes(p)&&p!==P);
+  if(!pm)return wantPos(cand,prev.length?'다른 상대도 보여줬으면 <span class="st">포지션</span> · 아니면 ↵':'① 패를 보여준 상대 <span class="st">포지션</span>을 누르세요');
+  const c=kpCards(rest,2,kpUsed(k0,b));if(!c)return bad;add(c.en);if(c.done)add(cand.map(kpLab));
+  return{en,msg:c.done?'✅ 다른 상대도 있으면 <span class="st">포지션</span> · 아니면 ↵':`② ${pm[1]} 카드: `+c.msg}}
+ if(KACT.includes(k0)){
+  if(R&&R.done[k0]&&atEnd&&b.trim()&&!pm)return{en,msg:'✅ 이 스트리트 액션이 끝났어요 → ↵ 다음 줄'};
+  const fo=new Set();   // 앞 스트리트·이 줄 앞부분에서 폴드한 자리
+  KACT.slice(0,KACT.indexOf(k0)+1).forEach(k=>{(k===k0?prev.join(','):el(k).value).split(',').forEach(t=>{const q=t.trim().split(/\s+/);if(q[1]&&q[1].replace('?','').toLowerCase()==='f'){const p=pos(q[0]);if(p)fo.add(p)}})});
+  const live=seat.filter(p=>!fo.has(p));
+  if(!pm)return wantPos(live,prev.length?'다음 액션한 <span class="st">포지션</span> · 다 적었으면 ↵':'① 먼저 액션한 <span class="st">포지션</span>을 누르세요');
+  if(!rest){add(['f','x','c','jam',...KD19]);return{en,msg:`② <span class="st">${pm[1]}</span> 액션: f 폴드 · x 체크 · c 콜 · jam 올인 · 또는 벳/레이즈 금액(칩)`}}
+  const r2=rest.replace(/\s*\?$/,''),q=rest!==r2;
+  const fin=R&&R.done[k0]&&atEnd,nx=fin?[]:live.filter(p=>p!==P).map(kpLab);   // 이 스트리트가 끝났으면 다음 포지션은 안 켬
+  if(/^\d+(\.\d*)?$/.test(r2)){if(!q){add(KD09);en.add('00');if(!r2.includes('.'))en.add('.');en.add('?')}add(nx);return{en,msg:fin?'✅ 이 스트리트 액션이 끝났어요 → ↵ 다음 줄':q?'다음 <span class="st">포지션</span> · 다 적었으면 ↵':'금액을 더 누르거나, 고민한 자리면 ? · 다음 <span class="st">포지션</span> · ↵'}}
+  if(/^(f|x|c|jam)$/i.test(r2)){if(!q)en.add('?');add(nx);return{en,msg:fin?'✅ 이 스트리트 액션이 끝났어요 → ↵ 다음 줄 (고민했으면 ?)':'다음 <span class="st">포지션</span> · 고민한 자리면 ? · 다 적었으면 ↵'}}
+  return bad}
+ return null}
+function kpApply(){const st=kpState(),d=FD.find(x=>x.k===aK);
+ document.querySelectorAll('#kp button').forEach(b=>{b.disabled=!!st&&!st.en.has(b.dataset.k)});
+ if(st&&d)$('#kl').innerHTML=`<span><b>${d.lb}:</b> ${st.msg}</span>`}
 function chg(){T.form=getL();sv();upd()}
 
 /*kppos*/ // ⌨️ 플로팅 키보드 자리 버튼: 테이블 인원(2~9max)에 없는 자리는 숨김 · 헤즈업은 SB 버튼을 'SB(BTN)'으로
