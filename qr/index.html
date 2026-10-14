@@ -468,9 +468,16 @@ function chg(){T.form=getL();sv();upd()}
 function kpPos(){const w=document.querySelector('#kp .k9');if(!w)return;const n=(T&&T.S&&+T.S.max)||9;
  w.style.gridTemplateColumns=`repeat(${n},1fr)`;
  w.querySelectorAll('button').forEach((b,i)=>{b.style.display=i<9-n?'none':'';if(b.dataset.k==='SB')b.textContent=n===2?'SB(BTN)':'SB'})}
-/*lock*/ // 🔒 stack이 비면 card 잠김 · card(포지션+카드 2장)가 안 되면 pre 이하 전부 잠김 (memo는 항상 열림)
-function kFirst(){return R&&R.st&&Object.keys(R.st).length?'card':'stack'}
-function kLocked(k){if(!R||k==='stack'||k==='memo')return false;const s=!!(R.st&&Object.keys(R.st).length);if(k==='card')return !s;return !(s&&R.hp&&R.hc&&R.hc.length>=2)}
+/*lock*/ // 🔒 위에서부터 차례로: stack → card → pre(액션 한 바퀴 끝) → flop board(3장) → flop → turn board → turn → river board → river → show (핸드가 끝나 흐려진 칸은 건너뜀 · memo는 항상 열림)
+const KC=['stack','card','pre','flopb','flop','turnb','turn','riverb','river','show'];
+function kOk(k){if(!R)return true;
+ if(k==='stack')return !!(R.st&&Object.keys(R.st).length);
+ if(k==='card')return !!(R.hp&&R.hc&&R.hc.length>=2);
+ if(k==='pre'||k==='flop'||k==='turn'||k==='river')return !!(R.done&&R.done[k]);
+ if(k==='show')return true;
+ return cards((el(k)||{}).value||'').length>=(k==='flopb'?3:1)}
+function kFirst(){for(const k of KC){if(k==='show')break;if(R&&R.dim&&R.dim[k])continue;if(!kOk(k))return k}return 'stack'}
+function kLocked(k){if(!R||k==='stack'||k==='memo')return false;const i=KC.indexOf(k);if(i<0)return false;for(let j=0;j<i;j++){const q=KC[j];if(R.dim&&R.dim[q])continue;if(!kOk(q))return true}return false}
 function upd(){R=sim(getL(),T.S);kpPos();
  $('#pa').innerHTML=(R.rows.length?R.rows.map(r=>`<div class="r"><b>${r.s}</b>${r.board?cH(cards(r.board))+' ':''}${esc(r.t)} · 팟 ${f(r.pot*R.u)}${r.rq}</div>`).join(''):'<span class="mu">입력하면 여기에 해석이 나옵니다</span>')+R.W.map(w=>`<div class="w">⚠ ${esc(w)}</div>`).join('');
  document.querySelectorAll('.ln').forEach(n=>{n.classList.toggle('dim',!!R.dim[n.dataset.k]);const lk=kLocked(n.dataset.k);n.classList.toggle('lock',lk);const i=n.querySelector('input');if(i)i.readOnly=lk});
