@@ -704,33 +704,36 @@ function load(){try{const s=JSON.parse(localStorage.getItem("sat_v15")||"null");
 function save(){try{localStorage.setItem("sat_v15",JSON.stringify(st));}catch(e){}}
 const POSN=()=>SAT.POS[st.tsize];
 const avgBB=()=>Math.max(1,st.entries*START/Math.max(2,st.players)/Math.max(1,st.bb));
-// 시작 시각: 직접 고른 값이 없으면 오늘 일정 중 지금 진행 중일 가능성이 가장 큰(가장 최근에 시작한) 게임
+// 시작 시각 자동: 가장 최근에 시작한 게임을 기본으로 보되, 그 바로 앞 게임의 레지 마감까지 AUTO_SWITCH_MIN분보다 많이 남았으면 앞 게임을 유지해요
+// (다음 게임이 시작됐고 + 이전 게임 레지 마감이 얼마 안 남았거나 이미 마감 → 다음 게임으로 자동 전환)
+const AUTO_SWITCH_MIN=30;
 function autoStart(game){
-  const g=GAMES[game], times=g.times, now=new Date(), mins=now.getHours()*60+now.getMinutes();
-  // 1순위: 레지가 이미 마감된(레지 레벨을 다 돈) 게임 중 가장 최근에 시작한 것 → 이 페이지는 마감 후(ICM)용이라 지금 실제로 진행 중인 게임이에요
-  // (예: 한게임 19:05엔 막 시작해 레잇레지 중인 19:00이 아니라 17:30 게임)
+  const g=GAMES[game], times=g.times, now=new Date(), nowMs=now.getTime(), mins=now.getHours()*60+now.getMinutes();
   const lm=g.levelMin||7, rl=(g.regLevel!=null?g.regLevel:15), need=rl*lm;
-  let best=null, bestT=-1, near=null, nearP=-1;
+  const list=[];
   for(const t of times){ const [h,m]=t.split(":").map(Number);
     for(const back of [0,1]){
       const d=new Date(now); d.setHours(h,m,0,0); d.setDate(d.getDate()-back);
-      const el=Math.floor((now-d)/60000); if(el<0||el>=12*60) continue;
+      const el=Math.floor((nowMs-d.getTime())/60000); if(el<0||el>=12*60) continue;
       let played=0; for(let i=0;i<el;i++) if((m+i)%60<55) played++;   // 매시 55~00분 휴식 제외
-      if(played>=need && d.getTime()>bestT){ best=t; bestT=d.getTime(); }
-      if(played>nearP){ near=t; nearP=played; } } }
-  if(best) return best;
-  // 2순위(마감된 게임이 없을 때): 레지 마감에 가장 가까운(가장 많이 진행된) 게임
-  if(near) return near;
-  // 3순위: 지금 시각 이전에 시작한 가장 최근 게임
+      list.push({t,ts:d.getTime(),played}); } }
+  // 레지 마감까지 남은 실제 시간(분): 남은 레벨 시간을 휴식 빼고 앞으로 세어 봄
+  const regLeft=x=>{ let rem=need-x.played, n=0, tt=nowMs; while(rem>0&&n<600){ if(new Date(tt).getMinutes()<55) rem--; tt+=60000; n++; } return n; };
+  list.sort((p,q)=>q.ts-p.ts);   // 최근 시작한 게임부터
+  for(let i=0;i<list.length;i++){ const prev=list[i+1]; if(!prev||regLeft(prev)<=AUTO_SWITCH_MIN) return list[i].t; }
+  // 12시간 안에 시작한 게임이 없으면: 지금 시각 이전에 시작한 가장 최근 게임
   const past=times.filter(t=>{const [h,m]=t.split(":").map(Number);return h*60+m<=mins;});
   return past.length?past[past.length-1]:times[times.length-1];
 }
 // 게임 시작 시각은 플레이어가 직접 골라야 해요(고른 뒤 14시간 동안 유효). 고르면 블라인드가 시계에 맞춰 자동으로 올라가요
-// 직접 고른 시각은 14시간, 자동으로 잡은 시각은 3시간 유지(그 사이 다음 게임 시각이 와도 하던 게임 블라인드가 안 튀게)
-const pickRaw=g=>{const p=(st.startPick||{})[g]; return p&&Date.now()-p.at<(p.auto?3:14)*3600e3?p:null;};
+// 직접 고른 시각은 14시간 유효. 자동은 저장하지 않고 매번 다시 계산해요(그래서 다음 게임으로 알아서 넘어가요)
+const pickRaw=g=>{const p=(st.startPick||{})[g]; return p&&!p.auto&&Date.now()-p.at<14*3600e3?p:null;};
 const pickOf=g=>{const p=pickRaw(g); return p?p.t:null;};
-const manualPick=g=>{const p=pickRaw(g); return p&&!p.auto?p.t:null;};
-function lockAutoStart(){ if(!pickRaw(st.game)){ st.startPick=st.startPick||{}; st.startPick[st.game]={t:autoStart(st.game),at:Date.now(),auto:true}; } }
+const manualPick=g=>{const p=pickRaw(g); return p?p.t:null;};
+// 자동 시작 시각이 다른 게임으로 넘어간 순간을 알려줘요(true). 이때는 레벨 고정·스택 BB 환산을 풀어 새 게임으로 시작
+function autoSwitchCheck(){ if(manualPick(st.game)) return false;
+  const a=autoStart(st.game); st.autoT=st.autoT||{}; const last=st.autoT[st.game]; st.autoT[st.game]=a;
+  return !!last && last!==a; }
 const hasStart=()=>true;   // 직접 고른 게 없으면 지금 시각으로 추정한 게임 시작 시각을 써요
 const startOf=()=>pickOf(st.game)||autoStart(st.game);
 function setStart(t){ st.startPick=st.startPick||{}; if(t) st.startPick[st.game]={t,at:Date.now()}; else delete st.startPick[st.game]; st.level=null; st.modeManual=false; }
@@ -776,7 +779,8 @@ const curLevel=()=>(+st.level)||(hasStart()?autoLevel():REG_LEVEL+1);
 let rescaleOK=true;
 const clkText=()=>{const x=nextLevelIn(); if(x.inBreak){const n=new Date(), r=(60-n.getMinutes())*60-n.getSeconds(); return `☕ Break time (매시 55분~정각) · 재개까지 <b>${Math.floor(r/60)}:${String(r%60).padStart(2,"0")}</b>`+(x.sec-r>0?` · 재개 후 ${Math.ceil((x.sec-r)/60)}분 뒤 레벨업`:"");} return `⏱ 다음 레벨까지 <b>${Math.floor(x.sec/60)}:${String(x.sec%60).padStart(2,"0")}</b>`;};
 function applyLevel(){
-  lockAutoStart(); logEntries();
+  if(autoSwitchCheck()){ st.level=null; st.modeManual=false; rescaleOK=false; }
+  logEntries();
   const L=curLevel(), g=GAMES[st.game], nb=g.blinds[Math.min(L,g.blinds.length)-1];
   // 블라인드가 바뀌면 칩은 그대로 두고 BB 수만 다시 계산 (모든 입력 스택)
   if(rescaleOK && st.bbPrev && st.bbPrev!==nb){
@@ -1661,6 +1665,7 @@ document.addEventListener("input",e=>{
 load(); if(!GAMES[st.game]) st.game="hg"; applyGame(); fillPickers(); schedule();
 $("detail").addEventListener("toggle",()=>{ if($("detail").open) schedule(); });
 setInterval(()=>{
+  if(autoSwitchCheck()){ st.level=null; st.modeManual=false; rescaleOK=false; schedule(); return; }   // 다음 게임으로 자동 전환
   if(st.level||!hasStart()) return;
   const L=autoLevel(); if(GAMES[st.game].blinds[L-1]!==st.bb){ rescaleOK=true; schedule(); return; }
   const br=inBreakNow(); if(br!==window._wasBreak){ window._wasBreak=br; drawStatic(); drawEasy(); return; }   // 휴식 시작/끝에 표시 바꾸기   // 블라인드 업 → BB 수 자동 조정
