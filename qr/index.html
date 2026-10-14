@@ -336,11 +336,15 @@ function ses(){const S=T.S;if(S.blind===undefined)S.blind=S.bb?`${S.sb} ${S.bb} 
 function mk(){const F=$('#form');F.innerHTML=FD.map(d=>`<div class="ln" data-k="${d.k}"><b>${d.lb}:</b><input data-k="${d.k}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${d.ph}" ${d.k==='memo'?'type="text"':'type="text" inputmode="none"'}></div>`).join('');
  F.addEventListener('focusin',e=>{const k=e.target.dataset.k;if(K.includes(k)){aK=k;mark();setKb(k!=='memo');if(k!=='memo')setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}});F.addEventListener('input',chg);F.addEventListener('click',()=>setTimeout(kpApply,0));F.addEventListener('keyup',kpApply);F.addEventListener('keydown',e=>{if(PC&&e.key==='Enter'&&e.target.dataset&&e.target.dataset.k){e.preventDefault();next()}});F.addEventListener('click',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k&&K.includes(k)&&k!=='memo'&&!kOn){aK=k;mark();setKb(true);setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}})}
 let kOn=true;
-const PC=matchMedia('(hover:hover) and (pointer:fine)').matches; /* PC(마우스+키보드)에서는 플로팅 키패드 없이 실제 키보드로 입력 */
+const PC=matchMedia('(hover:hover) and (pointer:fine)').matches; /* PC(마우스+키보드): 플로팅 키패드도 뜨고, [키패드 끄기]를 누르면 실제 키보드로 직접 입력 (10/14) */
+let kOff=false;try{kOff=PC&&localStorage.getItem('qr_kpoff')==='1'}catch(e){}   // PC에서 키패드를 끈 상태 (다른 칸을 눌러도 안 뜸, 기기에 기억)
+function setKOff(v){kOff=v;try{localStorage.setItem('qr_kpoff',v?'1':'0')}catch(e){}}
 let ky=null;try{ky=JSON.parse(localStorage.getItem('qr_ky')||'null')}catch(e){}
 function yClamp(y,h){return Math.min(Math.max(4,innerHeight-h),Math.max(4,y))}   // 아래 끝 = 화면(홈 안에선 아래 탭 위) 맨 아래까지 붙일 수 있음 (10/11, 예전엔 70px 띄움)
-function placeKb(){const w=$('#kw');if(w.hidden)return;const h=w.offsetHeight;w.style.top=yClamp(ky==null?(innerHeight-h)/2:ky*innerHeight,h)+'px'}
-function sync(){const a=!$('#app').hidden&&!PC;$('#kw').hidden=!(a&&kOn);$('#kt').hidden=!(a&&!kOn);placeKb();abarHide('kp',!!(a&&kOn));document.documentElement.style.setProperty('--kh',(a&&kOn?Math.max(0,innerHeight-$('#kw').getBoundingClientRect().top):0)+'px')}
+function placeKb(){const w=$('#kw');if(w.hidden)return;const h=w.offsetHeight;w.style.top=yClamp(ky==null?(PC?innerHeight-h:(innerHeight-h)/2):ky*innerHeight,h)+'px'}   // PC는 처음엔 화면 아래쪽
+function sync(){const a=!$('#app').hidden,on=a&&kOn&&!kOff;$('#kw').hidden=!on;$('#kt').hidden=!(a&&!on);
+ $('#kt').textContent=kOff?'⌨ 키패드 켜기':'⌨ 키패드';
+ placeKb();abarHide('kp',!!on);document.documentElement.style.setProperty('--kh',(on?Math.max(0,innerHeight-$('#kw').getBoundingClientRect().top):0)+'px')}
 function setKb(v){kOn=v;sync()}
 const el=k=>$(`#form input[data-k="${k}"]`),getL=()=>Object.fromEntries(K.map(k=>[k,el(k).value]));
 function setL(L){L=norm(L);K.forEach(k=>el(k).value=L[k]||'')}
@@ -463,13 +467,15 @@ function init(){mk();kp();
    D.tours=D.tours.filter(x=>x!==t);sv();home();toast('삭제했어요')}};
  $('#back').onclick=()=>{if(window.top===window&&history.state&&history.state.qr==='app'){history.back()}else home()};window.__qrBack=()=>{if(!$('#app').hidden){home();return true}return false};addEventListener('popstate',()=>{if(!$('#app').hidden)home()});$('#bi').oninput=e=>{T.S.blind=e.target.value;bparse(T.S);sv();upd()};
  $('#mx').onchange=e=>{T.S.max=+e.target.value;sv();upd()};$('#an').onchange=e=>{T.S.ante=e.target.value;sv();upd()};
- $('#kx').onclick=()=>{setKb(false);const a=document.activeElement;if(a&&a.closest&&a.closest('#form'))a.blur()};
+ if(PC){$('#kx').textContent='✕ 키패드 끄기 (직접 입력)';$('#kx').title='키패드 창을 끄고 키보드로 직접 입력해요. 아래 [⌨ 키패드 켜기]로 다시 켤 수 있어요'}
+ $('#kx').onclick=()=>{if(PC){setKOff(true);setKb(false);const a=document.activeElement;if(a&&a.closest&&a.closest('#form')&&a.dataset.k!=='memo')a.focus();toast('키보드로 직접 입력해요');return}   // PC: 창을 아예 끔 (칸을 눌러도 안 뜸)
+  setKb(false);const a=document.activeElement;if(a&&a.closest&&a.closest('#form'))a.blur()};
  {const h=$('#kh');let d=null;
   h.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;d={dy:e.clientY-$('#kw').getBoundingClientRect().top};try{h.setPointerCapture(e.pointerId)}catch(_){}e.preventDefault()});
   h.addEventListener('pointermove',e=>{if(!d)return;const w=$('#kw'),y=yClamp(e.clientY-d.dy,w.offsetHeight);ky=y/innerHeight;w.style.top=y+'px';document.documentElement.style.setProperty('--kh',Math.max(0,innerHeight-y)+'px')});
   const end=()=>{if(!d)return;d=null;try{localStorage.setItem('qr_ky',JSON.stringify(ky))}catch(_){}sync()};
   h.addEventListener('pointerup',end);h.addEventListener('pointercancel',end)}
- $('#kt').onclick=()=>{el(aK==='memo'?'show':aK).focus();setKb(true)};$('#bi').addEventListener('focus',()=>setKb(false));addEventListener('resize',sync);
+ $('#kt').onclick=()=>{if(kOff)setKOff(false);if(aK==='memo')aK='show';el(aK).focus();setKb(true)};$('#bi').addEventListener('focus',()=>setKb(false));addEventListener('resize',sync);
  $('#later').onclick=()=>saveH(true);
  $('#fresh').onclick=()=>{if(K.some(k=>el(k).value.trim())&&!confirm('입력한 내용을 모두 지우고 새로 쓸까요?'))return;ed=null;T.form={};setL({});aK='stack';sv();upd();window.scrollTo(0,0);el('stack').focus();toast('새로 쓰기')};$('#save').onclick=()=>saveH(false);
  $('#exp').onclick=()=>{const hs=T.hands.filter(h=>!h.d&&h.S.bb).reverse(),t=hs.map(ps).join('\n\n\n');if(hs.length<T.hands.filter(h=>!h.d).length)toast('BB를 안 적은 핸드는 빼고 복사했어요');if(!t){toast('내보낼 핸드가 없습니다');return}cp(t);
