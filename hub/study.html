@@ -1688,6 +1688,8 @@ const LR={p:0.2,a:[0.85,1.0],b:[0.55,0.9],d:0.15};/*aoflr*//*aoflr2*/   // 레�
 const DEF={wpl:{entries:231,live:55}};
 const aofKey=m=>'aofprac_'+(m==='sel'?'sel_'+(window.AOFSEL||[]).slice().sort().join(''):m);/*streak*/   // 🔥 연속 기록 키(상황별)   // 서버 숫자가 없을 때 쓰는 예시
 const TAG={o:'aof_open',s:'aof_vs',r:'aof_vr',m:'aof_mw',q:'aof_sq'},SN={o:'앞 모두 폴드',s:'앞에서 올인',r:'앞에서 오픈',m:'올인 + 올인',q:'오픈 + 3벳 올인'};
+// 🗑 쓰레기 핸드 제거: 전체 핸드를 강한 순(playOrder)으로 세웠을 때 하위 40%(72o·83o·T4o 같은 핸드)는 어떤 상황이든 출제하지 않음
+const JUNK=0.60;const PCTL=(()=>{let c=null;return k=>{if(!c){c=new Float64Array(169);let a=0;for(const h of F.playOrder()){a+=SAT.W[h];c[h]=a;}}return c[k];};})();
 const r1=x=>Math.round(x*10)/10,N1=x=>(+x).toFixed(1).replace(/\.0$/,'');
 const POSN=n=>SAT.POS[n];
 function rangeText(freq){const RK=SAT.RANKS,inR=k=>freq[k]>=0.5,parts=[];
@@ -1718,7 +1720,7 @@ function envOf(g,en,pl,bb){const D=GD[g],B=bb||D.bb,n=D.t,avg=r1(en*START/pl/B),
 // ---- 3명 상황(B안): 계산은 p9p_multi.js (AOFMULTI). 같은 문제를 두 번 계산하지 않게 마지막 결과를 기억 ----
 const MW=window.AOFMULTI;let MWC={};/*aofmw*/
 // ⏱ 실제 게임처럼: 베팅 시간(게임별) 지나면 타임뱅크 30초 자동(한 판에 3개), 그것도 끝나면 자동 폴드(폴드로 채점)
-const AP_T={pm:14,hg:17,wpl:17,apl:17},AP_BANK=30,AP_BANKS=3;/*aoftime*/
+const AP_T={pm:16,hg:19,wpl:19,apl:19},AP_BANK=30,AP_BANKS=3;/*aoftime*/
 const AP_TB={wpl:1};/*aofbank*/   // 타임뱅크가 있는 게임 (한게임·피망은 없음 — 베팅 시간 끝나면 바로 자동 폴드)
 function solveMW(p,e){const c=e.ctx,key=JSON.stringify([p.g,p.en,p.pl,p.bb,p.s,p.h,p.hb,p.v,p.vb,p.v2,p.vb2,p.R]);if(MWC.key===key)return MWC.val;
  const run=o=>p.s==='m'?MW.solveM(c,p.h,p.hb,p.v,p.vb,p.v2,p.vb2,o):MW.solveQ(c,p.h,p.hb,p.v,p.R,p.vb,p.v2,p.vb2,o);
@@ -1748,8 +1750,9 @@ const mwMin=p=>p.t==='b'?0.004:((window.AOFTRIES||0)>=4?0.012:0.025);
 function mwPick(p,r){const ord=F.playOrder(),cmb=k=>{const a=Math.floor(k/13),b=k%13;return a===b?6:a<b?4:12;};
  let e=0;for(let i=0;i<169;i++)if(r.call[ord[i]]>0.5)e=i;
  const lo=p.t==='b'?1:Math.max(1,e-14),hi=p.t==='b'?20:Math.min(168,e+14),C=[],Fd=[];
- for(let i=lo;i<=hi;i++){const k=ord[i];if(Math.abs(r.marg[k])<3)continue;const w=cmb(k)/(p.t==='b'?1:1+Math.abs(i-e)/5);(r.call[k]>0.5?C:Fd).push([k,w]);}
- let L=Math.random()<(p.t==='b'?0.35:p.t==='s'?0.65:0.5)?C:Fd;if(!L.length)L=L===C?Fd:C;if(!L.length)return -1;
+ for(let i=lo;i<=hi;i++){const k=ord[i];if(PCTL(k)>JUNK)continue;if(Math.abs(r.marg[k])<3)continue;const w=cmb(k)/(p.t==='b'?1:1+Math.abs(i-e)/5);(r.call[k]>0.5?C:Fd).push([k,w]);}
+ if(p.t!=='b'&&(!C.length||!Fd.length))return -1;/*경계 문제: 콜(올인)·폴드 정답 핸드가 둘 다 있을 때만 출제*/
+  let L=Math.random()<(p.t==='b'?0.35:p.t==='s'?0.65:0.5)?C:Fd;if(!L.length)L=L===C?Fd:C;if(!L.length)return -1;
  let tw=0;for(const x of L)tw+=x[1];let x=Math.random()*tw;for(const c of L){x-=c[1];if(x<0)return c[0];}return L[L.length-1][0];}
 const won=x=>{const v=Math.round(x*10000/100)*100;return (v>0?'+':v<0?'−':'')+Math.abs(v).toLocaleString()+'원';};
 function solveP(p){const e=envOf(p.g,p.en,p.pl,p.bb),c=e.ctx;
@@ -1767,8 +1770,8 @@ function probs(p,r,k){
  const s=r.rs[k],c=r.fl[k];return {f:Math.max(0,1-s-c),c,s};}
 function pickHand(p,r){/*aofhand*/const ord=F.playOrder(),cmb=k=>{const a=Math.floor(k/13),b=k%13;return a===b?6:a<b?4:12;};
  let e=0;for(let i=0;i<169;i++){const q=probs(p,r,ord[i]);if(1-q.f>0.3)e=i;}
- const C=[];let tw=0;for(let i=Math.max(r.marg?2:4,e-16);i<=Math.min(168,e+16);i++){const k=ord[i],q=probs(p,r,k);if(Math.max(...Object.values(q))<0.7)continue;if(r.marg&&Math.abs(r.marg[k])<3)continue;const w=cmb(k)/(1+Math.abs(i-e)/5);C.push([k,w]);tw+=w;}
- if(r.marg){const a=C.filter(c=>r.call[c[0]]>0.5),b=C.filter(c=>r.call[c[0]]<0.5),pk=Math.random()<0.5?a:b;if(pk.length){C.length=0;C.push(...pk);tw=pk.reduce((x,c)=>x+c[1],0);}}if(!C.length)return -1;let x=Math.random()*tw,k=C[C.length-1][0];for(const c of C){x-=c[1];if(x<0){k=c[0];break;}}
+ const C=[];let tw=0;for(let i=Math.max(r.marg?2:4,e-16);i<=Math.min(168,e+16);i++){const k=ord[i],q=probs(p,r,k);if(PCTL(k)>JUNK)continue;if(Math.max(...Object.values(q))<0.7)continue;if(r.marg&&Math.abs(r.marg[k])<3)continue;const w=cmb(k)/(1+Math.abs(i-e)/5);C.push([k,w]);tw+=w;}
+ {const isF=c=>{const q=probs(p,r,c[0]);return q.f>=Math.max(...Object.values(q));},a=C.filter(c=>!isF(c)),b=C.filter(isF);if(!a.length||!b.length)return -1;/*경계 문제: 폴드·들어가기 정답 핸드가 둘 다 있을 때만 출제*/const pk=Math.random()<0.5?a:b;C.length=0;C.push(...pk);tw=pk.reduce((x,c)=>x+c[1],0);}if(!C.length)return -1;let x=Math.random()*tw,k=C[C.length-1][0];for(const c of C){x-=c[1];if(x<0){k=c[0];break;}}
  window.AOFWHY='hand '+SAT.handName(k)+' (후보 '+C.length+'개, 경계 '+SAT.handName(ord[e])+')';return k;}
 
 // 올인 범위가 넓은 자리(짧은 스택)에서는 '지면 탈락' 대신, 이 패가 가장 약한 쪽이라 폴드가 낫다고 설명
