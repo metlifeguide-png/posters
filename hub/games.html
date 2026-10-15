@@ -589,16 +589,23 @@ G.push({k:'mines',cat:'퍼즐',e:'💣',n:'지뢰찾기',d:'쉬움·보통·어�
  nb(i){const x=i%this.w,y=Math.floor(i/this.w),o=[];for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;const X=x+dx,Y=y+dy;if(X>=0&&Y>=0&&X<this.w&&Y<this.h)o.push(Y*this.w+X);}return o;},
  init(safe){const N=this.w*this.h,ban=new Set([safe,...this.nb(safe)]);this.b=new Set(shuf([...Array(N).keys()].filter(i=>!ban.has(i))).slice(0,this.m));this.t0=Date.now();},
  cnt(i){return this.nb(i).filter(j=>this.b.has(j)).length;},
- tap(i){if(this.over||this.op.has(i))return;if(this.flag){this.fl.has(i)?this.fl.delete(i):this.fl.add(i);rr();return;}if(this.fl.has(i))return;if(!this.b)this.init(i);
+ tap(i){if(Date.now()-(this.lp||0)<700||Date.now()-(this.ck||0)<600)return;if(this.over)return;if(this.op.has(i)){this.chord(i);return;}if(this.flag){this.fl.has(i)?this.fl.delete(i):this.fl.add(i);rr();return;}if(this.fl.has(i))return;if(!this.b)this.init(i);
   if(this.b.has(i)){this.over=2;rr();return;}const st=[i];while(st.length){const c=st.pop();if(this.op.has(c))continue;this.op.add(c);this.fl.delete(c);if(!this.cnt(c))this.nb(c).forEach(j=>{if(!this.op.has(j)&&!this.b.has(j))st.push(j);});}
-  if(this.op.size===this.w*this.h-this.m){this.over=1;record('mines',secs(this.t0),this.lv);}rr();},
+  this.win();rr();},
+ win(){if(!this.over&&this.op.size===this.w*this.h-this.m){this.over=1;record('mines',secs(this.t0),this.lv);}},
+ openF(i){const st=[i];while(st.length){const c=st.pop();if(this.op.has(c))continue;this.op.add(c);this.fl.delete(c);if(!this.cnt(c))this.nb(c).forEach(j=>{if(!this.op.has(j)&&!this.b.has(j))st.push(j);});}},
+ chord(i){if(this.over||!this.b||!this.op.has(i))return;const n=this.cnt(i);if(!n)return;const N=this.nb(i);if(N.filter(j=>this.fl.has(j)).length!==n)return;let boom=false;N.forEach(j=>{if(this.fl.has(j)||this.op.has(j))return;if(this.b.has(j))boom=true;else this.openF(j);});if(boom){this.over=2;rr();return;}this.win();rr();},
+ md(i,e){if(e&&e.buttons===3){this.ck=Date.now();this.chord(i);}},
+ rc(i,e){if(e&&e.preventDefault)e.preventDefault();if(Date.now()-(this.lp||0)<1500||Date.now()-(this.ck||0)<600)return false;if(this.over||this.op.has(i))return false;this.fl.has(i)?this.fl.delete(i):this.fl.add(i);rr();return false;},
+ ts(i){clearTimeout(this.lpT);this.lpT=setTimeout(()=>{this.lpT=0;if(this.over||this.op.has(i))return;this.lp=Date.now();this.fl.has(i)?this.fl.delete(i):this.fl.add(i);try{if(navigator.vibrate)navigator.vibrate(15);}catch(e){}rr();},380);},
+ te(){clearTimeout(this.lpT);},
  view(){if(!this.lv)return lvPick('CUR.go');const C=['','#1f5fae','#3a9d3f','#d33b3b','#6a3fb5','#9a5a2a','#178f8f','#222','#777'];
   const cells=[...Array(this.w*this.h).keys()].map(i=>{const o=this.op.has(i),bm=this.b&&this.b.has(i)&&this.over===2;const n=o?this.cnt(i):0;
-   return `<div onclick="CUR.tap(${i})" style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;border-radius:4px;background:${o?'#f7f3e8':bm?'#f2b8b8':'#b9c7d8'};color:${C[n]}">${bm?'💣':o?(n||''):this.fl.has(i)?'🚩':''}</div>`;}).join('');
+   return `<div onclick="CUR.tap(${i})" oncontextmenu="return CUR.rc(${i},event)" onmousedown="CUR.md(${i},event)" ontouchstart="CUR.ts(${i})" ontouchend="CUR.te()" ontouchmove="CUR.te()" ontouchcancel="CUR.te()" style="-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;border-radius:4px;background:${o?'#f7f3e8':bm?'#f2b8b8':'#b9c7d8'};color:${C[n]}">${bm?'💣':o?(n||''):this.fl.has(i)?'🚩':''}</div>`;}).join('');
   return `<div class="gst"><span>${this.lv} · 💣 ${this.m-this.fl.size}</span><span>⏱ <b id="clk">${this.t0?fmtScore('memory',secs(this.t0)):'0분 00초'}</b></span></div>
    ${this.over?`<div class="gok">${this.over===1?'🎉 성공! '+fmtScore('memory',secs(this.t0)):'💥 펑!'} <button class="btn" style="padding:4px 10px;font-size:13px" onclick="CUR.go('${this.lv}')">다시</button></div>`:''}
    <div class="board" style="grid-template-columns:repeat(${this.w},1fr);max-width:${this.w*36}px">${cells}</div>
-   <div class="g2b"><button class="btn ${this.flag?'g':'gr'}" onclick="CUR.flag=!CUR.flag;rr()">${this.flag?'🚩 깃발 모드 켜짐':'🚩 깃발 모드'}</button><button class="btn b2" onclick="CUR.lv=null;rr()">난이도</button></div>`;}});
+   <div class="g2b"><button class="btn ${this.flag?'g':'gr'}" onclick="CUR.flag=!CUR.flag;rr()">${this.flag?'🚩 깃발 모드 켜짐':'🚩 깃발 모드'}</button><button class="btn b2" onclick="CUR.lv=null;rr()">난이도</button></div><div class="m" style="text-align:center;margin-top:8px;font-size:12.5px;line-height:1.6">PC: 우클릭 = 깃발 · 숫자 칸을 좌우클릭 동시(또는 클릭) = 주변 열기<br>모바일: 칸을 길게 누르면 깃발 · 열린 숫자 칸을 누르면 주변 열기<br>(주변 깃발 수가 숫자와 같을 때만 열려요 · 깃발이 틀리면 💥)</div>`;}});
 // 슬라이딩 퍼즐 (4×4 ~ 7×7) · 같은 줄의 칸을 누르면 여러 칸이 한 번에 밀려요
 G.push({k:'slide15',cat:'퍼즐',e:'🧱',n:'슬라이딩 퍼즐',d:'4×4~7×7 · 숫자를 순서대로 밀기',
  start(){this.N=lsGet('s15n',4);this.shuffle();},
