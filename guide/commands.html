@@ -158,6 +158,9 @@ function takeDate(t){
     var add=(WD.indexOf(m[2])-today().getDay()+7)%7;
     if(m[1]&&/다음|담/.test(m[1])) add=add?add+7:7;
     d=plus(add)}
+  else if(m=t.match(/(?<![\d월\/.:])([1-3]?\d)\s*일(?![차째간])/)){   // '23일' 처럼 월 없이 적으면 오늘 이후 가장 가까운 23일로
+    var dd=+m[1],y0=today().getFullYear(),m0=today().getMonth();
+    for(var k=0;k<13&&!d;k++){var c=new Date(y0,m0+k,dd);if(c.getDate()===dd&&c>=today())d=c}}
   if(!d||isNaN(d)) return {md:null,rest:t};
   if(d<today()&&m[0].match(/\d/)) d.setFullYear(d.getFullYear()+1);
   return {md:md(d),rest:t.replace(m[0]," ")};
@@ -214,11 +217,26 @@ function make(raw){
     var org=findOrg(t),fl=null,memo=[],r2=dropOrg(rest);
     var fm=r2.match(/(?:데이|day)?\s*(?<![\d])(\d)\s*([a-eA-E])(?![a-zA-Z가-힣])/);
     if(fm){fl=fm[1]+fm[2].toLowerCase();r2=r2.replace(fm[0]," ")}
-    var left=[];words(r2).forEach(function(w){if(/카풀|동행|픽업/.test(w))memo.push(w);else if(/새틀|위성|데이|플라이트|본선/.test(w)||w.length<2||/(갈게|갈래|가려|가요|갑니다|갈|가|할|하)\S*$/.test(w)&&w.length<=4)return;else left.push(w)});
-    var c2="!@참가"+(org?" "+org:"")+(fl?" "+fl:"")+(date?" "+date:"")+(!org&&left.length?" "+left.join(" "):"")+(memo.length?" | "+memo.join(" "):"");
+    // 🏆 메인·플라이트 회차: '메인a' · '메인 플라이트 B' · 'main event c' · 'B 플라이트' (순서가 바뀌어도 됨)
+    var KL={"에이":"A","비":"B","씨":"C","디":"D"},LT="([a-pA-P]|에이|비|씨|디)(?![a-zA-Z가-힣])",MN=/메인|(?<![a-z])main(?![a-z])/i;
+    var isMain=MN.test(r2),ml=null,mt=null;
+    if(isMain)mt=r2.match(new RegExp("(?:메인|(?<![a-z])main(?![a-z]))\\s*(?:이벤트|event)?\\s*-?\\s*(?:(?:플라이트|플라잍|flight|flt|회차)\\s*-?\\s*)?"+LT,"i"));
+    if(mt){ml=KL[mt[1]]||mt[1].toUpperCase();r2=r2.replace(mt[0]," ")}
+    else{
+      if(isMain)r2=r2.replace(new RegExp(MN.source,"gi")," ");
+      mt=r2.match(new RegExp("(?:플라이트|플라잍|flight|flt|회차)\\s*-?\\s*"+LT,"i"))||r2.match(new RegExp("(?<![a-zA-Z가-힣])"+LT.replace("(?![a-zA-Z가-힣])","")+"\\s*-?\\s*(?:플라이트|flight|회차)","i"));
+      if(mt&&!fl){ml=KL[mt[1]]||mt[1].toUpperCase();r2=r2.replace(mt[0]," ")}}
+    var left=[],apl=org==="APL";
+    words(r2).forEach(function(w){if(/카풀|동행|픽업/.test(w))memo.push(w);else if((apl?/데이|플라이트|본선/:/새틀|위성|데이|플라이트|본선/).test(w)||w.length<2||/(갈게|갈래|가려|가요|갑니다|갈|가|할|하)\S*$/.test(w)&&w.length<=4)return;else left.push(w)});
+    var tok=isMain?"메인"+(ml||""):(ml&&!fl?"플라이트"+ml:"");
+    var c2="!@참가"+(org?" "+org:"")+(fl?" "+fl:"")+(date?" "+date:"")+(tok?" "+tok:"")+((!org||apl)&&left.length?" "+left.join(" "):"")+(memo.length?" | "+memo.join(" "):"");
     if(!org&&!left.length)warns.push("어느 대회인지 빠졌어요. 주최사(피망·한게임·WPL·APL)나 매장 이름을 적어주세요.");
-    if(!date&&!fl)warns.push("날짜나 회차(1b 같은)를 같이 적으면 바로 등록돼요.");
-    if(org&&left.length)warns.push("'"+left.join(" ")+"'은(는) 명령어에 넣지 않았어요. 주최사 대회는 날짜·회차로 찾아요.");
+    if(apl){   // APL은 종합캘린더에서 날짜·회차로 찾아요 → 빠진 게 있으면 맞는 형식을 알려줌
+      if(!date)warns.push("날짜가 빠졌어요. 10/23 처럼 같이 적어주세요. 예) !@참가 APL 10/23 메인A");
+      else if(isMain&&!ml)warns.push("메인은 회차(A·B·C)까지 적어야 정확히 등록돼요. 예) !@참가 APL "+date+" 메인A");
+      else if(!isMain&&!ml&&!left.length)warns.push("메인 일정이면 '메인A'처럼 회차까지 적어주세요. 예) !@참가 APL "+date+" 메인A");
+    }else if(!date&&!fl)warns.push("날짜나 회차(1b 같은)를 같이 적으면 바로 등록돼요.");
+    if(org&&!apl&&left.length)warns.push("'"+left.join(" ")+"'은(는) 명령어에 넣지 않았어요. 주최사 대회는 날짜·회차로 찾아요.");
     return cmd(c2,"함께 가는 사람 명단이 같이 나와요. 취소는 !@참가취소 예요.",warns);
   }
   // --- 입상 ---
@@ -249,7 +267,7 @@ function run(){
   var o=$("gout");o.innerHTML=h;o.style.display="block";
   var cb=$("gcopy");if(cb)cb.onclick=function(){copy(r.c,cb)};
 }
-var ex=["10월17일 피망 참가 명령어 알려줘","금요일밤 강남에 소주벙개 만들려고하는데 명령어 알려줘","내일 7시 kims 벙개 취소하고 싶어","피망 1b 10/20 카풀 가능하게 참가"];
+var ex=["10월17일 피망 참가 명령어 알려줘","금요일밤 강남에 소주벙개 만들려고하는데 명령어 알려줘","내일 7시 kims 벙개 취소하고 싶어","피망 1b 10/20 카풀 가능하게 참가","apl 23일 메인a 참가 명령어 알려줘"];
 $("gchips").innerHTML=ex.map(function(e){return '<span class="chip">'+esc(e)+'</span>'}).join("");
 Array.prototype.forEach.call(document.querySelectorAll("#gchips .chip"),function(c){c.onclick=function(){$("gq").value=c.textContent;run()}});
 $("gb").onclick=run;
