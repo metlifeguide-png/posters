@@ -38,15 +38,15 @@ input[type=text],input[type=number],select{background:var(--pn);border:1px solid
 .pa .r{padding:5px 0;border-bottom:1px solid var(--ln);font-size:15px}.pa .r:last-child{border:0}
 .pa .r b{display:inline-block;min-width:38px;color:var(--ac)}
 .pa .w{color:var(--rd);font-size:14px}
-#kp button{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;height:46px;font-size:19px;border-radius:10px;border:1px solid var(--ln);background:var(--pn);cursor:pointer;padding:0;touch-action:manipulation}
+#kp button{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;height:38px;font-size:19px;border-radius:10px;border:1px solid var(--ln);background:var(--pn);cursor:pointer;padding:0;touch-action:manipulation}
 #kp button:active{background:var(--ln)}
 #kp button:disabled{opacity:.18;cursor:default;filter:grayscale(1)}#kp button:disabled:active{background:var(--pn)}
 #kl .st{color:var(--tx);font-weight:700}#kl .bad{color:var(--rd);font-weight:700}
 #kp .p{font-size:12.5px;color:var(--gd);font-weight:700}
 #kp .u{color:var(--bl);font-weight:700}#kp .a{font-weight:700;font-size:15px}#kp .e b,#kp .d b{font-size:24px}#kp .e{background:var(--ac);color:#fff;grid-column:6;grid-row:3/5;height:auto;font-size:13px;font-weight:700;line-height:1.4;white-space:nowrap}
-.k9{display:grid;grid-template-columns:repeat(9,1fr);gap:6px;margin-bottom:12px}
+.k9{display:grid;grid-template-columns:repeat(9,1fr);gap:5px;margin-bottom:6px}
 .kg{display:grid;grid-template-columns:1fr 1.85fr;gap:8px}
-.kl{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 6px}.kr{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) minmax(0,1.6fr);gap:10px 6px;grid-template-rows:repeat(4,46px)}#kp .kr .s{grid-row:2/4;height:auto}#kp .kr .j{grid-column:5;grid-row:2;height:auto}#kp .kr .q{grid-column:5;grid-row:3;height:auto}#kp .kr .fx{grid-column:1/6;grid-row:4;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}#kp .kr .d{grid-row:1/3;grid-column:6;height:auto;font-size:13px;font-weight:700;line-height:1.4;white-space:nowrap}
+.kl{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 5px}.kr{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) minmax(0,1.6fr);gap:6px 5px;grid-template-rows:repeat(4,38px)}#kp .kr .s{grid-row:2/4;height:auto}#kp .kr .j{grid-column:5;grid-row:2;height:auto}#kp .kr .q{grid-column:5;grid-row:3;height:auto}#kp .kr .fx{grid-column:1/6;grid-row:4;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}#kp .kr .d{grid-row:1/3;grid-column:6;height:auto;font-size:13px;font-weight:700;line-height:1.4;white-space:nowrap}
 .sv{display:grid;grid-template-columns:1fr 2fr;gap:8px;margin:10px 0 16px}.sv button{padding:14px;font-size:17px}
 .hc{background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:10px;margin-top:8px}
 .hc .t{font-weight:700}.hc .bt{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.hc .bt .btn{padding:7px 10px;font-size:13px}
@@ -418,7 +418,7 @@ function home(){flush();T=null;$('#app').hidden=true;$('#home').hidden=false;syn
  const l=[...D.tours].sort((a,b)=>b.ts-a.ts);$('#tlh').hidden=!l.length;
  $('#tl').innerHTML=l.map(t=>`<div class="tc" data-id="${t.id}"><b style="flex:1;min-width:0;overflow-wrap:anywhere">${esc(t.name)}</b><span class="mu" style="white-space:nowrap">${t.hands.length}핸드</span><span style="display:flex;gap:4px;flex-shrink:0"><button class="btn" data-a="ren" style="font-size:13px;padding:6px 9px" aria-label="대회 이름 수정">✏️ 수정</button><button class="btn" data-a="del" style="font-size:13px;padding:6px 9px" aria-label="대회 삭제">🗑 삭제</button></span></div>`).join('')}
 function conv(L,bb){L={...L};['stack','pre','flop','turn','river'].forEach(k=>{if(L[k])L[k]=L[k].split(',').map(x=>x.replace(/^(\s*\S+\s+)(\d+(?:\.\d+)?)(bb)?/i,(m,a,n)=>a+f(n*bb))).join(',')});return L}
-function enter(t){if(t.S.v!==2){if(t.S.bb>0&&t.form)t.form=conv(norm(t.form),t.S.bb);t.S.v=2}try{if(window.top===window&&!(history.state&&history.state.qr==='app'))history.pushState({qr:'app'},'')}catch(e){}T=t;ed=null;$('#home').hidden=true;$('#app').hidden=false;kOn=true;sync();$('#tt').textContent=t.name;ses();setL(t.form||{});aK='card';tab(0);upd();hands();window.scrollTo(0,0)}
+function enter(t){if(t.S.v!==2){if(t.S.bb>0&&t.form)t.form=conv(norm(t.form),t.S.bb);t.S.v=2}try{if(window.top===window&&!(history.state&&history.state.qr==='app'))history.pushState({qr:'app'},'')}catch(e){}T=t;ed=null;$('#home').hidden=true;$('#app').hidden=false;kOn=false;sync();$('#tt').textContent=t.name;ses();setL(t.form||{});aK='card';tab(0);upd();hands();window.scrollTo(0,0)}
 function bparse(S){const n=(S.blind||'').match(/\d+(?:\.\d+)?/g)||[];S.sb=+n[0]||0;S.bb=+n[1]||0;S.at=+n[2]||0}
 function ses(){const S=T.S;if(S.blind===undefined)S.blind=S.bb?`${S.sb} ${S.bb} ${S.at}`:'';bparse(S);$('#mx').value=S.max;$('#an').value=S.ante;$('#bi').value=S.blind;blFill()}
 /*blind3*/ // 🎚 blind: SB · BB · 앤티 세 칸 + 자주 쓰는 블라인드 버튼 (10/14) · 저장 형식은 그대로 S.blind = "SB BB 앤티"
