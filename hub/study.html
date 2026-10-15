@@ -1718,7 +1718,7 @@ function envOf(g,en,pl,bb){const D=GD[g],B=bb||D.bb,n=D.t,avg=r1(en*START/pl/B),
 // ---- 3명 상황(B안): 계산은 p9p_multi.js (AOFMULTI). 같은 문제를 두 번 계산하지 않게 마지막 결과를 기억 ----
 const MW=window.AOFMULTI;let MWC={};/*aofmw*/
 // ⏱ 실제 게임처럼: 베팅 시간(게임별) 지나면 타임뱅크 30초 자동(한 판에 3개), 그것도 끝나면 자동 폴드(폴드로 채점)
-const AP_T={pm:12,hg:15,wpl:15,apl:15},AP_BANK=30,AP_BANKS=3;/*aoftime*/
+const AP_T={pm:14,hg:17,wpl:17,apl:17},AP_BANK=30,AP_BANKS=3;/*aoftime*/
 const AP_TB={wpl:1};/*aofbank*/   // 타임뱅크가 있는 게임 (한게임·피망은 없음 — 베팅 시간 끝나면 바로 자동 폴드)
 function solveMW(p,e){const c=e.ctx,key=JSON.stringify([p.g,p.en,p.pl,p.bb,p.s,p.h,p.hb,p.v,p.vb,p.v2,p.vb2,p.R]);if(MWC.key===key)return MWC.val;
  const run=o=>p.s==='m'?MW.solveM(c,p.h,p.hb,p.v,p.vb,p.v2,p.vb2,o):MW.solveQ(c,p.h,p.hb,p.v,p.R,p.vb,p.v2,p.vb2,o);
@@ -1771,6 +1771,8 @@ function pickHand(p,r){/*aofhand*/const ord=F.playOrder(),cmb=k=>{const a=Math.f
  if(r.marg){const a=C.filter(c=>r.call[c[0]]>0.5),b=C.filter(c=>r.call[c[0]]<0.5),pk=Math.random()<0.5?a:b;if(pk.length){C.length=0;C.push(...pk);tw=pk.reduce((x,c)=>x+c[1],0);}}if(!C.length)return -1;let x=Math.random()*tw,k=C[C.length-1][0];for(const c of C){x-=c[1];if(x<0){k=c[0];break;}}
  window.AOFWHY='hand '+SAT.handName(k)+' (후보 '+C.length+'개, 경계 '+SAT.handName(ord[e])+')';return k;}
 
+// 올인 범위가 넓은 자리(짧은 스택)에서는 '지면 탈락' 대신, 이 패가 가장 약한 쪽이라 폴드가 낫다고 설명
+function shWhy(pc,hn,old){const x=Math.round(pc*100);return x>=50?`이 자리는 올인 범위가 ${x}%로 아주 넓어요. 그래도 ${hn}는 그 밖의 하위 ${100-x}%(가장 약한 핸드)라서 올인보다 폴드가 낫다고 계산돼요`:'올인했다 지면 탈락이에요 — '+old;}
 function build(p){const S=solveP(p);if(!S)return null;const {e,r}=S,k=p.k,P=POSN(e.n),D=e.D;
  const q=probs(p,r,k),ans=Object.keys(q).reduce((a,b)=>q[b]>q[a]?b:a),hn=SAT.handName(k),pct=x=>Math.round(x*100)+'%';
  const heroP=P[p.h],vilP=p.s==='o'?'':P[p.v];
@@ -1783,7 +1785,7 @@ function build(p){const S=solveP(p);if(!S)return null;const {e,r}=S,k=p.k,P=POSN
   const z=raise?F.pct(sumA(r.rc,r.rf)):0,zc=r.rc[k]>=r.rf[k];
   expl=`<b>${hn}</b> → <b>${{f:'폴드',z:'오픈 레이즈'+(zc?' (올인 받으면 콜)':' (올인 받으면 폴드)'),s:'올인'}[ans]}</b><br>`+
    `올인 범위 <b>${pct(r.shPct)}</b>${raise?` · 오픈 레이즈 <b>${pct(z)}</b>`:''}<br><span class="m">올인: ${rangeText(r.sh)}</span>`+(raise?`<br><span class="m">오픈 후 올인 받으면 콜: ${rangeText(r.rc)}</span>`:'');
-  why={s:'올인했다 지면 탈락이에요 — 이 자리·스택에선 범위 밖이에요',f:'이 패는 버리기엔 아까워요 — 이 자리·스택에선 범위 안이에요',z:'이 스택에선 오픈 레이즈가 맞지 않아요'};
+  why={s:shWhy(r.shPct,hn,'이 자리·스택에선 범위 밖이에요'),f:'이 패는 버리기엔 아까워요 — 이 자리·스택에선 범위 안이에요',z:'이 스택에선 오픈 레이즈가 맞지 않아요'};
   rule='가정: 앞 모두 폴드 · 뒤 사람들은 평균 스택 · ICM(레지 마감 후)'+(raise?'':' · 15BB 이하는 올인/폴드만');}
  else if(p.s==='s'){
   show=head+`<b>${vilP}</b>(${N1(p.vb)}BB)이 올인 → <b>${heroP}</b> · 내 스택 <b>${N1(p.hb)}BB</b><br><span class="hand">${hn}</span>`;
@@ -1806,7 +1808,7 @@ function build(p){const S=solveP(p);if(!S)return null;const {e,r}=S,k=p.k,P=POSN
   show=head+`<b>${vilP}</b>이 ${N1(p.R)}BB 오픈 (남은 ${N1(p.vb)}BB) → <b>${heroP}</b> · 내 스택 <b>${N1(p.hb)}BB</b><br><span class="hand">${hn}</span>`;
   opts=[['f','폴드'],...(flat?[['c','콜 (플랍 보기)']]:[]),['s','3벳 올인']];
   expl=`<b>${hn}</b> → <b>${{f:'폴드',c:'콜 (플랍 보기)',s:'3벳 올인'}[ans]}</b><br>3벳 올인 <b>${pct(r.rsPct)}</b>${flat?` · 콜 <b>${pct(r.flPct)}</b>`:''} · 상대 오픈 범위 상위 ${Math.round(r.op*100)}%로 봄<br><span class="m">3벳 올인: ${rangeText(r.rs)}</span>`+(flat?`<br><span class="m">콜: ${rangeText(r.fl)}</span>`:'');
-  why={s:'올인했다 지면 탈락이에요 — 이 패는 범위 밖이에요',c:'이 스택에선 콜보다 올인이나 폴드가 나아요',f:'이 패는 올인하거나 콜할 만해요'};
+  why={s:shWhy(r.rsPct,hn,'이 패는 범위 밖이에요'),c:'이 스택에선 콜보다 올인이나 폴드가 나아요',f:'이 패는 올인하거나 콜할 만해요'};
   rule='가정: 오픈한 사람 외 다른 사람은 폴드 · 25BB 이하 · [근사]';}
  expl+=`<br><span class="m">${D.n} · 남은 ${p.pl}명 · 평균 ${N1(e.avg)}BB · 내 ${N1(p.hb)}BB (평균의 ${N1(p.hb/e.avg)}배)</span>`;
  return {a:ans,opts,why,show,expl,rule,sum:`${SN[p.s]} ${heroP} ${N1(p.hb)}BB ${hn}`,tag:TAG[p.s],p,lv:1,
