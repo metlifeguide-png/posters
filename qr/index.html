@@ -441,8 +441,8 @@ function mk(){const F=$('#form');F.innerHTML=FD.map(d=>`<div class="ln" data-k="
  mkPub(F);F.addEventListener('focusin',e=>{const k=e.target.dataset.k;if(K.includes(k)){if(kLocked(k)){aK=kFirst();setTimeout(()=>el(aK).focus(),0);toast('위 칸부터 먼저 입력해 주세요');return}aK=k;mark();setKb(k!=='memo');if(k!=='memo')setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}});F.addEventListener('input',chg);F.addEventListener('click',()=>setTimeout(kpApply,0));F.addEventListener('keyup',kpApply);F.addEventListener('keydown',e=>{if(PC&&e.key==='Enter'&&e.target.dataset&&e.target.dataset.k){e.preventDefault();next()}});F.addEventListener('click',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k&&K.includes(k)&&k!=='memo'&&!kOn&&!kLocked(k)){aK=k;mark();setKb(true);setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}})}
 let kOn=true,TAB=0;
 const PC=matchMedia('(hover:hover) and (pointer:fine)').matches; /* PC(마우스+키보드): 플로팅 키패드도 뜨고, [키패드 끄기]를 누르면 실제 키보드로 직접 입력 (10/14) */
-let kOff=false;try{kOff=PC&&localStorage.getItem('qr_kpoff')==='1'}catch(e){}   // PC에서 키패드를 끈 상태 (다른 칸을 눌러도 안 뜸, 기기에 기억)
-function setKOff(v){kOff=v;try{localStorage.setItem('qr_kpoff',v?'1':'0')}catch(e){}}
+let kOff=false;try{localStorage.removeItem('qr_kpoff')}catch(e){}   // 끄기는 이번 화면에서만 (다시 열면 키패드 켜짐)   // PC에서 키패드를 끈 상태 (다른 칸을 눌러도 안 뜸, 기기에 기억)
+function setKOff(v){kOff=v}
 let ky=null;try{ky=JSON.parse(localStorage.getItem('qr_ky')||'null')}catch(e){}
 function yClamp(y,h){return Math.min(Math.max(4,innerHeight-h),Math.max(4,y))}   // 아래 끝 = 화면(홈 안에선 아래 탭 위) 맨 아래까지 붙일 수 있음 (10/11, 예전엔 70px 띄움)
 function placeKb(){const w=$('#kw');if(w.hidden)return;const h=w.offsetHeight;w.style.top=yClamp(ky==null?(PC?innerHeight-h:(innerHeight-h)/2):ky*innerHeight,h)+'px'}   // PC는 처음엔 화면 아래쪽
