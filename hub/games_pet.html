@@ -649,7 +649,7 @@ G.push({k:'pet',cat:'펫',e:'🐣',n:'뚝섬펫',d:PET_NEW_DAYS+'일 동안 키�
     <div class="row" style="font-size:12.5px;margin-top:4px"><span>⚖️ 체중 ${v.weight}</span><span>${v.est?`지금 페이스 예상 ${petStars(v.est)}`:'<span class="m">등급 예상은 조금 키운 뒤에 보여요</span>'}</span></div></div>
    ${v.stage==='알'?'':this.menuHTML(v)}${this.ctaHTML(v)}
    <div class="sec">최근 일</div><div class="card" style="font-size:12.5px;line-height:1.7">${(v.log||[]).map(x=>`<span class="m">${esc(x[0])}</span> ${esc(x[1])}`).join('<br>')||'-'}</div>`;}});
-// GORDER:live,blackjack,memory,mines,slide15,nonogram,chosung,baseball,sudoku,omok,othello,ladder,roulette,psquares,crossword,codebreak,speed50,chess,baduk,janggi,logic,pet,onecard,hula,sichuan,memseq,reaction
+// GORDER:live,blackjack,memory,mines,slide15,nonogram,chosung,baseball,sudoku,omok,othello,ladder,roulette,psquares,crossword,codebreak,speed50,chess,baduk,janggi,logic,pet,onecard,hula,sichuan,memseq,hilo,reaction
 G.push({k:'live',stub:'games.html',cat:'카드',e:'🎰',n:'라이브 카지노',d:'블랙잭 · 바카라'});
 G.push({k:'blackjack',stub:'games.html',cat:'카드',e:'🂡',n:'블랙잭 트레이너',d:'스플릿·더블·서렌더 · 카운팅 · 최고 칩 랭킹'});
 G.push({k:'memory',stub:'games.html',cat:'카드',e:'🧠',n:'카드 짝맞추기',d:'6~15쌍 · 난이도 4단계 · 빠를수록 좋아요'});
@@ -675,6 +675,7 @@ G.push({k:'onecard',stub:'games.html',cat:'카드',e:'🃏',n:'원카드',d:'AI 
 G.push({k:'hula',stub:'games.html',cat:'카드',e:'🀄',n:'세븐훌라',d:'AI 대전 · 등록·붙이기·땡큐·스톱 · 훌라 2배'});
 G.push({k:'sichuan',stub:'games_puzzle.html',cat:'퍼즐',e:'🀄',n:'사천성',d:'같은 그림을 2번 이하로 꺾어 연결 · 클래식·타임어택·12스테이지'});
 G.push({k:'memseq',stub:'games.html',cat:'카드',e:'🃏',n:'무늬 기억력',d:'무늬 순서 외우기 · 난이도 4단계 · 오늘의 기록'});
+G.push({k:'hilo',stub:'games.html',cat:'카드',e:'🎴',n:'하이로우',d:'다음 카드가 높을까 낮을까 · 2덱 · 연승 도전'});
 G.push({k:'reaction',stub:'games_battle.html',cat:'대전·도구',e:'⚡',n:'반응속도',d:'초록불에 터치 · 5번 평균'});
 
 // 두더지 잡기
