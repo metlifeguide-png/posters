@@ -608,8 +608,8 @@ function render(){const hsh=location.hash.slice(1);if(CUR&&CUR.stop)CUR.stop();S
  const back=$('backBtn');
  if(hsh.startsWith('g=')){const key=hsh.slice(2).split('&')[0];const g=G.find(x=>x.k===key);if(g&&g.stub){location.replace(g.stub+location.search+location.hash);return;}
   if(window.DAILY&&DAILY.k!==key)dailyEnd();
-  if(g&&MEM_ONLY.includes(key)&&!MEM.tok){CUR=null;setTitle(g.e+' '+g.nm);back.style.display='';newBtnSync();show(memLockView(g));memNeed(g.nm);scrollTo(0,0);return;}   // 회원 전용: 주소(#g=)는 그대로 두고 잠금 화면 → 로그인하면 바로 그 게임 (예전엔 목록으로 갔다가 다시 넘어왔음)
-  else if(g){gvisit((g.study?'':'게임·')+g.nm+(window.DAILY&&DAILY.k===key?' (오늘의 문제)':''));CUR=g;const dly=window.DAILY&&DAILY.k===key;setTitle((dly?'📅 오늘의 문제 · ':'')+g.e+' '+g.nm);back.style.display=g.study?'none':'';g.start();newBtnSync();
+  if(g&&MEM_ONLY.includes(key)&&!MEM.tok){CUR=null;setTitle(g.e+' '+g.nm);back.style.display=key==='pet'?'none':'';newBtnSync();show(memLockView(g));memNeed(g.nm);scrollTo(0,0);return;}   // 회원 전용: 주소(#g=)는 그대로 두고 잠금 화면 → 로그인하면 바로 그 게임 (예전엔 목록으로 갔다가 다시 넘어왔음)
+  else if(g){gvisit((g.study?'':'게임·')+g.nm+(window.DAILY&&DAILY.k===key?' (오늘의 문제)':''));CUR=g;const dly=window.DAILY&&DAILY.k===key;setTitle((dly?'📅 오늘의 문제 · ':'')+g.e+' '+g.nm);back.style.display=(g.study||key==='pet')?'none':'';g.start();   /* 10/16: 뚝섬펫은 '목록' 버튼 숨김 (펫 화면 안에 자체 메뉴가 있음) */newBtnSync();
    if(dly){if(key==='logic')g.go('오늘');else if(DAILY.lv&&g.go)g.go(DAILY.lv);}scrollTo(0,0);return;}}
  if(window.DAILY)dailyEnd();
  CUR=null;back.style.display='none';newBtnSync();
