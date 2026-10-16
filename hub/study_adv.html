@@ -1312,7 +1312,13 @@ setInterval(()=>{if(document.hidden||!PPAGE)return;if(Date.now()-PACT>PIDLE_MS){
 document.addEventListener('visibilitychange',()=>{if(PPAGE)pres(document.hidden);});
 window.addEventListener('pagehide',()=>{if(PPAGE)pres(1);});
 function gvisit(p){presPage(p);if(!API)return;try{fetch(API+'/api/visit',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({p,n:NICK||''})}).catch(()=>{});}catch(e){}}
-function render0(){const n=G.filter(g=>!g.study).length,st=n>0&&G.every(g=>g.cat==='홀덤');setTitle((st?'🎓 홀덤학습':'🎮 뚝섬 게임')+' · '+n+'종');if(st)document.title='홀덤학습';show(listView());}
+// 📒 오답노트 모아 보기 (학습 첫 화면) - 게임별 오답(wn_<게임키>, 이 기기 저장)을 한 칸에. 누르면 그 게임 오답노트 바로 시작
+const WN_GAMES=['potodds','geom','rulequiz','aofprac'];var WN_AUTO=null;
+function wnBox(){const R=WN_GAMES.map(k=>{const g=G.find(x=>x.k===k),n=lsGet('wn_'+k,[]).length;return g&&n?{g,n}:null;}).filter(Boolean);
+ if(!R.length)return '';const tot=R.reduce((a,r)=>a+r.n,0);
+ return `<div class="card" style="margin-bottom:10px"><div class="t">📒 내 오답노트 · ${tot}개</div><div class="m" style="margin-top:4px">틀린 문제를 게임별로 모았어요 · 맞히면 목록에서 빠져요 (이 기기 저장)</div><div style="display:grid;gap:6px;margin-top:8px">${R.map(r=>`<button class="btn full g" style="text-align:left" onclick="wnGo('${r.g.k}')">${r.g.e} ${r.g.nm||r.g.n} · ${r.n}개 풀기</button>`).join('')}</div></div>`;}
+function wnGo(k){WN_AUTO=k;location.hash='g='+k;}
+function render0(){const n=G.filter(g=>!g.study).length,st=n>0&&G.every(g=>g.cat==='홀덤');setTitle((st?'🎓 홀덤학습':'🎮 뚝섬 게임')+' · '+n+'종');if(st)document.title='홀덤학습';show((st?wnBox():'')+listView());}
 // 🔄 새 게임: 같은 난이도·옵션으로 바로 다시 시작
 const NO_NEW=['live','pet','blackjack','hustudy','huview','ladder','roulette'];
 function newBtnSync(){const b=$('newBtn');if(!b)return;const g=CUR;b.style.display=g&&!g.study&&!NO_NEW.includes(g.k)&&!(window.DAILY&&DAILY.k===g.k)?'':'none';}
@@ -1329,7 +1335,7 @@ function render(){const hsh=location.hash.slice(1);if(CUR&&CUR.stop)CUR.stop();S
  if(hsh.startsWith('g=')){const key=hsh.slice(2).split('&')[0];const g=G.find(x=>x.k===key);if(g&&g.stub){location.replace(g.stub+location.search+location.hash);return;}
   if(window.DAILY&&DAILY.k!==key)dailyEnd();
   if(g&&MEM_ONLY.includes(key)&&!MEM.tok){CUR=null;setTitle(g.e+' '+g.nm);back.style.display=key==='pet'?'none':'';newBtnSync();show(memLockView(g));memNeed(g.nm);scrollTo(0,0);return;}   // 회원 전용: 주소(#g=)는 그대로 두고 잠금 화면 → 로그인하면 바로 그 게임 (예전엔 목록으로 갔다가 다시 넘어왔음)
-  else if(g){gvisit((g.study?'':'게임·')+g.nm+(window.DAILY&&DAILY.k===key?' (오늘의 문제)':''));CUR=g;const dly=window.DAILY&&DAILY.k===key;setTitle((dly?'📅 오늘의 문제 · ':'')+g.e+' '+g.nm);back.style.display=(g.study||key==='pet')?'none':'';g.start();   /* 10/16: 뚝섬펫은 '목록' 버튼 숨김 (펫 화면 안에 자체 메뉴가 있음) */newBtnSync();
+  else if(g){gvisit((g.study?'':'게임·')+g.nm+(window.DAILY&&DAILY.k===key?' (오늘의 문제)':''));CUR=g;const dly=window.DAILY&&DAILY.k===key;setTitle((dly?'📅 오늘의 문제 · ':'')+g.e+' '+g.nm);back.style.display=(g.study||key==='pet')?'none':'';g.start();if(WN_AUTO===key||/&w=1/.test(hsh)){WN_AUTO=null;if(g.go)g.go('W');}   /* 10/16: 뚝섬펫은 '목록' 버튼 숨김 (펫 화면 안에 자체 메뉴가 있음) */newBtnSync();
    if(dly){if(key==='logic')g.go('오늘');else if(DAILY.lv&&g.go)g.go(DAILY.lv);}scrollTo(0,0);return;}}
  if(window.DAILY)dailyEnd();
  CUR=null;back.style.display='none';newBtnSync();
