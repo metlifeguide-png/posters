@@ -13,7 +13,7 @@
 <meta property="og:image" content="https://metlifeguide-png.github.io/posters/hub/banner.jpg">
 <!--
   🌏 해외대회일정 독립 페이지 (templates/intl.html → 깃허브 hub/intl.html)
-  · 서버가 {"sch": [], "schc": [], "updated": "10/16 20:13"} 자리에 관리자 🏠 홈 관리 → 🌏 해외대회일정 의 내용을 넣어요
+  · 서버가 {"sch": [], "schc": [], "updated": "10/16 20:20"} 자리에 관리자 🏠 홈 관리 → 🌏 해외대회일정 의 내용을 넣어요
       D.sch  = [{kind, name, color, s:'YYYY-MM-DD', e:'YYYY-MM-DD', t:'막대 글자(생략하면 날짜)'}]
       D.schc = [{title, badge, color, lines:[...]}]
   · 관리자에 아직 아무것도 안 넣었으면 아래 FALL(기본 일정)이 대신 나와요.
@@ -66,7 +66,7 @@ html,body{background:var(--paper);color:var(--ink);font:15px/1.5 system-ui,"Appl
 <body>
 <div class="wrap" id="app"></div>
 <script>
-let D={"sch": [], "schc": [], "updated": "10/16 20:13"}; const B="https://metlifeguide-png.github.io/posters";
+let D={"sch": [], "schc": [], "updated": "10/16 20:20"}; const B="https://metlifeguide-png.github.io/posters";
 try{if(window.self!==window.top)document.documentElement.classList.add('inframe');}catch(e){document.documentElement.classList.add('inframe');}
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const head=(t,m)=>`<div class="h"><h2>${t}</h2><div class="m">${m||''}</div></div>`;
