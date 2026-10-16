@@ -1058,7 +1058,7 @@ G.push({k:'aofprac',cat:'홀덤',e:'🎯',n:'새틀 AOF 연습',d:'앞액션 3�
   return hd+`<div style="margin:0 0 8px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span id="apTm" style="font-size:22px;font-weight:900">${(tm0/1000).toFixed(1)}초</span><span class="m">${this.bankOn?'⏱ 타임뱅크 사용 중 (30초)':'베팅 시간 '+(AP_T[q.p.g]||15)+'초 · 지나면 '+(AP_TB[q.p.g]&&this.banks>0?'타임뱅크 자동':'자동 폴드')}</span></div><div style="height:7px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:3px"><div id="apBar" style="height:100%;width:${Math.min(100,tm0/tot0*100)}%;background:${this.bankOn?'#e08a00':'#1565c0'}"></div></div></div>`+`<style>.hand{font-size:34px;font-weight:800;letter-spacing:1px}</style><div class="card" style="text-align:center;font-size:16px;line-height:1.8">${q.show}</div>`
    +`<div class="${cols}" style="${q.opts.length===3?'display:grid;grid-template-columns:repeat(3,1fr);gap:8px':''}">${q.opts.map(o=>`<button class="btn ${o[0]==='f'?'gr':''}" style="font-size:17px;padding:14px 6px" onclick="CUR.ans('${o[0]}')">${o[1]}</button>`).join('')}</div>`+rule(q);}});
 })();
-// GORDER:pushfold,potodds,nutadv,hustudy,huview,geom,aofprac,rulequiz,riverq
+// GORDER:pushfold,potodds,nutadv,hustudy,huview,geom,aofprac,rulequiz,riverq,mwflop
 G.push({k:'pushfold',stub:'study.html',cat:'홀덤',e:'🔥',n:'푸시/폴드',d:'올인·콜 판단 트레이너 · 연속 기록'});
 G.push({k:'potodds',stub:'study.html',cat:'홀덤',e:'💰',n:'팟 오즈',d:'레벨 1~5 · 멀티웨이·프리플랍·콜 판단까지'});
 G.push({k:'nutadv',stub:'study.html',cat:'홀덤',e:'🧭',n:'넛 우위 맞히기',d:'포지션별 레인지 · 누구 보드인가'});
@@ -1066,6 +1066,7 @@ G.push({k:'hustudy',stub:'study_hu.html',cat:'홀덤',e:'🎓',n:'헤즈업 공�
 G.push({k:'huview',stub:'study_hu.html',cat:'홀덤',e:'📊',n:'헤즈업 레인지 뷰어',d:'프리플랍 액션 → 플랍 솔버 자동 연동 · 핸드별 빈도·EV'});
 G.push({k:'rulequiz',stub:'study.html',cat:'홀덤',e:'📜',n:'대회 룰 퀴즈',d:'입문 · 베팅·쇼다운·사이드팟 등 대회 룰 10문제'});
 G.push({k:'riverq',stub:'study.html',cat:'홀덤',e:'🌊',n:'리버 트레이너',d:'헤즈업 리버 · 벳·체크·콜·폴드를 솔버 정답으로 맞히기'});
+G.push({k:'mwflop',stub:'study.html',cat:'홀덤',e:'👥',n:'멀티웨이 플랍',d:'여러 명 플랍에서 벳을 받았을 때 · 에퀴티 vs 팟 오즈로 콜/폴드'});
 
 // ===== 목록 · 랭킹 · 오늘의 문제 · 화면 전환 =====
 G.forEach(g=>g.nm=g.n);   // 게임 안에서 this.n 을 숫자로 쓰는 경우가 있어 이름은 따로 보관
