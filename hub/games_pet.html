@@ -51,6 +51,8 @@ input.q{width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius
 .np{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:12px}.np button{font-size:20px;padding:10px 0;border-radius:10px;border:1.5px solid var(--line);background:#fff}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#26303d;color:#fff;padding:9px 14px;border-radius:11px;font-size:13.5px;opacity:0;transition:.2s;pointer-events:none;z-index:50;max-width:90%;text-align:center}
 .toast.on{opacity:.96}
+/* 🖥 [10/16] PC(마우스) 게임 화면 확대: 게임 칸 1.35배 · 윗줄 1.2배 (모바일·터치 기기는 그대로 · 되돌리려면 이 두 줄만 지우기) */
+@media(min-width:820px) and (pointer:fine){.wrap{zoom:1.35}.top{zoom:1.2}}
 .ctl{display:grid;grid-template-columns:repeat(3,64px);grid-template-rows:repeat(2,48px);gap:6px;justify-content:center;margin-top:10px}
 .ctl button{font-size:22px;border-radius:12px;border:1.5px solid var(--line);background:#fff}
 @keyframes cfblink{50%{opacity:.35}}@keyframes pgin{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}#app{animation:pgin .22s ease-out}
@@ -464,7 +466,7 @@ function petBushes(v,x,pick){const f={...petForm(v),uid:'hd'};let h='';for(let i
  return `<div style="position:absolute;inset:0;display:flex;align-items:flex-end;justify-content:space-around;padding:0 6px 6px">${h}</div>`;}
 function petApi(path,body){return fetch(API+path,body?{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(body)}:{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json());}
 const petStars=n=>`<span style="color:#f5b400;letter-spacing:-1px">${'★'.repeat(n||0)}</span><span style="color:#ccc;letter-spacing:-1px">${'★'.repeat(10-(n||0))}</span>`;
-G.push({k:'pet',cat:'펫',e:'🐣',n:'뚝섬펫',d:PET_NEW_DAYS+'일 동안 키우는 다마고치 · 20종 중 선택 · 여러 마리 키우기',
+G.push({k:'pet',cat:'펫',e:'🐣',n:'뚝섬펫',d:'30일 동안 키우는 다마고치 · 20종 중 선택 · 여러 마리 키우기',
  start(){this._mine=0;this._mineBusy=0;this._linking=0;this.tab='home';this.data=null;this.msg='';this.err='';this.mode=this.tok()?'login':'new';this.sel=0;this.fl='';this.fp='';this.menu='feed';this.fx=null;this.hiding=false;this.flash=false;this.list=null;this.scr='';this.boot();rr();clearInterval(this.iv);this.iv=setInterval(()=>{if(CUR===this&&this.tab==='home'&&!this.fx&&!this.hiding){if(this.scr==='list')this.loadList(true);else if(this.tok()){this.load(true);if(this.scr==='pet')this.loadList(true);}}},60000);},
  stop(){clearInterval(this.iv);clearTimeout(this.ft);},
  tok(){try{return localStorage.getItem('ddpet_tok')||'';}catch(e){return '';}},
