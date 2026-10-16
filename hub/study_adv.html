@@ -633,7 +633,11 @@ function solveVs(ctx,hero,heroBB,vil,vilBB){
  const x=r.info[c];let call=r.cs[c],callPct=r.csPct[c];
  const f=1*tsty(ctx).shove;
  if(f!==1){const y=SAT.exploitCaller(r,Eq,c,f);call=y.call;callPct=y.callPct;}
- call=shrinkRange(call,CALL_TIGHT,ord);callPct=pct(call);
+ {const keep=call,sr=r.sh;let sw=0;for(let k=0;k<169;k++)sw+=W[k]*sr[k];   /*calltight2 10/17*/
+  const eqv=h=>{let a=0;for(let k=0;k<169;k++)a+=W[k]*sr[k]*Eq[h][k];return sw?a/sw:0;};
+  call=shrinkRange(call,CALL_TIGHT,ord);   // 경계 핸드만 조이기: 승률이 필요 승률보다 3%p 이상 높은 핸드는 다시 콜 (예: SB 2.5BB vs BTN 올인 82o 32% > 28%)
+  for(let h=0;h<169;h++)if(keep[h]>call[h]&&eqv(h)>=x.need+0.03)call[h]=keep[h];}
+ callPct=pct(call);
  return {kind:'vs',call,callPct,need:x.need,chipNeed:x.chipNeed,shPct:r.shPct,eff:Math.min(vilBB,heroBB)};
 }
 
