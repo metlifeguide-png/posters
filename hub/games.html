@@ -51,6 +51,8 @@ input.q{width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius
 .np{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:12px}.np button{font-size:20px;padding:10px 0;border-radius:10px;border:1.5px solid var(--line);background:#fff}
 .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#26303d;color:#fff;padding:9px 14px;border-radius:11px;font-size:13.5px;opacity:0;transition:.2s;pointer-events:none;z-index:50;max-width:90%;text-align:center}
 .toast.on{opacity:.96}
+/* 🖥 [10/16] PC(마우스) 게임 화면 확대: 게임 칸 1.35배 · 윗줄 1.2배 (모바일·터치 기기는 그대로 · 되돌리려면 이 두 줄만 지우기) */
+@media(min-width:820px) and (pointer:fine){.wrap{zoom:1.35}.top{zoom:1.2}}
 .ctl{display:grid;grid-template-columns:repeat(3,64px);grid-template-rows:repeat(2,48px);gap:6px;justify-content:center;margin-top:10px}
 .ctl button{font-size:22px;border-radius:12px;border:1.5px solid var(--line);background:#fff}
 @keyframes cfblink{50%{opacity:.35}}@keyframes pgin{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}#app{animation:pgin .22s ease-out}
@@ -1262,6 +1264,7 @@ G.push({k:'chess',stub:'games_battle.html',cat:'대전·도구',e:'♟️',n:'�
 G.push({k:'baduk',stub:'games_battle.html',cat:'대전·도구',e:'⚫',n:'바둑 (19줄)',d:'AI 대전 · 친구와 2인 · 계가 자동'});
 G.push({k:'janggi',stub:'games_battle.html',cat:'대전·도구',e:'🀄',n:'장기',d:'AI 대전 · 친구와 2인'});
 G.push({k:'logic',stub:'games_puzzle.html',cat:'퍼즐',e:'🕵️',n:'논리 퍼즐',d:'범인 찾기·순서·기사와 건달 · 무한 생성'});
+G.push({k:'pet',stub:'games_pet.html',cat:'펫',e:'🐣',n:'뚝섬펫',d:'30일 동안 키우는 다마고치 · 20종 중 선택 · 여러 마리 키우기'});
 G.push({k:'sichuan',stub:'games_puzzle.html',cat:'퍼즐',e:'🀄',n:'사천성',d:'같은 그림을 2번 이하로 꺾어 연결 · 클래식·타임어택·12스테이지'});
 G.push({k:'reaction',stub:'games_battle.html',cat:'대전·도구',e:'⚡',n:'반응속도',d:'초록불에 터치 · 5번 평균'});
 
