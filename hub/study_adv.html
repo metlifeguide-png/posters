@@ -866,7 +866,7 @@ function envOf(g,en,pl,bb){const D=GD[g],B=bb||D.bb,n=D.t,avg=r1(en*START/pl/B),
 // ---- 3명 상황(B안): 계산은 p9p_multi.js (AOFMULTI). 같은 문제를 두 번 계산하지 않게 마지막 결과를 기억 ----
 const MW=window.AOFMULTI;let MWC={};/*aofmw*/
 // ⏱ 실제 게임처럼: 베팅 시간(게임별) 지나면 타임뱅크 30초 자동(한 판에 3개), 그것도 끝나면 자동 폴드(폴드로 채점)
-const AP_T={pm:16,hg:19,wpl:19,apl:19},AP_BANK=30,AP_BANKS=3;/*aoftime*/
+const AP_T={pm:14,hg:17,wpl:17,apl:17},AP_BANK=30,AP_BANKS=3;/*aoftime*/
 const AP_TB={wpl:1};/*aofbank*/   // 타임뱅크가 있는 게임 (한게임·피망은 없음 — 베팅 시간 끝나면 바로 자동 폴드)
 function solveMW(p,e){const c=e.ctx,key=JSON.stringify([p.g,p.en,p.pl,p.bb,p.s,p.h,p.hb,p.v,p.vb,p.v2,p.vb2,p.R]);if(MWC.key===key)return MWC.val;
  const run=o=>p.s==='m'?MW.solveM(c,p.h,p.hb,p.v,p.vb,p.v2,p.vb2,o):MW.solveQ(c,p.h,p.hb,p.v,p.R,p.vb,p.v2,p.vb2,o);
@@ -948,13 +948,13 @@ function genX(g,D,c,O){const n=Math.min(6+Math.floor(Math.random()*4),O?O.pl:99)
  let k=pickX(p,S);if(k<0&&O){const ord=F.playOrder().filter(h=>PCTL(h)<=JUNK);k=ord[Math.floor(Math.random()*ord.length)];}   // 시뮬레이션: 경계 핸드가 없으면(아주 짧은 스택 등) 그냥 아무 핸드
  if(k<0)return null;p.k=k;return build(p);}
 // 원형 테이블: 나는 아래 가운데, 시계 방향으로 다음 자리. 앞 사람 액션은 순서대로 하나씩 나타남(0.35초 간격) /*aoftable*/
-function tableX(p,e,P,stat){const n=e.n,xs=p.xs||'o',btn=n-3,pot=0.1*n+1.5+(xs==='s'?p.st[p.v]-(p.v>=n-2?(p.v===n-1?1:0.5):0):xs==='r'?p.R-(p.v>=n-2?(p.v===n-1?1:0.5):0):0);
- const seat=i=>{const rel=(i-p.h+n)%n,a=Math.PI/2+rel*2*Math.PI/n,x=50+43*Math.cos(a),y=50+38*Math.sin(a),me=i===p.h,act=xs!=='o'&&i===p.v,fold=i<p.h&&!act;
+function tableX(p,e,P,stat){/*aoftable2*/const n=e.n,xs=p.xs||'o',btn=n-3,pot=p.pot!=null?p.pot:0.1*n+1.5+(xs==='s'?p.st[p.v]-(p.v>=n-2?(p.v===n-1?1:0.5):0):xs==='r'?p.R-(p.v>=n-2?(p.v===n-1?1:0.5):0):0);
+ const seat=i=>{const rel=(i-p.h+n)%n,a=Math.PI/2+rel*2*Math.PI/n,x=50+43*Math.cos(a),y=50+38*Math.sin(a),me=i===p.h,act=p.acts?p.acts.includes(i):xs!=='o'&&i===p.v,fold=i<p.h&&!act,av=p.avgS&&p.avgS.includes(i);
   const st=stat(i),dl=i<p.h?(i+1)*0.35:0,col=me?'#1565c0':act?'#d94a2b':fold?'#9aa0a6':'var(--ink)';
   return `<div style="position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);width:62px;text-align:center;line-height:1.2">
    <div style="background:var(--paper2);border:2px solid ${col};border-radius:10px;padding:3px 2px;${fold?'opacity:.55;':''}${me?'box-shadow:0 0 0 3px rgba(21,101,192,.2);':''}">
     <div style="font-size:10.5px;font-weight:700;color:${col}">${P[i]}${i===btn?' <span style="display:inline-block;background:#fff;color:#111;border:1px solid #999;border-radius:50%;width:13px;height:13px;font-size:8.5px;line-height:12px">D</span>':''}</div>
-    <div style="font-size:14.5px;font-weight:800">${N1(p.st[i])}<span style="font-size:9.5px;font-weight:600">BB</span></div></div>
+    <div style="font-size:14.5px;font-weight:800">${av?'<span style="font-size:10px;font-weight:600">평균 </span>':''}${N1(p.st[i])}<span style="font-size:9.5px;font-weight:600">BB</span></div></div>
    ${me?'<div style="font-size:11px;font-weight:800;color:#1565c0;margin-top:2px">나</div>':st&&st!=='남음'?`<div style="font-size:11px;font-weight:800;margin-top:2px;color:${act?'#d94a2b':'#7a7f86'};opacity:0;animation:apIn .25s ${dl}s forwards">${st}</div>`:''}</div>`;};
  return `<style>@keyframes apIn{to{opacity:1}}</style><div style="position:relative;width:100%;max-width:440px;aspect-ratio:1.45;margin:6px auto 2px">
   <div style="position:absolute;left:11%;right:11%;top:14%;bottom:14%;border-radius:50%;background:radial-gradient(#2f7d52,#1f5f3f);border:6px solid #6b4a2b"></div>
@@ -1089,6 +1089,15 @@ function build(p){const S=solveP(p);if(!S)return null;if(p.s==='x')return buildX
   why={s:shWhy(r.rsPct,hn,'이 패는 범위 밖이에요'),c:'이 스택에선 콜보다 올인이나 폴드가 나아요',f:'이 패는 올인하거나 콜할 만해요'};
   rule='가정: 오픈한 사람 외 다른 사람은 폴드 · 25BB 이하 · [근사]';}
  expl+=`<br><span class="m">${D.n} · 남은 ${p.pl}명 · 평균 ${N1(e.avg)}BB · 내 ${N1(p.hb)}BB (평균의 ${N1(p.hb/e.avg)}배)</span>`;
+ {const n=e.n,bl=i=>i===n-1?1:i===n-2?0.5:0,st=new Array(n).fill(r1(e.avg)),avgS=[],acts=[],lab={};let pot=0.1*n+1.5;
+  for(let i=0;i<n;i++)avgS.push(i);const set=(i,v,t)=>{st[i]=v;avgS.splice(avgS.indexOf(i),1);acts.push(i);lab[i]=t;};
+  st[p.h]=p.hb;avgS.splice(avgS.indexOf(p.h),1);
+  if(p.s==='s'){set(p.v,p.vb,'올인');pot+=p.vb-bl(p.v);}
+  else if(p.s==='r'){set(p.v,p.vb+p.R,N1(p.R)+'BB 오픈');pot+=p.R-bl(p.v);}
+  else if(p.s==='m'){set(p.v,p.vb,'올인');set(p.v2,p.vb2,p.vb2>p.vb?'올인':'콜');pot+=p.vb+p.vb2-bl(p.v)-bl(p.v2);}
+  else if(p.s==='q'){set(p.v,p.vb+p.R,N1(p.R)+'BB 오픈');set(p.v2,p.vb2,'3벳 올인');pot+=p.R+p.vb2-bl(p.v)-bl(p.v2);}
+  const tb=tableX({h:p.h,st,acts,avgS,pot,xs:'t'},e,P,i=>i===p.h?'나':lab[i]||(i<p.h?'폴드':'남음'));
+  show=show.replace('<br><span class="hand">',tb+'<span class="hand">');}
  return {a:ans,opts,why,show,expl,rule,sum:`${SN[p.s]} ${heroP} ${N1(p.hb)}BB ${hn}`,tag:TAG[p.s],p,lv:1,
   fmt:id=>(opts.find(o=>o[0]===id)||[0,id])[1],chart:chartHtml(p,r,k)};}
 
