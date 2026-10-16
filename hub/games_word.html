@@ -316,7 +316,7 @@ G.push({k:'crossword',cat:'퍼즐',e:'📝',n:'가로세로 낱말퀴즈',d:'상
    ${this.done?'':`<div class="card" style="margin-top:10px"><div class="t">${p.no}번 ${p.dx?'가로':'세로'} · ${p.w.length}글자</div><div class="m" style="margin:4px 0 8px">${esc(p.clue)}</div>
     <div style="display:flex;gap:6px"><input class="q" id="cwin" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="정답" onkeydown="if(event.key==='Enter')CUR.ans(this.value)"><button class="btn" style="flex:none" onclick="CUR.ans($('cwin').value)">확인</button><button class="btn gr" style="flex:none" onclick="CUR.hint()">힌트</button></div></div>`}
    <div class="sec">➡ 가로</div><div class="card">${clues(1)}</div><div class="sec">⬇ 세로</div><div class="card">${clues(0)}</div>`;}});
-// GORDER:live,blackjack,memory,mines,slide15,nonogram,chosung,baseball,sudoku,omok,othello,ladder,roulette,psquares,crossword,codebreak,speed50,chess,baduk,janggi,logic,pet,onecard,hula,sichuan,memseq,reaction
+// GORDER:live,blackjack,memory,mines,slide15,nonogram,chosung,baseball,sudoku,omok,othello,ladder,roulette,psquares,crossword,codebreak,speed50,chess,baduk,janggi,logic,pet,onecard,hula,sichuan,memseq,hilo,reaction
 G.push({k:'live',stub:'games.html',cat:'카드',e:'🎰',n:'라이브 카지노',d:'블랙잭 · 바카라'});
 G.push({k:'blackjack',stub:'games.html',cat:'카드',e:'🂡',n:'블랙잭 트레이너',d:'스플릿·더블·서렌더 · 카운팅 · 최고 칩 랭킹'});
 G.push({k:'memory',stub:'games.html',cat:'카드',e:'🧠',n:'카드 짝맞추기',d:'6~15쌍 · 난이도 4단계 · 빠를수록 좋아요'});
@@ -340,6 +340,7 @@ G.push({k:'onecard',stub:'games.html',cat:'카드',e:'🃏',n:'원카드',d:'AI 
 G.push({k:'hula',stub:'games.html',cat:'카드',e:'🀄',n:'세븐훌라',d:'AI 대전 · 등록·붙이기·땡큐·스톱 · 훌라 2배'});
 G.push({k:'sichuan',stub:'games_puzzle.html',cat:'퍼즐',e:'🀄',n:'사천성',d:'같은 그림을 2번 이하로 꺾어 연결 · 클래식·타임어택·12스테이지'});
 G.push({k:'memseq',stub:'games.html',cat:'카드',e:'🃏',n:'무늬 기억력',d:'무늬 순서 외우기 · 난이도 4단계 · 오늘의 기록'});
+G.push({k:'hilo',stub:'games.html',cat:'카드',e:'🎴',n:'하이로우',d:'다음 카드가 높을까 낮을까 · 2덱 · 연승 도전'});
 G.push({k:'reaction',stub:'games_battle.html',cat:'대전·도구',e:'⚡',n:'반응속도',d:'초록불에 터치 · 5번 평균'});
 ['chosung','crossword'].forEach(k=>{const g=G.find(x=>x.k===k);if(!g||g.stub)return;const s0=g.start,v0=g.view;
 g.start=function(){const r=s0.apply(this,arguments);if(!WORDS.ok)wordsLoad().then(()=>{if(CUR===this)rr();}).catch(()=>{if(CUR===this)rr();});return r;};
