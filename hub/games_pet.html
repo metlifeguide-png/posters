@@ -944,7 +944,7 @@ function qrepSend(el,i,k){const [g,id,sum]=QREP[i];let cid='';try{cid=localStora
  const box=el.parentNode,done=m=>{box.innerHTML=`<small style="opacity:.6">🚩 ${m}</small>`;};box.innerHTML='<small>보내는 중…</small>';
  try{fetch(API+'/api/quiz/report',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({game:g,qid:id,summary:sum,reason:QREPR[k],mtok:(typeof MEM!=='undefined'&&MEM&&MEM.tok)||'',cid})}).then(r=>r.json()).then(x=>{if(x&&x.ok)QREPD.add(g+'/'+id);done((x&&x.msg)||'신고했어요');}).catch(()=>done('보내지 못했어요. 잠시 뒤 다시 눌러 주세요'));}catch(e){done('보내지 못했어요');}}
 // 📒 오답노트 모아 보기 (학습 첫 화면) - 게임별 오답(wn_<게임키>, 이 기기 저장)을 한 칸에. 누르면 그 게임 오답노트 바로 시작
-const WN_GAMES=['potodds','geom','rulequiz','aofprac','riverq','mwflop','bovq'];var WN_AUTO=null;
+const WN_GAMES=['potodds','geom','rulequiz','aofprac','riverq'];var WN_AUTO=null;
 function wnBox(){const R=WN_GAMES.map(k=>{const g=G.find(x=>x.k===k),n=lsGet('wn_'+k,[]).length;return g&&n?{g,n}:null;}).filter(Boolean);
  if(!R.length)return '';const tot=R.reduce((a,r)=>a+r.n,0);
  return `<div class="card" style="margin-bottom:10px"><div class="t">📒 내 오답노트 · ${tot}개</div><div class="m" style="margin-top:4px">틀린 문제를 게임별로 모았어요 · 맞히면 목록에서 빠져요 (이 기기 저장)</div><div style="display:grid;gap:6px;margin-top:8px">${R.map(r=>`<button class="btn full g" style="text-align:left" onclick="wnGo('${r.g.k}')">${r.g.e} ${r.g.nm||r.g.n} · ${r.n}개 풀기</button>`).join('')}</div></div>`;}
