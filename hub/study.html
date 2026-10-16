@@ -573,7 +573,7 @@ const CAT={bet:'베팅·레이즈',sd:'쇼다운·족보',pot:'올인·사이드
 const NOTE='※ 룰은 대회·장소마다 다를 수 있어요. 이 문제는 일반적인 TDA(토너먼트 디렉터 협회) 기준이고, 실제 대회에서는 그날 운영진·플로어의 판정이 우선이에요.';
 const NOTE_V='이 항목은 특히 대회마다 달라요. 참가하는 대회의 룰을 꼭 확인하세요.';
 const valid=x=>x&&x.id&&x.q&&Array.isArray(x.o)&&x.o.length>=2&&x.a>=0&&x.a<x.o.length;
-const bank=()=>(typeof RULE_QS!=='undefined'?RULE_QS:[]).filter(valid);
+const bank=()=>(typeof RULE_QS!=='undefined'?RULE_QS:[]).filter(valid).filter(x=>!(typeof qblkHas==='function'&&qblkHas('rulequiz',x.id)));
 const nl=t=>esc(t).replace(/\n/g,'<br>');
 const isPerm=(a,n)=>Array.isArray(a)&&a.length===n&&[...a].sort((x,y)=>x-y).every((v,i)=>v===i);
 function mk(p){p=Object.assign({},p||{});const B=bank();let b=p.id?B.find(x=>x.id===p.id):null;if(!b)b=pick(B);
@@ -603,7 +603,7 @@ G.push({k:'rulequiz',cat:'홀덤',e:'📜',n:'대회 룰 퀴즈',d:'입문 · �
  view(){if(!this.lv)return this.menu();const q=this.q,W=this.lv==='W';
   const nextBtn=(this.fb&&!this.over)?` <button class="btn g" style="padding:6px 14px;font-size:14px;margin-left:8px;white-space:nowrap" onclick="CUR.next()">다음 ▶</button>`:'';
   const hd=`<div class="gst"><span>${W?'📒 오답노트':'룰 퀴즈'} · ${W?`${Math.min(this.i+(this.fb||this.over?0:1),this.N)} / ${this.N}`:`🔥 연속 <b>${this.ok}</b> · 최고 ${stkBest('rulequiz')}연속`}</span><span>정답 <b>${this.ok}</b>${nextBtn} <a onclick="CUR.start()" style="color:var(--blue);cursor:pointer;margin-left:6px">처음으로</a></span></div>`;
-  const fbCard=L=>{const b=L.q.b;return `<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:16px">${L.ok?'✅ 정답':'❌ 오답'} · ${L.t.toFixed(1)}초 <span class="m">· ${CAT[b.c]||''}</span></div>
+  const fbCard=L=>{const b=L.q.b;return `<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:16px">${L.ok?'✅ 정답':'❌ 오답'} · ${L.t.toFixed(1)}초 <span class="m">· ${CAT[b.c]||''}</span>${typeof qrepBtn==='function'?qrepBtn('rulequiz',b.id,String(b.q||'').slice(0,80)):''}</div>
    <div class="m" style="margin:6px 0 2px">${nl(b.q)}</div>
    <div style="font-size:14.5px;margin-top:4px">정답: <b>${esc(L.q.opts[L.q.a])}</b>${L.ok?'':`<br><span style="color:var(--red)">내 선택: ${esc(L.q.opts[L.o])}</span>`}</div>
    <div style="font-size:14px;line-height:1.75;margin-top:8px">${nl(b.w)}</div>
@@ -641,7 +641,7 @@ const cards=s=>(s.match(/../g)||[]).map(cd).join('');
 const bb=x=>(Math.round(x)/10).toLocaleString()+'BB';
 const LINE={f:{b:'플랍: BB 체크 → BTN 33% 벳 → BB 콜',x:'플랍: 체크 · 체크'},t:{b:'턴: BB 체크 → BTN 75% 벳 → BB 콜',x:'턴: 체크 · 체크'}};
 const valid=x=>x&&x.id&&x.b&&x.h&&OPT[x.f]&&OPT[x.f].some(o=>o[0]===x.a);
-const bank=()=>(typeof RIVER_QS!=='undefined'?RIVER_QS:[]).filter(valid);
+const bank=()=>(typeof RIVER_QS!=='undefined'?RIVER_QS:[]).filter(valid).filter(x=>!(typeof qblkHas==='function'&&qblkHas('riverq',x.id)));
 function mk(p){const B=bank();let b=p&&p.id?B.find(x=>x.id===p.id):null;if(!b)b=pick(B);
  const opts=OPT[b.f];return {b,opts,a:opts.findIndex(o=>o[0]===b.a),tag:'rv_'+b.f,p:{lv:1,id:b.id}};}
 function sit(b){return `<div class="m">${esc(SPOT[b.s]||b.s)} · BTN 오픈 · BB 콜${b.s==='3BP100A'?' (BB 3벳 · BTN 콜)':''}</div>
@@ -675,7 +675,7 @@ G.push({k:'riverq',cat:'홀덤',e:'🌊',n:'리버 트레이너',d:'헤즈업 �
  view(){if(!this.lv)return this.menu();const q=this.q,W=this.lv==='W';
   const nextBtn=(this.fb&&!this.over)?` <button class="btn g" style="padding:6px 14px;font-size:14px;margin-left:8px;white-space:nowrap" onclick="CUR.next()">다음 ▶</button>`:'';
   const hd=`<div class="gst"><span>${W?'📒 오답노트':'리버'} · ${W?`${Math.min(this.i+(this.fb||this.over?0:1),this.N)} / ${this.N}`:`🔥 연속 <b>${this.ok}</b> · 최고 ${stkBest('riverq')}연속`}</span><span>정답 <b>${this.ok}</b>${nextBtn} <a onclick="CUR.start()" style="color:var(--blue);cursor:pointer;margin-left:6px">처음으로</a></span></div>`;
-  const fbCard=L=>{const b=L.q.b,w=(WHY[b.a]||{})[b.k]||'';return `<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:16px">${L.ok?'✅ 정답':'❌ 오답'} · ${L.t.toFixed(1)}초 <span class="m">· ${CAT[b.f]}</span></div>
+  const fbCard=L=>{const b=L.q.b,w=(WHY[b.a]||{})[b.k]||'';return `<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:16px">${L.ok?'✅ 정답':'❌ 오답'} · ${L.t.toFixed(1)}초 <span class="m">· ${CAT[b.f]}</span>${typeof qrepBtn==='function'?qrepBtn('riverq',b.id,b.s+' '+b.b+' '+b.h+' '+b.f+'→'+b.a):''}</div>
    <div style="margin:6px 0 2px">${cards(b.b)} &nbsp; 내 패 ${cards(b.h)}</div>
    <div style="font-size:14.5px;margin-top:4px">정답: <b>${esc(L.q.opts[L.q.a][1])}</b>${L.ok?'':`<br><span style="color:var(--red)">내 선택: ${esc(L.q.opts[L.o][1])}</span>`}</div>
    <div style="font-size:14px;line-height:1.75;margin-top:8px">솔버 빈도: ${esc(frs(b))}<br>내 패: ${esc(KIND[b.k]||'')}${w?'<br>'+esc(w):''}</div>
@@ -705,7 +705,7 @@ const cd=c=>{const s=SU[c[1]]||['?','#000'];return `<span style="display:inline-
 const cards=s=>(s.match(/../g)||[]).map(cd).join('');
 const bb=x=>(Math.round(x*10)/10)+'BB';
 const valid=x=>x&&x.id&&x.b&&x.h&&(x.a==='call'||x.a==='fold');
-const bank=()=>(typeof MW_QS!=='undefined'?MW_QS:[]).filter(valid);
+const bank=()=>(typeof MW_QS!=='undefined'?MW_QS:[]).filter(valid).filter(x=>!(typeof qblkHas==='function'&&qblkHas('mwflop',x.id)));
 const OPTS=[['fold','폴드'],['call','콜']];
 function mk(p){const B=bank();let b=p&&p.id?B.find(x=>x.id===p.id):null;if(!b)b=pick(B);return {b,a:b.a==='call'?1:0,tag:'mw_'+b.a,p:{lv:1,id:b.id}};}
 function sit(b){const pre=`${b.op} <b>${b.X}BB</b> 오픈 → ${b.cl.map(esc).join(' · ')} 콜 → 나(${b.me}) 콜 → 블라인드 폴드`;
@@ -740,7 +740,7 @@ G.push({k:'mwflop',cat:'홀덤',e:'👥',n:'멀티웨이 플랍',d:'여러 명 �
  view(){if(!this.lv)return this.menu();const q=this.q,W=this.lv==='W';
   const nextBtn=(this.fb&&!this.over)?` <button class="btn g" style="padding:6px 14px;font-size:14px;margin-left:8px;white-space:nowrap" onclick="CUR.next()">다음 ▶</button>`:'';
   const hd=`<div class="gst"><span>${W?'📒 오답노트':'멀티웨이'} · ${W?`${Math.min(this.i+(this.fb||this.over?0:1),this.N)} / ${this.N}`:`🔥 연속 <b>${this.ok}</b> · 최고 ${stkBest('mwflop')}연속`}</span><span>정답 <b>${this.ok}</b>${nextBtn} <a onclick="CUR.start()" style="color:var(--blue);cursor:pointer;margin-left:6px">처음으로</a></span></div>`;
-  const fbCard=L=>{const b=L.q.b,n=b.st+1,tot=b.p+(b.st+2)*b.bt;return `<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:16px">${L.ok?'✅ 정답':'❌ 오답'} · ${L.t.toFixed(1)}초</div>
+  const fbCard=L=>{const b=L.q.b,n=b.st+1,tot=b.p+(b.st+2)*b.bt;return `<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:16px">${L.ok?'✅ 정답':'❌ 오답'} · ${L.t.toFixed(1)}초${typeof qrepBtn==='function'?qrepBtn('mwflop',b.id,b.me+' vs '+b.op+' '+b.b+' '+b.h+' → '+b.a):''}</div>
    <div style="margin:6px 0 2px">${cards(b.b)} &nbsp; 내 패 ${cards(b.h)}</div>
    <div style="font-size:14.5px;margin-top:4px">정답: <b>${b.a==='call'?'콜':'폴드'}</b>${L.ok?'':`<br><span style="color:var(--red)">내 선택: ${OPTS[L.o][1]}</span>`}</div>
    <div style="font-size:14px;line-height:1.75;margin-top:8px">필요 승률 = 콜 ${bb(b.bt)} ÷ 콜 후 팟 ${bb(tot)} = <b>${b.nd}%</b><br>내 에퀴티 (상대 ${n}명 모두 대비) ≈ <b>${b.eq}%</b><br>→ <b>${b.eq>b.nd?'에퀴티가 더 높아서 콜':'에퀴티가 모자라서 폴드'}</b><br><span class="m">내 패: ${esc(KIND[b.k]||'')}${b.dr&&DR[b.dr]?' · '+DR[b.dr]:''}${n>=2?' · 상대가 많을수록 팟 오즈는 좋아지지만, 그만큼 누군가 나보다 좋은 패일 확률도 올라가요':''}</span></div>
@@ -1006,6 +1006,17 @@ setInterval(()=>{if(document.hidden||!PPAGE)return;if(Date.now()-PACT>PIDLE_MS){
 document.addEventListener('visibilitychange',()=>{if(PPAGE)pres(document.hidden);});
 window.addEventListener('pagehide',()=>{if(PPAGE)pres(1);});
 function gvisit(p){presPage(p);if(!API)return;try{fetch(API+'/api/visit',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({p,n:NICK||''})}).catch(()=>{});}catch(e){}}
+// ===== 🚩 학습 문제 신고 (룰 퀴즈·리버 트레이너·멀티웨이 플랍, 10/17) /*qrep*/ — 관리자가 '제외'한 문제는 출제에서 빠짐 =====
+let QBLK={};try{const c=JSON.parse(localStorage.getItem('qblk')||'{}');if(c&&typeof c==='object')QBLK=c;}catch(e){}
+function qblkHas(g,id){const a=QBLK[g];return !!(a&&a.indexOf(id)>=0);}
+function qblkLoad(){try{if(typeof API==='undefined'||!API)return;fetch(API+'/api/quiz/blocked',{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{if(r&&r.ok&&r.items&&typeof r.items==='object'){QBLK=r.items;try{localStorage.setItem('qblk',JSON.stringify(r.items));}catch(e){}}}).catch(()=>{});}catch(e){}}
+setTimeout(qblkLoad,300);
+const QREP=[],QREPD=new Set(),QREPR=['정답이 틀림','해설이 틀림','문제가 이상함','기타'];
+function qrepBtn(g,id,sum){const w='<div style="margin-top:4px;text-align:right;font-weight:400">';if(QREPD.has(g+'/'+id))return w+'<small style="opacity:.5">🚩 신고함</small></div>';const i=QREP.push([g,id,sum||''])-1;return w+`<button class="btn gr" style="padding:2px 8px;font-size:12px;width:auto" onclick="event.stopPropagation();qrepOpen(this,${i})">🚩 문제 신고</button></div>`;}
+function qrepOpen(el,i){const d=document.createElement('span');d.style.cssText='display:inline-flex;flex-wrap:wrap;gap:3px;justify-content:flex-end';d.innerHTML=QREPR.map((r,k)=>`<button class="btn b2" style="padding:2px 6px;font-size:12px;width:auto" onclick="event.stopPropagation();qrepSend(this,${i},${k})">${r}</button>`).join('');el.replaceWith(d);}
+function qrepSend(el,i,k){const [g,id,sum]=QREP[i];let cid='';try{cid=localStorage.getItem('wcid')||'';if(!cid){cid=Math.random().toString(36).slice(2,12);localStorage.setItem('wcid',cid);}}catch(e){}
+ const box=el.parentNode,done=m=>{box.innerHTML=`<small style="opacity:.6">🚩 ${m}</small>`;};box.innerHTML='<small>보내는 중…</small>';
+ try{fetch(API+'/api/quiz/report',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({game:g,qid:id,summary:sum,reason:QREPR[k],mtok:(typeof MEM!=='undefined'&&MEM&&MEM.tok)||'',cid})}).then(r=>r.json()).then(x=>{if(x&&x.ok)QREPD.add(g+'/'+id);done((x&&x.msg)||'신고했어요');}).catch(()=>done('보내지 못했어요. 잠시 뒤 다시 눌러 주세요'));}catch(e){done('보내지 못했어요');}}
 // 📒 오답노트 모아 보기 (학습 첫 화면) - 게임별 오답(wn_<게임키>, 이 기기 저장)을 한 칸에. 누르면 그 게임 오답노트 바로 시작
 const WN_GAMES=['potodds','geom','rulequiz','aofprac'];var WN_AUTO=null;
 function wnBox(){const R=WN_GAMES.map(k=>{const g=G.find(x=>x.k===k),n=lsGet('wn_'+k,[]).length;return g&&n?{g,n}:null;}).filter(Boolean);
