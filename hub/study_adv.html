@@ -625,9 +625,9 @@ function solveOpen(ctx,hero,heroBB,extra){/*aofadv*/   // extra = {자리:BB} �
 }
 
 // ---- 2) 앞에서 올인: 올인한 사람(vil, 올인 전체 금액 vilBB) → 나(hero) 콜/폴드 ----
-function solveVs(ctx,hero,heroBB,vil,vilBB){
+function solveVs(ctx,hero,heroBB,vil,vilBB,extra){/*aofadv2*/
  const Eq=E(),ord=playOrder();
- const st=tableStacks(ctx,hero,heroBB);st[vil]=vilBB+0.1;   // aof: 올인 전체 금액 + 앤티
+ const st=tableStacks(ctx,hero,heroBB,extra);st[vil]=vilBB+0.1;   // aof: 올인 전체 금액 + 앤티
  const r=SAT.solve(Object.assign(base(ctx),{stacks:st,opener:vil,raise:0}),Eq);
  const c=r.callers.indexOf(hero);if(c<0)return null;
  const x=r.info[c];let call=r.cs[c],callPct=r.csPct[c];
@@ -642,9 +642,9 @@ function solveVs(ctx,hero,heroBB,vil,vilBB){
 }
 
 // ---- 3) 앞에서 오픈: 오픈한 사람(vil, 오픈 크기 R, 남은 스택 vilBB) → 나(hero) 3벳 올인/콜/폴드 ----
-function solveVr(ctx,hero,heroBB,vil,R,vilBB){
+function solveVr(ctx,hero,heroBB,vil,R,vilBB,extra){
  const n=ctx.n,Eq=E(),ord=playOrder(),T=tsty(ctx);
- const st=tableStacks(ctx,hero,heroBB);st[vil]=vilBB+R+0.1;   // aof: 오픈한 사람 스택 = 남은 + 오픈 금액 + 앤티
+ const st=tableStacks(ctx,hero,heroBB,extra);st[vil]=vilBB+R+0.1;   // aof: 오픈한 사람 스택 = 남은 + 오픈 금액 + 앤티
  const r=SAT.solve(Object.assign(base(ctx),{stacks:st,opener:vil,raise:R}),Eq);
  const c=r.callers.indexOf(hero);if(c<0)return null;
  if(!r.canRaise)return {kind:'vr',noRaise:true};
@@ -847,7 +847,7 @@ function rangeText(freq){const RK=SAT.RANKS,inR=k=>freq[k]>=0.5,parts=[];
   const sfx=suited?'s':'o';for(const [p,q] of runs){if(p===h+1)parts.push(q===p?RK[h]+RK[p]+sfx:RK[h]+RK[q]+sfx+'+');else parts.push(q===p?RK[h]+RK[p]+sfx:RK[h]+RK[q]+sfx+'-'+RK[h]+RK[p]+sfx);}}}
  return parts.length?parts.join(' '):'없음';}
 const CC={s:'#d94a2b',c:'#7a4ec9',z:'#e08a1e',f:'#e4dfd4'};
-function chartHtml(p,r,k0){let h='';for(let k=0;k<169;k++){const q=probs(p,r,k),a=Object.keys(q).reduce((x,y)=>q[y]>q[x]?y:x);
+function chartHtml(p,r,k0){if(p.s==='x')p=Object.assign({},p,{s:p.xs||'o'});let h='';for(let k=0;k<169;k++){const q=probs(p,r,k),a=Object.keys(q).reduce((x,y)=>q[y]>q[x]?y:x);
   h+=`<div style="background:${CC[a]};color:${a==='f'?'#6b665c':'#fff'};font-size:8.5px;line-height:1;padding:5px 0;text-align:center;border-radius:2px;${k===k0?'outline:2px solid #111;outline-offset:-1px;font-weight:800;':''}">${SAT.handName(k)}</div>`;}
  const leg=p.s==='x'?[['s','올인'],['f','폴드']]:p.s==='o'?[['s','올인'],...(r.canRaise&&p.hb>15?[['z','오픈 레이즈']]:[]),['f','폴드']]:(p.s==='s'||p.s==='m')?[['c','콜'],['f','폴드']]:p.s==='q'?[['s','올인'],['f','폴드']]:[['s','3벳 올인'],...(r.flPct>0?[['c','콜']]:[]),['f','폴드']];
  return `<div style="display:grid;grid-template-columns:repeat(13,1fr);gap:1px;margin-top:10px">${h}</div><div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;font-size:12px">${leg.map(l=>`<span><i style="display:inline-block;width:10px;height:10px;background:${CC[l[0]]};border-radius:2px;margin-right:3px"></i>${l[1]}</span>`).join('')}<span class="m">· 검은 테두리 = 이 핸드</span></div>`;}
@@ -902,62 +902,98 @@ function mwPick(p,r){const ord=F.playOrder(),cmb=k=>{const a=Math.floor(k/13),b=
  let tw=0;for(const x of L)tw+=x[1];let x=Math.random()*tw;for(const c of L){x-=c[1];if(x<0)return c[0];}return L[L.length-1][0];}
 const won=x=>{const v=Math.round(x*10000/100)*100;return (v>0?'+':v<0?'−':'')+Math.abs(v).toLocaleString()+'원';};
 /*aofadv*/
-// ---- 🔥 고급 실전: 6~9명 · 자리마다 스택이 다름 · 앞 모두 폴드 → 나 올인/폴드 ----
-// 같은 자리·스택이라도 뒤에 누가 몇 BB로 남았는지에 따라 올인 범위가 달라지는 걸 연습. 비교용으로 '뒤가 모두 평균 스택'일 때 범위(rb)도 계산
+// ---- 🔥 고급 실전: 6~9명 · 자리마다 스택이 다름 · 앞 액션 3종류(xs) ----
+// xs 'o' 앞 모두 폴드 → 올인/폴드 · 's' 앞에서 올인 → 콜/폴드 · 'r' 앞에서 오픈 → 3벳 올인/(콜)/폴드
+// 같은 상황이라도 테이블 스택에 따라 답이 달라지는 걸 연습. 비교용으로 '나머지가 모두 평균 스택'일 때(rb)도 계산 /*aofadv2*/
 let XC={};
+const XN={o:'앞 모두 폴드',s:'앞에서 올인',r:'앞에서 오픈'};
 function envX(p){const D=GD[p.g],n=p.n,tot=p.en*START/p.bb,avg=r1(tot/p.pl),M=Math.max(0,p.pl-n),rest=tot-p.st.reduce((a,b)=>a+b,0),off=M?new Array(M).fill(Math.max(0.5,rest/M)):[];
  return {D,n,avg,ctx:{pay:D.pay,players:p.pl,avg,n,mode:'icm',off,raise:2}};}
-function solveX(p){const key=JSON.stringify([p.g,p.en,p.pl,p.bb,p.h,p.hb,p.st]);if(XC.key===key)return XC.val;
- const e=envX(p),c=e.ctx,ex={};p.st.forEach((v,i)=>{if(i!==p.h)ex[i]=v;});
- const r=F.solveOpen(c,p.h,p.hb,ex),rb=r&&!r.deep?F.solveOpen(c,p.h,p.hb):null;
- window.AOFWHY='x '+(r?(r.deep?'deep':'ok'):'null')+' n'+p.n+' h'+p.h+' hb'+p.hb;
- const val=r&&!r.deep&&rb?{e,r,rb}:null;XC={key,val};return val;}
-// 핸드 고르기: 경계 ±18칸 · 확실한 것(빈도 25%p 이상 차이)만 · '평균 스택이면 답이 반대'인 핸드를 75% 우선
+function solveX(p){const key=JSON.stringify([p.g,p.en,p.pl,p.bb,p.xs,p.h,p.v,p.R,p.st]);if(XC.key===key)return XC.val;
+ const e=envX(p),c=e.ctx,ex={},xs=p.xs||'o';p.st.forEach((v,i)=>{if(i!==p.h&&(xs==='o'||i!==p.v))ex[i]=v;});
+ const run=E=>xs==='o'?F.solveOpen(c,p.h,p.hb,E):xs==='s'?F.solveVs(c,p.h,p.hb,p.v,p.st[p.v],E):F.solveVr(c,p.h,p.hb,p.v,p.R,p.st[p.v]-p.R,E);
+ const bad=r=>!r||r.deep||r.noRaise;
+ const r=run(ex),rb=bad(r)?null:run(null);
+ window.AOFWHY='x'+xs+' '+(r?(bad(r)?'bad':'ok'):'null')+' n'+p.n+' h'+p.h+' v'+p.v+' hb'+p.hb;
+ const val=!bad(r)&&!bad(rb)?{e,r,rb}:null;XC={key,val};return val;}
+const amax=q=>Object.keys(q).reduce((a,b)=>q[b]>q[a]?b:a);
+// 핸드 고르기: 경계 ±18칸 · 정답이 확실한 것(1위 행동 75% 이상)만 · '나머지가 평균 스택이면 답이 반대'인 핸드 75% 우선
+// 머니인 직전(버블까지 3명 이하)은 AA·KK도 폴드인 상황이 있어서 경계가 아주 위쪽일 수 있음 — 그대로 출제
 function pickX(p,S){const {r,rb}=S,ord=F.playOrder(),cmb=k=>{const a=Math.floor(k/13),b=k%13;return a===b?6:a<b?4:12;};
- let e=0;for(let i=0;i<169;i++)if(r.sh[ord[i]]>0.3)e=i;
- const D=[],C=[];for(let i=Math.max(2,e-18);i<=Math.min(168,e+18);i++){const k=ord[i];if(PCTL(k)>JUNK)continue;const s=r.sh[k];if(Math.abs(s-0.5)<0.25)continue;
-  const w=cmb(k)/(1+Math.abs(i-e)/5);((s>0.5)!==(rb.sh[k]>0.5)&&Math.abs(rb.sh[k]-0.5)>=0.25?D:C).push([k,w]);}
+ let e=0;for(let i=0;i<169;i++){if(1-probs(p,r,ord[i]).f>0.3)e=i;}
+ const D=[],C=[];for(let i=Math.max(0,e-18);i<=Math.min(168,e+18);i++){const k=ord[i];if(PCTL(k)>JUNK)continue;
+  const q=probs(p,r,k),a=amax(q);if(q[a]<0.75)continue;const qb=probs(p,rb,k),b=amax(qb);
+  const w=cmb(k)/(1+Math.abs(i-e)/5);(a!==b&&qb[b]>=0.75?D:C).push([k,w]);}
  let L=D.length&&Math.random()<0.75?D:null;
  if(!L){if(!D.length&&(window.AOFTRIES||0)<4){window.AOFWHY='x-nodiff';return -1;}
-  const a=C.filter(x=>r.sh[x[0]]>0.5),b=C.filter(x=>r.sh[x[0]]<0.5);L=Math.random()<0.5?a:b;if(!L.length)L=a.length?a:b;}
+  const a=C.filter(x=>probs(p,r,x[0]).f<0.5),b=C.filter(x=>probs(p,r,x[0]).f>=0.5);L=Math.random()<0.5?a:b;if(!L.length)L=a.length?a:b;}
  if(!L.length)return -1;let tw=0;for(const x of L)tw+=x[1];let x=Math.random()*tw;for(const c of L){x-=c[1];if(x<0)return c[0];}return L[L.length-1][0];}
 function genX(g,D,c){const n=6+Math.floor(Math.random()*4),lo=Math.max(D.min,n);if(c.live<lo){window.AOFWHY='x-live';return null;}
- const pl=lo+Math.floor((c.live-lo)*Math.pow(Math.random(),1.5)),bb=BBT[D.tab][lvIdx(g.k,c.entries,pl,c.live)],avg=c.entries*START/pl/bb;
- const half=x=>Math.round(x*2)/2,rnd=(a,b)=>a+Math.random()*(b-a);
- const h=Math.min(n-2,Math.floor(Math.pow(Math.random(),0.7)*(n-1))),hb=half(rnd(3,15)),st=[];
- for(let i=0;i<n;i++){if(i===h){st.push(hb);continue;}const y=Math.random();
-  st.push(Math.max(1.5,half(y<0.25?rnd(1.5,Math.max(3,avg*0.45)):y<0.75?avg*rnd(0.6,1.4):avg*rnd(1.5,3))));}
+ const y0=Math.random(),xs=y0<0.4?'o':y0<0.8?'s':'r';
+ // 남은 인원: 30% 머니인 직전(버블까지 1~3명) · 나머지는 레지마감 직후~머니인 사이
+ const pl=Math.random()<0.3?Math.max(lo,D.tk+1+Math.floor(Math.random()*3)):lo+Math.floor((c.live-lo)*Math.pow(Math.random(),1.5));
+ if(pl>c.live){window.AOFWHY='x-pl';return null;}
+ const bb=BBT[D.tab][lvIdx(g.k,c.entries,pl,c.live)],avg=c.entries*START/pl/bb;
+ const half=x=>Math.round(x*2)/2,rnd=(a,b)=>a+Math.random()*(b-a),stk=()=>{const y=Math.random();return Math.max(1.5,half(y<0.25?rnd(1.5,Math.max(3,avg*0.45)):y<0.75?avg*rnd(0.6,1.4):avg*rnd(1.5,3)));};
+ let h,v=0,R=2,hb;
+ if(xs==='o'){h=Math.min(n-2,Math.floor(Math.pow(Math.random(),0.7)*(n-1)));hb=half(rnd(3,15));}
+ else if(xs==='s'){h=1+Math.floor(Math.pow(Math.random(),0.6)*(n-1));v=Math.floor(Math.random()*h);hb=half(rnd(3,25));}
+ else{h=Math.random()<0.15?n-3:n-2;v=Math.max(0,h-1-Math.floor(Math.random()*3));R=[2,2,2.5,3][Math.floor(Math.random()*4)];hb=half(rnd(7,13.5));}
+ const st=[];for(let i=0;i<n;i++)st.push(i===h?hb:stk());
+ if(xs==='s')st[v]=Math.max(3,Math.min(25,st[v]));if(xs==='r')st[v]=Math.max(10,Math.min(24,Math.round(st[v])))+R;
  if(st.reduce((a,b)=>a+b,0)>1.6*n*avg){window.AOFWHY='x-sum';return null;}
- const p={g:g.k,en:c.entries,pl,bb,hb,s:'x',h,n,st,v:0,vb:0,R:2,k:0};
- const S=solveX(p);if(!S)return null;if(S.r.shPct<0.04||S.r.shPct>0.75){window.AOFWHY='x-metric '+S.r.shPct.toFixed(2);return null;}
+ const p={g:g.k,en:c.entries,pl,bb,hb,s:'x',xs,h,v,R,n,st,vb:0,k:0};
+ const S=solveX(p);if(!S)return null;const m=metric(p,S.r);if(m<0.004||m>0.75){window.AOFWHY='x-metric '+m.toFixed(3);return null;}
  const k=pickX(p,S);if(k<0)return null;p.k=k;return build(p);}
-function buildX(p,S){const {e,r,rb}=S,k=p.k,P=POSN(e.n),D=e.D,hn=SAT.handName(k),pct=x=>Math.round(x*100)+'%';
- const ans=r.sh[k]>0.5?'s':'f',bs=rb.sh[k]>0.5?'s':'f',dif=bs!==ans,nm={s:'올인',f:'폴드'};
- const bbv=p.bb,lvn=BBT[D.tab].indexOf(bbv)+1;
- const seat=i=>{const me=i===p.h,bf=i<p.h;return `<div style="border:1.5px solid ${me?'#1565c0':'var(--line)'};border-radius:8px;padding:4px 2px;line-height:1.25;${bf?'opacity:.4;':''}${me?'background:rgba(21,101,192,.14);font-weight:800;':''}"><div style="font-size:11px">${P[i]}</div><div style="font-size:14.5px;font-weight:700">${N1(p.st[i])}<span style="font-size:10px">BB</span></div><div style="font-size:10.5px" class="m">${me?'나':bf?'폴드':'남음'}</div></div>`;};
- const cols=e.n<=6?e.n:Math.ceil(e.n/2);
- const tbl=`<div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:4px;margin:8px 0">${p.st.map((_,i)=>seat(i)).join('')}</div>`;
- const head=`<b>${D.n}</b> · 남은 <b>${p.pl}명</b> (티켓 ${D.tk}장 · 버블까지 ${p.pl-D.tk}명) · 블라인드 ${bbv.toLocaleString()}${lvn?' (Lv.'+lvn+')':''} · 평균 <b>${N1(e.avg)}BB</b><br>`;
- const show=head+`<b style="color:#c62828">🔥 고급 실전</b> · <b>${e.n}명</b> 테이블 · 앞 모두 폴드 → <b>${P[p.h]}</b> · 내 스택 <b>${N1(p.hb)}BB</b>`+tbl+`<span class="hand">${hn}</span>`;
- const cov=r.callers.filter(i=>p.st[i]>=p.hb).length;
- const rows=r.callers.map((i,c)=>`${P[i]} <b>${N1(p.st[i])}BB</b> · 콜 범위 <b>${pct(r.cs[c])}</b>${p.st[i]<p.hb?' <span class="m">(나보다 짧음 — 이 사람이 콜하면 그만큼만 걸림)</span>':''}`).join('<br>');
- let expl=`<b>${hn}</b> → <b>${nm[ans]}</b><br>이 테이블 올인 범위 <b>${pct(r.shPct)}</b> · 뒤가 모두 평균 스택(${N1(e.avg)}BB)이면 <b>${pct(rb.shPct)}</b><br>`+
-  (dif?`<b style="color:#b26a00">⚠ 뒤가 모두 평균 스택이었다면 ${nm[bs]}인 패예요 — 이 테이블 스택 때문에 답이 바뀌었어요</b><br>`:'')+
-  `<span class="m">뒤에 남은 ${r.callers.length}명 (나를 덮는 스택 ${cov}명)</span><br><span style="font-size:13.5px;line-height:1.7">${rows}</span><br><span class="m">올인: ${rangeText(r.sh)}</span>`+
+// 원형 테이블: 나는 아래 가운데, 시계 방향으로 다음 자리. 앞 사람 액션은 순서대로 하나씩 나타남(0.35초 간격) /*aoftable*/
+function tableX(p,e,P,stat){const n=e.n,xs=p.xs||'o',btn=n-3,pot=0.1*n+1.5+(xs==='s'?p.st[p.v]-(p.v>=n-2?(p.v===n-1?1:0.5):0):xs==='r'?p.R-(p.v>=n-2?(p.v===n-1?1:0.5):0):0);
+ const seat=i=>{const rel=(i-p.h+n)%n,a=Math.PI/2+rel*2*Math.PI/n,x=50+43*Math.cos(a),y=50+38*Math.sin(a),me=i===p.h,act=xs!=='o'&&i===p.v,fold=i<p.h&&!act;
+  const st=stat(i),dl=i<p.h?(i+1)*0.35:0,col=me?'#1565c0':act?'#d94a2b':fold?'#9aa0a6':'var(--ink)';
+  return `<div style="position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);width:62px;text-align:center;line-height:1.2">
+   <div style="background:var(--paper2);border:2px solid ${col};border-radius:10px;padding:3px 2px;${fold?'opacity:.55;':''}${me?'box-shadow:0 0 0 3px rgba(21,101,192,.2);':''}">
+    <div style="font-size:10.5px;font-weight:700;color:${col}">${P[i]}${i===btn?' <span style="display:inline-block;background:#fff;color:#111;border:1px solid #999;border-radius:50%;width:13px;height:13px;font-size:8.5px;line-height:12px">D</span>':''}</div>
+    <div style="font-size:14.5px;font-weight:800">${N1(p.st[i])}<span style="font-size:9.5px;font-weight:600">BB</span></div></div>
+   ${me?'<div style="font-size:11px;font-weight:800;color:#1565c0;margin-top:2px">나</div>':st&&st!=='남음'?`<div style="font-size:11px;font-weight:800;margin-top:2px;color:${act?'#d94a2b':'#7a7f86'};opacity:0;animation:apIn .25s ${dl}s forwards">${st}</div>`:''}</div>`;};
+ return `<style>@keyframes apIn{to{opacity:1}}</style><div style="position:relative;width:100%;max-width:440px;aspect-ratio:1.45;margin:6px auto 2px">
+  <div style="position:absolute;left:11%;right:11%;top:14%;bottom:14%;border-radius:50%;background:radial-gradient(#2f7d52,#1f5f3f);border:6px solid #6b4a2b"></div>
+  <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#fff;text-align:center;line-height:1.3"><div style="font-size:11px;opacity:.85">${n}명 · 팟</div><div style="font-size:17px;font-weight:800">${N1(Math.round(pot*10)/10)}BB</div></div>
+  ${p.st.map((_,i)=>seat(i)).join('')}</div>`;}
+function buildX(p,S){const {e,r,rb}=S,k=p.k,xs=p.xs||'o',P=POSN(e.n),D=e.D,hn=SAT.handName(k),pct=x=>Math.round(x*100)+'%';
+ const q=probs(p,r,k),ans=amax(q),bq=probs(p,rb,k),bs=amax(bq),dif=bs!==ans;
+ const opts=xs==='o'?[['f','폴드'],['s','올인']]:xs==='s'?[['f','폴드'],['c','콜']]:[['f','폴드'],...(r.flPct>0?[['c','콜 (플랍 보기)']]:[]),['s','3벳 올인']];
+ const nm=id=>(opts.find(o=>o[0]===id)||[0,{f:'폴드',s:'올인',c:'콜'}[id]])[1];
+ const bbv=p.bb,lvn=BBT[D.tab].indexOf(bbv)+1,bub=p.pl-D.tk;
+ const stat=i=>i===p.h?'나':xs!=='o'&&i===p.v?(xs==='s'?'올인':N1(p.R)+'BB 오픈'):i<p.h?'폴드':'남음';
+ const seat=i=>{const me=i===p.h,act=xs!=='o'&&i===p.v,bf=i<p.h&&!act;return `<div style="border:1.5px solid ${me?'#1565c0':act?'#d94a2b':'var(--line)'};border-radius:8px;padding:4px 2px;line-height:1.25;${bf?'opacity:.4;':''}${me?'background:rgba(21,101,192,.14);font-weight:800;':act?'background:rgba(217,74,43,.12);font-weight:800;':''}"><div style="font-size:11px">${P[i]}</div><div style="font-size:14.5px;font-weight:700">${N1(p.st[i])}<span style="font-size:10px">BB</span></div><div style="font-size:10.5px;${act?'color:#d94a2b':''}" class="${act?'':'m'}">${stat(i)}</div></div>`;};
+ const tbl=tableX(p,e,P,stat);
+ const head=`<b>${D.n}</b> · 남은 <b>${p.pl}명</b> (티켓 ${D.tk}장 · ${bub<=3?'<b style="color:var(--red)">💰 버블까지 '+bub+'명</b>':'버블까지 '+bub+'명'}) · 블라인드 ${bbv.toLocaleString()}${lvn?' (Lv.'+lvn+')':''} · 평균 <b>${N1(e.avg)}BB</b><br>`;
+ const line=xs==='o'?'앞 모두 폴드':xs==='s'?`<b>${P[p.v]}</b> ${N1(p.st[p.v])}BB 올인`:`<b>${P[p.v]}</b> ${N1(p.R)}BB 오픈`;
+ const show=head+`<b style="color:#c62828">🔥 고급 실전</b> · <b>${e.n}명</b> · ${line} → <b>${P[p.h]}</b> · 내 스택 <b>${N1(p.hb)}BB</b>`+tbl+`<span class="hand">${hn}</span>`;
+ const behind=[];for(let i=p.h+1;i<e.n;i++)behind.push(i);
+ const cov=behind.filter(i=>p.st[i]>=p.hb).length;
+ let main;
+ if(xs==='o'){const rows=r.callers.map((i,c)=>`${P[i]} <b>${N1(p.st[i])}BB</b> · 콜 범위 <b>${pct(r.cs[c])}</b>${p.st[i]<p.hb?' <span class="m">(나보다 짧음 — 이 사람이 콜하면 그만큼만 걸림)</span>':''}`).join('<br>');
+  main=`이 테이블 올인 범위 <b>${pct(r.shPct)}</b> · 나머지가 모두 평균 스택(${N1(e.avg)}BB)이면 <b>${pct(rb.shPct)}</b><br><span class="m">뒤에 남은 ${r.callers.length}명 (나를 덮는 스택 ${cov}명)</span><br><span style="font-size:13.5px;line-height:1.7">${rows}</span><br><span class="m">올인: ${rangeText(r.sh)}</span>`;}
+ else if(xs==='s'){main=`이 테이블 콜 범위 <b>${pct(r.callPct)}</b> · 필요 승률 ${(r.need*100).toFixed(1)}% (칩 기준 ${(r.chipNeed*100).toFixed(1)}%) · 나머지가 모두 평균 스택이면 콜 <b>${pct(rb.callPct)}</b>`+
+   `<br><span class="m">올인한 ${P[p.v]} ${N1(p.st[p.v])}BB · 걸리는 칩 ${N1(Math.min(p.hb,p.st[p.v]))}BB · 내 뒤 ${behind.length}명`+(behind.length?` (${behind.map(i=>P[i]+' '+N1(p.st[i])+'BB').join(' · ')})`:'')+`</span><br><span class="m">콜: ${rangeText(r.call)}</span>`;}
+ else{const flat=r.flPct>0;main=`이 테이블 3벳 올인 <b>${pct(r.rsPct)}</b>${flat?` · 콜 <b>${pct(r.flPct)}</b>`:''} · 나머지가 모두 평균 스택이면 3벳 올인 <b>${pct(rb.rsPct)}</b> · 오픈 범위 상위 ${Math.round(r.op*100)}%로 봄`+
+   `<br><span class="m">오픈한 ${P[p.v]} 남은 ${N1(p.st[p.v]-p.R)}BB · 내 뒤 ${behind.length}명`+(behind.length?` (${behind.map(i=>P[i]+' '+N1(p.st[i])+'BB').join(' · ')})`:'')+`</span><br><span class="m">3벳 올인: ${rangeText(r.rs)}</span>`+(flat?`<br><span class="m">콜: ${rangeText(r.fl)}</span>`:'');}
+ const expl=`<b>${hn}</b> → <b>${nm(ans)}</b><br>`+main+
+  (dif?`<br><b style="color:#b26a00">⚠ 나머지가 모두 평균 스택이었다면 ${nm(bs)}인 패예요 — 이 테이블 스택 때문에 답이 바뀌었어요</b>`:'')+
   `<br><span class="m">${D.n} · 남은 ${p.pl}명 · 평균 ${N1(e.avg)}BB · 내 ${N1(p.hb)}BB (평균의 ${N1(p.hb/e.avg)}배)</span>`;
- const why={s:shWhy(r.shPct,hn,'뒤에 남은 스택을 보면 범위 밖이에요')+(dif?' (뒤가 평균 스택이라면 올인이에요)':''),f:'이 테이블에선 올인 범위 안이에요'+(dif?' (뒤가 평균 스택이라면 폴드인 패예요)':'')};
- const opts=[['f','폴드'],['s','올인']];
- return {a:ans,opts,why,show,expl,rule:'가정: 앞 모두 폴드 · 자리마다 실제 스택 · 뒤 사람은 각자 스택으로 콜 범위 계산 · ICM(레지 마감 후) · 15BB 이하라 올인/폴드만',
-  sum:`고급 ${e.n}명 ${P[p.h]} ${N1(p.hb)}BB ${hn}`,tag:TAG.x,p,lv:1,fmt:id=>(opts.find(o=>o[0]===id)||[0,id])[1],chart:chartHtml(p,r,k)};}
+ const tail=dif?` (나머지가 평균 스택이라면 ${nm(bs)}이 맞아요)`:'';
+ const why={f:'이 테이블에선 들어갈 만한 패예요'+tail,s:(xs==='o'?shWhy(r.shPct,hn,'이 테이블 스택을 보면 범위 밖이에요'):'이 테이블 스택을 보면 3벳 올인 범위 밖이에요')+tail,c:(xs==='s'?'티켓이 걸려 있어서 이 테이블에선 콜하면 손해예요':'이 스택에선 콜보다 올인이나 폴드가 나아요')+tail};
+ return {a:ans,opts,why,show,expl,rule:'가정: 자리마다 실제 스택 · ICM(레지 마감 후) · '+(xs==='o'?'15BB 이하라 올인/폴드만':xs==='s'?'올인 외 다른 사람은 폴드':'오픈한 사람 외 다른 사람은 폴드 · [근사]'),
+  sum:`고급 ${e.n}명 ${XN[xs]} ${P[p.h]} ${N1(p.hb)}BB ${hn}`,tag:TAG.x,p,lv:1,fmt:id=>nm(id),chart:chartHtml(p,r,k)};}
 function solveP(p){if(p.s==='x')return solveX(p);const e=envOf(p.g,p.en,p.pl,p.bb),c=e.ctx;
  if(p.s==='m'||p.s==='q')return solveMW(p,e);
  if(p.s==='o'){const r=F.solveOpen(c,p.h,p.hb);window.AOFWHY=/*aofdiag*/(!r?'o-null':r.deep?'o-deep':'o-ok')+' h'+p.h+' hb'+p.hb;return r&&!r.deep?{e,r}:null;}
  if(p.s==='s'){const r=F.solveVs(c,p.h,p.hb,p.v,p.vb);window.AOFWHY=(!r?'s-null':'s-ok')+' h'+p.h+' v'+p.v+' hb'+p.hb+' vb'+p.vb;return r?{e,r}:null;}
  const r=F.solveVr(c,p.h,p.hb,p.v,p.R,p.vb);window.AOFWHY=(!r?'r-null':r.noRaise?'r-noRaise':r.deep?'r-deep':'r-ok')+' h'+p.h+' v'+p.v+' hb'+p.hb+' vb'+p.vb+' R'+p.R;return r&&!r.noRaise&&!r.deep?{e,r}:null;}
 // 상황의 '범위 크기'(너무 크거나 작으면 연습이 안 됨)
-function metric(p,r){if(p.s==='m'||p.s==='q')return r.callPct>=mwMin(p)?Math.max(0.05,r.callPct):0;return (p.s==='o'||p.s==='x')?r.shPct+(r.canRaise&&p.hb>15?F.pct(sumA(r.rc,r.rf)):0):p.s==='s'?r.callPct:r.rsPct+r.flPct;}
+function metric(p,r){if(p.s==='x')return metric(Object.assign({},p,{s:p.xs||'o'}),r);if(p.s==='m'||p.s==='q')return r.callPct>=mwMin(p)?Math.max(0.05,r.callPct):0;return (p.s==='o'||p.s==='x')?r.shPct+(r.canRaise&&p.hb>15?F.pct(sumA(r.rc,r.rf)):0):p.s==='s'?r.callPct:r.rsPct+r.flPct;}
 // 손패별 행동 확률 {id:확률}
-function probs(p,r,k){
+function probs(p,r,k){if(p.s==='x')return probs(Object.assign({},p,{s:p.xs||'o'}),r,k);
  if(p.s==='m')return {f:1-r.call[k],c:r.call[k]};if(p.s==='q')return {f:1-r.call[k],s:r.call[k]};
  if(p.s==='o'||p.s==='x'){const raise=p.s==='o'&&r.canRaise&&p.hb>15,s=r.sh[k],z=raise?r.rc[k]+r.rf[k]:0;return {f:Math.max(0,1-s-z),z,s};}
  if(p.s==='s'){const c=r.call[k];return {f:1-c,c};}
@@ -1092,7 +1128,7 @@ G.push({k:'aofprac',cat:'홀덤',e:'🎯',n:'새틀 AOF 연습',d:'앞액션 3�
   const row=(m,t,d,tag)=>{const s=tag&&st[tag],pc=tag?(s&&s[1]?Math.round(s[0]/s[1]*100)+'% ('+s[0]+'/'+s[1]+')':'아직 안 풀었어요'):'';
    return `<button class="btn ${m==='mix'?'':'b2'}" style="text-align:left;padding:12px 14px" onclick="CUR.go('${m}')"><b>${t}</b> · ${d}${tag?`<br><span style="font-size:12.5px;opacity:.9">정답률 ${pc}</span>`:''}</button>`;};
   return `<div class="card"><div class="t">🎯 ${gn}</div><div class="m" style="margin-top:4px"><a onclick="CUR.pickG(null)" style="color:var(--blue);cursor:pointer">← 게임 다시 고르기</a></div></div><div class="gq">상황 선택</div>
-  <div style="display:grid;gap:8px">${row('o','앞 모두 폴드','폴드 / 오픈 / 올인','aof_open')+row('s','앞에서 올인','콜 / 폴드','aof_vs')+row('r','앞에서 오픈','폴드 / 콜 / 3벳 올인','aof_vr')+row('m','올인 + 올인','앞에서 2명 올인 → 콜 / 폴드','aof_mw')+row('x','🔥 고급 실전','6~9명 · 자리마다 스택이 달라요 · 뒤에 남은 스택 보고 올인 / 폴드','aof_adv')+row('q','오픈 + 3벳 올인','오픈 뒤 3벳 올인 → 올인 / 폴드','aof_sq')}</div>${this.selHtml()}${wnB}`;},
+  <div style="display:grid;gap:8px">${row('o','앞 모두 폴드','폴드 / 오픈 / 올인','aof_open')+row('s','앞에서 올인','콜 / 폴드','aof_vs')+row('r','앞에서 오픈','폴드 / 콜 / 3벳 올인','aof_vr')+row('m','올인 + 올인','앞에서 2명 올인 → 콜 / 폴드','aof_mw')+row('x','🔥 고급 실전','6~9명 · 자리마다 스택이 달라요 · 앞 폴드/올인/오픈 → 내 결정','aof_adv')+row('q','오픈 + 3벳 올인','오픈 뒤 3벳 올인 → 올인 / 폴드','aof_sq')}</div>${this.selHtml()}${wnB}`;},
  view(){if(!this.mode)return this.menu();const W=this.mode==='W',q=this.q;
   const gl=this.gsel==='rand'||!this.gsel?'랜덤':GD[this.gsel].n;
   const hd=`<div class="gst"><span>${W?'📒 오답노트':'🎯 '+gl+' · '+(this.mode==='mix'?'모두 랜덤':this.mode==='sel'?((window.AOFSEL||[]).length>=5?'모두 랜덤':(window.AOFSEL||[]).map(k=>SN[k]).join('·')):SN[this.mode])} · ${W?`${Math.min(this.i+(this.fb||this.over?0:1),this.N)} / ${this.N} · 정답 <b>${this.ok}</b>`:`🔥 연속 <b>${this.ok}</b> · 최고 ${stkBest(aofKey(this.mode))}연속`} ${this.q&&AP_TB[this.q.p.g]?` · 타임뱅크 <b>${this.banks==null?AP_BANKS:this.banks}</b>/${AP_BANKS}`:''}</span><span><a onclick="CUR.start()" style="color:var(--blue);cursor:pointer">메뉴</a></span></div>`;
