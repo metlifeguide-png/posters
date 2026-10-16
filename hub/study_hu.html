@@ -950,13 +950,14 @@ G.push({k:'huview',cat:'홀덤',e:'📊',n:'헤즈업 레인지 뷰어',d:'프�
    <button class="btn ${this.showList?'':'b2'}" style="padding:4px 8px;font-size:12.5px;line-height:1.25;margin-top:12px" onclick="CUR.showList=!CUR.showList;rr()">플랍풀이<br>스택별</button></div>
    <div class="m" style="font-size:12px;margin:2px 2px 6px">● = 플랍 솔버풀이가 있는 스택</div>`
   +(this.showList?this.listView():'')+this.pfView();}});
-// GORDER:pushfold,potodds,nutadv,hustudy,huview,geom,aofprac,rulequiz
+// GORDER:pushfold,potodds,nutadv,hustudy,huview,geom,aofprac,rulequiz,riverq
 G.push({k:'pushfold',stub:'study.html',cat:'홀덤',e:'🔥',n:'푸시/폴드',d:'올인·콜 판단 트레이너 · 연속 기록'});
 G.push({k:'potodds',stub:'study.html',cat:'홀덤',e:'💰',n:'팟 오즈',d:'레벨 1~5 · 멀티웨이·프리플랍·콜 판단까지'});
 G.push({k:'nutadv',stub:'study.html',cat:'홀덤',e:'🧭',n:'넛 우위 맞히기',d:'포지션별 레인지 · 누구 보드인가'});
 G.push({k:'geom',stub:'study_adv.html',cat:'홀덤',e:'📐',n:'팟 지오메트리',d:'SPR · 베팅 사이즈 · 올인 라인 레벨 1~4'});
 G.push({k:'aofprac',stub:'study_adv.html',cat:'홀덤',e:'🎯',n:'새틀 AOF 연습',d:'앞액션 3종류 · 올인/콜/폴드 · 이번 주 새틀 인원 기준'});
 G.push({k:'rulequiz',stub:'study.html',cat:'홀덤',e:'📜',n:'대회 룰 퀴즈',d:'입문 · 베팅·쇼다운·사이드팟 등 대회 룰 10문제'});
+G.push({k:'riverq',stub:'study.html',cat:'홀덤',e:'🌊',n:'리버 트레이너',d:'헤즈업 리버 · 벳·체크·콜·폴드를 솔버 정답으로 맞히기'});
 
 // ===== 목록 · 랭킹 · 오늘의 문제 · 화면 전환 =====
 G.forEach(g=>g.nm=g.n);   // 게임 안에서 this.n 을 숫자로 쓰는 경우가 있어 이름은 따로 보관
