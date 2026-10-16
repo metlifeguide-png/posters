@@ -1520,6 +1520,17 @@ setInterval(()=>{if(document.hidden||!PPAGE)return;if(Date.now()-PACT>PIDLE_MS){
 document.addEventListener('visibilitychange',()=>{if(PPAGE)pres(document.hidden);});
 window.addEventListener('pagehide',()=>{if(PPAGE)pres(1);});
 function gvisit(p){presPage(p);if(!API)return;try{fetch(API+'/api/visit',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({p,n:NICK||''})}).catch(()=>{});}catch(e){}}
+// ===== 🚩 학습 문제 신고 (룰 퀴즈·리버 트레이너·멀티웨이 플랍, 10/17) /*qrep*/ — 관리자가 '제외'한 문제는 출제에서 빠짐 =====
+let QBLK={};try{const c=JSON.parse(localStorage.getItem('qblk')||'{}');if(c&&typeof c==='object')QBLK=c;}catch(e){}
+function qblkHas(g,id){const a=QBLK[g];return !!(a&&a.indexOf(id)>=0);}
+function qblkLoad(){try{if(typeof API==='undefined'||!API)return;fetch(API+'/api/quiz/blocked',{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json()).then(r=>{if(r&&r.ok&&r.items&&typeof r.items==='object'){QBLK=r.items;try{localStorage.setItem('qblk',JSON.stringify(r.items));}catch(e){}}}).catch(()=>{});}catch(e){}}
+setTimeout(qblkLoad,300);
+const QREP=[],QREPD=new Set(),QREPR=['정답이 틀림','해설이 틀림','문제가 이상함','기타'];
+function qrepBtn(g,id,sum){const w='<div style="margin-top:4px;text-align:right;font-weight:400">';if(QREPD.has(g+'/'+id))return w+'<small style="opacity:.5">🚩 신고함</small></div>';const i=QREP.push([g,id,sum||''])-1;return w+`<button class="btn gr" style="padding:2px 8px;font-size:12px;width:auto" onclick="event.stopPropagation();qrepOpen(this,${i})">🚩 문제 신고</button></div>`;}
+function qrepOpen(el,i){const d=document.createElement('span');d.style.cssText='display:inline-flex;flex-wrap:wrap;gap:3px;justify-content:flex-end';d.innerHTML=QREPR.map((r,k)=>`<button class="btn b2" style="padding:2px 6px;font-size:12px;width:auto" onclick="event.stopPropagation();qrepSend(this,${i},${k})">${r}</button>`).join('');el.replaceWith(d);}
+function qrepSend(el,i,k){const [g,id,sum]=QREP[i];let cid='';try{cid=localStorage.getItem('wcid')||'';if(!cid){cid=Math.random().toString(36).slice(2,12);localStorage.setItem('wcid',cid);}}catch(e){}
+ const box=el.parentNode,done=m=>{box.innerHTML=`<small style="opacity:.6">🚩 ${m}</small>`;};box.innerHTML='<small>보내는 중…</small>';
+ try{fetch(API+'/api/quiz/report',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({game:g,qid:id,summary:sum,reason:QREPR[k],mtok:(typeof MEM!=='undefined'&&MEM&&MEM.tok)||'',cid})}).then(r=>r.json()).then(x=>{if(x&&x.ok)QREPD.add(g+'/'+id);done((x&&x.msg)||'신고했어요');}).catch(()=>done('보내지 못했어요. 잠시 뒤 다시 눌러 주세요'));}catch(e){done('보내지 못했어요');}}
 // 📒 오답노트 모아 보기 (학습 첫 화면) - 게임별 오답(wn_<게임키>, 이 기기 저장)을 한 칸에. 누르면 그 게임 오답노트 바로 시작
 const WN_GAMES=['potodds','geom','rulequiz','aofprac'];var WN_AUTO=null;
 function wnBox(){const R=WN_GAMES.map(k=>{const g=G.find(x=>x.k===k),n=lsGet('wn_'+k,[]).length;return g&&n?{g,n}:null;}).filter(Boolean);
