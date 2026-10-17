@@ -1035,8 +1035,9 @@ function simAdvance(S){const T=BBT[S.D.tab];S.round++;
   const amt=Math.min(TT.c[a],TT.c[b2],Math.round(bb*(1.5+Math.random()*(Math.random()<0.3?40:8))));if(Math.random()<0.5){TT.c[a]+=amt;TT.c[b2]-=amt;}else{TT.c[a]-=amt;TT.c[b2]+=amt;}}
  for(let j=0;j<nn();j++)if(j!==TT.hs&&TT.c[j]<=bb*0.3)simNewP(S,j,bb);
  while(nn()>Math.max(2,Math.min(S.D.t,S.pl))){let j=Math.floor(Math.random()*nn());if(j===TT.hs)j=(j+1)%nn();TT.c.splice(j,1);if(TT.hs>j)TT.hs--;if(TT.btn>=nn())TT.btn=0;}
- S.chips=Math.round(S.chips-bb*(0.1+1.5/9));if(S.chips<=bb*0.15){S.chips=0;S.end={win:false,rank:S.pl};S.msg='블라인드·앤티에 칩이 다 떨어졌어요';return;}
+ /*aofpay: 내 칩은 simPay에서 (넘긴 판만)*/
  const g=S.stage===1?S.goal:S.goal2;if(g&&S.pl<=g){S.end={win:true,rank:S.pl,stage:S.stage};}}
+function simPay(S){/*aofpay*/const bb=BBT[S.D.tab][S.bi],TT=S.T,n=TT.c.length,h=simPos(TT,TT.hs),bl=h===n-1?1:h===n-2?0.5:0;S.chips=Math.round(S.chips-bb*(0.1+bl));if(S.chips<=bb*0.15){S.chips=0;S.end={win:false,rank:S.pl};S.msg='블라인드·앤티에 칩이 다 떨어졌어요';}}
 function simGen(S){const T=BBT[S.D.tab],bb=T[S.bi],hb=Math.round(S.chips/bb*2)/2;
  const L=hb>25?null:hb>15?['s']:hb>=7&&hb<=13.5?['o','o','o','s','r']:['o','o','o','s'];if(!L)return 'deep';if(Math.random()<0.4)return 'pass';   // 판마다 결정이 오지는 않음
  if(S.rt)simTbl(S,bb);   // 🎲 매판 새 테이블: 내 칩·블라인드·남은 인원은 이어지고 테이블·자리만 새로 /*aofsimrt*/
@@ -1227,7 +1228,7 @@ G.push({k:'aofprac',cat:'홀덤',e:'🎯',n:'새틀 AOF 연습',d:'앞액션 3�
  simStep(){const S=this.sim;S.q=null;S.res=null;const gid=this.gid=(this.gid||0)+1;let skip=0;const c0=S.chips;
   const step=()=>{if(gid!==this.gid||S.end){rr();return;}simAdvance(S);if(S.end){rr();return;}window.AOFTRIES=0;let q=null,t=0;
    for(;t<8&&!q;t++){window.AOFTRIES=t;q=simGen(S);if(q==='deep'||q==='pass')break;}
-   if(q==='deep'||q==='pass'||!q){skip++;S.msg=q==='deep'?'스택이 25BB보다 깊어서 판을 넘겼어요':'';setTimeout(step,0);return;}
+   if(q==='deep'||q==='pass'||!q){simPay(S);if(S.end){rr();return;}skip++;S.msg=q==='deep'?'스택이 25BB보다 깊어서 판을 넘겼어요':'';setTimeout(step,0);return;}
    S.q=q;S.t0=Date.now();const lost=c0-S.chips;S.msg=skip?`🗑 자동 폴드 ${skip}판 · −${N1(Math.round(lost/BBT[S.D.tab][S.bi]*10)/10)}BB`:'';rr();scrollTo(0,0);};
   rr();setTimeout(step,30);},
  simTStart(){/*aofsimtime*/const S=this.sim;clearInterval(this.iv);S.tq=S.q;S.bankOn=false;S.dl=Date.now()+(AP_T[S.gk]||15)*1000;const me=this;this.iv=setInterval(()=>me.simTick(),100);},
