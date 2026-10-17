@@ -943,7 +943,7 @@ function genX(g,D,c,O){const n=Math.min(6+Math.floor(Math.random()*4),O?O.pl:99)
  const st=[];for(let i=0;i<n;i++)st.push(i===h?hb:stk());
  if(xs==='s')st[v]=Math.max(3,Math.min(25,st[v]));if(xs==='r')st[v]=Math.max(10,Math.min(24,Math.round(st[v])))+R;
  if(!O&&st.reduce((a,b)=>a+b,0)>1.6*n*avg){window.AOFWHY='x-sum';return null;}
- const p={g:g.k,en:c.entries,pl,bb,hb,s:'x',xs,h,v,R,n,st,vb:0,k:0};
+ const p={g:g.k,en:c.entries,pl,bb,hb,s:'x',xs,h,v,R,n,st,vb:0,k:0};if(O)p.sim=1;
  const S=solveX(p);if(!S)return null;const m=metric(p,S.r);if(m<0.004||m>(O?1.01:0.75)){window.AOFWHY='x-metric '+m.toFixed(3);return null;}
  let k=pickX(p,S);if(k<0&&O){const ord=F.playOrder().filter(h=>PCTL(h)<=JUNK);k=ord[Math.floor(Math.random()*ord.length)];}   // 시뮬레이션: 경계 핸드가 없으면(아주 짧은 스택 등) 그냥 아무 핸드
  if(k<0)return null;p.k=k;return build(p);}
@@ -968,7 +968,7 @@ function buildX(p,S){const {e,r,rb}=S,k=p.k,xs=p.xs||'o',P=POSN(e.n),D=e.D,hn=SA
  const stat=i=>i===p.h?'나':xs!=='o'&&i===p.v?(xs==='s'?'올인':N1(p.R)+'BB 오픈'):i<p.h?'폴드':'남음';
  const seat=i=>{const me=i===p.h,act=xs!=='o'&&i===p.v,bf=i<p.h&&!act;return `<div style="border:1.5px solid ${me?'#1565c0':act?'#d94a2b':'var(--line)'};border-radius:8px;padding:4px 2px;line-height:1.25;${bf?'opacity:.4;':''}${me?'background:rgba(21,101,192,.14);font-weight:800;':act?'background:rgba(217,74,43,.12);font-weight:800;':''}"><div style="font-size:11px">${P[i]}</div><div style="font-size:14.5px;font-weight:700">${N1(p.st[i])}<span style="font-size:10px">BB</span></div><div style="font-size:10.5px;${act?'color:#d94a2b':''}" class="${act?'':'m'}">${stat(i)}</div></div>`;};
  const tbl=tableX(p,e,P,stat);
- const head=`<b>${D.n}</b> · 남은 <b>${p.pl}명</b> (티켓 ${D.tk}장 · ${bub<=3?'<b style="color:var(--red)">💰 버블까지 '+bub+'명</b>':'버블까지 '+bub+'명'}) · 블라인드 ${bbv.toLocaleString()}${lvn?' (Lv.'+lvn+')':''} · 평균 <b>${N1(e.avg)}BB</b>${rankH(p.hb,e.avg,p.pl,D.tk)}<br>`;
+ const head=`<b>${D.n}</b> · 남은 <b>${p.pl}명</b> (티켓 ${D.tk}장 · ${bub<=3?'<b style="color:var(--red)">💰 버블까지 '+bub+'명</b>':'버블까지 '+bub+'명'}) · 블라인드 ${bbv.toLocaleString()}${lvn?' (Lv.'+lvn+')':''} · 평균 <b>${N1(e.avg)}BB</b>${p.sim?'':rankH(p.hb,e.avg,p.pl,D.tk)}<br>`;
  const line=xs==='o'?'앞 모두 폴드':xs==='s'?`<b>${P[p.v]}</b> ${N1(p.st[p.v])}BB 올인`:`<b>${P[p.v]}</b> ${N1(p.R)}BB 오픈`;
  const show=head+`<b style="color:#c62828">🔥 고급 실전</b> · <b>${e.n}명</b> · ${line} → <b>${P[p.h]}</b> · 내 스택 <b>${N1(p.hb)}BB</b>`+tbl+`<span class="hand">${hn}</span>`;
  const behind=[];for(let i=p.h+1;i<e.n;i++)behind.push(i);
@@ -1002,14 +1002,17 @@ function simDeal(hc,vc){const used=new Set([...hc,...vc]),b=[];while(b.length<5)
  const a=MW.ev7([...hc,...b]),v=MW.ev7([...vc,...b]);return {b,w:a>v?1:a<v?-1:0};}
 // 티켓 확률(ICM): 나 + 나머지가 남은 칩을 똑같이 나눠 가졌다고 보고 계산
 function simTk(S){const g=S.stage===1?S.goal:S.goal2,tot=S.en*START,o=Math.max(1,S.pl-1),rest=Math.max(1,(tot-S.chips)/o),st=[S.chips].concat(new Array(o).fill(rest));return S.chips>0&&g?SAT.icmPay(st,0,new Array(g).fill(1)):0;}
-function simNew(gk,cfg,d){const D=GD[gk],T=BBT[D.tab];let bi=0;while(bi<T.length-1&&START/T[bi]>d)bi++;
- if(bi>0&&Math.abs(START/T[bi-1]-d)<Math.abs(START/T[bi]-d))bi--;
- return {gk,D,d,en:cfg.entries,pl:cfg.live,bi,chips:Math.round(d*T[bi]),round:0,ok:0,n:0,log:[],goal:D.tk,goal2:gk==='hg'?9:0,stage:1,end:null,q:null,res:null,msg:''};}
-// 다음 판까지 진행: 블라인드(3판마다 한 단계) · 앤티·블라인드 비용 · 다른 사람 탈락
-function simAdvance(S){const T=BBT[S.D.tab];S.round++;if(S.round%3===0&&S.bi<T.length-1)S.bi++;
- const bb=T[S.bi],avg=S.en*START/S.pl/bb,lam=(S.pl/9)*Math.min(2,Math.max(0.3,10/avg));
- let bust=0;for(let i=0;i<3;i++)if(Math.random()<lam/3)bust++;S.pl=Math.max(2,S.pl-bust);
- S.chips=Math.round(S.chips-bb*(0.2+3/9));if(S.chips<=bb*0.15){S.chips=0;S.end={win:false,rank:S.pl};S.msg='블라인드·앤티에 칩이 다 떨어졌어요';return;}
+// 시작 = 관리자에 넣은 레지 마감 순간(총 엔트리·라이브 인원·마감 블라인드 D.bb) + 내 스택만 고른 BB /*aofsimreal*/
+// 블라인드는 남은 인원에 맞춰 올림(고급 실전 문제 lvIdx와 같은 기준, 랜덤 한 단계 없음) → 평균 스택이 실제 흐름과 맞음
+function simLv(S){const T=BBT[S.D.tab],i0=Math.max(0,T.indexOf(S.D.bb)),A0=S.en*START/S.live0/S.D.bb,need=S.en*START/S.pl/(A0*1.35);let i=i0;while(i<T.length-1&&T[i]<need)i++;return i;}
+function simNew(gk,cfg,d){const D=GD[gk],T=BBT[D.tab],bi=Math.max(0,T.indexOf(D.bb));
+ return {gk,D,d,en:cfg.entries,pl:cfg.live,live0:cfg.live,bi,chips:Math.round(d*T[bi]),round:0,ok:0,n:0,log:[],goal:D.tk,goal2:gk==='hg'?9:0,stage:1,end:null,q:null,res:null,msg:''};}
+// 다음 판까지 진행: 다른 사람 탈락(테이블마다 확률, 평균 스택이 짧을수록 자주) → 남은 인원에 맞춰 블라인드 → 내 앤티·블라인드 비용(한 판 평균 0.1+1.5/9 BB)
+function simAdvance(S){const T=BBT[S.D.tab];S.round++;
+ let bb=T[S.bi];const avg=S.en*START/S.pl/bb,rate=Math.min(0.35,Math.max(0.05,1.2/avg)),tb=Math.ceil(S.pl/9);
+ let bust=0;for(let i=0;i<tb;i++)if(Math.random()<rate)bust++;S.pl=Math.max(2,S.pl-bust);
+ S.bi=Math.max(S.bi,simLv(S));bb=T[S.bi];
+ S.chips=Math.round(S.chips-bb*(0.1+1.5/9));if(S.chips<=bb*0.15){S.chips=0;S.end={win:false,rank:S.pl};S.msg='블라인드·앤티에 칩이 다 떨어졌어요';return;}
  const g=S.stage===1?S.goal:S.goal2;if(g&&S.pl<=g){S.end={win:true,rank:S.pl,stage:S.stage};}}
 function simGen(S){const T=BBT[S.D.tab],bb=T[S.bi],hb=Math.round(S.chips/bb*2)/2;
  const L=hb>25?null:hb>15?['s']:hb>=7&&hb<=13.5?['o','o','o','s','r']:['o','o','o','s'];if(!L)return 'deep';if(Math.random()<0.4)return 'pass';   // 판마다 결정이 오지는 않음
@@ -1125,7 +1128,7 @@ G.push({k:'aofprac',cat:'홀덤',e:'🎯',n:'새틀 AOF 연습',d:'앞액션 3�
  cfg:null,cfgNote:'',
  start(){clearInterval(this.iv);this.gsel=null;this.adv=false;this.mode=null;this.fb=null;this.over=false;this.q=null;this.nxt=null;this.gid=(this.gid||0)+1;this.load();rr();},
  stop(){clearInterval(this.iv);this.gid=(this.gid||0)+1;},
- toMenu(){/*aofadv*/clearInterval(this.iv);this.mode=null;this.fb=null;this.over=false;this.q=null;this.nxt=null;this.sim=null;this.gid=(this.gid||0)+1;rr();scrollTo(0,0);},   // 메뉴: 고른 게임(·고급 실전)은 그대로 두고 상황 고르기로
+ toMenu(){/*aofadv*/clearInterval(this.iv);if(this.simTop&&this.mode==='sim'){this.gsel=null;this.adv=false;}this.simTop=0;this.mode=null;this.fb=null;this.over=false;this.q=null;this.nxt=null;this.sim=null;this.gid=(this.gid||0)+1;rr();scrollTo(0,0);},   // 메뉴: 고른 게임(·고급 실전)은 그대로 두고 상황 고르기로
  advOn(v){this.adv=!!v;this.gsel=null;rr();scrollTo(0,0);},
  load(){if(this.cfg)return;
   const use=(o,note)=>{const L=[];for(const k in GD){if(k==='apl')continue;const cs=SC(o&&o[k],k);if(cs.length)L.push({k,cfg:{entries:cs[0].entries,live:cs[0].live,cases:cs}});else if(RND[k])L.push({k,cfg:{rnd:1}});}
@@ -1182,7 +1185,7 @@ G.push({k:'aofprac',cat:'홀덤',e:'🎯',n:'새틀 AOF 연습',d:'앞액션 3�
    <div style="display:grid;gap:8px">${L.map(k=>{const c=has(k)&&this.cfg.find(x=>x.k===k).cfg,D=GD[k];
     return c?`<button class="btn b2" style="text-align:left;padding:12px 14px" onclick="CUR.pickG('${k}')"><b>${D.n}</b> · 티켓 ${D.tkn}<br><span style="font-size:12.5px;opacity:.9">${c.rnd?'바인 '+RND[k].lo+'~'+RND[k].hi+' 랜덤':(c.cases&&c.cases.length>1?c.cases.length+'건 섞어서 · 바인 '+Math.min(...c.cases.map(x=>x.entries))+'~'+Math.max(...c.cases.map(x=>x.entries))+' · 마감 직후 '+Math.min(...c.cases.map(x=>x.live))+'~'+Math.max(...c.cases.map(x=>x.live))+'명':'바인 '+c.entries+' · 마감 직후 '+c.live+'명')}</span></button>`
      :`<button class="btn b2" style="text-align:left;padding:12px 14px;opacity:.45" onclick="toast('이번 주 숫자가 아직 없어요')"><b>${D.n}</b> · 이번 주 숫자 없음</button>`;}).join('')}
-    <button class="btn" style="text-align:left;padding:12px 14px" onclick="CUR.pickG('rand')"><b>🎲 랜덤</b> · 숫자가 있는 게임 중에서 섞어서</button></div>${A?'':wnB+`<button class="btn full" style="text-align:left;padding:13px 14px;margin-top:12px;background:#c62828;color:#fff" onclick="CUR.advOn(1)"><b>🔥 고급 실전</b> · 한게임·피망·WPL<br><span style="font-size:12.5px;opacity:.92">자리마다 스택이 다른 실전 문제 · 🎮 실전과 같은 테이블 시뮬레이션 (5~25BB 바인)</span></button>`}`;}
+    <button class="btn" style="text-align:left;padding:12px 14px" onclick="CUR.pickG('rand')"><b>🎲 랜덤</b> · 숫자가 있는 게임 중에서 섞어서</button></div>${A?'':`<button class="btn full" style="text-align:left;padding:15px 14px;margin-top:10px;font-size:17px;background:#c62828;color:#fff" onclick="CUR.simTop=1;CUR.go('sim')"><b>🔥 고급 실전</b> · 실전과 같은 테이블<br><span style="font-size:12.5px;opacity:.92">대회 고르기 → BB 고르기 → 바로 시작 · 상대 핸드 까고 쇼다운 · 내 추정 등수 표시</span></button>`+wnB}`;}
   const gn=this.gsel==='rand'?'랜덤':GD[this.gsel].n;
   if(this.adv){const s=st[TAG.x],pc=s&&s[1]?Math.round(s[0]/s[1]*100)+'% ('+s[0]+'/'+s[1]+')':'아직 안 풀었어요';
    return `<div class="card"><div class="t">🔥 고급 실전 · ${gn}</div><div class="m" style="margin-top:4px"><a onclick="CUR.pickG(null)" style="color:var(--blue);cursor:pointer">← 게임 다시 고르기</a></div></div><div style="display:grid;gap:8px">
@@ -1193,41 +1196,56 @@ G.push({k:'aofprac',cat:'홀덤',e:'🎯',n:'새틀 AOF 연습',d:'앞액션 3�
   return `<div class="card"><div class="t">🎯 ${gn}</div><div class="m" style="margin-top:4px"><a onclick="CUR.pickG(null)" style="color:var(--blue);cursor:pointer">← 게임 다시 고르기</a></div></div><div class="gq">상황 선택</div>
   <div style="display:grid;gap:8px">${row('o','앞 모두 폴드','폴드 / 오픈 / 올인','aof_open')+row('s','앞에서 올인','콜 / 폴드','aof_vs')+row('r','앞에서 오픈','폴드 / 콜 / 3벳 올인','aof_vr')+row('m','올인 + 올인','앞에서 2명 올인 → 콜 / 폴드','aof_mw')+row('q','오픈 + 3벳 올인','오픈 뒤 3벳 올인 → 올인 / 폴드','aof_sq')}</div>${this.selHtml()}${wnB}`;},
  simGo(d){const d0=d;if(!d)d=5+Math.floor(Math.random()*21);const pool=(!this.gsel||this.gsel==='rand')?this.cfg:this.cfg.filter(x=>x.k===this.gsel),g=pool[Math.floor(Math.random()*pool.length)],c=rc(g);
-  this.sim=simNew(g.k,c,d);this.sim.d0=d0;this.sim.tk0=simTk(this.sim);this.simStep();},
+  this.sim=simNew(g.k,c,d);this.sim.d0=d0;this.sim.banks=AP_BANKS;this.sim.tk0=simTk(this.sim);this.simStep();},
  simStep(){const S=this.sim;S.q=null;S.res=null;const gid=this.gid=(this.gid||0)+1;let skip=0;const c0=S.chips;
   const step=()=>{if(gid!==this.gid||S.end){rr();return;}simAdvance(S);if(S.end){rr();return;}window.AOFTRIES=0;let q=null,t=0;
    for(;t<8&&!q;t++){window.AOFTRIES=t;q=simGen(S);if(q==='deep'||q==='pass')break;}
    if(q==='deep'||q==='pass'||!q){skip++;S.msg=q==='deep'?'스택이 25BB보다 깊어서 판을 넘겼어요':'';setTimeout(step,0);return;}
-   S.q=q;S.t0=Date.now();const lost=c0-S.chips;S.msg=skip?`🗑 그사이 ${skip}판은 트래쉬 핸드라 자동 폴드했어요 · 블라인드·앤티로 ${lost.toLocaleString()}칩 (${N1(Math.round(lost/BBT[S.D.tab][S.bi]*10)/10)}BB) 줄었어요`:'';rr();scrollTo(0,0);};
+   S.q=q;S.t0=Date.now();const lost=c0-S.chips;S.msg=skip?`🗑 자동 폴드 ${skip}판 · −${N1(Math.round(lost/BBT[S.D.tab][S.bi]*10)/10)}BB`:'';rr();scrollTo(0,0);};
   rr();setTimeout(step,30);},
- simAns(o){const S=this.sim;if(!S||!S.q||S.res)return;const q=S.q,t=(Date.now()-S.t0)/1000;S.n++;if(o===q.a)S.ok++;
+ simTStart(){/*aofsimtime*/const S=this.sim;clearInterval(this.iv);S.tq=S.q;S.bankOn=false;S.dl=Date.now()+(AP_T[S.gk]||15)*1000;const me=this;this.iv=setInterval(()=>me.simTick(),100);},
+ simTick(){const S=this.sim;if(CUR!==this||this.mode!=='sim'||!S||!S.q||S.res||S.end){clearInterval(this.iv);return;}
+  const rem=Math.max(0,S.dl-Date.now()),tot=(S.bankOn?AP_BANK:(AP_T[S.gk]||15))*1000;
+  if(rem<=0){if(!S.bankOn&&S.banks>0&&AP_TB[S.gk]){S.banks--;S.bankOn=true;S.dl=Date.now()+AP_BANK*1000;rr();return;}clearInterval(this.iv);this.simAns('f',true);return;}
+  const tm=document.getElementById('simTm'),br=document.getElementById('simBar');if(tm){tm.textContent=(rem/1000).toFixed(1)+'초';tm.style.color=rem<=3000?'#d33b3b':'';}
+  if(br){br.style.width=Math.min(100,rem/tot*100)+'%';br.style.background=S.bankOn?'#e08a00':(rem<=3000?'#d33b3b':'#1565c0');}},
+ simAns(o,to){const S=this.sim;if(!S||!S.q||S.res)return;clearInterval(this.iv);const q=S.q,t=(Date.now()-S.t0)/1000;S.n++;if(o===q.a)S.ok++;
   studyLog('aofprac',q.tag,1,o===q.a,Math.round(t*1000),q.p);
-  S.res=simResolve(S,q,o);S.log.push({sum:q.sum,a:q.a,o,ok:o===q.a,kind:S.res.kind,w:S.res.w,d:S.res.after-S.res.before});rr();scrollTo(0,0);},
+  S.res=simResolve(S,q,o);S.res.to=!!to;S.log.push({sum:q.sum,a:q.a,o,ok:o===q.a,kind:S.res.kind,w:S.res.w,d:S.res.after-S.res.before});rr();scrollTo(0,0);
+  const res=S.res;if(!S.end&&res.ok&&(res.kind==='steal'||res.kind==='fold'))setTimeout(()=>{if(CUR===this&&this.mode==='sim'&&this.sim===S&&S.res===res)this.simStep();},2200);},   // 쉬운 결과(정답 + 스틸·폴드)는 2.2초 뒤 자동으로 다음 판
  simCont(){const S=this.sim;if(S.end&&S.end.win&&S.stage===1&&S.goal2){S.stage=2;S.end=null;S.q=null;S.res=null;this.simStep();}},
  simView(){const S=this.sim;
-  if(!S){return `<div class="card"><div class="t">🎮 실전 시뮬레이션</div><div class="m" style="margin-top:4px;line-height:1.6">고른 BB만큼 칩을 들고 레잇레지로 들어가요. 블라인드가 오르고 사람이 떨어지는 동안 결정할 상황이 오면 골라요. 올인·콜을 하면 실제로 카드를 깔아서 이기면 살고 지면 탈락이에요.<br>티켓을 따면 성공이에요${this.gsel==='hg'||this.gsel==='rand'?' (한게임은 9등 안에 들면 티켓 2장 — 이어서 도전할 수 있어요)':''}.</div></div>
-   <div class="gq">몇 BB로 바인할까요?</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">${SIMD.map(d=>`<button class="btn b2" style="padding:10px 2px;font-size:15px;line-height:1.25" onclick="CUR.simGo(${d})"><b>${d}BB</b><br><span style="font-size:11px">바인하기</span></button>`).join('')}<button class="btn" style="padding:10px 2px;font-size:15px;line-height:1.25" onclick="CUR.simGo(0)"><b>🎲 랜덤</b><br><span style="font-size:11px">5~25BB</span></button></div>
+  if(!S){return `<div class="card"><div class="t">🔥 고급 실전</div><div class="m" style="margin-top:4px;line-height:1.6">관리자에 넣은 레지 마감 숫자(총 엔트리·마감 직후 라이브 인원·마감 블라인드)로 시작하고, 내 스택만 고른 BB예요. 사람이 떨어지는 만큼 블라인드가 오르고 사람이 떨어지는 동안 결정할 상황이 오면 골라요. 올인·콜을 하면 실제로 카드를 깔아서 이기면 살고 지면 탈락이에요.<br>티켓을 따면 성공이에요${this.gsel==='hg'||this.gsel==='rand'?' (한게임은 9등 안에 들면 티켓 2장 — 이어서 도전할 수 있어요)':''}.</div></div>
+   <div class="gq">① 대회 고르기</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">${['hg','wpl','pm','rand'].map(k=>{const on=(this.gsel||'rand')===k,ok=k==='rand'||(this.cfg||[]).some(x=>x.k===k);return `<button class="btn ${on?'':'gr'}" style="padding:10px 2px;font-size:14.5px${ok?'':';opacity:.4'}" onclick="${ok?`CUR.gsel='${k}';rr()`:`toast('이번 주 숫자가 없어요')`}">${on?'✅ ':''}${k==='rand'?'🎲 랜덤':GD[k].n}</button>`;}).join('')}</div>
+${(()=>{const k=this.gsel&&this.gsel!=='rand'?this.gsel:null,x=k&&(this.cfg||[]).find(y=>y.k===k),c=x&&x.cfg;if(!k)return '<div class="m" style="text-align:center;margin-top:6px">숫자가 있는 게임 중 하나를 골라요</div>';if(!c||c.rnd)return '<div class="m" style="text-align:center;margin-top:6px">이번 주 숫자가 없어서 랜덤 숫자로 해요</div>';const L=c.cases&&c.cases.length?c.cases:[c];return `<div class="m" style="text-align:center;margin-top:6px">${L.map(z=>'총 '+z.entries+'명 · 마감 직후 '+z.live+'명 · 평균 '+N1(r1(z.entries*START/z.live/GD[k].bb))+'BB').join(' / ')}${L.length>1?' 중 랜덤':''}</div>`;})()}
+   <div class="gq">② 몇 BB로 시작할까요? (누르면 바로 시작)</div><div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">${SIMD.map(d=>`<button class="btn b2" style="padding:10px 2px;font-size:15px;line-height:1.25" onclick="CUR.simGo(${d})"><b>${d}BB</b><br><span style="font-size:11px">바인하기</span></button>`).join('')}<button class="btn" style="padding:10px 2px;font-size:15px;line-height:1.25" onclick="CUR.simGo(0)"><b>🎲 랜덤</b><br><span style="font-size:11px">5~25BB</span></button></div>
    <div class="note" style="margin-top:8px">🗑 트래쉬 핸드는 자동으로 폴드해서 넘겨요 — 그동안 블라인드·앤티만큼 BB가 줄어요</div>
    <div class="m" style="margin-top:8px;line-height:1.55">※ 25BB보다 깊은 스택(40~100BB)은 플랍 이후 계산이 필요해서 아직 없어요 · 판 사이에는 앤티·블라인드만 내고 지나가요 · 올인에 콜하는 사람은 1명으로 봐요</div>
    <button class="btn full gr" style="margin-top:10px" onclick="CUR.toMenu()">메뉴</button>`;}
   const T=BBT[S.D.tab],bb=T[S.bi],hb=S.chips/bb,g=S.stage===1?S.goal:S.goal2;
-  const hd=`<div class="gst"><span>🎮 ${S.D.n} · 남은 <b>${S.pl}</b>명 / ${S.stage===1?'티켓 '+S.goal+'장':'2장 컷 '+S.goal2+'명'} · 블라인드 ${bb.toLocaleString()} · 내 칩 <b>${S.chips.toLocaleString()}</b> (${N1(Math.round(hb*10)/10)}BB)${rankH(hb,S.en*START/S.pl/bb,S.pl,g)} · 티켓 확률 <b>${Math.round(simTk(S)*100)}%</b></span><span>정답 <b>${S.ok}</b>/${S.n} <a onclick="CUR.toMenu()" style="color:var(--blue);cursor:pointer;margin-left:6px">메뉴</a></span></div>`;
+  const rk=estRank(hb,S.en*START/S.pl/bb,S.pl),rkC=`<div class="card" style="display:flex;justify-content:space-around;align-items:center;text-align:center;padding:8px 6px;margin-bottom:8px;line-height:1.3"><div><div class="m" style="font-size:12px">내 추정 등수</div><div style="font-size:22px;font-weight:900;color:${rk<=g?'#2e7d32':'#c62828'}">약 ${rk}등</div><div class="m" style="font-size:12px">${S.pl}명 중</div></div><div><div class="m" style="font-size:12px">머니인</div><div style="font-size:22px;font-weight:900">${g}등</div><div style="font-size:12px;font-weight:700;color:${rk<=g?'#2e7d32':'#c62828'}">${rk<=g?'✅ 안쪽':'🔺 '+(rk-g)+'등 차이'}</div></div><div><div class="m" style="font-size:12px">내 스택</div><div style="font-size:22px;font-weight:900">${N1(Math.round(hb*10)/10)}BB</div><div class="m" style="font-size:12px">평균 ${N1(Math.round(S.en*START/S.pl/bb*10)/10)}BB</div></div></div>`;
+  const hd=`<div style="display:flex;justify-content:flex-end;margin:-2px 0 4px"><a onclick="CUR.toMenu()" style="color:var(--blue);cursor:pointer;font-size:13.5px">메뉴</a></div>`;   // 시뮬: 위 작은 글씨 줄 없앰(문제 카드와 같은 내용이라 헷갈림) /*aofsimclean*/
   const logH=()=>`<div class="card"><div class="t">결정 기록</div>${S.log.map((x,k)=>`<div class="row"><span>${k+1}. ${x.sum} → ${x.ok?'✅':'❌'}</span><span class="m">${x.kind==='fold'?'폴드':x.kind==='flat'?'콜(플랍)':x.kind==='steal'?'가져감':x.w>0?'승':x.w<0?'패':'무'} ${x.d>=0?'+':''}${x.d.toLocaleString()}</span></div>`).join('')||'<div class="m">없음</div>'}</div>`;
-  let resH='';
+  let resH='',resX='';
   if(S.res){const r=S.res,q=S.q,P=POSN(q.p.n);
-   const dec=`<div class="t" style="font-size:16px">${r.ok?'✅ 결정 정답':'❌ 결정 오답 · 정답 '+q.fmt(q.a)}</div>`;
-   const out=r.kind==='flat'?`콜하고 플랍을 봤어요 → ${r.w>0?'팟을 가져왔어요':'접었어요'} (${r.after-r.before>=0?'+':''}${(r.after-r.before).toLocaleString()}) <span class="m">· 플랍 이후는 간단히 처리</span>`:r.kind==='fold'?`폴드 · ${(r.after-r.before).toLocaleString()}칩`:r.kind==='steal'?`아무도 콜 안 함 → 팟을 가져왔어요 (+${(r.after-r.before).toLocaleString()})`:
-    `<style>@keyframes sdIn{from{opacity:0;transform:translateY(-6px) scale(.9)}to{opacity:1;transform:none}}.sd{display:inline-block;opacity:0;animation:sdIn .3s forwards}</style><div style="margin:4px 0">나 ${r.hc.map(cardH).join('')} vs <b>${P[r.vi]}</b> <span class="sd" style="animation-delay:.3s">${r.vc.map(cardH).join('')}</span></div><div style="background:#1f5f3f;border-radius:10px;padding:6px 4px;text-align:center">${r.b.map((c,j)=>`<span class="sd" style="animation-delay:${j<3?0.9+j*0.12:j===3?1.8:2.6}s">${cardH(c)}</span>`).join('')}</div><div class="sd" style="animation-delay:3.1s;display:block;font-weight:800;margin-top:4px;color:${r.w>0?'#2e7d32':r.w<0?'#c62828':'inherit'}">${r.w>0?'🎉 이겼어요':r.w<0?'💥 졌어요':'🤝 무승부'} (${r.after-r.before>=0?'+':''}${(r.after-r.before).toLocaleString()}칩 · ${r.after-r.before>=0?'+':''}${N1(Math.round((r.after-r.before)/BBT[S.D.tab][S.bi]*10)/10)}BB)</div>`+
-     (r.w<0&&r.ok?`<div class="sd" style="animation-delay:3.1s;display:block;color:#2e7d32;font-weight:700">결정은 맞았어요 — 이번엔 카드 운이 없었을 뿐이에요</div>`:r.w>0&&!r.ok?`<div class="sd" style="animation-delay:3.1s;display:block;color:#b26a00;font-weight:700">이겼지만 결정은 틀렸어요 — 길게 보면 손해예요</div>`:'');
-   resH=`<div class="card" style="border-color:${r.ok?'#3a9d3f':'#d33b3b'}">${dec}<div style="font-size:15px;line-height:1.7;margin-top:6px">${out}</div><div style="font-size:14px;line-height:1.75;margin-top:8px">${q.expl}${q.chart}</div></div>`;}
+   /*aofsimres*/const bbN=BBT[S.D.tab][S.bi],B0=N1(Math.round(r.before/bbN*10)/10),B1=N1(Math.round(r.after/bbN*10)/10),dB=Math.round((r.after-r.before)/bbN*10)/10,isSd=r.kind==='sd';
+   const ttl=r.kind==='steal'?(q.p.xs==='r'?'🎉 다들 폴드 — 3벳 올인으로 팟을 가져왔어요':'🎉 다들 폴드했어요 — 블라인드 스틸 성공!'):r.kind==='fold'?(r.to?'⏰ 시간 초과 — 자동 폴드':'폴드했어요'):r.kind==='flat'?(r.w>0?'콜 → 플랍 이후 팟을 가져왔어요':'콜 → 플랍 이후 접었어요'):'';
+   const sdH=isSd?`<style>@keyframes sdIn{from{opacity:0;transform:translateY(-6px) scale(.9)}to{opacity:1;transform:none}}.sd{display:inline-block;opacity:0;animation:sdIn .3s forwards}</style><div style="margin:4px 0">나 ${r.hc.map(cardH).join('')} vs <b>${P[r.vi]}</b> <span class="sd" style="animation-delay:.3s">${r.vc.map(cardH).join('')}</span></div><div style="background:#1f5f3f;border-radius:10px;padding:6px 4px;text-align:center">${r.b.map((c,j)=>`<span class="sd" style="animation-delay:${j<3?0.9+j*0.12:j===3?1.8:2.6}s">${cardH(c)}</span>`).join('')}</div><div class="sd" style="animation-delay:3.1s;display:block;font-weight:800;margin-top:4px;color:${r.w>0?'#2e7d32':r.w<0?'#c62828':'inherit'}"><span style="font-size:20px">${r.w>0?'🎉 이겼어요':r.w<0?'💥 졌어요':'🤝 무승부'}</span></div>`:'';
+   const luck=isSd?(r.w<0&&r.ok?`<div class="sd" style="animation-delay:3.1s;display:block;color:#2e7d32;font-weight:700">결정은 맞았어요 — 이번엔 카드 운이 없었을 뿐이에요</div>`:r.w>0&&!r.ok?`<div class="sd" style="animation-delay:3.1s;display:block;color:#b26a00;font-weight:700">이겼지만 결정은 틀렸어요 — 길게 보면 손해예요</div>`:''):'';
+   const big=`<div class="${isSd?'sd':''}" style="${isSd?'display:block;animation-delay:3.1s;':''}text-align:center;margin-top:6px"><span style="font-size:26px;font-weight:900">${B0}BB → <span style="color:${dB>0?'#2e7d32':dB<0?'#c62828':'inherit'}">${B1}BB</span></span> <span style="font-size:15px;font-weight:800;color:${dB>0?'#2e7d32':dB<0?'#c62828':'var(--sub)'}">(${dB>0?'+':''}${N1(dB)}BB)</span></div>`;
+   const dec=`<div style="text-align:center;font-size:15px;font-weight:800;margin-top:8px;color:${r.ok?'#2e7d32':'#c62828'}">${r.ok?'✅ 결정 정답':'❌ 결정 오답 · 정답 '+q.fmt(q.a)}</div>`;
+   resH=`<div class="card" style="border-color:${r.ok?'#3a9d3f':'#d33b3b'};text-align:center">${ttl?`<div style="font-size:18px;font-weight:900">${ttl}</div>`:''}${sdH}${big}${luck}${dec}${!S.end&&r.ok&&!isSd&&r.kind!=='flat'?'<div class="m" style="font-size:12.5px;margin-top:4px">잠시 후 다음 판으로 넘어가요</div>':''}</div>`;
+   resX=`<details ${r.ok?'':'open'} class="card" style="font-size:14px;line-height:1.75"><summary style="cursor:pointer;font-weight:700">📖 해설·차트 ${r.ok?'보기':''}</summary><div style="margin-top:6px">${q.expl}${q.chart}</div></details>`;}
   if(S.end){const E=S.end,two=E.win&&E.stage===2;
-   return hd+resH+`<div class="gbig${S.res&&S.res.kind==='sd'?' sd':''}" style="${S.res&&S.res.kind==='sd'?'display:block;animation-delay:3.4s':''}">${E.win?(two?'🎫🎫 티켓 2장!':'🎫 티켓 획득!'):'💥 탈락 · '+E.rank+'등'}</div>${S.msg?`<div class="m" style="text-align:center">${S.msg}</div>`:''}<div class="card" style="text-align:center;font-size:15px;line-height:1.8">결정 정답 ${S.ok}/${S.n}${S.n?' ('+Math.round(S.ok/S.n*100)+'%)':''} · 입장 ${S.d}BB<br><span class="m">입장할 때 티켓 확률(ICM)은 약 ${Math.round((S.tk0||0)*100)}%였어요 — 짧은 스택으로 들어가면 원래 티켓을 못 따는 경우가 더 많아요</span></div>`+
+   return hd+resH+resX+`<div class="gbig${S.res&&S.res.kind==='sd'?' sd':''}" style="${S.res&&S.res.kind==='sd'?'display:block;animation-delay:3.4s':''}">${E.win?(two?'🎫🎫 티켓 2장!':'🎫 티켓 획득!'):'💥 탈락 · '+E.rank+'등'}</div>${S.msg?`<div class="m" style="text-align:center">${S.msg}</div>`:''}<div class="card" style="text-align:center;font-size:15px;line-height:1.8">결정 정답 ${S.ok}/${S.n}${S.n?' ('+Math.round(S.ok/S.n*100)+'%)':''} · 입장 ${S.d}BB<br><span class="m">입장할 때 티켓 확률(ICM)은 약 ${Math.round((S.tk0||0)*100)}%였어요 — 짧은 스택으로 들어가면 원래 티켓을 못 따는 경우가 더 많아요</span></div>`+
     (E.win&&S.stage===1&&S.goal2?`<button class="btn full g" onclick="CUR.simCont()">🎫🎫 9등 안(티켓 2장)까지 계속하기</button>`:'')+logH()+
     `<button class="btn full" style="margin-top:8px" onclick="CUR.simGo(${S.d0||0})">다시 도전${S.d0?'':' (🎲 랜덤 바인)'}</button><button class="btn full gr" style="margin-top:8px" onclick="CUR.go('sim')">입장 스택 다시 고르기</button>`;}
-  if(S.res)return hd+resH+`<button class="btn full g" style="font-size:17px;padding:13px" onclick="CUR.simStep()">다음 판 ▶</button>`;
+  if(S.res)return hd+(S.res.kind==='sd'?`<div class="sd" style="display:block;animation-delay:3.1s">${rkC}</div>`:rkC)+resH+`<button class="btn full g" style="font-size:17px;padding:13px;margin-bottom:10px" onclick="CUR.simStep()">다음 판 ▶</button>`+resX;
   if(!S.q)return hd+`<div class="card m" style="text-align:center;line-height:1.7">${S.round?'다음 결정할 판까지 진행 중…':'바인하는 중…'}<br><span style="font-size:12.5px">⏳ 문제 생성에 시간이 걸려요 — 지금 내 스택·남은 인원·테이블 스택에 맞는 상황을 계산하고 있어요 (몇 초)</span><br><span style="font-size:12.5px">${S.msg||''}</span></div>`;
-  const q=S.q;
-  return hd+(S.msg?`<div class="m" style="text-align:center;margin-bottom:6px">${S.msg}</div>`:'')+`<style>.hand{font-size:34px;font-weight:800;letter-spacing:1px}</style><div class="card" style="text-align:center;font-size:16px;line-height:1.8">${q.show}</div>`+
+  const q=S.q;if(S.tq!==q)this.simTStart();
+  const tm0=Math.max(0,S.dl-Date.now()),tot0=(S.bankOn?AP_BANK:(AP_T[S.gk]||15))*1000,tb=AP_TB[S.gk];
+  const tmr=`<div style="margin:2px 0 8px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span id="simTm" style="font-size:24px;font-weight:900;${tm0<=3000?'color:#d33b3b':''}">${(tm0/1000).toFixed(1)}초</span><span class="m">${S.bankOn?'⏱ 타임뱅크 사용 중 ('+AP_BANK+'초)':'베팅 시간 '+(AP_T[S.gk]||15)+'초 · 지나면 '+(tb&&S.banks>0?'타임뱅크 자동':'자동 폴드')}${tb?' · 타임뱅크 <b>'+S.banks+'</b>/'+AP_BANKS:''}</span></div><div style="height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:3px"><div id="simBar" style="height:100%;width:${Math.min(100,tm0/tot0*100)}%;background:${S.bankOn?'#e08a00':tm0<=3000?'#d33b3b':'#1565c0'}"></div></div></div>`;
+  return hd+rkC+(S.msg?`<div class="m" style="text-align:center;margin-bottom:6px">${S.msg}</div>`:'')+`<style>.hand{font-size:34px;font-weight:800;letter-spacing:1px}</style><div class="card" style="text-align:center;font-size:16px;line-height:1.8">${q.show}</div>`+tmr+
    `<div style="display:grid;grid-template-columns:repeat(${q.opts.length},1fr);gap:8px">${q.opts.map(o=>`<button class="btn ${o[0]==='f'?'gr':''}" style="font-size:17px;padding:14px 6px" onclick="CUR.simAns('${o[0]}')">${o[1]}</button>`).join('')}</div><div class="m" style="text-align:center;margin-top:8px">${q.rule}</div>`;},
  view(){if(!this.mode)return this.menu();if(this.mode==='sim')return this.simView();const W=this.mode==='W',q=this.q;
   const gl=this.gsel==='rand'||!this.gsel?'랜덤':GD[this.gsel].n;
