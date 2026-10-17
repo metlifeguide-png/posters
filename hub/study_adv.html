@@ -827,7 +827,7 @@ const GD={wpl:{n:'WPL',pay:Array(10).fill(25).concat(Array(2).fill(20)),bb:2800,
  pm:{n:'피망',pay:Array(25).fill(9.27),bb:2400,tab:'pm',t:9,min:26,tk:25,tkn:'25장'},
  apl:{n:'APL',pay:[5,3,2,1,1,1,1,1].map(x=>x*5),bb:1000,tab:'apl',t:8,min:9,tk:8,tkn:'8위까지'}};
 const BBT=window.AOFENG.bb;
-const RND={wpl:{lo:100,hi:150},hg:{lo:150,hi:210},pm:{lo:100,hi:150}};   // 서버 숫자가 없을 때 바인 랜덤 범위(APL 제외)
+const RND={wpl:{lo:100,hi:150},hg:{lo:130,hi:180},pm:{lo:100,hi:150}};   // 서버 숫자가 없을 때 바인 랜덤 범위(APL 제외)
 const SC=(c,k)=>{/*satcases*/const raw=c&&Array.isArray(c.cases)&&c.cases.length?c.cases:(c?[c]:[]);return raw.map(x=>({entries:+x.entries,live:+x.live,label:x.label||''})).filter(x=>x.entries>x.live&&x.live>=GD[k].min);};   // 서버 줄(cases) 중 쓸 수 있는 것만
 const rc=g=>{let c=g.cfg;if(c.cases&&c.cases.length)c=c.cases[Math.floor(Math.random()*c.cases.length)];if(!c.rnd)return c;const R=RND[g.k],D=GD[g.k],en=R.lo+Math.floor(Math.random()*(R.hi-R.lo+1)),lv=Math.max(D.min+2,Math.round(en*(0.2+Math.random()*0.1)));return{entries:en,live:Math.min(lv,en-1)};};
 const LR={p:0.2,a:[0.85,1.0],b:[0.55,0.9],d:0.15};/*aoflr*//*aoflr2*/   // 레잇레지 입장 문제 비율 · 스타팅 1만칩 대비 남은 칩 비율(마감 레벨 입장 / 1레벨 전 입장) · d = 레지마감 라이브 인원에서 최대 몇 % 줄어든 인원까지 출제
@@ -854,9 +854,10 @@ function chartHtml(p,r,k0){if(p.s==='x')p=Object.assign({},p,{s:p.xs||'o'});let 
 const sumA=(a,b)=>{const o=new Float64Array(169);for(let k=0;k<169;k++)o[k]=a[k]+(b?b[k]:0);return o;};
 
 // 게임 숫자 → 문제용 환경
-// 남은 인원이 줄수록 블라인드가 올라가요: 마감 직후 평균 스택(BB)의 1.35배 안에 들어오는 첫 블라인드(+가끔 한 단계 위)
-function lvIdx(g,en,pl,live){const D=GD[g],T=BBT[D.tab],i0=Math.max(0,T.indexOf(D.bb)),A0=en*START/live/D.bb,need=en*START/pl/(A0*1.35);
- let i=i0;while(i<T.length-1&&T[i]<need)i++;
+// 남은 인원이 줄면 평균 스택(BB)도 줄어듦: 목표 평균 = 마감 직후 평균 × √(남은 인원/마감 인원) → 가장 가까운 블라인드 /*aofblind*/
+function lvNear(T,i0,need){let i=i0;while(i<T.length-1&&Math.abs(Math.log(T[i+1]/need))<Math.abs(Math.log(T[i]/need)))i++;return i;}
+function lvIdx(g,en,pl,live){const D=GD[g],T=BBT[D.tab],i0=Math.max(0,T.indexOf(D.bb)),A0=en*START/live/D.bb,need=en*START/pl/Math.max(4,A0*Math.sqrt(Math.min(1,pl/live)));
+ let i=lvNear(T,i0,need);
  if(Math.random()<0.4&&i<T.length-1&&en*START/pl/T[i+1]>=6)i++;return i;}
 function envOf(g,en,pl,bb){const D=GD[g],B=bb||D.bb,n=D.t,avg=r1(en*START/pl/B),M=Math.max(0,pl-n),tot=en*START/B,off=M?new Array(M).fill(Math.max(M*0.5,tot-n*avg)/M):[];
  return {D,n,avg,ctx:{pay:D.pay,players:pl,avg,n,mode:'icm',off,raise:2}};}
@@ -1014,9 +1015,10 @@ function simDeal(hc,vc){const used=new Set([...hc,...vc]),b=[];while(b.length<5)
 function simTk(S){const g=S.stage===1?S.goal:S.goal2,tot=S.en*START,o=Math.max(1,S.pl-1),rest=Math.max(1,(tot-S.chips)/o),st=[S.chips].concat(new Array(o).fill(rest));return S.chips>0&&g?SAT.icmPay(st,0,new Array(g).fill(1)):0;}
 // 시작 = 관리자에 넣은 레지 마감 순간(총 엔트리·라이브 인원·마감 블라인드 D.bb) + 내 스택만 고른 BB /*aofsimreal*/
 // 블라인드는 남은 인원에 맞춰 올림(고급 실전 문제 lvIdx와 같은 기준, 랜덤 한 단계 없음) → 평균 스택이 실제 흐름과 맞음
-function simLv(S){const T=BBT[S.D.tab],i0=Math.max(0,T.indexOf(S.D.bb)),A0=S.en*START/S.live0/S.D.bb,need=S.en*START/S.pl/(A0*1.35);let i=i0;while(i<T.length-1&&T[i]<need)i++;return i;}
+function simLv(S){const T=BBT[S.D.tab],i0=Math.max(0,T.indexOf(S.D.bb)),A0=S.en*START/S.live0/S.D.bb,need=S.en*START/S.pl/Math.max(4,A0*Math.sqrt(Math.min(1,S.pl/S.live0)));return lvNear(T,i0,need);}   /*aofblind*/
 // 다른 사람 스택(BB): 평균 주변 로그정규(평균=avg) → 숏·중간·빅 스택이 섞임(중앙값은 평균보다 작음)
-function simStk(avg){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();const z=Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v),sg=0.75;return Math.min(avg*4,Math.max(1,avg*Math.exp(sg*z-sg*sg/2)));}
+function simCap(avg){return Math.min(25,Math.max(3,avg*2.2));}   // 다른 사람 최대 스택: 평균×2.2, 25BB 넘지 않음 /*aofcap*/
+function simStk(avg){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();const z=Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v),sg=0.75;const x=Math.max(1,avg*Math.exp(sg*z-sg*sg/2)),cp=simCap(avg);return x>cp?cp*(0.85+Math.random()*0.15):x;}
 // 내 테이블(자리 고정, 버튼만 돌아감): c = 자리별 칩(내 자리 hs는 S.chips 사용), btn = 버튼 자리
 function simTbl(S,bb){const n=Math.min(S.D.t,S.pl),avg=S.en*START/S.pl/bb,c=[];for(let i=0;i<n;i++)c.push(Math.round(simStk(avg)*bb));const hs=Math.floor(Math.random()*n);c[hs]=0;S.T={c,hs,btn:Math.floor(Math.random()*n)};}
 const simSeat=(T,pos)=>(T.btn+3+pos)%T.c.length,simPos=(T,j)=>((j-T.btn-3)%T.c.length+2*T.c.length)%T.c.length;
@@ -1034,6 +1036,7 @@ function simAdvance(S){const T=BBT[S.D.tab];S.round++;
  if(Math.random()<0.55&&nn()>2){const O=[];for(let j=0;j<nn();j++)if(j!==TT.hs)O.push(j);const a=O.splice(Math.floor(Math.random()*O.length),1)[0],b2=O[Math.floor(Math.random()*O.length)];
   const amt=Math.min(TT.c[a],TT.c[b2],Math.round(bb*(1.5+Math.random()*(Math.random()<0.3?40:8))));if(Math.random()<0.5){TT.c[a]+=amt;TT.c[b2]-=amt;}else{TT.c[a]-=amt;TT.c[b2]+=amt;}}
  for(let j=0;j<nn();j++)if(j!==TT.hs&&TT.c[j]<=bb*0.3)simNewP(S,j,bb);
+ {const cp=simCap(S.en*START/S.pl/bb)*bb;for(let j=0;j<nn();j++)if(j!==TT.hs&&TT.c[j]>cp)TT.c[j]=Math.round(cp*(0.85+Math.random()*0.15));}   // 칩 몰림 막기 /*aofcap*/
  while(nn()>Math.max(2,Math.min(S.D.t,S.pl))){let j=Math.floor(Math.random()*nn());if(j===TT.hs)j=(j+1)%nn();TT.c.splice(j,1);if(TT.hs>j)TT.hs--;if(TT.btn>=nn())TT.btn=0;}
  /*aofpay: 내 칩은 simPay에서 (넘긴 판만)*/
  const g=S.stage===1?S.goal:S.goal2;if(g&&S.pl<=g){S.end={win:true,rank:S.pl,stage:S.stage};}}
