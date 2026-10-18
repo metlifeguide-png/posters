@@ -606,7 +606,7 @@ const GAMES={
        bubbles:[{key:"t1",label:"미니메인 이상 (12위 안)",n:12},{key:"t2",label:"메인 (10위 안)",n:10}]},
   hg:{blinds:STD_BB,times:["17:30","19:00","20:30","22:00","23:30"],name:"한게임",desc:`1~9위 2장(${r1(TV.hg*2)}만)<br>10~20위 1장`,pay:()=>Array(9).fill(TV.hg*2).concat(Array(11).fill(TV.hg)),
        bubbles:[{key:"t1",label:"1장 (20위 안)",n:20},{key:"t2",label:"2장 (9위 안)",n:9}]},
-  pm:{blinds:PM_BB,times:["18:00","19:30","21:00","22:30"],name:"피망",desc:`1~25위 메인 1장<br>(${TV.pm}만)`,pay:()=>Array(pmSeats()).fill(TV.pm),
+  pm:{ante:0.15,blinds:PM_BB,times:["18:00","19:30","21:00","22:30"],name:"피망",desc:`1~25위 메인 1장<br>(${TV.pm}만)`,pay:()=>Array(pmSeats()).fill(TV.pm),
        get bubbles(){return [{key:"t1",label:`메인 티켓 (${pmSeats()}위 안)`,n:pmSeats()}];}},
   apl:{blinds:APL_BB,times:["15:00"],name:"APL 프리롤",desc:`1위 5장·2위 3장·3위 2장<br>4~8위 1장 (1장 ${TV.apl}만)`,
        pay:()=>[5,3,2,1,1,1,1,1].map(x=>x*TV.apl),
