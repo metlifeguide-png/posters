@@ -1038,7 +1038,8 @@ function simAdvance(S){const T=BBT[S.D.tab];S.round++;
   else{const f=P.h/SIM_HPL;S.en=Math.round(P.EN[L]+(P.EN[L+1]-P.EN[L])*f);S.pl=Math.max(2,Math.round(P.PL[L]+(P.PL[L+1]-P.PL[L])*f));}
   bb=T[S.bi];}
  else{let bust=0;for(let i=0;i<tb;i++)if(Math.random()<rate)bust++;S.pl=Math.max(2,S.pl-bust);
- S.bi=Math.max(S.bi,simLv(S));bb=T[S.bi];}
+ const g1=S.goal,ph=S.pl<=g1?1.3:S.pl<=g1+Math.ceil(g1*0.25)?0.75:1,nt=S.T.c.length,hpl=SIM_HPL*ph*(nt<9?Math.sqrt(9/nt):1);   // 레벨당 판수: 버블 근처는 타임을 길게 써서 적게, 머니인 뒤·짧은 테이블은 많게 /*aofpace*/
+ if((S.hh=(S.hh||0)+1/hpl)>=1){S.hh=0;S.bi=Math.min(T.length-1,S.bi+1);}bb=T[S.bi];}   // 마감 뒤도 시간(레벨)마다 블라인드 업 /*aoftime*/
  // 내 테이블: 버튼 이동 · 다른 사람끼리 팟 주고받기 · 탈락 자리는 새 사람 · 남은 인원이 테이블보다 적으면 자리 줄임
  const TT=S.T,nn=()=>TT.c.length;TT.btn=(TT.btn+1)%nn();
  for(let j=0;j<nn();j++)if(j!==TT.hs)TT.c[j]=Math.round(TT.c[j]-bb*(0.1+1.5/9));
