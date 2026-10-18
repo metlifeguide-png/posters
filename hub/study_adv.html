@@ -595,11 +595,11 @@ function openPct(n,i,mode){const btn=n-3,OPEN=[0.45,0.29,0.23,0.19,0.16,0.14,0.1
  let op=i===n-2?0.40:OPEN[Math.min(OPEN.length-1,Math.max(0,btn-i))];if(mode==="icm")op*=0.8;return op;}
 
 // ctx = {pay, players, avg(평균BB), n(테이블 인원), mode:'icm'|'chip', off:[다른 테이블 스택(BB)], raise:2}
-const posted=(n,i)=>0.1+(i===n-1?1:(i===n-2?0.5:0));
+const posted=(n,i)=>(window.AOF_A||0.1)+(i===n-1?1:(i===n-2?0.5:0));
 function tableStacks(ctx,hero,heroBB,extra){const n=ctx.n,arr=new Array(n).fill(ctx.avg);arr[hero]=heroBB+posted(n,hero);
  if(extra)for(const k in extra)arr[+k]=extra[k]+posted(n,+k);return arr;}
-function base(ctx){return {pay:ctx.pay,players:ctx.players,avg:ctx.avg,ante:0.1,mode:ctx.mode,iters:300,
- pressure:ctx.mode==="icm"?(1.5+0.1*ctx.n)/4:0,off:ctx.off};}
+function base(ctx){return {pay:ctx.pay,players:ctx.players,avg:ctx.avg,ante:(window.AOF_A||0.1),mode:ctx.mode,iters:300,
+ pressure:ctx.mode==="icm"?(1.5+(window.AOF_A||0.1)*ctx.n)/4:0,off:ctx.off};}
 const tsty=ctx=>ctx.mode==="icm"?TSTYLE.normal:TSTYLE.chip;
 
 // ---- 1) 앞 모두 폴드: 내가 먼저 액션 (올인 / 오픈→올인받으면 콜 / 오픈→폴드) ----
@@ -630,7 +630,7 @@ function solveOpen(ctx,hero,heroBB,extra){/*aofadv*/   // extra = {자리:BB} �
 // ---- 2) 앞에서 올인: 올인한 사람(vil, 올인 전체 금액 vilBB) → 나(hero) 콜/폴드 ----
 function solveVs(ctx,hero,heroBB,vil,vilBB,extra){/*aofadv2*/
  const Eq=E(),ord=playOrder();
- const st=tableStacks(ctx,hero,heroBB,extra);st[vil]=vilBB+0.1;   // aof: 올인 전체 금액 + 앤티
+ const st=tableStacks(ctx,hero,heroBB,extra);st[vil]=vilBB+(window.AOF_A||0.1);   // aof: 올인 전체 금액 + 앤티
  const r=SAT.solve(Object.assign(base(ctx),{stacks:st,opener:vil,raise:0}),Eq);
  const c=r.callers.indexOf(hero);if(c<0)return null;
  const x=r.info[c];let call=r.cs[c],callPct=r.csPct[c];
@@ -643,7 +643,7 @@ function solveVs(ctx,hero,heroBB,vil,vilBB,extra){/*aofadv2*/
  /*aofovc 10/18*/   // 뒤에 남은 사람 오버콜: 내가 콜한 뒤 뒤 사람이 2명 상대로 들어오는 경우까지 계산 (근사)
  // 엔진(SAT.solve)은 콜러를 올인한 사람과 1:1로만 계산함 → 내 스택이 올인 금액보다 크고 뒤에 사람이 있으면 콜 범위가 넓게 나옴
  // 오버콜 범위 = 그 사람의 1:1 콜 범위의 절반(최대 6%). 3명 승률 = 1:1 승률로 근사(브래들리-테리). ICM은 1:1 필요 승률에서 구한 손실 가중치(lam)를 그대로 씀
- const n=ctx.n,H=st[hero],m=x.eff,b=posted(n,hero),dead=0.1*n+1.5-posted(n,vil)-b;
+ const n=ctx.n,H=st[hero],m=x.eff,b=posted(n,hero),dead=(window.AOF_A||0.1)*n+1.5-posted(n,vil)-b;
  const ov=[];let P=0;
  {let reach=1;const mm=Math.min(m,H);
   for(let j=hero+1;j<n;j++){const cj=r.callers.indexOf(j);if(cj<0||st[j]<mm)continue;
@@ -668,7 +668,7 @@ function solveVs(ctx,hero,heroBB,vil,vilBB,extra){/*aofadv2*/
 // ---- 3) 앞에서 오픈: 오픈한 사람(vil, 오픈 크기 R, 남은 스택 vilBB) → 나(hero) 3벳 올인/콜/폴드 ----
 function solveVr(ctx,hero,heroBB,vil,R,vilBB,extra){
  const n=ctx.n,Eq=E(),ord=playOrder(),T=tsty(ctx);
- const st=tableStacks(ctx,hero,heroBB,extra);st[vil]=vilBB+R+0.1;   // aof: 오픈한 사람 스택 = 남은 + 오픈 금액 + 앤티
+ const st=tableStacks(ctx,hero,heroBB,extra);st[vil]=vilBB+R+(window.AOF_A||0.1);   // aof: 오픈한 사람 스택 = 남은 + 오픈 금액 + 앤티
  const r=SAT.solve(Object.assign(base(ctx),{stacks:st,opener:vil,raise:R}),Eq);
  const c=r.callers.indexOf(hero);if(c<0)return null;
  if(!r.canRaise)return {kind:'vr',noRaise:true};
@@ -762,11 +762,11 @@ function settle(S,ante,put,live,sc){const n=S.length,fin=new Array(n);let dead=0
  return fin;}
 
 // ---------- ICM 값 (결과 종류가 몇 개 안 되니 기억해 둠). 블라인드 압박·다른 테이블은 엔진과 같은 방식 ----------
-function valuer(ctx){const pr=(1.5+0.1*ctx.n)/4,sq=x=>x>1e-9?Math.max(0,x-pr):0,offP=(ctx.off||[]).map(sq),memo=new Map();
+function valuer(ctx){const pr=(1.5+(window.AOF_A||0.1)*ctx.n)/4,sq=x=>x>1e-9?Math.max(0,x-pr):0,offP=(ctx.off||[]).map(sq),memo=new Map();
  return (fin,i)=>{const key=i+'|'+fin.map(x=>x.toFixed(2)).join(',');let v=memo.get(key);
   if(v===undefined){v=SAT.icmPay(fin.map(sq).concat(offP),i,ctx.pay);memo.set(key,v);}return v;};}
 // spec[자리] = 판 시작 스택(BB, 앤티·블라인드 포함). 나머지는 평균 + 포스팅
-function table(ctx,spec){const n=ctx.n,S=new Array(n),ante=new Array(n).fill(0.1),bl=new Array(n).fill(0);
+function table(ctx,spec){const n=ctx.n,S=new Array(n),ante=new Array(n).fill((window.AOF_A||0.1)),bl=new Array(n).fill(0);
  for(let j=0;j<n;j++){S[j]=spec[j]!=null?spec[j]:ctx.avg+F.posted(n,j);bl[j]=j===n-1?1:j===n-2?0.5:0;}
  return {S,ante,bl,allin:j=>S[j]-ante[j]};}
 
@@ -792,7 +792,7 @@ function rangesM(ctx,v1,vb1,v2,vb2){
  return {r1:o.sh,r2:c2.call,p1:o.shPct,p2:c2.callPct};}
 function solveM(ctx,h,hb,v1,vb1,v2,vb2,opt){opt=opt||{};
  const R=opt.R||rangesM(ctx,v1,vb1,v2,vb2);if(!R)return null;
- const n=ctx.n,spec={};spec[h]=hb+F.posted(n,h);spec[v1]=vb1+0.1;spec[v2]=vb2+0.1;
+ const n=ctx.n,spec={};spec[h]=hb+F.posted(n,h);spec[v1]=vb1+(window.AOF_A||0.1);spec[v2]=vb2+(window.AOF_A||0.1);
  const T=table(ctx,spec),val=valuer(ctx),S1=sampler(R.r1),S2=sampler(R.r2),sc=new Array(n).fill(0);
  const putF=T.bl.slice();putF[v1]=T.allin(v1);putF[v2]=T.allin(v2);
  const putC=putF.slice();putC[h]=Math.min(T.allin(h),Math.max(putF[v1],putF[v2]));
@@ -809,7 +809,7 @@ function rangesQ(ctx,o,R,ob,v,vb){const n=ctx.n,op=F.openPct(n,o,ctx.mode),ro=ne
  return {ro,rv:s.rs,po:op,pv:s.rsPct};}
 function solveQ(ctx,h,hb,o,R,ob,v,vb,opt){opt=opt||{};
  const RG=opt.RG||rangesQ(ctx,o,R,ob,v,vb);if(!RG)return null;
- const n=ctx.n,spec={};spec[h]=hb+F.posted(n,h);spec[o]=ob+R+0.1;spec[v]=vb+0.1;
+ const n=ctx.n,spec={};spec[h]=hb+F.posted(n,h);spec[o]=ob+R+(window.AOF_A||0.1);spec[v]=vb+(window.AOF_A||0.1);
  const T=table(ctx,spec),val=valuer(ctx),sc=new Array(n).fill(0),Sv=sampler(RG.rv),So=sampler(RG.ro);
  const p0=T.bl.slice();p0[o]=Math.max(R,T.bl[o]);p0[v]=T.allin(v);           // 내가 접고 o도 접음
  const pOF=p0.slice();pOF[o]=Math.min(T.allin(o),p0[v]);                       // 내가 접고 o 콜
@@ -848,7 +848,7 @@ const F=window.AOFFRONT,SAT=window.AOFENG.SAT,START=10000;
 // bb = 레지 마감 직후 BB(칩), tab = 블라인드표 이름, min = 버블 다음 인원(이 인원 이상만 출제), tk = 티켓 수
 const GD={wpl:{n:'WPL',pay:Array(10).fill(25).concat(Array(2).fill(20)),bb:2800,tab:'std',t:9,min:13,tk:12,tkn:'메인 10 · 미니메인 2'},
  hg:{n:'한게임',pay:Array(9).fill(44).concat(Array(11).fill(22)),bb:2800,tab:'std',t:9,min:21,tk:20,tkn:'1~9등 2장 · 10~20등 1장'},
- pm:{n:'피망',pay:Array(25).fill(9.27),bb:2400,tab:'pm',t:9,min:26,tk:25,tkn:'25장'},
+ pm:{n:'피망',pay:Array(25).fill(9.27),bb:2400,tab:'pm',t:9,min:26,tk:25,tkn:'25장',ante:0.15},
  apl:{n:'APL',pay:[5,3,2,1,1,1,1,1].map(x=>x*5),bb:1000,tab:'apl',t:8,min:9,tk:8,tkn:'8위까지'}};
 const BBT=window.AOFENG.bb;
 const RND={wpl:{lo:100,hi:150},hg:{lo:130,hi:200},pm:{lo:100,hi:140}};/*aofrc2*/   // 서버 숫자가 없을 때 바인 랜덤 범위(APL 제외)
@@ -884,7 +884,7 @@ function lvIdx(g,en,pl,live){const D=GD[g],T=BBT[D.tab],i0=Math.max(0,T.indexOf(
  let i=i0;while(i<T.length-1&&T[i]<need)i++;
  if(Math.random()<0.4&&i<T.length-1&&en*START/pl/T[i+1]>=6)i++;return i;}
 function envOf(g,en,pl,bb){const D=GD[g],B=bb||D.bb,n=D.t,avg=r1(en*START/pl/B),M=Math.max(0,pl-n),tot=en*START/B,off=M?new Array(M).fill(Math.max(M*0.5,tot-n*avg)/M):[];
- return {D,n,avg,ctx:{pay:D.pay,players:pl,avg,n,mode:'icm',off,raise:2}};}
+ return {D,n,avg,ctx:{pay:D.pay,players:pl,avg,n,mode:'icm',off,raise:2,ante:(window.AOF_A=D.ante||0.1)}};}
 
 // 파라미터 p → 문제. h(손패 번호)가 없으면 null 반환(고르는 건 gen). 계산이 부적합하면 null.
 // p = {g,en,pl,h:내 자리,hb:내 BB,s:'o'|'s'|'r',v:빌런 자리,vb:빌런 BB,R:오픈 크기,k:손패}
@@ -933,7 +933,7 @@ const won=x=>{const v=Math.round(x*10000/100)*100;return (v>0?'+':v<0?'−':'')+
 let XC={};
 const XN={o:'앞 모두 폴드',s:'앞에서 올인',r:'앞에서 오픈'};
 function envX(p){const D=GD[p.g],n=p.n,tot=p.en*START/p.bb,avg=r1(tot/p.pl),M=Math.max(0,p.pl-n),rest=tot-p.st.reduce((a,b)=>a+b,0),off=M?new Array(M).fill(Math.max(0.5,rest/M)):[];
- return {D,n,avg,ctx:{pay:D.pay,players:p.pl,avg,n,mode:'icm',off,raise:2}};}
+ return {D,n,avg,ctx:{pay:D.pay,players:p.pl,avg,n,mode:'icm',off,raise:2,ante:(window.AOF_A=D.ante||0.1)}};}
 function solveX(p){const key=JSON.stringify([p.g,p.en,p.pl,p.bb,p.xs,p.h,p.v,p.R,p.st]);if(XC.key===key)return XC.val;
  const e=envX(p),c=e.ctx,ex={},xs=p.xs||'o';p.st.forEach((v,i)=>{if(i!==p.h&&(xs==='o'||i!==p.v))ex[i]=v;});
  const run=E=>xs==='o'?F.solveOpen(c,p.h,p.hb,E):xs==='s'?F.solveVs(c,p.h,p.hb,p.v,p.st[p.v],E):F.solveVr(c,p.h,p.hb,p.v,p.R,p.st[p.v]-p.R,E);
@@ -1011,9 +1011,9 @@ function avSVG(r,sk){const pk=a=>a[Math.floor(r()*a.length)],SK=pk(['#f8d9c0','#
  if(sk==='wpl'){const RC=pk(['#c9a227','#7e57c2','#2e7d32','#b71c1c','#1565c0','#ef6c00']),BG=pk(['#4fc3f7','#81c784','#ffb74d','#ba68c8','#90a4ae','#f06292']);
   return `<svg viewBox="0 0 60 60" width="100%" height="100%" style="display:block"><defs><clipPath id="${id}"><circle cx="30" cy="30" r="24"/></clipPath></defs><circle cx="30" cy="30" r="29.5" fill="${RC}"/><circle cx="30" cy="30" r="25.5" fill="#1a1a1a"/><circle cx="30" cy="30" r="24" fill="${BG}"/><g clip-path="url(#${id})">${face}</g>${[0,1,2,3,4,5,6,7,8,9].map(j=>{const a=j*Math.PI/5;return `<circle cx="${30+27.5*Math.cos(a)}" cy="${30+27.5*Math.sin(a)}" r="1.1" fill="#fff8e1"/>`;}).join('')}</svg>`;}
  return `<svg viewBox="0 0 60 60" width="100%" height="100%" style="display:block"><defs><clipPath id="${id}"><circle cx="30" cy="30" r="28"/></clipPath><radialGradient id="${id}g" cx="50%" cy="35%"><stop offset="0" stop-color="#6a6f78"/><stop offset="1" stop-color="#2f3238"/></radialGradient></defs><circle cx="30" cy="30" r="29.5" fill="#1d1f23"/><circle cx="30" cy="30" r="28" fill="url(#${id}g)"/><g clip-path="url(#${id})">${face}</g></svg>`;}
-function tableX(p,e,P,stat){/*aoftable2*//*aoftable4*//*aoftable5*/const n=e.n,xs=p.xs||'o',btn=n-3,pot=p.pot!=null?p.pot:0.1*n+1.5+(xs==='s'?p.st[p.v]-(p.v>=n-2?(p.v===n-1?1:0.5):0):xs==='r'?p.R-(p.v>=n-2?(p.v===n-1?1:0.5):0):0);
+function tableX(p,e,P,stat){/*aoftable2*//*aoftable4*//*aoftable5*/const n=e.n,xs=p.xs||'o',btn=n-3,pot=p.pot!=null?p.pot:((e.D||{}).ante||0.1)*n+1.5+(xs==='s'?p.st[p.v]-(p.v>=n-2?(p.v===n-1?1:0.5):0):xs==='r'?p.R-(p.v>=n-2?(p.v===n-1?1:0.5):0):0);
  const K=SKIN[(e.D||{}).n]||SKIN['한게임'],bb=p.bb||0,chip=K.unit==='chip'&&bb,amt=v=>chip?MAN(v*bb):N1(Math.round(v*100)/100)+'BB',fc=v=>chip?MAN(v):Math.round(v).toLocaleString();
- const SKN={'한게임':'hg','피망':'pm','WPL':'wpl'}[(e.D||{}).n]||'hg',D=e.D||{},T=BBT[D.tab]||[],li=T.indexOf(bb),lvn=li+1,nb=li>=0?T[li+1]:0,ante=bb?Math.round(bb*0.1):0;
+ const SKN={'한게임':'hg','피망':'pm','WPL':'wpl'}[(e.D||{}).n]||'hg',D=e.D||{},T=BBT[D.tab]||[],li=T.indexOf(bb),lvn=li+1,nb=li>=0?T[li+1]:0,ante=bb?Math.round(bb*(SKN==='pm'?0.15:0.1)):0;
  // 같은 문제는 다시 그려도 캐릭터·카드 무늬·남은 시간이 그대로 (문제 내용으로 씨앗)
  const key=JSON.stringify([p.g,p.h,p.st,p.k,p.bb,p.v,p.xs,p.pl]);let z=7;for(let j=0;j<key.length;j++)z=(Math.imul(z,31)+key.charCodeAt(j))>>>0;const rnd=()=>(z=(Math.imul(z,1664525)+1013904223)>>>0)/4294967296;
  // 내 카드 2장: 핸드 이름(AKs·QQ·T9o)에서 무늬를 정함
@@ -1127,33 +1127,33 @@ function simAdvance(S){const T=BBT[S.D.tab];S.round++;
  if((S.hh=(S.hh||0)+1/hpl)>=1){S.hh=0;S.bi=Math.min(T.length-1,S.bi+1);}bb=T[S.bi];}   // 마감 뒤도 시간(레벨)마다 블라인드 업 /*aoftime*/
  // 내 테이블: 버튼 이동 · 다른 사람끼리 팟 주고받기 · 탈락 자리는 새 사람 · 남은 인원이 테이블보다 적으면 자리 줄임
  const TT=S.T,nn=()=>TT.c.length;TT.btn=(TT.btn+1)%nn();
- for(let j=0;j<nn();j++)if(j!==TT.hs)TT.c[j]=Math.round(TT.c[j]-bb*(0.1+1.5/9));
+ for(let j=0;j<nn();j++)if(j!==TT.hs)TT.c[j]=Math.round(TT.c[j]-bb*((window.AOF_A||0.1)+1.5/9));
  if(Math.random()<0.55&&nn()>2){const O=[];for(let j=0;j<nn();j++)if(j!==TT.hs)O.push(j);const a=O.splice(Math.floor(Math.random()*O.length),1)[0],b2=O[Math.floor(Math.random()*O.length)];
   const amt=Math.min(TT.c[a],TT.c[b2],Math.round(bb*(1.5+Math.random()*(Math.random()<0.3?40:8))));if(Math.random()<0.5){TT.c[a]+=amt;TT.c[b2]-=amt;}else{TT.c[a]-=amt;TT.c[b2]+=amt;}}
  for(let j=0;j<nn();j++)if(j!==TT.hs&&TT.c[j]<=bb*0.3)simNewP(S,j,bb);
  while(nn()>Math.max(2,Math.min(S.D.t,S.pl))){let j=Math.floor(Math.random()*nn());if(j===TT.hs)j=(j+1)%nn();TT.c.splice(j,1);if(TT.hs>j)TT.hs--;if(TT.btn>=nn())TT.btn=0;}
  /*aofpay: 내 칩은 simPay에서 (넘긴 판만)*/
  const g=S.stage===1?S.goal:S.goal2;if(g&&S.pl<=g){S.end={win:true,rank:S.pl,stage:S.stage};}}
-function simPay(S){/*aofpay*/const bb=BBT[S.D.tab][S.bi],TT=S.T,n=TT.c.length,h=simPos(TT,TT.hs),bl=h===n-1?1:h===n-2?0.5:0;S.chips=Math.round(S.chips-bb*(0.1+bl));if(S.chips<=bb*0.15){S.chips=0;S.end={win:false,rank:S.pl};S.msg='블라인드·앤티에 칩이 다 떨어졌어요';}}
+function simPay(S){/*aofpay*/const bb=BBT[S.D.tab][S.bi],TT=S.T,n=TT.c.length,h=simPos(TT,TT.hs),bl=h===n-1?1:h===n-2?0.5:0;S.chips=Math.round(S.chips-bb*((S.D.ante||0.1)+bl));if(S.chips<=bb*0.15){S.chips=0;S.end={win:false,rank:S.pl};S.msg='블라인드·앤티에 칩이 다 떨어졌어요';}}
 function simHand(){let x=Math.random()*SAT.W.reduce((a,b)=>a+b,0);for(let j=0;j<169;j++){x-=SAT.W[j];if(x<0)return j;}return 168;}   // 1326조합 중 무작위 1개 /*aofrng*/
 function simGen(S){const T=BBT[S.D.tab],bb=T[S.bi],hb=Math.round(S.chips/bb*2)/2;
  const L=hb>25?null:hb>15?['s']:hb>=7&&hb<=13.5?['o','o','o','s','r']:['o','o','o','s'];if(!L)return 'deep';   // /*aofrng*/ 판마다 결정이 오는지는 받은 핸드(RNG)로 정해짐
- const hk=simHand(),cap=hb<=5?2:hb<=8?0.8:hb<=12?0.65:0.55;if(PCTL(hk)-SAT.W[hk]>cap)return 'fold';   // 아주 약한 핸드는 계산 없이 바로 폴드(속도)
+ const hk=simHand(),cap=hb<=5?2:hb<=8?0.8:hb<=12?0.65:hb>15?0.85:0.55;/*aofcap*/if(PCTL(hk)-SAT.W[hk]>cap)return 'fold';   // 아주 약한 핸드는 계산 없이 바로 폴드(속도)
  if(S.rt)simTbl(S,bb);   // 🎲 매판 새 테이블: 내 칩·블라인드·남은 인원은 이어지고 테이블·자리만 새로 /*aofsimrt*/
  const TT=S.T,n=TT.c.length,st=[];for(let i=0;i<n;i++){const j=simSeat(TT,i);st.push(j===TT.hs?hb:Math.max(1,Math.round(TT.c[j]/bb*2)/2));}
  return genX({k:S.gk},S.D,{entries:S.en,live:S.pl},{pl:S.pl,bb,hb,L,k:hk,T:{n,h:simPos(TT,TT.hs),st}});}
-function simResolve(S,q,o){const p=q.p,bb=BBT[S.D.tab][S.bi],n=p.n,bl=i=>i===n-1?1:i===n-2?0.5:0,posted=0.1+bl(p.h),R=solveX(p).r;
+function simResolve(S,q,o){const p=q.p,bb=BBT[S.D.tab][S.bi],n=p.n,bl=i=>i===n-1?1:i===n-2?0.5:0,posted=(S.D.ante||0.1)+bl(p.h),R=solveX(p).r;
  const res={o,ok:o===q.a,before:S.chips},TT=S.T,ch=(pos,d)=>{if(!TT||pos<0||TT.c.length!==n)return;const j=simSeat(TT,pos);if(j===TT.hs)return;TT.c[j]=Math.max(0,Math.round(TT.c[j]+d*bb));if(TT.c[j]<=bb*0.15)simNewP(S,j,bb);};
- if(o==='f'){S.chips-=posted*bb;res.kind='fold';if(p.xs!=='o')ch(p.v,0.1*n+1.5);}
+ if(o==='f'){S.chips-=posted*bb;res.kind='fold';if(p.xs!=='o')ch(p.v,(S.D.ante||0.1)*n+1.5);}
  else{const hc=MW.CMB[p.k][Math.floor(Math.random()*MW.CMB[p.k].length)],used=new Set(hc);let vi=-1,vh=null,oi=-1,oh=null;
   if(p.xs==='o'){for(let c=0;c<R.callers.length;c++){if(Math.random()<R.cs[c]){vh=simPickHand(R.csR[c],used);if(vh){vi=R.callers[c];/*aofmwc*/vh.c.forEach(x=>used.add(x));for(let c2=c+1;c2<R.callers.length;c2++){if(Math.random()<R.cs[c2]*0.6){oh=simPickHand(R.csR[c2],used);if(oh){oi=R.callers[c2];break;}}}break;}}}}
   else if(p.xs==='s'){vi=p.v;vh=simPickHand(R.sh,used);}
-  else if(o==='c'){/*aofflat*/const ord=F.playOrder(),top=new Float64Array(169),tt=SAT.W.reduce((a,b)=>a+b,0);let ta=0;for(const h of ord){if(ta>=tt*0.22)break;top[h]=1;ta+=SAT.W[h];}const fv=simPickHand(top,used),sw=fv?simDeal(hc,fv.c).w:0,win=sw>0||(sw===0&&Math.random()<(fv?0.5:0.45)),dd=0.1*(n-1)+1.5-bl(p.h);S.chips+=(win?p.R+dd:-p.R)*bb;ch(p.v,win?-p.R:p.R+dd);S.chips=Math.max(0,Math.round(S.chips));Object.assign(res,{kind:'flat',w:win?1:-1,after:S.chips});return res;}
+  else if(o==='c'){/*aofflat*/const ord=F.playOrder(),top=new Float64Array(169),tt=SAT.W.reduce((a,b)=>a+b,0);let ta=0;for(const h of ord){if(ta>=tt*0.22)break;top[h]=1;ta+=SAT.W[h];}const fv=simPickHand(top,used),sw=fv?simDeal(hc,fv.c).w:0,win=sw>0||(sw===0&&Math.random()<(fv?0.5:0.45)),dd=(S.D.ante||0.1)*(n-1)+1.5-bl(p.h);S.chips+=(win?p.R+dd:-p.R)*bb;ch(p.v,win?-p.R:p.R+dd);S.chips=Math.max(0,Math.round(S.chips));Object.assign(res,{kind:'flat',w:win?1:-1,after:S.chips});return res;}
   else{vi=p.v;if(o==='s'&&Math.random()<0.45){const ord=F.playOrder(),top=new Float64Array(169);let a=0;for(const h of ord){if(a>=R.op*0.45)break;top[h]=1;a+=SAT.W[h];}vh=simPickHand(top,used);}}
   /*aofovc2*/if(p.xs==='s'&&o==='c'&&vi>=0&&vh&&R.ov){vh.c.forEach(c=>used.add(c));for(const ov of R.ov){if(Math.random()<ov.p){oh=simPickHand(ov.rng,used);if(oh){oi=ov.i;break;}}}}   // 내가 콜한 뒤 뒤 사람 오버콜
-  const dead=0.1*(n-(vi>=0?2:1))+1.5-bl(p.h)-(vi>=0?bl(vi):0);
-  if(vi<0||!vh){S.chips+=(dead+(p.xs==='r'?p.R+0.1:0))*bb;res.kind='steal';res.vi=vi;if(p.h!==n-1)ch(n-1,-1);if(p.h!==n-2)ch(n-2,-0.5);if(p.xs==='r')ch(p.v,-p.R);}
-  else if(oh){const cs=[hc,vh.c,oh.c],stk=[p.hb,p.st[vi],p.st[oi]],amt=stk.map((s,j)=>Math.min(s,Math.max(...stk.filter((_,k)=>k!==j)))),d3=dead-0.1-bl(oi);   // 3명 쇼다운 + 사이드팟
+  const dead=(S.D.ante||0.1)*(n-(vi>=0?2:1))+1.5-bl(p.h)-(vi>=0?bl(vi):0);
+  if(vi<0||!vh){S.chips+=(dead+(p.xs==='r'?p.R+(S.D.ante||0.1):0))*bb;res.kind='steal';res.vi=vi;if(p.h!==n-1)ch(n-1,-1);if(p.h!==n-2)ch(n-2,-0.5);if(p.xs==='r')ch(p.v,-p.R);}
+  else if(oh){const cs=[hc,vh.c,oh.c],stk=[p.hb,p.st[vi],p.st[oi]],amt=stk.map((s,j)=>Math.min(s,Math.max(...stk.filter((_,k)=>k!==j)))),d3=dead-(S.D.ante||0.1)-bl(oi);   // 3명 쇼다운 + 사이드팟
    const pay=rk=>{const out=[0,0,0],lv=[...new Set(amt)].sort((a,b)=>a-b);let prev=0;lv.forEach((L,li)=>{let pot=li===0?d3:0;for(let j=0;j<3;j++)pot+=Math.max(0,Math.min(amt[j],L)-prev);const el=[0,1,2].filter(j=>amt[j]>=L-1e-9),best=Math.max(...el.map(j=>rk[j])),wn=el.filter(j=>rk[j]===best);wn.forEach(j=>out[j]+=pot/wn.length);prev=L;});return out.map((x,j)=>x-amt[j]);};
    const deal=()=>{const u=new Set([...hc,...vh.c,...oh.c]),b=[];while(b.length<5){const c=Math.floor(Math.random()*52);if(!u.has(c)){u.add(c);b.push(c);}}return {b,rk:cs.map(c=>MW.ev7([...c,...b]))};};
    const z=deal(),net=pay(z.rk);let ex=0,q=0;for(let t=0;t<600;t++){const y=deal(),nt=pay(y.rk),mx=Math.max(...y.rk);ex+=nt[0];if(y.rk[0]===mx)q+=1/y.rk.filter(v=>v===mx).length;}
@@ -1227,7 +1227,7 @@ function build(p){const S=solveP(p);if(!S)return null;if(p.s==='x')return buildX
   why={s:shWhy(r.rsPct,hn,'이 패는 범위 밖이에요'),c:'이 스택에선 콜보다 올인이나 폴드가 나아요',f:'이 패는 올인하거나 콜할 만해요'};
   rule='가정: 오픈한 사람 외 다른 사람은 폴드 · 25BB 이하 · [근사]';}
  expl+=`<br><span class="m">${D.n} · 남은 ${p.pl}명 · 평균 ${N1(e.avg)}BB · 내 ${N1(p.hb)}BB (평균의 ${N1(p.hb/e.avg)}배)</span>`;
- {const n=e.n,bl=i=>i===n-1?1:i===n-2?0.5:0,st=new Array(n).fill(r1(e.avg)),avgS=[],acts=[],lab={};let pot=0.1*n+1.5;
+ {const n=e.n,bl=i=>i===n-1?1:i===n-2?0.5:0,st=new Array(n).fill(r1(e.avg)),avgS=[],acts=[],lab={};let pot=((e.D||{}).ante||0.1)*n+1.5;
   for(let i=0;i<n;i++)avgS.push(i);const set=(i,v,t)=>{st[i]=v;avgS.splice(avgS.indexOf(i),1);acts.push(i);lab[i]=t;};
   st[p.h]=p.hb;avgS.splice(avgS.indexOf(p.h),1);
   if(p.s==='s'){set(p.v,p.vb,'올인');pot+=p.vb-bl(p.v);}
