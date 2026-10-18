@@ -967,22 +967,46 @@ const SKIN={
  'WPL':{bg:'radial-gradient(120% 90% at 50% 30%,#3a2b24,#1f1714)',felt:'radial-gradient(70% 70% at 50% 40%,#e0342f,#b71c1c 60%,#8e1414)',rail:'#4a3226',rim:'0 0 0 2px #2a1c15,inset 0 0 0 8px rgba(0,0,0,.18)',
   nm:'#e6ddd6',v:'#fff',ctr:'#ffe9e0',ctrI:0,lv:'#5a1010',fold:'#6b5d57',me:'#ffd54f',unit:'chip',rk:'bl'}};
 const MAN=c=>{c=Math.round(c);if(c<1e4)return c.toLocaleString();const m=Math.floor(c/1e4),r=c%1e4;return m+'만'+(r?' '+r:'');};
-function tableX(p,e,P,stat){/*aoftable2*/const n=e.n,xs=p.xs||'o',btn=n-3,pot=p.pot!=null?p.pot:0.1*n+1.5+(xs==='s'?p.st[p.v]-(p.v>=n-2?(p.v===n-1?1:0.5):0):xs==='r'?p.R-(p.v>=n-2?(p.v===n-1?1:0.5):0):0);
- const K=SKIN[(e.D||{}).n]||SKIN['한게임'],bb=p.bb||0,chip=K.unit==='chip'&&bb,amt=v=>chip?MAN(v*bb):N1(Math.round(v*100)/100)+'BB';
- const seat=i=>{const rel=(i-p.h+n)%n,a=Math.PI/2+rel*2*Math.PI/n,x=50+41*Math.cos(a),y=50+40*Math.sin(a),me=i===p.h,act=p.acts?p.acts.includes(i):xs!=='o'&&i===p.v,fold=i<p.h&&!act,av=p.avgS&&p.avgS.includes(i);
-  const st=stat(i),dl=i<p.h?(i+1)*0.35:0,bub=!me&&st&&st!=='남음'?`<div style="position:absolute;left:50%;top:-6px;transform:translateX(-50%);white-space:nowrap;background:${act?'#d94a2b':'#e9e9e9'};color:${act?'#fff':'#333'};font-size:10.5px;font-weight:800;border-radius:9px;padding:1px 7px;opacity:0;animation:apIn .25s ${dl}s forwards">${st}</div>`:'';
-  const nameBox=chip?`<div style="background:rgba(0,0,0,.6);border-radius:6px;padding:2px 4px;margin-top:-4px">`:'<div style="margin-top:1px">';
-  return `<div style="position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);width:70px;text-align:center;line-height:1.15;${fold?'opacity:.55;':''}">
-   <div style="position:relative;width:34px;height:34px;margin:0 auto;border-radius:50%;background:radial-gradient(circle at 50% 35%,#8b8f96,#4a4d52);border:2px solid ${me?K.me:act?'#d94a2b':'rgba(255,255,255,.25)'};${me?'box-shadow:0 0 8px '+K.me+';':''}">${bub}</div>
-   ${nameBox}<div style="font-size:10.5px;color:${me?K.me:K.nm};font-weight:${me?800:600}">${me?'나 · ':''}${P[i]}</div>
-   <div style="font-size:13.5px;font-weight:800;color:${K.v}">${av?'<span style="font-size:9.5px;font-weight:600;opacity:.8">평균 </span>':''}${amt(p.st[i])}</div></div>
-   ${i===btn?`<div style="position:absolute;right:-6px;top:4px;background:#fff;color:#111;border-radius:50%;width:15px;height:15px;font-size:9px;font-weight:900;line-height:15px;box-shadow:0 1px 2px #0008">D</div>`:''}</div>`;};
- const ante=bb?Math.round(bb*0.1):0,bl=bb?`${K.ctrI?'<i>':''}${chip?`블라인드 : ${(bb/2).toLocaleString()} / ${bb.toLocaleString()}(${ante.toLocaleString()})`:`Ante ${ante.toLocaleString()}<br>${(bb/2).toLocaleString()} / ${bb.toLocaleString()}`}${K.ctrI?'</i>':''}`:'';
- const potV=Math.round(pot*10)/10,potH=chip?`<div style="font-size:12px;color:#ffcc66">Pot : ${MAN(potV*bb)}</div><div style="display:inline-block;margin-top:2px;background:rgba(60,0,0,.55);border-radius:14px;padding:2px 16px;font-size:15px;font-weight:800;color:#ffe082">${MAN(potV*bb)}</div>`:`<div style="display:inline-block;margin-top:4px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:2px 16px;font-size:15px;font-weight:800;color:#ffe082">${N1(potV)}BB</div>`;
- return `<style>@keyframes apIn{to{opacity:1}}</style><div style="position:relative;width:100%;max-width:440px;aspect-ratio:1.25;margin:6px auto 2px;background:${K.bg};border-radius:14px;overflow:hidden">
-  <div style="position:absolute;left:13%;right:13%;top:12%;bottom:12%;border-radius:50%/48%;background:${K.felt};border:9px solid ${K.rail};box-shadow:${K.rim}"></div>
-  <div style="position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);text-align:center;line-height:1.35;color:${K.ctr};width:60%">${potH}<div style="font-size:11px;margin-top:3px;opacity:.9">${bl}</div><div style="font-size:10px;opacity:.6;margin-top:2px">${n}명 테이블</div></div>
-  ${p.st.map((_,i)=>seat(i)).join('')}</div>`;}
+function tableX(p,e,P,stat){/*aoftable2*//*aoftable4*/const n=e.n,xs=p.xs||'o',btn=n-3,pot=p.pot!=null?p.pot:0.1*n+1.5+(xs==='s'?p.st[p.v]-(p.v>=n-2?(p.v===n-1?1:0.5):0):xs==='r'?p.R-(p.v>=n-2?(p.v===n-1?1:0.5):0):0);
+ const K=SKIN[(e.D||{}).n]||SKIN['한게임'],bb=p.bb||0,chip=K.unit==='chip'&&bb,amt=v=>chip?MAN(v*bb):N1(Math.round(v*100)/100)+'BB',fc=v=>chip?MAN(v):Math.round(v).toLocaleString();
+ const D=e.D||{},T=BBT[D.tab]||[],li=T.indexOf(bb),lvn=li+1,nb=li>=0?T[li+1]:0,ante=bb?Math.round(bb*0.1):0;
+ // 같은 문제는 다시 그려도 캐릭터·카드 무늬·남은 시간이 그대로 (문제 내용으로 씨앗)
+ const key=JSON.stringify([p.g,p.h,p.st,p.k,p.bb,p.v,p.xs,p.pl]);let z=7;for(let j=0;j<key.length;j++)z=(Math.imul(z,31)+key.charCodeAt(j))>>>0;const rnd=()=>(z=(Math.imul(z,1664525)+1013904223)>>>0)/4294967296;
+ const AV=['🦊','🐻','🐼','🐯','🐸','🐵','🐷','🐨','🐰','🦁','🐧','🐶','🐱','🦉','🐙','🐲','🦝','🐺'];for(let j=AV.length-1;j>0;j--){const t=Math.floor(rnd()*(j+1));const x=AV[j];AV[j]=AV[t];AV[t]=x;}
+ // 내 카드 2장: 핸드 이름(AKs·QQ·T9o)에서 무늬를 정함
+ const hn=(SAT.handName(p.k)||'')+'',s1=Math.floor(rnd()*4),s2=hn[2]==='s'?s1:(s1+1+Math.floor(rnd()*3))%4,SU=['\u2660\uFE0E','\u2665\uFE0E','\u2666\uFE0E','\u2663\uFE0E'],RK=c=>c==='T'?'10':c;
+ const card=(r,s)=>{const red=s===1||s===2,S=SU[s];return `<div style="width:46px;height:64px;background:linear-gradient(#fff,#eceff1);border-radius:6px;border:1px solid #cfd8dc;box-shadow:0 3px 8px rgba(0,0,0,.55);position:relative;color:${red?'#d32f2f':'#111'};font-family:Georgia,'Times New Roman',serif;font-variant-emoji:text">
+  <div style="position:absolute;left:4px;top:2px;font-size:${r.length>1?17:20}px;font-weight:900;line-height:1;letter-spacing:-1px">${r}</div><div style="position:absolute;left:5px;top:22px;font-size:14px;line-height:1">${S}</div><div style="position:absolute;right:4px;bottom:3px;font-size:27px;line-height:1">${S}</div></div>`;};
+ const myC=hn.length>=2?`<div style="position:absolute;left:50%;top:69%;transform:translate(-50%,-50%);display:flex;z-index:3">
+  <div style="transform:rotate(-7deg);margin-right:-9px"><div style="animation:apDeal .35s ease-out both">${card(RK(hn[0]),s1)}</div></div>
+  <div style="transform:rotate(7deg) translateY(2px)"><div style="animation:apDeal .35s .15s ease-out both">${card(RK(hn[1]),s2)}</div></div></div>`:'';
+ // 순위 (추정): 카드 오른쪽
+ const rk=p.pl?estRank(p.hb,e.avg,p.pl):0,itm=rk&&D.tk&&rk<=D.tk;
+ const rkH=rk?`<div style="position:absolute;left:calc(50% + 54px);top:69%;transform:translateY(-50%);z-index:3;background:rgba(0,0,0,.72);border:1.5px solid ${itm?'#66bb6a':'rgba(255,255,255,.35)'};border-radius:8px;padding:3px 8px;text-align:center;line-height:1.2;color:#fff;text-shadow:0 1px 2px #000"><div style="font-size:10px;opacity:.85">순위</div><div style="font-size:15px;font-weight:900">${rk}<span style="font-size:11px;opacity:.8">/${p.pl}</span></div></div>`:'';
+ // 블라인드 업까지 남은 시간 (레벨 7분 기준, 1초마다 줄어듦)
+ const LE=window.AOFLVE=window.AOFLVE||{};if(Object.keys(LE).length>200)for(const k0 in LE)delete LE[k0];if(!LE[key])LE[key]=Date.now()+(p.tl!=null?p.tl:40+Math.floor(rnd()*370))*1000;
+ const mmss=end=>{const s=Math.max(0,Math.round((end-Date.now())/1000));return s?Math.floor(s/60)+':'+String(s%60).padStart(2,'0'):'곧 업';};
+ if(!window.AOFLVI)window.AOFLVI=setInterval(()=>{document.querySelectorAll('.apLvT').forEach(el=>{el.textContent=mmss(+el.dataset.end);});},1000);
+ const seat=i=>{const rel=(i-p.h+n)%n,a=Math.PI/2+rel*2*Math.PI/n,cs=Math.cos(a),sn=Math.sin(a),x=50+40*cs,y=50+41*sn,me=i===p.h,act=p.acts?p.acts.includes(i):xs!=='o'&&i===p.v,fold=i<p.h&&!act,av=p.avgS&&p.avgS.includes(i);
+  const st=stat(i),dl=i<p.h?(i+1)*0.35:0,bub=!me&&st&&st!=='남음'?`<div style="position:absolute;left:50%;top:-19px;transform:translateX(-50%);white-space:nowrap;background:${act?'#d94a2b':'#e9e9e9'};color:${act?'#fff':'#333'};font-size:11px;line-height:16px;font-weight:800;border-radius:9px;padding:1px 7px;opacity:0;animation:apIn .25s ${dl}s forwards;z-index:2">${st}</div>`:'';
+  const side=cs>0.2?'left':'right',back=me?'':`<div style="position:absolute;top:0;${side}:-4px;display:flex;z-index:1;animation:${fold?`apOut .3s ${dl}s forwards`:'none'}">${[0,1].map(j=>`<div style="width:15px;height:21px;margin-left:${j?-7:0}px;transform:rotate(${j?10:-6}deg);border-radius:3px;border:1.5px solid #fff;background:repeating-linear-gradient(45deg,#b71c1c 0 3px,#7f0f0f 3px 6px);box-shadow:0 1px 3px #0009;animation:apDeal .3s ${0.05*rel+j*0.05}s ease-out both"></div>`).join('')}</div>`;
+  return `<div style="position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);width:74px;text-align:center;line-height:1.15;z-index:2;${fold?'opacity:.5;':''}">
+   <div style="position:relative;width:42px;height:42px;margin:0 auto;border-radius:50%;background:radial-gradient(circle at 50% 35%,#fdfdfd,#b0bec5);font-size:25px;line-height:40px;border:2.5px solid ${me?K.me:act?'#d94a2b':'rgba(255,255,255,.4)'};box-shadow:${me?'0 0 10px '+K.me:'0 2px 5px rgba(0,0,0,.6)'}">${me?'😎':AV[i%AV.length]}${bub}</div>${back}
+   <div style="background:rgba(0,0,0,.72);border:1px solid ${me?K.me:'rgba(255,255,255,.15)'};border-radius:7px;padding:2px 3px;margin-top:-5px;position:relative">
+   <div style="font-size:10.5px;color:${me?K.me:'#e0e0e0'};font-weight:${me?800:600}">${me?'나 · ':''}${P[i]}</div>
+   <div style="font-size:13.5px;font-weight:800;color:#fff">${av?'<span style="font-size:9.5px;font-weight:600;opacity:.8">평균 </span>':''}${amt(p.st[i])}</div></div>
+   ${i===btn?`<div style="position:absolute;${side==='left'?'right':'left'}:4px;top:26px;background:#fff;color:#111;border-radius:50%;width:16px;height:16px;font-size:9.5px;font-weight:900;line-height:16px;box-shadow:0 1px 2px #0008">D</div>`:''}</div>`;};
+ const potV=Math.round(pot*10)/10,potH=`<div style="display:inline-block;background:rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.25);border-radius:14px;padding:3px 18px;font-size:16px;font-weight:900;color:#ffe082;text-shadow:0 1px 2px #000"><span style="font-size:11px;color:#fff;opacity:.85">POT </span>${chip?MAN(potV*bb):N1(potV)+'BB'}</div>`;
+ const info=bb?`<div style="margin-top:7px;display:inline-block;background:rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:5px 12px;line-height:1.45;color:#fff;text-shadow:0 1px 2px #000">
+  ${lvn?`<div style="font-size:12.5px;font-weight:900;color:#ffd54f">Lv.${lvn}</div>`:''}
+  <div style="font-size:15.5px;font-weight:900">${fc(bb/2)} / ${fc(bb)}</div>
+  <div style="font-size:13px;font-weight:800">앤티 ${fc(ante)}</div>
+  <div style="font-size:12px;font-weight:800;color:#b3e5fc;margin-top:2px">⏱ 블라인드 업 <span class="apLvT" data-end="${LE[key]}">${mmss(LE[key])}</span></div>
+  ${nb?`<div style="font-size:11px;opacity:.85">다음 ${fc(nb/2)} / ${fc(nb)}</div>`:''}</div>`:'';
+ return `<style>@keyframes apIn{to{opacity:1}}@keyframes apOut{to{opacity:0;transform:translateY(-18px)}}@keyframes apDeal{from{opacity:0;transform:translateY(-160px) scale(.4) rotate(-120deg)}to{opacity:1;transform:none}}</style><div style="position:relative;width:100%;max-width:420px;aspect-ratio:.66;margin:6px auto 2px;background:${K.bg};border-radius:16px;overflow:hidden">
+  <div style="position:absolute;left:11%;right:11%;top:8%;bottom:8%;border-radius:9999px;background:${K.felt};border:11px solid ${K.rail};box-shadow:${K.rim},0 6px 18px rgba(0,0,0,.6)"></div>
+  <div style="position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);text-align:center;width:64%;z-index:1">${potH}<br>${info}<div style="font-size:11px;color:#fff;opacity:.75;margin-top:4px">${n}명 테이블</div></div>
+  ${p.st.map((_,i)=>seat(i)).join('')}${myC}${rkH}</div>`;}
 function buildX(p,S){const {e,r,rb}=S,k=p.k,xs=p.xs||'o',P=POSN(e.n),D=e.D,hn=SAT.handName(k),pct=x=>Math.round(x*100)+'%';
  const q=probs(p,r,k),ans=amax(q),bq=probs(p,rb,k),bs=amax(bq),dif=bs!==ans;
  const opts=xs==='o'?[['f','폴드'],['s','올인']]:xs==='s'?[['f','폴드'],['c','콜']]:[['f','폴드'],...(r.flPct>0?[['c','콜 (플랍 보기)']]:[]),['s','3벳 올인']];
@@ -993,7 +1017,7 @@ function buildX(p,S){const {e,r,rb}=S,k=p.k,xs=p.xs||'o',P=POSN(e.n),D=e.D,hn=SA
  const tbl=tableX(p,e,P,stat);
  const head=`<b>${D.n}</b> · 남은 <b>${p.pl}명</b> (티켓 ${D.tk}장 · ${bub<=3?'<b style="color:var(--red)">💰 버블까지 '+bub+'명</b>':'버블까지 '+bub+'명'}) · 블라인드 ${bbv.toLocaleString()}${lvn?' (Lv.'+lvn+')':''} · 평균 <b>${N1(e.avg)}BB</b>${p.sim?'':rankH(p.hb,e.avg,p.pl,D.tk)}<br>`;
  const line=xs==='o'?'앞 모두 폴드':xs==='s'?`<b>${P[p.v]}</b> ${N1(p.st[p.v])}BB 올인`:`<b>${P[p.v]}</b> ${N1(p.R)}BB 오픈`;
- const show=p.sim?tbl+`<span class="hand">${hn}</span>`:head+`<b style="color:#c62828">🔥 고급 실전</b> · <b>${e.n}명</b> · ${line} → <b>${P[p.h]}</b> · 내 스택 <b>${N1(p.hb)}BB</b>`+tbl+`<span class="hand">${hn}</span>`;
+ const show=p.sim?tbl:head+`<b style="color:#c62828">🔥 고급 실전</b> · <b>${e.n}명</b> · ${line} → <b>${P[p.h]}</b> · 내 스택 <b>${N1(p.hb)}BB</b>`+tbl;
  const behind=[];for(let i=p.h+1;i<e.n;i++)behind.push(i);
  const cov=behind.filter(i=>p.st[i]>=p.hb).length;
  let main;
