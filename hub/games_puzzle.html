@@ -1094,8 +1094,9 @@ document.addEventListener('focusin',e=>{if(e.target&&e.target.matches&&e.target.
 document.addEventListener('focusout',()=>setTimeout(()=>{const t=document.activeElement;if(!(t&&t.matches&&t.matches(ABAR_KB))){delete ABAR.hide.kb;abarDraw();}},120));
 ABAR.api=API;ABAR.src=adImg;ABAR.go=a=>adGo(a.id);abarSet(ADS);
 // 하단 띠를 안 띄우는 게임: 빨리 연타하는 게임·아래쪽에 자기 조작판이 있는 게임 (여기 키만 고치면 됨)
-const AD_BAR_NO=['reaction','speed50','live','pet'];
-function abarSync(){const k=CUR&&CUR.k;abarShow(!!k&&!AD_BAR_NO.includes(k)&&!(window.DAILY&&DAILY.k===k),true);}
+const AD_BAR_NO=['reaction','speed50','live','pet','aofprac'];
+function ttukFull(on){on=!!on;if(window.top===window.self||ttukFull.s===on)return;ttukFull.s=on;try{parent.postMessage({t:'ttuk-full',on},'*');}catch(e){}}
+function abarSync(){if(!(CUR&&CUR.k==='aofprac'))ttukFull(false);const k=CUR&&CUR.k;abarShow(!!k&&!AD_BAR_NO.includes(k)&&!(window.DAILY&&DAILY.k===k),true);}
 function adLoad(){if(!API||!window.fetch)return;fetch(API+'/api/ads/live',{headers:{'ngrok-skip-browser-warning':'1'}}).then(r=>r.json())
  .then(r=>{if(!r||!r.ok||!Array.isArray(r.ads))return;r.ads=r.ads.filter(a=>!a.dev||a.dev==='all'||(a.dev==='m')===(innerWidth<760));/* 광고 '보이는 기기'(휴대폰만/PC만) */ADS=r.ads;AD_PICK={};abarSet(r.ads);if(typeof rr2==='function')rr2();}).catch(()=>{});}
 adLoad();
