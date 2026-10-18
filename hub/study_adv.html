@@ -958,8 +958,9 @@ function genT(g,D,c,O){const {n,h}=O.T,st=O.T.st.slice(),hb=O.hb;st[h]=hb;
  else if(xs==='r'){R=[2,2,2.5,3][Math.floor(Math.random()*4)];const C=[];for(let i=Math.max(0,h-3);i<h;i++)if(st[i]-R>=10&&st[i]-R<=24)C.push(i);if(!C.length){window.AOFWHY='t-r';return null;}v=C[Math.floor(Math.random()*C.length)];}
  const p={g:g.k,en:c.entries,pl:O.pl,bb:O.bb,hb,s:'x',xs,h,v,R,n,st,vb:0,k:0,sim:1};
  const S=solveX(p);if(!S)return null;const m=metric(p,S.r);if(m<0.004||m>1.01){window.AOFWHY='t-metric '+m.toFixed(3);return null;}
- let k=pickX(p,S);if(k<0){const ord=F.playOrder().filter(x=>PCTL(x)<=JUNK);k=ord[Math.floor(Math.random()*ord.length)];}
- if(k<0)return null;p.k=k;return build(p);}
+ /*aofrng 10/18*/   // 실전 RNG: 핸드는 1326조합에서 무작위로 받음. 폴드가 정답인데 범위에서 먼(+6%p 넘게) 핸드면 문제 없이 자동 폴드
+ const k=O.k!=null?O.k:simHand();
+ p.k=k;const q=build(p);if(!q)return null;if(q.a==='f'&&PCTL(k)-SAT.W[k]>m+0.06)return 'fold';return q;}
 function genX(g,D,c,O){if(O&&O.T)return genT(g,D,c,O);const n=Math.min(6+Math.floor(Math.random()*4),O?O.pl:99),lo=O?n:Math.max(D.min,n);if(n<2||c.live<lo){window.AOFWHY='x-live';return null;}
  const y0=Math.random(),xs=O&&O.xs?O.xs:y0<0.4?'o':y0<0.8?'s':'r';
  // 남은 인원: 30% 머니인 직전(버블까지 1~3명) · 나머지는 레지마감 직후~머니인 사이
@@ -1129,11 +1130,13 @@ function simAdvance(S){const T=BBT[S.D.tab];S.round++;
  /*aofpay: 내 칩은 simPay에서 (넘긴 판만)*/
  const g=S.stage===1?S.goal:S.goal2;if(g&&S.pl<=g){S.end={win:true,rank:S.pl,stage:S.stage};}}
 function simPay(S){/*aofpay*/const bb=BBT[S.D.tab][S.bi],TT=S.T,n=TT.c.length,h=simPos(TT,TT.hs),bl=h===n-1?1:h===n-2?0.5:0;S.chips=Math.round(S.chips-bb*(0.1+bl));if(S.chips<=bb*0.15){S.chips=0;S.end={win:false,rank:S.pl};S.msg='블라인드·앤티에 칩이 다 떨어졌어요';}}
+function simHand(){let x=Math.random()*SAT.W.reduce((a,b)=>a+b,0);for(let j=0;j<169;j++){x-=SAT.W[j];if(x<0)return j;}return 168;}   // 1326조합 중 무작위 1개 /*aofrng*/
 function simGen(S){const T=BBT[S.D.tab],bb=T[S.bi],hb=Math.round(S.chips/bb*2)/2;
- const L=hb>25?null:hb>15?['s']:hb>=7&&hb<=13.5?['o','o','o','s','r']:['o','o','o','s'];if(!L)return 'deep';if(Math.random()<0.4)return 'pass';   // 판마다 결정이 오지는 않음
+ const L=hb>25?null:hb>15?['s']:hb>=7&&hb<=13.5?['o','o','o','s','r']:['o','o','o','s'];if(!L)return 'deep';   // /*aofrng*/ 판마다 결정이 오는지는 받은 핸드(RNG)로 정해짐
+ const hk=simHand(),cap=hb<=5?2:hb<=8?0.8:hb<=12?0.65:0.55;if(PCTL(hk)-SAT.W[hk]>cap)return 'fold';   // 아주 약한 핸드는 계산 없이 바로 폴드(속도)
  if(S.rt)simTbl(S,bb);   // 🎲 매판 새 테이블: 내 칩·블라인드·남은 인원은 이어지고 테이블·자리만 새로 /*aofsimrt*/
  const TT=S.T,n=TT.c.length,st=[];for(let i=0;i<n;i++){const j=simSeat(TT,i);st.push(j===TT.hs?hb:Math.max(1,Math.round(TT.c[j]/bb*2)/2));}
- return genX({k:S.gk},S.D,{entries:S.en,live:S.pl},{pl:S.pl,bb,hb,L,T:{n,h:simPos(TT,TT.hs),st}});}
+ return genX({k:S.gk},S.D,{entries:S.en,live:S.pl},{pl:S.pl,bb,hb,L,k:hk,T:{n,h:simPos(TT,TT.hs),st}});}
 function simResolve(S,q,o){const p=q.p,bb=BBT[S.D.tab][S.bi],n=p.n,bl=i=>i===n-1?1:i===n-2?0.5:0,posted=0.1+bl(p.h),R=solveX(p).r;
  const res={o,ok:o===q.a,before:S.chips},TT=S.T,ch=(pos,d)=>{if(!TT||pos<0||TT.c.length!==n)return;const j=simSeat(TT,pos);if(j===TT.hs)return;TT.c[j]=Math.max(0,Math.round(TT.c[j]+d*bb));if(TT.c[j]<=bb*0.15)simNewP(S,j,bb);};
  if(o==='f'){S.chips-=posted*bb;res.kind='fold';if(p.xs!=='o')ch(p.v,0.1*n+1.5);}
@@ -1324,11 +1327,11 @@ G.push({k:'aofprac',cat:'홀덤',e:'🎯',n:'새틀 AOF 연습',d:'앞액션 3�
  simGo(d,lv){const again=[d||0,lv||0];if(lv===-1)lv=10+Math.floor(Math.random()*(SIM_REG-9));else if(!lv&&!d)d=5+Math.floor(Math.random()*21);   // d = 레지 마감 때 내 BB · lv = 🕐 레잇레지 입장 레벨(-1 랜덤) /*aoflate*/
   const pool=(!this.gsel||this.gsel==='rand')?this.cfg:this.cfg.filter(x=>x.k===this.gsel),g=pool[Math.floor(Math.random()*pool.length)],c=rc(g);
   this.sim=simNew(g.k,c,d,lv);this.sim.again=again;this.sim.d0=d||0;this.sim.rt=this.simRtGet();this.sim.banks=AP_BANKS;this.sim.tk0=simTk(this.sim);this.simStep();},
- simStep(){const S=this.sim;S.q=null;S.res=null;const gid=this.gid=(this.gid||0)+1;let skip=0;const c0=S.chips;
+ simStep(){const S=this.sim;S.q=null;S.res=null;const gid=this.gid=(this.gid||0)+1;let skip=0;const c0=S.chips,bi0=S.bi;
   const step=()=>{if(gid!==this.gid||S.end){rr();return;}simAdvance(S);if(S.end){rr();return;}window.AOFTRIES=0;let q=null,t=0;
-   for(;t<8&&!q;t++){window.AOFTRIES=t;q=simGen(S);if(q==='deep'||q==='pass')break;}
-   if(q==='deep'||q==='pass'||!q){simPay(S);if(S.end){rr();return;}skip++;S.msg=q==='deep'?'스택이 25BB보다 깊어서 판을 넘겼어요':'';setTimeout(step,0);return;}
-   S.q=q;S.t0=Date.now();const lost=c0-S.chips;S.msg=skip?`🗑 자동 폴드 ${skip}판 · −${N1(Math.round(lost/BBT[S.D.tab][S.bi]*10)/10)}BB`:'';rr();scrollTo(0,0);};
+   for(;t<8&&!q;t++){window.AOFTRIES=t;q=simGen(S);if(q==='deep'||q==='pass'||q==='fold')break;}
+   if(q==='deep'||q==='pass'||q==='fold'||!q){simPay(S);if(S.end){rr();return;}skip++;S.msg=q==='deep'?'스택이 25BB보다 깊어서 판을 넘겼어요':'';setTimeout(step,0);return;}
+   S.q=q;S.t0=Date.now();const lost=c0-S.chips;const bbn=BBT[S.D.tab][S.bi],nowB=N1(Math.round(S.chips/bbn*10)/10);S.msg=skip?`🗑 쓸 만한 핸드가 안 들어와 ${skip}판 폴드했어요 (−${N1(Math.round(lost/bbn*10)/10)}BB) · `+(S.bi>bi0?`블라인드가 올라 지금 <b>${nowB}BB</b>예요`:`지금 <b>${nowB}BB</b>예요`):'';rr();scrollTo(0,0);};
   rr();setTimeout(step,30);},
  simTStart(){/*aofsimtime*/const S=this.sim;clearInterval(this.iv);S.tq=S.q;S.bankOn=false;S.dl=Date.now()+(AP_T[S.gk]||15)*1000;const me=this;this.iv=setInterval(()=>me.simTick(),100);},
  simTick(){const S=this.sim;if(CUR!==this||this.mode!=='sim'||!S||!S.q||S.res||S.end){clearInterval(this.iv);return;}
@@ -1384,7 +1387,7 @@ ${(()=>{const k=this.gsel&&this.gsel!=='rand'?this.gsel:null,x=k&&(this.cfg||[])
   const q=S.q;if(S.tq!==q)this.simTStart();
   const tm0=Math.max(0,S.dl-Date.now()),tot0=(S.bankOn?AP_BANK:(AP_T[S.gk]||15))*1000,tb=AP_TB[S.gk];
   const tmr=`<div style="margin:2px 0 8px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span id="simTm" style="font-size:24px;font-weight:900;${tm0<=3000?'color:#d33b3b':''}">${(tm0/1000).toFixed(1)}초</span><span class="m">${S.bankOn?'⏱ 타임뱅크 사용 중 ('+AP_BANK+'초)':'베팅 시간 '+(AP_T[S.gk]||15)+'초 · 지나면 '+(tb&&S.banks>0?'타임뱅크 자동':'자동 폴드')}${tb?' · 타임뱅크 <b>'+S.banks+'</b>/'+AP_BANKS:''}</span></div><div style="height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:3px"><div id="simBar" style="height:100%;width:${Math.min(100,tm0/tot0*100)}%;background:${S.bankOn?'#e08a00':tm0<=3000?'#d33b3b':'#1565c0'}"></div></div></div>`;
-  return hdOf(S.chips,1)+`<style>.hand{font-size:34px;font-weight:800;letter-spacing:1px}</style><div class="card" style="text-align:center;font-size:16px;line-height:1.8">${q.show}</div>`+tmr+
+  return hdOf(S.chips,1)+(S.msg?`<div style="text-align:center;margin:0 0 6px;font-size:14px;color:var(--sub)">${S.msg}</div>`:'')+`<style>.hand{font-size:34px;font-weight:800;letter-spacing:1px}</style><div class="card" style="text-align:center;font-size:16px;line-height:1.8">${q.show}</div>`+tmr+
    `<div style="display:grid;grid-template-columns:repeat(${q.opts.length},1fr);gap:8px">${q.opts.map(o=>`<button class="btn ${o[0]==='f'?'gr':''}" style="font-size:17px;padding:14px 6px" onclick="CUR.simAns('${o[0]}')">${o[1]}</button>`).join('')}</div>`;},
  view(){if(typeof ttukFull==='function')ttukFull(this.mode==='sim'&&!!this.sim);if(!this.mode)return this.menu();if(this.mode==='sim')return this.simView();const W=this.mode==='W',q=this.q;
   const gl=this.gsel==='rand'||!this.gsel?'랜덤':GD[this.gsel].n;
