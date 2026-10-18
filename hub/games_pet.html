@@ -331,6 +331,7 @@ const PET_SP=[
  ['불꽃이',20,'어려움','뜨겁게 먹어요. 자주 챙겨주세요','special',9,1.4,1,1,1],
  ['포카',40,'보통','포커 카드 친구. 숨바꼭질을 좋아해요','hide',13,1,1,1,1],
  ['칩돌이',30,'쉬움','묵직한 포커칩. 든든하게 오래 가요','meal',9,.85,.9,1,1]];
+const PET_FOOD=[['🍮','푸딩'],['🍬','사탕'],['🥫','참치캔'],['🥕','당근'],['🍯','꿀'],['🍇','베리'],['🌾','모이'],['🐟','생선'],['🫧','플랑크톤'],['🌙','달빛 가루'],['🍎','용 열매'],['🌟','별사탕'],['🍂','낙엽'],['💧','물'],['🦴','뼈다귀'],['🍉','과일'],['🔋','배터리'],['🪵','장작'],['🃏','카드 쿠키'],['🪙','코인 젤리']];
 const PET_FAVN={meal:'밥',snack:'간식',special:'특식',veg:'채소',play:'공놀이',walk:'산책',hide:'숨바꼭질',sing:'노래',pet:'쓰담',bath:'목욕'};
 function petTraitTxt(i){const m=PET_SP[i],t=[];if(m[6]>=1.1)t.push('배고픔 빠름');else if(m[6]<=.85)t.push('배고픔 느림');if(m[7]>=1.2)t.push('삐짐 잘함');else if(m[7]<=.85)t.push('혼자서도 잘 놂');if(m[8]>=1.2)t.push('똥 많이');else if(m[8]<=.8)t.push('똥 적음');if(m[9]>=1.1)t.push('체력 빨리 닳음');else if(m[9]<=.9)t.push('체력 오래감');return t.join(' · ')||'무난한 성격';}
 const PET_ST=' stroke="#0002" stroke-width="2"';
@@ -444,7 +445,7 @@ const PET_FXCLS={full:'petturn',meal:'petchew',snack:'petchew',special:'petchew'
 function pH(e,l,t,d,an,sz){return `<div class="pfl" style="left:${l}%;top:${t}%;font-size:${sz||22}px;animation:${an};animation-delay:${d}s;animation-fill-mode:both">${e}</div>`;}
 function petFxLayer(k,v,prev){const hearts=[0,.5,1,1.5].map((d,i)=>pH('💕',38+i*9,40,d,'pup 1.6s ease-out infinite',20)).join('');
  switch(k){
-  case 'meal':return pH('🍚',47,8,0,'feed .8s ease-in infinite',30)+pH('🥣',42,80,0,'none',34)+pH((v&&v.hunger!=null?'🍚 '+v.hunger+'%':'냠!'),58,34,.35,'pup .9s ease-out 1',14);
+  case 'meal':return pH((v&&v.sp!=null?PET_FOOD[v.sp%PET_FOOD.length][0]:'🍚'),47,8,0,'feed .8s ease-in infinite',30)+pH('🥣',42,80,0,'none',34)+pH((v&&v.hunger!=null?'🍚 '+v.hunger+'%':'냠!'),58,34,.35,'pup .9s ease-out 1',14);
   case 'full':return pH('🥣',42,80,0,'none',34)+pH('😋',58,18,0,'pup 1.4s ease-out 1',26)+pH('배불러요~',54,6,.2,'pup 1.4s ease-out 1',13);
   case 'snack':return pH('🍪',47,8,0,'feed 1.1s ease-in infinite',30)+pH('✨',58,40,.9,'pup 1s ease-out infinite',18);
   case 'special':return pH('🍖',47,8,0,'feed 1.1s ease-in infinite',32)+pH('✨',34,36,.8,'pup 1.2s ease-out infinite',20)+pH('✨',62,34,1.2,'pup 1.2s ease-out infinite',20);
@@ -614,7 +615,7 @@ G.push({k:'pet',cat:'펫',e:'🐣',n:'뚝섬펫',d:'30일 동안 키우는 다�
    toast((r&&r.msg)||'실패했어요',2200);rr();}).catch(()=>{this._buying=0;toast('서버 연결 실패');});},
  menuHTML(v){const h=this.menuHTML0(v);if(this.menu!=='shop')return h;return h.slice(0,h.indexOf('</div>')+6)+this.shopHTML(v);},
  menuHTML0(v){const inv=v.inv||{};const sn=inv.snack||0,sp=inv.special||0;const fav=v.fav;
-  const M={feed:[v.sp===13?['meal','💧','물주기']:v.sp===17?['meal','🪵','장작']:['meal','🍚','밥'],['snack','🍪',`간식 ${sn}`,sn<=0],['special','🍖',`특식 ${sp}`,sp<=0],['prem','🍱',`고급밥 ${inv.prem||0}`,(inv.prem||0)<=0],['veg','🥗','채소']],
+  const M={feed:[v.sp===13?['meal','💧','물주기']:['meal',...PET_FOOD[v.sp%PET_FOOD.length]],['snack','🍪',`간식 ${sn}`,sn<=0],['special','🍖',`특식 ${sp}`,sp<=0],['prem','🍱',`고급밥 ${inv.prem||0}`,(inv.prem||0)<=0],['veg','🥗','채소']],
    play:[['play','🎾','공놀이'],['walk','🦮','산책'],['hide','🙈','숨바꼭질'],['sing','🎵','노래']],
    care:[['pet','✋','쓰담'],['clean','🧹','치우기',!v.poop],['bath','🛁','목욕'],['med','💊','약',!v.sick],['light',v.nap?'☀️':(v.light?'🌙':'💡'),v.nap?'깨우기':(v.sleepy&&v.light?'재우기':(v.light?'불 끄기':'불 켜기'))],...(v.sp===17?[['chill','🧊','식히기']]:[])]};
   const tabs=[['feed','🍽️ 먹이기'],['play','🎈 놀기'],['care','🧼 돌보기'],...(this.list&&this.list.wallet?[['shop','🛒 상점']]:[])];const wt=v.want?({meal:'feed',snack:'feed',special:'feed',veg:'feed',play:'play',walk:'play',hide:'play',sing:'play'})[v.want]||'care':'';const arr=M[this.menu]||M.feed;
