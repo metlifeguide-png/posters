@@ -736,6 +736,9 @@ function snapApply(res){
   clearSit(); Object.assign(st,p);
   st.tend=new Array(st.tsize).fill(0); st.settled={}; st.hist=[];
   if(res.scen==='open') st.proV='vs';
+  {const g=GAMES[st.game]; if(g&&g.blinds){ let bi=0,bd=1e18; g.blinds.forEach((b,i)=>{const d=Math.abs(b-(+st.bb)); if(d<bd){bd=d;bi=i;}}); st.level=bi+1; st.bbPrev=g.blinds[bi];
+    if(bd>0) res.note=(res.note?res.note+'\n':'')+'블라인드 '+st.bb+'이(가) 목록에 없어 가장 가까운 '+(bi+1)+'레벨로 맞췄어요'; }
+   if(st.startPick) delete st.startPick[st.game]; st.snapMode=true; st.modeManual=false; rescaleOK=false;}   /*snapmode*/
   schedule();
 }
 window.addEventListener('load',()=>{
@@ -788,12 +791,12 @@ const pickRaw=g=>{const p=(st.startPick||{})[g]; return p&&!p.auto&&Date.now()-p
 const pickOf=g=>{const p=pickRaw(g); return p?p.t:null;};
 const manualPick=g=>{const p=pickRaw(g); return p?p.t:null;};
 // 자동 시작 시각이 다른 게임으로 넘어간 순간을 알려줘요(true). 이때는 레벨 고정·스택 BB 환산을 풀어 새 게임으로 시작
-function autoSwitchCheck(){ if(manualPick(st.game)) return false;
+function autoSwitchCheck(){ if(manualPick(st.game)||st.snapMode) return false;
   const a=autoStart(st.game); st.autoT=st.autoT||{}; const last=st.autoT[st.game]; st.autoT[st.game]=a;
   return !!last && last!==a; }
 const hasStart=()=>true;   // 직접 고른 게 없으면 지금 시각으로 추정한 게임 시작 시각을 써요
 const startOf=()=>pickOf(st.game)||autoStart(st.game);
-function setStart(t){ st.startPick=st.startPick||{}; if(t) st.startPick[st.game]={t,at:Date.now()}; else delete st.startPick[st.game]; st.level=null; st.modeManual=false; }
+function setStart(t){ st.startPick=st.startPick||{}; if(t) st.startPick[st.game]={t,at:Date.now()}; else delete st.startPick[st.game]; st.level=null; st.modeManual=false; st.snapMode=false; }
 // 다음 레벨까지 남은 시간(초). 휴식(매시 55~00분) 중이면 휴식 끝날 때까지 포함
 function nextLevelIn(){
   const [h,m]=startOf().split(":").map(Number), now=new Date(), start=new Date(now);
@@ -834,7 +837,7 @@ const parseLevel=v=>v===""?null:+v;
 const curLevel=()=>(+st.level)||(hasStart()?autoLevel():REG_LEVEL+1);
 // 시간이 흘러 블라인드가 오른 경우에만 칩 그대로·BB 수 재계산. 시작 시각/레벨/게임을 고쳐서 바뀐 건 입력한 BB 그대로
 let rescaleOK=true;
-const clkText=()=>{const x=nextLevelIn(); if(x.inBreak){const n=new Date(), r=(60-n.getMinutes())*60-n.getSeconds(); return `☕ Break time (매시 55분~정각) · 재개까지 <b>${Math.floor(r/60)}:${String(r%60).padStart(2,"0")}</b>`+(x.sec-r>0?` · 재개 후 ${Math.ceil((x.sec-r)/60)}분 뒤 레벨업`:"");} return `⏱ 다음 레벨까지 <b>${Math.floor(x.sec/60)}:${String(x.sec%60).padStart(2,"0")}</b>`;};
+const clkText=()=>{if(st.snapMode) return '📸 스샷 모드 · 시작 시각·블라인드 시계 없음'; const x=nextLevelIn(); if(x.inBreak){const n=new Date(), r=(60-n.getMinutes())*60-n.getSeconds(); return `☕ Break time (매시 55분~정각) · 재개까지 <b>${Math.floor(r/60)}:${String(r%60).padStart(2,"0")}</b>`+(x.sec-r>0?` · 재개 후 ${Math.ceil((x.sec-r)/60)}분 뒤 레벨업`:"");} return `⏱ 다음 레벨까지 <b>${Math.floor(x.sec/60)}:${String(x.sec%60).padStart(2,"0")}</b>`;};
 function applyLevel(){
   if(autoSwitchCheck()){ st.level=null; st.modeManual=false; rescaleOK=false; }
   logEntries();
@@ -1303,7 +1306,7 @@ function drawEasy(){
   {const h=$("ezHero"); if(document.activeElement!==h || Date.now()-(h._typed||0)>1500) h.value=st.heroStack;}
   $("ezHeroChips").textContent=`내 스택 = ${Math.round(st.heroStack*st.bb).toLocaleString()}칩`;
   { const al=autoPostReg();
-    $("ezStart").innerHTML=`<option value="">⏱ 자동 · ${manualPick(st.game)?autoStart(st.game):startOf()} 시작</option>`+g.times.map(t=>`<option value="${t}">${t} 시작 (직접)</option>`).join("");
+    $("ezStart").innerHTML=`<option value="">${st.snapMode?'📸 스샷 모드 · 시작 시각 없음':'⏱ 자동 · '+(manualPick(st.game)?autoStart(st.game):startOf())+' 시작'}</option>`+g.times.map(t=>`<option value="${t}">${t} 시작 (직접)</option>`).join("");
     $("ezStart").value=manualPick(st.game)||"";
     $("ezStart").parentElement.style.border="";
     $("ezLevel").innerHTML=levelOptions(g,false); $("ezLevel").value=levelValue(); }
