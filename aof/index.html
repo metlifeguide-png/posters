@@ -118,6 +118,23 @@ body:not(.easy) .easy-only{display:none!important}
 .verdict.push .hand,.verdict.call .hand,.verdict.raise .hand,.verdict.push .why,.verdict.call .why,.verdict.raise .why{color:rgba(255,255,255,.85)}
 .ezchart .c{font-size:clamp(8px,2.4vw,12px)}
 .ezchart .c.sel{outline:3px solid var(--text);outline-offset:-2px;z-index:1}
+/*chsize*/.sizebar{display:flex;gap:6px;margin:2px 0 8px}
+.sizebar .szb{flex:1;padding:9px 6px;border-radius:10px;border:1px solid var(--accent);background:var(--surface);color:var(--accent);font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
+.sizebar .szb.on{background:var(--accent);color:#fff}
+body.ezmini .ezchart{gap:1px}
+body.ezmini .ezchart .c{aspect-ratio:1/.72;border-radius:2px;font-size:clamp(7px,2.1vw,11px)}
+body.promini:not(.snaptab) .chart:not(.ezchart){gap:1px}
+body.promini:not(.snaptab) .chart:not(.ezchart) .c{aspect-ratio:1/.72;border-radius:2px;font-size:clamp(6px,1.9vw,10px)}
+/*ezsticky*/body.easy #ezVerdict{position:sticky;bottom:6px;z-index:20;padding:10px 12px;box-shadow:0 4px 16px rgba(0,0,0,.28)}
+body.easy #ezVerdict .big{font-size:26px}
+body.easy #ezVerdict .hand{font-size:13px}
+body.easy #ezVerdict .why{font-size:11.5px;margin-top:3px;line-height:1.4}
+/*ezall*/body.easy.ezall #ezScen,body.easy.ezall .ezallhide,body.easy.ezall #ezVilBox,body.easy.ezall #ezOppBox,body.easy.ezall #ezSizeBar,body.easy.ezall #ezChart,body.easy.ezall #ezLegend,body.easy.ezall #ezVerdict,body.easy.ezall #ezResult,body.easy.ezall .posbox .prow.v{display:none!important}
+body:not(.ezall) #ezAll{display:none}
+#ezAll{margin-top:4px}
+/*ezlean*/#ezRankHint,#ezHeroChips,#ezSafe{display:none!important}
+/*ezhint*/#ezOpenHint,#ezQvHint{display:none!important}
+#ezAll .sgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px;align-items:start} #ezAll .sgrid>div{margin:0!important;min-width:0} #ezAll .sgrid>.note{grid-column:1/-1} #ezAll .sgrid .chart{gap:1px} #ezAll .sgrid .c{border-radius:2px;font-size:clamp(5px,1.1vw,9px)} #ezAll .sgrid .c em{letter-spacing:-.5px} #ezAll .sgrid>div>div:first-child{font-size:12px!important;margin-bottom:2px!important} #ezAll .sgrid>div>div[style*="font-size:13px"]{font-size:11px!important;line-height:1.35!important} @media(max-width:520px){#ezAll .sgrid{gap:6px 6px}} #ezAll .sgrid.big{display:block} #ezAll .sgrid.big>div{margin:14px 0 20px!important} #ezAll .sgrid.big .chart{gap:2px} #ezAll .sgrid.big .c{border-radius:4px;font-size:clamp(8px,2.4vw,12px)} #ezAll .sgrid.big>div>div:first-child{font-size:15px!important;margin-bottom:4px!important} #ezAll .sgrid.big>div>div[style*="font-size:13px"]{font-size:13px!important;line-height:1.5!important}
 .f2t{margin-top:12px;border-radius:12px;padding:10px 12px;background:var(--gold-soft);color:var(--gold);font-size:13.5px;line-height:1.6}
 .f2t b{font-size:16px}
 .posbox{border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:6px}
@@ -193,12 +210,12 @@ body.isetc .noetc{display:none!important}
     <div class="hint" id="ezOpenHint" style="margin-top:6px"></div>
   </div>
   <div id="ezOppBox" style="margin-top:8px;display:none">
-    <div class="info" style="margin:0 0 6px"><b>🪑 뒤 상대 스택</b> — 올인이 아니라 <b>그냥 가진 칩</b>이에요. 넣으면 내 올인·오픈 차트에 반영돼요.</div>
+    <div class="info" id="ezQvHint" style="margin:0 0 6px"><b>🪑 뒤 상대 스택</b> — 올인이 아니라 <b>그냥 가진 칩</b>이에요. 넣으면 내 올인·오픈 차트에 반영돼요.</div>
     <div class="chips" id="ezOppPos"></div>
     <div class="ez-grid"><div class="ez-ctl"><div class="k"><b>상대 스택</b> (BB · 올인 아님)</div><div class="row2"><input id="ezOppStack" type="number" inputmode="decimal" step="0.1" min="0.1" placeholder="비우면 평균"></div></div></div>
   </div>
   <h3>내 패 <span class="hint">차트에서 누르기 · 색 = 지금 상황의 정답</span></h3>
-  <div class="chart ezchart" id="ezChart"></div>
+  <div class="sizebar" id="ezSizeBar"></div><div class="chart ezchart" id="ezChart"></div>
   <div class="legend" id="ezLegend"></div>
   <div class="verdict" id="ezVerdict"><div class="big">패를 고르세요</div></div>
   <div id="ezResult" style="margin-top:10px"></div>
@@ -259,7 +276,7 @@ body.isetc .noetc{display:none!important}
   <div class="hint" style="margin-top:6px">자리마다 <b>보통/타이트/루즈</b>를 누르면 그 사람 성향에 맞춰 내 액션을 다시 계산해요. <b>타이트</b> = 먼저 올인하는 범위가 계산값의 60% (콜 범위는 그대로), <b>루즈</b> = 올인·콜 범위 모두 1.6배.</div>
   <div class="hint" id="nextHint" style="margin-top:6px">다음 핸드: 모두 한 칸씩 이동하고, 새 판 앤티 0.1BB·새 SB 0.5BB·새 BB 1BB를 빼요 (게임 화면에 보이는 스택과 같게). 판을 이긴 사람은 스택을 고쳐주세요.</div>
   <div style="height:12px"></div>
-  <div class="qa">
+  <div class="sizebar" id="proSizeBar"></div><div class="qa">
     <div class="summary" id="qaSum"></div>
     <div class="chart" id="qaChart"></div>
   </div>
@@ -1009,7 +1026,7 @@ function schedule(){applyGame();applyLevel();rescaleOK=false;fix();drawStatic();
     if(st.hero>=1 && !(st.qvil<st.hero && st.qvil<=n-2)) st.qvil=Math.min(st.hero-1,n-2);
     if(st.ezScen==="open" && st.hero<=n-2 && +st.qvStack>0){ const qr=quickStacks(); qr[rcV()]=+st.qvStack+ANTE; job("qr",{stacks:qr,opener:st.hero,raise:myR()||(+st.raise||2)}); } else { want.qr=null; window.QR=null; }
     if(st.hero>=1){const qs=quickStacks(); if(+st.qvStack>0) qs[st.qvil]=+st.qvStack+ANTE; job("qb",{stacks:qs,opener:st.qvil,raise:0});
-      if(st.ezScen==="vr" || st.ui==="snap" || (st.ui==="pro" && st.proV==="vr")){ const vr=+st.vraise||2, q2=qs.slice(); if(+st.qvStack>0) q2[st.qvil]=+st.qvStack+vr+ANTE; job("qc",{stacks:q2,opener:st.qvil,raise:vr}); } else {want.qc=null; window.QC=null;}} else {want.qb=null; lastQB=null; drawQuickB(null);}
+      if(st.ezScen==="vr" || st.ui==="snap" || (st.ui==="easy"&&!st.ezAllOff) || (st.ui==="pro" && st.proV==="vr")){ const vr=+st.vraise||2, q2=qs.slice(); if(+st.qvStack>0) q2[st.qvil]=+st.qvStack+vr+ANTE; job("qc",{stacks:q2,opener:st.qvil,raise:vr}); } else {want.qc=null; window.QC=null;}} else {want.qb=null; lastQB=null; drawQuickB(null);}
     if(st.ui==="pro" && $("detail").open && detailValid()){const opener=(sc==="open"||sc==="rc")?st.hero:st.vil; job("detail",{stacks:stacks(),opener,raise:(sc==="vs"?0:+st.raise)});}
     else {want.detail=null; $("summary").innerHTML=""; $("chart").innerHTML=""; $("legend").innerHTML=""; $("result").classList.remove("busy");}
     const qs=quickStacks(), field=qs.filter((x,i)=>i!==st.hero).concat(fieldOff(qs));
@@ -1030,7 +1047,7 @@ function onResult(m){
     if(kind==="qb"){drawQuickB(m.r);}
     if(kind==="qc"){drawQuickC(m.r);}
     if(kind==="qr"){window.QR=m.r; drawVerdict();}
-    if(!Object.values(want).some(id=>id&&pending[id])) $("quick").classList.remove("busy");
+    if(!Object.values(want).some(id=>id&&pending[id])) $("quick").classList.remove("busy"); try{drawEzAll();}catch(e){}
     try{drawSnapTab();}catch(e){}}
   if(m.type==="safe"&&m.id===safeId){lastSafe=m.out;drawSafe();drawAdvice();drawEzSafe();}
   if(m.type==="f2t"&&m.id===f2tId){lastF2T=m.out;drawF2T();drawVerdict();}
@@ -1101,6 +1118,7 @@ function deepOpen(){
   const sh=new Float64Array(169), rc=new Float64Array(169), rf=new Float64Array(169);
   for(let h=0;h<169;h++){ if(!open[h]) continue; let a=0,w=0; for(let k=0;k<169;k++) if(vr[k]){a+=W[k]*E[h][k]; w+=W[k];}
     if(a/w>=need) rc[h]=1; else rf[h]=1; }
+  /*deeptight*/{ const rc2=shrinkRange(rc,CALL_TIGHT); for(let h=0;h<169;h++){ if(open[h]){ rc[h]=rc2[h]; rf[h]=1-rc2[h]; } } }
   return {sh,rc,rf,op,eff,vil,X,need,R, vilKnown:false};
 }
 
@@ -1113,6 +1131,49 @@ function deepOpen(){
 function snapModeBtns(){return [["chip","칩EV (마감 전)"],["icm","ICM (마감 후)"]].map(function(x){return '<button type="button" onclick="snapMode(\''+x[0]+'\')" style="margin-right:6px;padding:4px 10px;border-radius:8px;border:1px solid #2f7d5b;font-size:13px;font-weight:700;cursor:pointer;'+(st.mode===x[0]?'background:#2f7d5b;color:#fff':'background:#fff;color:#2f7d5b')+'">'+x[1]+'</button>';}).join("");}
 /*snapgame*/function snapGame(k){var g=GAMES[k]; if(!g) return; st.game=k; st.level=null; st.modeManual=false;if(g.blinds){var bi=0,bd=1e18; g.blinds.forEach(function(b,i){var d=Math.abs(b-(+st.bb)); if(d<bd){bd=d;bi=i;}}); st.level=bi+1; st.bbPrev=g.blinds[bi];}applyGame(); try{save();}catch(e){} schedule(); try{drawSnapTab();}catch(e){}}
 function snapGameBtns(){return ["wpl","pm","hg"].filter(function(k){return GAMES[k];}).map(function(k){return '<button type="button" onclick="snapGame(\''+k+'\')" style="margin-right:6px;padding:4px 10px;border-radius:8px;border:1px solid #2f7d5b;font-size:13px;font-weight:700;cursor:pointer;'+(st.game===k?'background:#2f7d5b;color:#fff':'background:#fff;color:#2f7d5b')+'">'+GAMES[k].name+'</button>';}).join("");}
+/*chsize*/function szClick(b){st[b.dataset.szk]=(b.dataset.szv==="1");try{save();}catch(e){}szApply();}
+function szBar(k){return [["1","작은 차트 (한 화면)"],["0","큰 차트"]].map(function(x){return '<button type="button" class="szb'+((!!st[k])===(x[0]==="1")?' on':'')+'" data-szk="'+k+'" data-szv="'+x[0]+'" onclick="szClick(this)">'+x[1]+'</button>';}).join("");}
+/*ezfold*/function szSetD(){var g=document.querySelector("#easy .ez-grid.noetc");if(!g)return;var d=document.getElementById("ezSetD");if(!d){d=document.createElement("details");d.className="more noetc";d.id="ezSetD";d.innerHTML='<summary>⚙️ 게임 시작 시각 · 블라인드 레벨 <span class="hint">(눌러서 수정)</span></summary>';g.parentNode.insertBefore(d,g);d.appendChild(g);}var need=!st.level&&!hasStart();if(window._setNeed!==need){window._setNeed=need;d.open=need;}}
+/*ezall*/function szBar2(k,it){return it.map(function(x){return '<button type="button" class="szb'+((!!st[k])===(x[0]==="1")?' on':'')+'" data-szk="'+k+'" data-szv="'+x[0]+'" onclick="szClick(this)">'+x[1]+'</button>';}).join("");}
+function ezAllMode(v){st.ezAllOff=(v===1);try{save();}catch(e){}try{szApply();}catch(e){}try{schedule();}catch(e){}}
+function ezAllVil(i){st.qvil=i;try{save();}catch(e){}try{schedule();}catch(e){}}
+function ezAllVS(v){st.qvStack=v;try{save();}catch(e){}try{schedule();}catch(e){}}
+function ezAllInit(){var sc=document.getElementById("ezScen");if(!sc||document.getElementById("ezAll"))return;var h=sc.previousElementSibling;if(h&&h.tagName==="H3")h.classList.add("ezallhide");var z=document.getElementById("ezSizeBar");if(z&&z.previousElementSibling&&z.previousElementSibling.tagName==="H3")z.previousElementSibling.classList.add("ezallhide");var m=document.createElement("div");m.id="ezModeBar";m.className="sizebar";var a=document.createElement("div");a.id="ezAll";a.innerHTML='<div class="sizebar" id="ezAllSz"></div><div id="ezAllVil"></div><div class="ez-grid" id="ezAllVSBox"><div class="ez-ctl"><div class="k"><b>앞사람 스택</b> (BB · 비우면 평균)</div><div class="row2"><input id="ezAllVS" type="number" inputmode="decimal" step="0.1" min="0.1" placeholder="비우면 평균" oninput="ezAllVS(this.value)"></div></div></div><div id="ezAllCharts"></div>';var ref=h||sc;ref.parentNode.insertBefore(m,ref);ref.parentNode.insertBefore(a,ref);var vs=document.getElementById("ezAllVS");if(vs)vs.value=st.qvStack||"";}
+function ezAllBars(){var m=document.getElementById("ezModeBar");if(m)m.innerHTML='<button type="button" class="szb'+(st.ezAllOff?'':' on')+'" onclick="ezAllMode(0)">📊 한눈에 보기</button><button type="button" class="szb'+(st.ezAllOff?' on':'')+'" onclick="ezAllMode(1)">상황별 보기</button>';}
+function drawEzAll(){
+  const box=document.getElementById("ezAllCharts"); if(!box||st.ui!=="easy"||st.ezAllOff) return;
+  const P=POSN(), n=st.tsize, pp=x=>(x*100).toFixed(1)+"%";
+  const sz=document.getElementById("ezAllSz"); if(sz) sz.innerHTML=szBar2("ezAllBig",[["0","작은 차트 (한 화면)"],["1","큰 차트"]]);
+  const vb=document.getElementById("ezAllVSBox"); if(vb) vb.style.display=st.hero>=1?"":"none";
+  const vc=document.getElementById("ezAllVil");
+  if(vc){ if(st.hero>=1){ let b=""; for(let i=0;i<st.hero&&i<=n-2;i++) b+='<button type="button" class="chip vil'+(i===st.qvil?' on':'')+'" onclick="ezAllVil('+i+')">'+P[i]+'</button>'; vc.innerHTML='<div class="hint" style="margin:6px 0 4px">③④ 앞에서 액션한 자리 (안 눌러도 바로 앞 자리로 계산)</div><div class="chips">'+b+'</div>'; } else vc.innerHTML=""; }
+  const busy=!!(document.getElementById("quick")&&document.getElementById("quick").classList.contains("busy")), mf=moneyFirst(110);
+  const cells=layers=>{ let h=""; for(let k=0;k<169;k++){ let bars="",tot=0; const off=mf&&moneyFirst(k);
+      for(const [arr,col] of layers){ const f=off?0:Math.max(0,Math.min(1,arr[k])); tot+=f; bars+='<i style="height:'+(f*100).toFixed(0)+'%;background:'+col+'"></i>'; }
+      h+='<div class="c '+(tot>=0.5?"on":"")+'"><div class="bars">'+bars+'</div><em>'+SAT.handName(k)+'</em></div>'; }
+    return h; };
+  const sw=(t,c)=>'<span style="display:inline-flex;align-items:center;gap:4px;margin-right:10px"><i style="display:inline-block;width:11px;height:11px;border-radius:3px;background:'+c+'"></i>'+t+'</span>';
+  const sec=(title,sum,layers,leg)=>'<div style="margin:14px 0 20px"><div style="font-weight:800;font-size:15px;margin-bottom:4px">'+title+'</div>'+(sum?'<div style="font-size:13px;margin-bottom:6px;line-height:1.5">'+sum+'</div>':'')+'<div class="chart">'+cells(layers)+'</div><div style="font-size:12px;margin-top:4px">'+leg.map(x=>sw(x[0],x[1])).join("")+sw("폴드","var(--cell)")+'</div></div>';
+  const wait=t=>'<div style="margin:14px 0 20px"><b>'+t+'</b><br><span class="note">'+(busy?"계산 중…":"이 자리에서는 해당 없음")+'</span></div>';
+  let h='<div class="sgrid'+(st.ezAllBig?' big':'')+'">'; const qa=window.QA, qb=window.QB, qc=(st.hero>=1?window.QC:null);
+  const T1='① 앞 모두 폴드 → '+P[st.hero]+' 액션';
+  if(st.hero===n-1) h+='<div class="note" style="margin:14px 0">BB는 앞이 다 폴드하면 이긴 판이라 ①②는 없어요.</div>';
+  else if(qa&&qa.sh){
+    h+=sec(T1,'👉 올인: '+rangeText(qa.sh),[[qa.sh,COL.push],[qa.rz,COL.raise]],[["올인",COL.push],["오픈 레이즈",COL.raise]]);
+    if(qa.canRaise&&qa.rc&&qa.rf) h+=sec('② 내가 오픈 → 올인 받으면','👉 콜: '+rangeText(qa.rc)+'<br>👉 폴드: '+rangeText(qa.rf),[[qa.rc,COL.call],[qa.rf,COL.fold2]],[["올인 받고 콜",COL.call],["올인 받고 폴드",COL.fold2]]);
+  } else h+=wait(T1);
+  const T3='③ 앞에서 오픈 → 내 액션';
+  if(st.hero<1) h+='<div class="note" style="margin:14px 0">맨 앞 자리라 ③④(앞에서 오픈·올인)는 없어요.</div>';
+  else {
+    if(qc&&qc.noRaise) h+='<div style="margin:14px 0 20px"><b>'+T3+'</b><br><span class="note">오픈한 사람 스택이 10BB 미만이면 오픈 대신 올인이라 ④로 봐요.</span></div>';
+    else if(qc&&qc.rs) h+=sec('③ '+P[st.qvil]+' '+qc.R+'BB 오픈 → 내 액션','👉 '+(qc.deep?"3벳":"올인")+': '+rangeText(qc.rs)+'<br>👉 콜: '+rangeText(qc.fl)+'<br>👉 나머지는 폴드',[[qc.rs,COL.push],[qc.fl,COL.flat]],[[qc.deep?"3벳 (크게)":"올인 (3벳 셔브)",COL.push],["콜 (플랍 보기)",COL.flat]]);
+    else h+=wait(T3);
+    if(qb&&qb.call) h+=sec('④ '+P[st.qvil]+' 올인 → 내 콜','👉 콜: '+rangeText(qb.call)+' <span class="note">(필요 승률 '+pp(qb.need)+')</span>',[[qb.call,COL.call]],[["콜",COL.call]]);
+    else h+=wait('④ 앞에서 올인 → 내 콜');
+  }
+  h+='</div>'; box.innerHTML=h; box.style.opacity=busy?".45":"1";
+}
+function szApply(){try{szSetD();}catch(e){}try{ezAllInit();}catch(e){}try{ezAllBars();}catch(e){}document.body.classList.toggle("ezall",!st.ezAllOff);try{setTimeout(function(){try{drawEzAll();}catch(e){}},0);}catch(e){}document.body.classList.toggle("ezmini",!!st.ezMini);document.body.classList.toggle("promini",!!st.proMini);var a=document.getElementById("ezSizeBar");if(a)a.innerHTML=szBar("ezMini");var b=document.getElementById("proSizeBar");if(b)b.innerHTML=szBar("proMini");}
 /*snapview*/function snapView(b){st.snapBig=!!b;try{save();}catch(e){}try{drawSnapTab();}catch(e){}}
 function snapViewBtns(){return [[0,"미니차트 (한 화면)"],[1,"큰 차트"]].map(function(x){return '<button type="button" onclick="snapView('+x[0]+')" style="margin-right:6px;padding:4px 10px;border-radius:8px;border:1px solid #2f7d5b;font-size:13px;font-weight:700;cursor:pointer;'+((!!st.snapBig)===(x[0]===1)?'background:#2f7d5b;color:#fff':'background:#fff;color:#2f7d5b')+'">'+x[1]+'</button>';}).join("");}
 /*snapalert*/function snapAlert(m){try{var o=document.createElement("div");o.style.cssText="position:fixed;left:0;top:0;right:0;bottom:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);padding:16px";var b=document.createElement("div");b.style.cssText="background:#fff;color:#222;border-radius:14px;padding:20px 22px 16px;max-width:360px;width:100%;box-shadow:0 8px 30px rgba(0,0,0,.35);font-size:15px;line-height:1.55;white-space:pre-line;text-align:left";var t=document.createElement("div");t.textContent=String(m);var k=document.createElement("button");k.type="button";k.textContent="확인";k.style.cssText="display:block;margin:14px 0 0 auto;padding:8px 22px;border:0;border-radius:10px;background:#2f7d5b;color:#fff;font-size:15px;font-weight:700;cursor:pointer";var h;var c=function(){if(o.parentNode)o.parentNode.removeChild(o);document.removeEventListener("keydown",h);};h=function(e){if(e.key==="Escape"||e.key==="Enter"){e.preventDefault();c();}};k.onclick=c;o.onclick=function(e){if(e.target===o)c();};document.addEventListener("keydown",h);b.appendChild(t);b.appendChild(k);o.appendChild(b);document.body.appendChild(o);k.focus();}catch(e){alert(m);}}
@@ -1345,7 +1406,7 @@ function paintEz(){
 function drawEasy(){
   const P=POSN(), n=st.tsize, g=GAMES[st.game];
   document.body.classList.toggle("easy",st.ui==="easy");
-  $("mEasy").classList.toggle("on",st.ui==="easy"); $("mPro").classList.toggle("on",st.ui==="pro"); document.body.classList.toggle("snaptab",st.ui==="snap"); $("mSnap").classList.toggle("on",st.ui==="snap"); setTimeout(()=>{try{drawSnapTab();}catch(e){}},0);
+  $("mEasy").classList.toggle("on",st.ui==="easy"); $("mPro").classList.toggle("on",st.ui==="pro"); document.body.classList.toggle("snaptab",st.ui==="snap"); $("mSnap").classList.toggle("on",st.ui==="snap"); try{szApply();}catch(e){} setTimeout(()=>{try{drawSnapTab();}catch(e){}},0);
   $("ezGames").innerHTML=Object.entries(GAMES).map(([k,x])=>`<button type="button" class="chip ${st.game===k?"on":""}" data-g="${k}">${x.name}</button>`).join("")+
     (st.game==="etc"?`<span class="hint" style="align-self:center">${etcStage()} · <a href="#" onclick="event.preventDefault();const d=document.getElementById('ezEtcD');if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'});}" style="color:var(--accent)">구조 입력·바꾸기</a></span>`:`<span class="hint" style="align-self:center">${startOf()} 게임 · <a href="#" data-ui="pro" style="color:var(--accent)">시간·설정 바꾸기</a></span>`);
   const pj=isPreReg()?projectClose():null;
