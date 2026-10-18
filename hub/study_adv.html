@@ -1145,12 +1145,12 @@ function simGen(S){const T=BBT[S.D.tab],bb=T[S.bi],hb=Math.round(S.chips/bb*2)/2
 function simResolve(S,q,o){const p=q.p,bb=BBT[S.D.tab][S.bi],n=p.n,bl=i=>i===n-1?1:i===n-2?0.5:0,posted=0.1+bl(p.h),R=solveX(p).r;
  const res={o,ok:o===q.a,before:S.chips},TT=S.T,ch=(pos,d)=>{if(!TT||pos<0||TT.c.length!==n)return;const j=simSeat(TT,pos);if(j===TT.hs)return;TT.c[j]=Math.max(0,Math.round(TT.c[j]+d*bb));if(TT.c[j]<=bb*0.15)simNewP(S,j,bb);};
  if(o==='f'){S.chips-=posted*bb;res.kind='fold';if(p.xs!=='o')ch(p.v,0.1*n+1.5);}
- else{const hc=MW.CMB[p.k][Math.floor(Math.random()*MW.CMB[p.k].length)],used=new Set(hc);let vi=-1,vh=null;
-  if(p.xs==='o'){for(let c=0;c<R.callers.length;c++){if(Math.random()<R.cs[c]){vh=simPickHand(R.csR[c],used);if(vh){vi=R.callers[c];break;}}}}
+ else{const hc=MW.CMB[p.k][Math.floor(Math.random()*MW.CMB[p.k].length)],used=new Set(hc);let vi=-1,vh=null,oi=-1,oh=null;
+  if(p.xs==='o'){for(let c=0;c<R.callers.length;c++){if(Math.random()<R.cs[c]){vh=simPickHand(R.csR[c],used);if(vh){vi=R.callers[c];/*aofmwc*/vh.c.forEach(x=>used.add(x));for(let c2=c+1;c2<R.callers.length;c2++){if(Math.random()<R.cs[c2]*0.6){oh=simPickHand(R.csR[c2],used);if(oh){oi=R.callers[c2];break;}}}break;}}}}
   else if(p.xs==='s'){vi=p.v;vh=simPickHand(R.sh,used);}
-  else if(o==='c'){const win=Math.random()<0.45,dd=0.1*(n-1)+1.5-bl(p.h);S.chips+=(win?p.R+dd:-p.R)*bb;ch(p.v,win?-p.R:p.R+dd);S.chips=Math.max(0,Math.round(S.chips));Object.assign(res,{kind:'flat',w:win?1:-1,after:S.chips});return res;}
+  else if(o==='c'){/*aofflat*/const ord=F.playOrder(),top=new Float64Array(169),tt=SAT.W.reduce((a,b)=>a+b,0);let ta=0;for(const h of ord){if(ta>=tt*0.22)break;top[h]=1;ta+=SAT.W[h];}const fv=simPickHand(top,used),sw=fv?simDeal(hc,fv.c).w:0,win=sw>0||(sw===0&&Math.random()<(fv?0.5:0.45)),dd=0.1*(n-1)+1.5-bl(p.h);S.chips+=(win?p.R+dd:-p.R)*bb;ch(p.v,win?-p.R:p.R+dd);S.chips=Math.max(0,Math.round(S.chips));Object.assign(res,{kind:'flat',w:win?1:-1,after:S.chips});return res;}
   else{vi=p.v;if(o==='s'&&Math.random()<0.45){const ord=F.playOrder(),top=new Float64Array(169);let a=0;for(const h of ord){if(a>=R.op*0.45)break;top[h]=1;a+=SAT.W[h];}vh=simPickHand(top,used);}}
-  let oi=-1,oh=null;/*aofovc2*/if(p.xs==='s'&&o==='c'&&vi>=0&&vh&&R.ov){vh.c.forEach(c=>used.add(c));for(const ov of R.ov){if(Math.random()<ov.p){oh=simPickHand(ov.rng,used);if(oh){oi=ov.i;break;}}}}   // 내가 콜한 뒤 뒤 사람 오버콜
+  /*aofovc2*/if(p.xs==='s'&&o==='c'&&vi>=0&&vh&&R.ov){vh.c.forEach(c=>used.add(c));for(const ov of R.ov){if(Math.random()<ov.p){oh=simPickHand(ov.rng,used);if(oh){oi=ov.i;break;}}}}   // 내가 콜한 뒤 뒤 사람 오버콜
   const dead=0.1*(n-(vi>=0?2:1))+1.5-bl(p.h)-(vi>=0?bl(vi):0);
   if(vi<0||!vh){S.chips+=(dead+(p.xs==='r'?p.R+0.1:0))*bb;res.kind='steal';res.vi=vi;if(p.h!==n-1)ch(n-1,-1);if(p.h!==n-2)ch(n-2,-0.5);if(p.xs==='r')ch(p.v,-p.R);}
   else if(oh){const cs=[hc,vh.c,oh.c],stk=[p.hb,p.st[vi],p.st[oi]],amt=stk.map((s,j)=>Math.min(s,Math.max(...stk.filter((_,k)=>k!==j)))),d3=dead-0.1-bl(oi);   // 3명 쇼다운 + 사이드팟
