@@ -958,17 +958,30 @@ function genX(g,D,c,O){if(O&&O.T)return genT(g,D,c,O);const n=Math.min(6+Math.fl
  let k=pickX(p,S);if(k<0&&O){const ord=F.playOrder().filter(h=>PCTL(h)<=JUNK);k=ord[Math.floor(Math.random()*ord.length)];}   // 시뮬레이션: 경계 핸드가 없으면(아주 짧은 스택 등) 그냥 아무 핸드
  if(k<0)return null;p.k=k;return build(p);}
 // 원형 테이블: 나는 아래 가운데, 시계 방향으로 다음 자리. 앞 사람 액션은 순서대로 하나씩 나타남(0.35초 간격) /*aoftable*/
+// 대회별 테이블 느낌(색·배치·숫자 표기만 비슷하게, 로고·글자 상표는 넣지 않음) /*aofskin*/
+const SKIN={
+ '한게임':{bg:'radial-gradient(120% 90% at 50% 30%,#3a3d42,#1b1c1f)',felt:'radial-gradient(70% 70% at 50% 45%,#2f74c0,#1a4f93 60%,#123a6e)',rail:'#121316',rim:'0 0 0 2px #2c2f35,inset 0 0 0 10px rgba(255,255,255,.06)',
+  nm:'#9fb3d1',v:'#fff',ctr:'#8fc3ff',ctrI:1,lv:'#16325e',fold:'#5f6670',me:'#ffd54f',unit:'bb',rk:'tl'},
+ '피망':{bg:'#1d1a1c url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2728%27 height=%2748%27%3E%3Cpath d=%27M14 0l14 8v16l-14 8L0 24V8z%27 fill=%27none%27 stroke=%27%23302a2e%27 stroke-width=%271.5%27/%3E%3C/svg%3E")',felt:'radial-gradient(70% 70% at 50% 45%,#8a5cff,#5b33d1 55%,#3a1f8f)',rail:'#2a2320',rim:'0 0 0 3px #6e5a4a,inset 0 0 0 9px rgba(0,0,0,.25)',
+  nm:'#f1eef6',v:'#e9e3ff',ctr:'#c9b8f5',ctrI:1,lv:'#2c1d63',fold:'#6d6670',me:'#ffb74d',unit:'bb',rk:'br'},
+ 'WPL':{bg:'radial-gradient(120% 90% at 50% 30%,#3a2b24,#1f1714)',felt:'radial-gradient(70% 70% at 50% 40%,#e0342f,#b71c1c 60%,#8e1414)',rail:'#4a3226',rim:'0 0 0 2px #2a1c15,inset 0 0 0 8px rgba(0,0,0,.18)',
+  nm:'#e6ddd6',v:'#fff',ctr:'#ffe9e0',ctrI:0,lv:'#5a1010',fold:'#6b5d57',me:'#ffd54f',unit:'chip',rk:'bl'}};
+const MAN=c=>{c=Math.round(c);if(c<1e4)return c.toLocaleString();const m=Math.floor(c/1e4),r=c%1e4;return m+'만'+(r?' '+r:'');};
 function tableX(p,e,P,stat){/*aoftable2*/const n=e.n,xs=p.xs||'o',btn=n-3,pot=p.pot!=null?p.pot:0.1*n+1.5+(xs==='s'?p.st[p.v]-(p.v>=n-2?(p.v===n-1?1:0.5):0):xs==='r'?p.R-(p.v>=n-2?(p.v===n-1?1:0.5):0):0);
- const seat=i=>{const rel=(i-p.h+n)%n,a=Math.PI/2+rel*2*Math.PI/n,x=50+43*Math.cos(a),y=50+38*Math.sin(a),me=i===p.h,act=p.acts?p.acts.includes(i):xs!=='o'&&i===p.v,fold=i<p.h&&!act,av=p.avgS&&p.avgS.includes(i);
-  const st=stat(i),dl=i<p.h?(i+1)*0.35:0,col=me?'#1565c0':act?'#d94a2b':fold?'#9aa0a6':'var(--ink)';
-  return `<div style="position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);width:62px;text-align:center;line-height:1.2">
-   <div style="background:var(--paper2);border:2px solid ${col};border-radius:10px;padding:3px 2px;${fold?'opacity:.55;':''}${me?'box-shadow:0 0 0 3px rgba(21,101,192,.2);':''}">
-    <div style="font-size:10.5px;font-weight:700;color:${col}">${P[i]}${i===btn?' <span style="display:inline-block;background:#fff;color:#111;border:1px solid #999;border-radius:50%;width:13px;height:13px;font-size:8.5px;line-height:12px">D</span>':''}</div>
-    <div style="font-size:14.5px;font-weight:800">${av?'<span style="font-size:10px;font-weight:600">평균 </span>':''}${N1(p.st[i])}<span style="font-size:9.5px;font-weight:600">BB</span></div></div>
-   ${me?'<div style="font-size:11px;font-weight:800;color:#1565c0;margin-top:2px">나</div>':st&&st!=='남음'?`<div style="font-size:11px;font-weight:800;margin-top:2px;color:${act?'#d94a2b':'#7a7f86'};opacity:0;animation:apIn .25s ${dl}s forwards">${st}</div>`:''}</div>`;};
- return `<style>@keyframes apIn{to{opacity:1}}</style><div style="position:relative;width:100%;max-width:440px;aspect-ratio:1.45;margin:6px auto 2px">
-  <div style="position:absolute;left:11%;right:11%;top:14%;bottom:14%;border-radius:50%;background:radial-gradient(#2f7d52,#1f5f3f);border:6px solid #6b4a2b"></div>
-  <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#fff;text-align:center;line-height:1.3"><div style="font-size:11px;opacity:.85">${n}명 · 팟</div><div style="font-size:17px;font-weight:800">${N1(Math.round(pot*10)/10)}BB</div></div>
+ const K=SKIN[(e.D||{}).n]||SKIN['한게임'],bb=p.bb||0,chip=K.unit==='chip'&&bb,amt=v=>chip?MAN(v*bb):N1(Math.round(v*100)/100)+'BB';
+ const seat=i=>{const rel=(i-p.h+n)%n,a=Math.PI/2+rel*2*Math.PI/n,x=50+41*Math.cos(a),y=50+40*Math.sin(a),me=i===p.h,act=p.acts?p.acts.includes(i):xs!=='o'&&i===p.v,fold=i<p.h&&!act,av=p.avgS&&p.avgS.includes(i);
+  const st=stat(i),dl=i<p.h?(i+1)*0.35:0,bub=!me&&st&&st!=='남음'?`<div style="position:absolute;left:50%;top:-6px;transform:translateX(-50%);white-space:nowrap;background:${act?'#d94a2b':'#e9e9e9'};color:${act?'#fff':'#333'};font-size:10.5px;font-weight:800;border-radius:9px;padding:1px 7px;opacity:0;animation:apIn .25s ${dl}s forwards">${st}</div>`:'';
+  const nameBox=chip?`<div style="background:rgba(0,0,0,.6);border-radius:6px;padding:2px 4px;margin-top:-4px">`:'<div style="margin-top:1px">';
+  return `<div style="position:absolute;left:${x}%;top:${y}%;transform:translate(-50%,-50%);width:70px;text-align:center;line-height:1.15;${fold?'opacity:.55;':''}">
+   <div style="position:relative;width:34px;height:34px;margin:0 auto;border-radius:50%;background:radial-gradient(circle at 50% 35%,#8b8f96,#4a4d52);border:2px solid ${me?K.me:act?'#d94a2b':'rgba(255,255,255,.25)'};${me?'box-shadow:0 0 8px '+K.me+';':''}">${bub}</div>
+   ${nameBox}<div style="font-size:10.5px;color:${me?K.me:K.nm};font-weight:${me?800:600}">${me?'나 · ':''}${P[i]}</div>
+   <div style="font-size:13.5px;font-weight:800;color:${K.v}">${av?'<span style="font-size:9.5px;font-weight:600;opacity:.8">평균 </span>':''}${amt(p.st[i])}</div></div>
+   ${i===btn?`<div style="position:absolute;right:-6px;top:4px;background:#fff;color:#111;border-radius:50%;width:15px;height:15px;font-size:9px;font-weight:900;line-height:15px;box-shadow:0 1px 2px #0008">D</div>`:''}</div>`;};
+ const ante=bb?Math.round(bb*0.1):0,bl=bb?`${K.ctrI?'<i>':''}${chip?`블라인드 : ${(bb/2).toLocaleString()} / ${bb.toLocaleString()}(${ante.toLocaleString()})`:`Ante ${ante.toLocaleString()}<br>${(bb/2).toLocaleString()} / ${bb.toLocaleString()}`}${K.ctrI?'</i>':''}`:'';
+ const potV=Math.round(pot*10)/10,potH=chip?`<div style="font-size:12px;color:#ffcc66">Pot : ${MAN(potV*bb)}</div><div style="display:inline-block;margin-top:2px;background:rgba(60,0,0,.55);border-radius:14px;padding:2px 16px;font-size:15px;font-weight:800;color:#ffe082">${MAN(potV*bb)}</div>`:`<div style="display:inline-block;margin-top:4px;background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:2px 16px;font-size:15px;font-weight:800;color:#ffe082">${N1(potV)}BB</div>`;
+ return `<style>@keyframes apIn{to{opacity:1}}</style><div style="position:relative;width:100%;max-width:440px;aspect-ratio:1.25;margin:6px auto 2px;background:${K.bg};border-radius:14px;overflow:hidden">
+  <div style="position:absolute;left:13%;right:13%;top:12%;bottom:12%;border-radius:50%/48%;background:${K.felt};border:9px solid ${K.rail};box-shadow:${K.rim}"></div>
+  <div style="position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);text-align:center;line-height:1.35;color:${K.ctr};width:60%">${potH}<div style="font-size:11px;margin-top:3px;opacity:.9">${bl}</div><div style="font-size:10px;opacity:.6;margin-top:2px">${n}명 테이블</div></div>
   ${p.st.map((_,i)=>seat(i)).join('')}</div>`;}
 function buildX(p,S){const {e,r,rb}=S,k=p.k,xs=p.xs||'o',P=POSN(e.n),D=e.D,hn=SAT.handName(k),pct=x=>Math.round(x*100)+'%';
  const q=probs(p,r,k),ans=amax(q),bq=probs(p,rb,k),bs=amax(bq),dif=bs!==ans;
@@ -1140,7 +1153,7 @@ function build(p){const S=solveP(p);if(!S)return null;if(p.s==='x')return buildX
   else if(p.s==='r'){set(p.v,p.vb+p.R,N1(p.R)+'BB 오픈');pot+=p.R-bl(p.v);}
   else if(p.s==='m'){set(p.v,p.vb,'올인');set(p.v2,p.vb2,p.vb2>p.vb?'올인':'콜');pot+=p.vb+p.vb2-bl(p.v)-bl(p.v2);}
   else if(p.s==='q'){set(p.v,p.vb+p.R,N1(p.R)+'BB 오픈');set(p.v2,p.vb2,'3벳 올인');pot+=p.R+p.vb2-bl(p.v)-bl(p.v2);}
-  const tb=tableX({h:p.h,st,acts,avgS,pot,xs:'t'},e,P,i=>i===p.h?'나':lab[i]||(i<p.h?'폴드':'남음'));
+  const tb=tableX({h:p.h,st,acts,avgS,pot,xs:'t',bb:p.bb},e,P,i=>i===p.h?'나':lab[i]||(i<p.h?'폴드':'남음'));
   show=show.replace('<br><span class="hand">',tb+'<span class="hand">');}
  return {a:ans,opts,why,show,expl,rule,sum:`${SN[p.s]} ${heroP} ${N1(p.hb)}BB ${hn}`,tag:TAG[p.s],p,lv:1,
   fmt:id=>(opts.find(o=>o[0]===id)||[0,id])[1],chart:chartHtml(p,r,k)};}
@@ -1267,7 +1280,7 @@ ${(()=>{const k=this.gsel&&this.gsel!=='rand'?this.gsel:null,x=k&&(this.cfg||[])
    <button class="btn full gr" style="margin-top:10px" onclick="CUR.toMenu()">메뉴</button>`;}
   const T=BBT[S.D.tab],bb=T[S.bi],hb=S.chips/bb,g=S.stage===1?S.goal:S.goal2;
   const rk=estRank(hb,S.en*START/S.pl/bb,S.pl),rkC=`<div class="card" style="display:flex;justify-content:space-around;align-items:center;text-align:center;padding:8px 6px;margin-bottom:8px;line-height:1.3"><div><div class="m" style="font-size:12px">내 추정 등수</div><div style="font-size:22px;font-weight:900;color:${rk<=g?'#2e7d32':'#c62828'}">약 ${rk}등</div><div class="m" style="font-size:12px">${S.pl}명 중</div></div><div><div class="m" style="font-size:12px">머니인</div><div style="font-size:22px;font-weight:900">${g}등</div><div style="font-size:12px;font-weight:700;color:${rk<=g?'#2e7d32':'#c62828'}">${rk<=g?'✅ 안쪽':'🔺 '+(rk-g)+'등 차이'}</div></div><div><div class="m" style="font-size:12px">내 스택</div><div style="font-size:22px;font-weight:900">${N1(Math.round(hb*10)/10)}BB</div><div class="m" style="font-size:12px">평균 ${N1(Math.round(S.en*START/S.pl/bb*10)/10)}BB</div></div></div>`;
-  const hdOf=ch=>{const r=estRank(ch/bb,S.en*START/S.pl/bb,S.pl);return `<div style="display:flex;justify-content:space-between;align-items:baseline;font-size:16px;margin:-2px 0 8px"><span><b>${S.D.n}</b> &nbsp;${ch>0?`<b style="font-size:22px;color:${r<=(S.stage===1?S.goal:S.goal2)?'#2e7d32':'var(--ink)'}">${r}/${S.pl}</b> &nbsp;·&nbsp; `:''}블라인드 ${(bb/2).toLocaleString()}/${bb.toLocaleString()} (Lv.${S.bi+1})${S.pre?' · 레지 중':''}</span><a onclick="CUR.toMenu()" style="color:var(--blue);cursor:pointer;font-size:13.5px">메뉴</a></div>`;};   // 실제 게임처럼: 대회 · 내 등수/남은 인원 · 블라인드만
+  const hdOf=(ch,nb)=>{const r=estRank(ch/bb,S.en*START/S.pl/bb,S.pl);return `<div style="display:flex;justify-content:space-between;align-items:baseline;font-size:16px;margin:-2px 0 8px"><span><b>${S.D.n}</b> &nbsp;${ch>0?`<b style="font-size:22px;color:${r<=(S.stage===1?S.goal:S.goal2)?'#2e7d32':'var(--ink)'}">${r}/${S.pl}</b> &nbsp;·&nbsp; `:''}${nb?'Lv.'+(S.bi+1):'블라인드 '+(bb/2).toLocaleString()+'/'+bb.toLocaleString()+' (Lv.'+(S.bi+1)+')'}${S.pre?' · 레지 중':''}</span><a onclick="CUR.toMenu()" style="color:var(--blue);cursor:pointer;font-size:13.5px">메뉴</a></div>`;};   // 실제 게임처럼: 대회 · 내 등수/남은 인원 · 블라인드만
   const hd=hdOf(S.chips);   // 시뮬: 위 작은 글씨 줄 없앰(문제 카드와 같은 내용이라 헷갈림) /*aofsimclean*/
   const logH=()=>`<div class="card"><div class="t">결정 기록</div>${S.log.map((x,k)=>`<div class="row"><span>${k+1}. ${x.sum} → ${x.ok?'✅':'❌'}</span><span class="m">${x.kind==='fold'?'폴드':x.kind==='flat'?'콜(플랍)':x.kind==='steal'?'가져감':x.w>0?'승':x.w<0?'패':'무'} ${x.d>=0?'+':''}${x.d.toLocaleString()}</span></div>`).join('')||'<div class="m">없음</div>'}</div>`;
   let resH='',resX='';
@@ -1289,7 +1302,7 @@ ${(()=>{const k=this.gsel&&this.gsel!=='rand'?this.gsel:null,x=k&&(this.cfg||[])
   const q=S.q;if(S.tq!==q)this.simTStart();
   const tm0=Math.max(0,S.dl-Date.now()),tot0=(S.bankOn?AP_BANK:(AP_T[S.gk]||15))*1000,tb=AP_TB[S.gk];
   const tmr=`<div style="margin:2px 0 8px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span id="simTm" style="font-size:24px;font-weight:900;${tm0<=3000?'color:#d33b3b':''}">${(tm0/1000).toFixed(1)}초</span><span class="m">${S.bankOn?'⏱ 타임뱅크 사용 중 ('+AP_BANK+'초)':'베팅 시간 '+(AP_T[S.gk]||15)+'초 · 지나면 '+(tb&&S.banks>0?'타임뱅크 자동':'자동 폴드')}${tb?' · 타임뱅크 <b>'+S.banks+'</b>/'+AP_BANKS:''}</span></div><div style="height:8px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:3px"><div id="simBar" style="height:100%;width:${Math.min(100,tm0/tot0*100)}%;background:${S.bankOn?'#e08a00':tm0<=3000?'#d33b3b':'#1565c0'}"></div></div></div>`;
-  return hd+(S.msg?`<div class="m" style="text-align:center;margin-bottom:6px">${S.msg}</div>`:'')+`<style>.hand{font-size:34px;font-weight:800;letter-spacing:1px}</style><div class="card" style="text-align:center;font-size:16px;line-height:1.8">${q.show}</div>`+tmr+
+  return hdOf(S.chips,1)+(S.msg?`<div class="m" style="text-align:center;margin-bottom:6px">${S.msg}</div>`:'')+`<style>.hand{font-size:34px;font-weight:800;letter-spacing:1px}</style><div class="card" style="text-align:center;font-size:16px;line-height:1.8">${q.show}</div>`+tmr+
    `<div style="display:grid;grid-template-columns:repeat(${q.opts.length},1fr);gap:8px">${q.opts.map(o=>`<button class="btn ${o[0]==='f'?'gr':''}" style="font-size:17px;padding:14px 6px" onclick="CUR.simAns('${o[0]}')">${o[1]}</button>`).join('')}</div>`;},
  view(){if(!this.mode)return this.menu();if(this.mode==='sim')return this.simView();const W=this.mode==='W',q=this.q;
   const gl=this.gsel==='rand'||!this.gsel?'랜덤':GD[this.gsel].n;
