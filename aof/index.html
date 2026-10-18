@@ -738,12 +738,13 @@ const SNAP_API="https://211-233-211-164.sslip.io";   /*snapsrv*/
 const SNAP_URL=SNAP_API?SNAP_API+'/api/snap/read':'http://127.0.0.1:8765/ocrtable';
 function snapApply(res){
   const p=Object.assign({},res.patch); Object.keys(p).forEach(k=>{if(p[k]===undefined) delete p[k];});
+  if(!st.snapMode) st.easyBak={level:st.level,mode:st.mode,modeManual:st.modeManual,startPick:st.startPick?JSON.parse(JSON.stringify(st.startPick)):null};   /*snapsep*/
   clearSit(); Object.assign(st,p);
   st.tend=new Array(st.tsize).fill(0); st.settled={}; st.hist=[];
   if(res.scen==='open') st.proV='vs';
   {const g=GAMES[st.game]; if(g&&g.blinds){ let bi=0,bd=1e18; g.blinds.forEach((b,i)=>{const d=Math.abs(b-(+st.bb)); if(d<bd){bd=d;bi=i;}}); st.level=bi+1; st.bbPrev=g.blinds[bi];
     if(bd>0) res.note=(res.note?res.note+'\n':'')+'블라인드 '+st.bb+'이(가) 목록에 없어 가장 가까운 '+(bi+1)+'레벨로 맞췄어요'; }
-   if(window._snapGmiss) res.note=(res.note?res.note+'\n':'')+'게임을 못 알아봐서 '+GAMES[st.game].name+' 기준이에요. 차트 위 게임 버튼으로 바꿔 주세요'; if(st.startPick) delete st.startPick[st.game]; st.snapMode=true; st.ui='snap'; window.scrollTo(0,0); st.modeManual=false; rescaleOK=false;}   /*snapmode*/
+   if(window._snapGmiss) res.note=(res.note?res.note+'\n':'')+'게임을 못 알아봐서 '+GAMES[st.game].name+' 기준이에요. 차트 위 게임 버튼으로 바꿔 주세요'; st.snapMode=true; st.ui='snap'; window.scrollTo(0,0); st.modeManual=false; rescaleOK=false;}   /*snapmode*/
   schedule();
 }
 window.addEventListener('load',()=>{
@@ -1106,11 +1107,11 @@ function deepOpen(){
 // ===== 앞에서 오픈(레이즈) → 나: 3벳 올인 / 콜(플랍) / 폴드 =====
 // 오픈한 사람 범위 = 그 자리 일반 오픈 범위(성향 반영). 내 올인에 오픈한 사람이 콜하는 범위와 내 올인 범위를 번갈아 맞춰요
 /*snaptab*/
-/*snapclear*/function snapClear(){st.snapMode=false;st.ui="easy";document.body.classList.remove("snaptab");try{$("mEasy").click();}catch(e){}try{save();}catch(e){}try{schedule();}catch(e){}try{drawSnapTab();}catch(e){}window.scrollTo(0,0);}
+/*snapclear*/function snapClear(){st.snapMode=false;st.ui="easy";if(st.easyBak){st.level=st.easyBak.level;st.mode=st.easyBak.mode;st.modeManual=st.easyBak.modeManual;st.startPick=st.easyBak.startPick||{};st.easyBak=null;}else{st.level=null;st.modeManual=false;}document.body.classList.remove("snaptab");try{$("mEasy").click();}catch(e){}try{save();}catch(e){}try{schedule();}catch(e){}try{drawSnapTab();}catch(e){}window.scrollTo(0,0);}
 /*snapent*/function snapEnt(v){v=+v;if(v>0){st.entries=v;try{save();}catch(e){}try{schedule();}catch(e){}}}
 /*snapmode2*/function snapMode(m){st.mode=m;st.modeManual=true;try{save();}catch(e){}try{schedule();}catch(e){}}
 function snapModeBtns(){return [["chip","칩EV (마감 전)"],["icm","ICM (마감 후)"]].map(function(x){return '<button type="button" onclick="snapMode(\''+x[0]+'\')" style="margin-right:6px;padding:4px 10px;border-radius:8px;border:1px solid #2f7d5b;font-size:13px;font-weight:700;cursor:pointer;'+(st.mode===x[0]?'background:#2f7d5b;color:#fff':'background:#fff;color:#2f7d5b')+'">'+x[1]+'</button>';}).join("");}
-/*snapgame*/function snapGame(k){var g=GAMES[k]; if(!g) return; st.game=k; st.level=null; st.modeManual=false; if(st.startPick) delete st.startPick[k];if(g.blinds){var bi=0,bd=1e18; g.blinds.forEach(function(b,i){var d=Math.abs(b-(+st.bb)); if(d<bd){bd=d;bi=i;}}); st.level=bi+1; st.bbPrev=g.blinds[bi];}applyGame(); try{save();}catch(e){} schedule(); try{drawSnapTab();}catch(e){}}
+/*snapgame*/function snapGame(k){var g=GAMES[k]; if(!g) return; st.game=k; st.level=null; st.modeManual=false;if(g.blinds){var bi=0,bd=1e18; g.blinds.forEach(function(b,i){var d=Math.abs(b-(+st.bb)); if(d<bd){bd=d;bi=i;}}); st.level=bi+1; st.bbPrev=g.blinds[bi];}applyGame(); try{save();}catch(e){} schedule(); try{drawSnapTab();}catch(e){}}
 function snapGameBtns(){return ["wpl","pm","hg"].filter(function(k){return GAMES[k];}).map(function(k){return '<button type="button" onclick="snapGame(\''+k+'\')" style="margin-right:6px;padding:4px 10px;border-radius:8px;border:1px solid #2f7d5b;font-size:13px;font-weight:700;cursor:pointer;'+(st.game===k?'background:#2f7d5b;color:#fff':'background:#fff;color:#2f7d5b')+'">'+GAMES[k].name+'</button>';}).join("");}
 /*snapview*/function snapView(b){st.snapBig=!!b;try{save();}catch(e){}try{drawSnapTab();}catch(e){}}
 function snapViewBtns(){return [[0,"미니차트 (한 화면)"],[1,"큰 차트"]].map(function(x){return '<button type="button" onclick="snapView('+x[0]+')" style="margin-right:6px;padding:4px 10px;border-radius:8px;border:1px solid #2f7d5b;font-size:13px;font-weight:700;cursor:pointer;'+((!!st.snapBig)===(x[0]===1)?'background:#2f7d5b;color:#fff':'background:#fff;color:#2f7d5b')+'">'+x[1]+'</button>';}).join("");}
