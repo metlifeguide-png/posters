@@ -713,7 +713,7 @@ function snapToSt(r){
   const ring=sit.slice(k+1).concat(sit.slice(0,k+1));   // 0=UTG … n-3=BTN, n-2=SB, n-1=BB (aof.html posted() 기준)
   const n=ring.length, hero=ring.findIndex(s=>s.i===0), hs=ring[hero];
   const tbl=new Array(n).fill(null);
-  ring.forEach((s,j)=>{ if(j!==hero && +s.stack>0) tbl[j]=R1(toBB(s.stack)); });
+  ring.forEach((s,j)=>{ if(j!==hero){ const sv=+s.stack>0?+s.stack:(+s.bet>0?+s.bet:0); if(sv>0) tbl[j]=R1(toBB(sv)); } }); /*snapallin*/
   const patch={game,tsize:n,hero,heroStack:R1(toBB(hs.stack)),bb,players:+r.total||undefined,rank:r.rank!=null?String(r.rank):"",tbl,ui:'pro'};
   const others=ring.map((s,j)=>({s,j})).filter(o=>o.j!==hero);
   const aggr=pre?[]:others.filter(o=>o.s.act==='allin'||o.s.act==='raise'||(+o.s.bet>bb*1.0001&&o.j<n-2));
