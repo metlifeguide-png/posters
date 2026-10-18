@@ -92,6 +92,7 @@ details.more summary{cursor:pointer;color:var(--accent);font-weight:600}
 body.easy .pro-only{display:none!important}
 /*snaptab*/ body.snaptab .modebar~*:not(#snapTab):not(script):not(style){display:none!important}
 body.snaptab #snapTab{display:block!important}
+/*snapmini*/ #snapTab .sgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px;align-items:start} #snapTab .sgrid>div{margin:0!important;min-width:0} #snapTab .sgrid>.note{grid-column:1/-1} #snapTab .sgrid .chart{gap:1px} #snapTab .sgrid .c{border-radius:2px;font-size:clamp(5px,1.1vw,9px)} #snapTab .sgrid .c em{letter-spacing:-.5px} #snapTab .sgrid>div>div:first-child{font-size:12px!important;margin-bottom:2px!important} #snapTab .sgrid>div>div[style*="font-size:13px"]{font-size:11px!important;line-height:1.35!important} @media(max-width:520px){#snapTab .sgrid{gap:6px 6px}}
 #snapTab{padding:10px 12px}
 body:not(.easy) .easy-only{display:none!important}
 .ez-status{font-size:13px;line-height:1.55;background:var(--surface2);border-radius:10px;padding:8px 10px;margin-top:8px}
@@ -727,7 +728,7 @@ function snapToSt(r){
     return {ok:true,scen:'open',patch,note:pre?'미리 모드: 표만 채웠어요. 앞 상황(올폴드·오픈·올인)은 화면에서 골라 주세요':'앞 사람 모두 폴드 → 내가 오픈/올인'};
   }
   const a=aggr.reduce((x,y)=>(+y.s.bet>+x.s.bet?y:x));
-  if(a.j>=hero) return no('올인/레이즈한 자리가 내 뒤라서 계산할 수 없어요');
+  if(a.j>hero){ /*snapbehind*/ patch.heroStack=R1(toBB((+hs.stack)+(+hs.bet||0))); return {ok:true,scen:'open',patch,note:'내가 오픈한 뒤 뒤 자리가 올인 → ② 내가 오픈 → 올인 받으면 차트를 보세요'}; } if(a.j===hero) return no('내 자리를 상대로 잘못 읽었어요');
   const note=aggr.length>1?'레이즈/올인이 여러 명 → 가장 큰 베팅 기준':'';
   if(a.s.act==='allin') return {ok:true,scen:'vs',patch:Object.assign(patch,{proV:'vs',qvil:a.j,qvStack:R1(toBB(a.s.bet))}),note};
   return {ok:true,scen:'vr',patch:Object.assign(patch,{proV:'vr',qvil:a.j,qvStack:R1(toBB(a.s.stack)),vraise:R1(toBB(a.s.bet))}),note};
@@ -1119,7 +1120,7 @@ function drawSnapTab(){
   const sec=(title,sum,layers,leg)=>'<div style="margin:14px 0 20px"><div style="font-weight:800;font-size:15px;margin-bottom:4px">'+title+'</div>'+(sum?'<div style="font-size:13px;margin-bottom:6px;line-height:1.5">'+sum+'</div>':'')+'<div class="chart">'+cells(layers)+'</div><div style="font-size:12px;margin-top:4px">'+leg.map(x=>sw(x[0],x[1])).join("")+sw("폴드","var(--cell)")+'</div></div>';
   const wait=t=>'<div style="margin:14px 0 20px"><b>'+t+'</b><br><span class="note">'+(busy?"계산 중…":"이 자리에서는 해당 없음")+'</span></div>';
   let h='<button type="button" onclick="snapClear()" style="float:right;margin:0 0 6px 8px;padding:8px 14px;border-radius:10px;border:1px solid #c33;background:#fff;color:#c33;font-weight:700;font-size:14px;cursor:pointer">🗑 지우기</button><div style="font-weight:800;font-size:16px">📸 스샷 차트 · '+P[st.hero]+' · 내 '+st.heroStack+'BB · 평균 '+r1(avgBB())+'BB</div><div class="note" style="margin-top:2px"><b style="color:var(--push)">⏱ 시작 시각 없음</b> (게임 시간 반영 안 함 · 스샷 블라인드 기준)<span style="display:none">/*snaptime*/</span><br>'+lvLabel()+' · 블라인드 '+st.bb+' · '+n+'명 테이블'+(mf?' · 티켓 우선 구간: 최상위 패만 표시':'')+'</div>';
-  const qa=window.QA, qb=window.QB, qc=(st.hero>=1?window.QC:null);
+  h+='<div class="sgrid">'; const qa=window.QA, qb=window.QB, qc=(st.hero>=1?window.QC:null);
   const T1='① 앞 모두 폴드 → '+P[st.hero]+' 액션';
   if(st.hero===n-1) h+='<div class="note" style="margin:14px 0">BB는 앞이 다 폴드하면 이긴 판이라 ①②는 없어요.</div>';
   else if(qa&&qa.sh){
@@ -1137,7 +1138,7 @@ function drawSnapTab(){
     else h+=wait(T4);
     h+='<div class="note">③④의 상대는 내 바로 앞 자리('+P[st.qvil]+')로 계산했어요. 다른 자리·스택은 ⚡이지 모드에서 바꿔요.</div>';
   }
-  el.innerHTML=h;
+  h+='</div>'; el.innerHTML=h;
 }
 function drawQuickC(r){
   if(!r){window.QC=null; drawVerdict(); return;}
