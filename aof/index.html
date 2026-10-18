@@ -1107,6 +1107,7 @@ function deepOpen(){
 // 오픈한 사람 범위 = 그 자리 일반 오픈 범위(성향 반영). 내 올인에 오픈한 사람이 콜하는 범위와 내 올인 범위를 번갈아 맞춰요
 /*snaptab*/
 /*snapclear*/function snapClear(){st.snapMode=false;st.ui="easy";document.body.classList.remove("snaptab");try{$("mEasy").click();}catch(e){}try{save();}catch(e){}try{schedule();}catch(e){}try{drawSnapTab();}catch(e){}window.scrollTo(0,0);}
+/*snapent*/function snapEnt(v){v=+v;if(v>0){st.entries=v;try{save();}catch(e){}try{schedule();}catch(e){}}}
 function drawSnapTab(){
   const el=$("snapTab"); if(!el||st.ui!=="snap") return;
   const P=POSN(), n=st.tsize, pp=x=>(x*100).toFixed(1)+"%";
@@ -1119,7 +1120,7 @@ function drawSnapTab(){
   const sw=(t,c)=>'<span style="display:inline-flex;align-items:center;gap:4px;margin-right:10px"><i style="display:inline-block;width:11px;height:11px;border-radius:3px;background:'+c+'"></i>'+t+'</span>';
   const sec=(title,sum,layers,leg)=>'<div style="margin:14px 0 20px"><div style="font-weight:800;font-size:15px;margin-bottom:4px">'+title+'</div>'+(sum?'<div style="font-size:13px;margin-bottom:6px;line-height:1.5">'+sum+'</div>':'')+'<div class="chart">'+cells(layers)+'</div><div style="font-size:12px;margin-top:4px">'+leg.map(x=>sw(x[0],x[1])).join("")+sw("폴드","var(--cell)")+'</div></div>';
   const wait=t=>'<div style="margin:14px 0 20px"><b>'+t+'</b><br><span class="note">'+(busy?"계산 중…":"이 자리에서는 해당 없음")+'</span></div>';
-  let h='<button type="button" onclick="snapClear()" style="float:right;margin:0 0 6px 8px;padding:8px 14px;border-radius:10px;border:1px solid #c33;background:#fff;color:#c33;font-weight:700;font-size:14px;cursor:pointer">🗑 지우기</button><div style="font-weight:800;font-size:16px">📸 스샷 차트 · '+P[st.hero]+' · 내 '+st.heroStack+'BB · 평균 '+r1(avgBB())+'BB</div><div class="note" style="margin-top:2px"><b style="color:var(--push)">⏱ 시작 시각 없음</b> (게임 시간 반영 안 함 · 스샷 블라인드 기준)<span style="display:none">/*snaptime*/</span><br>'+lvLabel()+' · 블라인드 '+st.bb+' · '+n+'명 테이블'+(mf?' · 티켓 우선 구간: 최상위 패만 표시':'')+'</div>';
+  let h='<button type="button" onclick="snapClear()" style="float:right;margin:0 0 6px 8px;padding:8px 14px;border-radius:10px;border:1px solid #c33;background:#fff;color:#c33;font-weight:700;font-size:14px;cursor:pointer">🗑 지우기</button><div style="font-weight:800;font-size:16px">📸 스샷 차트 · '+P[st.hero]+' · 내 '+st.heroStack+'BB · 평균 '+r1(avgBB())+'BB</div><div class="note" style="margin:2px 0"><label>총 엔트리 <input type="number" min="2" step="1" value="'+st.entries+'" style="width:72px;padding:2px 4px" onchange="snapEnt(this.value)"> 명 · 남은 '+st.players+'명 (스샷엔 없는 값이라 직접 맞춰 주세요)</label></div><div class="note" style="margin-top:2px"><b style="color:var(--push)">⏱ 시작 시각 없음</b> (게임 시간 반영 안 함 · 스샷 블라인드 기준)<span style="display:none">/*snaptime*/</span><br>'+lvLabel()+' · 블라인드 '+st.bb+' · '+n+'명 테이블'+(mf?' · 티켓 우선 구간: 최상위 패만 표시':'')+'</div>';
   h+='<div class="sgrid">'; const qa=window.QA, qb=window.QB, qc=(st.hero>=1?window.QC:null);
   const T1='① 앞 모두 폴드 → '+P[st.hero]+' 액션';
   if(st.hero===n-1) h+='<div class="note" style="margin:14px 0">BB는 앞이 다 폴드하면 이긴 판이라 ①②는 없어요.</div>';
