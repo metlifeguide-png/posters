@@ -700,6 +700,63 @@ const SCEN={
 };
 const $=id=>document.getElementById(id);
 const st={game:"hg",mode:"icm",entries:150,players:40,bb:400,tsize:9,scen:"open",hero:6,vil:8,qvil:5,heroStack:20,vilStack:30,others:{},tbl:[],tend:[],hist:[],ui:"easy",ezScen:null,pick:{k:null},settled:{},bustLog:[],caller:null,shorter:"",rank:"",tstyle:"normal",raise:"2",qvStack:"",level:null,modeManual:false,starts:{}};
+/*snapmap*/ // 표읽기(/ocrtable) 결과 → aof.html st 값. 반환 {ok, why} 또는 {ok:true, scen, patch, note}
+function snapToSt(r){
+  const R1=x=>Math.round(x*10)/10, no=why=>({ok:false,why});
+  if(!r||typeof r!=='object') return no('읽기 결과가 비었어요');
+  if(r.turn==='reserve') return no('내 차례가 온 순간 화면을 올려주세요 (예약 버튼 화면)');
+  if(r.turn!=='my_turn') return no('내 차례 화면이 아니에요');
+  const game={hg:'hg',wpl:'wpl',pm:'pm'}[r.app]; if(!game) return no('게임(한게임·WPL·피망)을 못 알아봤어요');
+  const bb=+r.bb; if(!(bb>0)) return no('블라인드를 못 읽었어요');
+  const seats=r.seats||[], toBB=v=>r.unit==='bb'?+v:(+v)/bb;
+  const sit=seats.map((s,i)=>Object.assign({i},s)).filter(s=>!s.out);
+  const k=sit.findIndex(s=>s.btn==='BB'); if(k<0||sit.length<3) return no('BB 자리를 못 찾았어요');
+  const ring=sit.slice(k+1).concat(sit.slice(0,k+1));   // 0=UTG … n-3=BTN, n-2=SB, n-1=BB (aof.html posted() 기준)
+  const n=ring.length, hero=ring.findIndex(s=>s.i===0), hs=ring[hero];
+  const tbl=new Array(n).fill(null);
+  ring.forEach((s,j)=>{ if(j!==hero && +s.stack>0) tbl[j]=R1(toBB(s.stack)); });
+  const patch={game,tsize:n,hero,heroStack:R1(toBB(hs.stack)),bb,players:+r.total||undefined,rank:r.rank!=null?String(r.rank):"",tbl,ui:'pro'};
+  const others=ring.map((s,j)=>({s,j})).filter(o=>o.j!==hero);
+  const aggr=others.filter(o=>o.s.act==='allin'||o.s.act==='raise'||(+o.s.bet>bb*1.0001&&o.j<n-2));
+  if(!aggr.length){
+    const maxB=Math.max(0,...others.map(o=>toBB(o.s.bet||0)));
+    if(hero>=n-2 && maxB<=1.0001) return no('앞 사람이 레이즈·올인 없이 돌아온 판(림프·체크 옵션)은 AOF 계산 대상이 아니에요');
+    return {ok:true,scen:'open',patch,note:'앞 사람 모두 폴드 → 내가 오픈/올인'};
+  }
+  const a=aggr.reduce((x,y)=>(+y.s.bet>+x.s.bet?y:x));
+  if(a.j>=hero) return no('올인/레이즈한 자리가 내 뒤라서 계산할 수 없어요');
+  const note=aggr.length>1?'레이즈/올인이 여러 명 → 가장 큰 베팅 기준':'';
+  if(a.s.act==='allin') return {ok:true,scen:'vs',patch:Object.assign(patch,{proV:'vs',qvil:a.j,qvStack:R1(toBB(a.s.bet))}),note};
+  return {ok:true,scen:'vr',patch:Object.assign(patch,{proV:'vr',qvil:a.j,qvStack:R1(toBB(a.s.stack)),vraise:R1(toBB(a.s.bet))}),note};
+}
+
+const SNAP_URL='http://127.0.0.1:8765/ocrtable';
+function snapApply(res){
+  const p=Object.assign({},res.patch); Object.keys(p).forEach(k=>{if(p[k]===undefined) delete p[k];});
+  clearSit(); Object.assign(st,p);
+  st.tend=new Array(st.tsize).fill(0); st.settled={}; st.hist=[];
+  if(res.scen==='open') st.proV='vs';
+  schedule();
+}
+window.addEventListener('load',()=>{
+  const b=document.createElement('button'), f=document.createElement('input');
+  b.type='button'; b.textContent='📸 스샷으로 채우기';
+  b.style.cssText='position:fixed;right:12px;bottom:12px;z-index:50;padding:10px 14px;border-radius:20px;border:0;background:#2f7d5b;color:#fff;font-weight:700';
+  f.type='file'; f.accept='image/*'; f.style.display='none';
+  b.onclick=()=>f.click();
+  f.onchange=async()=>{
+    const file=f.files[0]; if(!file) return; b.textContent='읽는 중…';
+    try{
+      const b64=await new Promise((ok,ng)=>{const fr=new FileReader(); fr.onload=()=>ok(String(fr.result).split(',')[1]); fr.onerror=ng; fr.readAsDataURL(file);});
+      const resp=await fetch(SNAP_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({imgs:[{mime:file.type||'image/jpeg',b64}]})});
+      const res=snapToSt(await resp.json());
+      if(!res.ok) alert(res.why); else { snapApply(res); if(res.note) alert(res.note); }
+    }catch(e){ alert('스샷 읽기 실패: 8_stack_input.bat 이 켜져 있는지 확인해 주세요'); }
+    b.textContent='📸 스샷으로 채우기'; f.value='';
+  };
+  document.body.append(b,f);
+});
+
 function load(){try{const s=JSON.parse(localStorage.getItem("sat_v15")||"null");if(s) Object.assign(st,s); if(st.ezScen==="rc") st.ezScen="open";}catch(e){}}
 function save(){try{localStorage.setItem("sat_v15",JSON.stringify(st));}catch(e){}}
 const POSN=()=>SAT.POS[st.tsize];
