@@ -652,12 +652,20 @@ const valid=x=>x&&x.id&&x.b&&x.h&&OPT[x.f]&&OPT[x.f].some(o=>o[0]===x.a);
 const bank=()=>(typeof RIVER_QS!=='undefined'?RIVER_QS:[]).filter(valid).filter(x=>!(typeof qblkHas==='function'&&qblkHas('riverq',x.id)));
 function mk(p){const B=bank();let b=p&&p.id?B.find(x=>x.id===p.id):null;if(!b)b=pick(B);
  const opts=OPT[b.f];return {b,opts,a:opts.findIndex(o=>o[0]===b.a),tag:'rv_'+b.f,p:{lv:1,id:b.id}};}
-function sit(b){return `<div class="m">${esc(SPOT[b.s]||b.s)} · BTN 오픈 · BB 콜${b.s==='3BP100A'?' (BB 3벳 · BTN 콜)':''}</div>
- <div class="m" style="margin-top:2px">${LINE.f[b.l[0]]||''}<br>${LINE.t[b.l[1]]||''}</div>
- <div style="margin-top:8px">${cards(b.b)}</div>
- <div style="margin-top:6px">팟 <b>${bb(b.p)}</b> · 남은 스택 <b>${bb(b.e)}</b></div>
- <div style="margin-top:8px">내 패 (${b.f==='first'?'BB':'BTN'}) ${cards(b.h)}</div>
- <div style="margin-top:8px;font-weight:700">${b.f==='first'?'리버, 내가 먼저 행동해요. 어떻게 할까요?':b.f==='check'?'리버, BB가 체크했어요. 어떻게 할까요?':`리버, BB가 ${b.bt||75}% 벳 (${bb(b.p*(b.bt||75)/100)})을 했어요. 어떻게 할까요?`}</div>`;}
+/*rvsim*/function sit(b){
+ const sz=(c,n)=>{const s=SU[c[1]]||['?','#000'];return `<span style="display:inline-block;min-width:${n+14}px;padding:5px 6px;margin:2px 4px 2px 0;border:2px solid #aaa;border-radius:8px;background:#fff;color:${s[1]};font-weight:900;font-size:${n}px;line-height:1.1;text-align:center">${c[0]==='T'?'10':c[0]}${s[0]}</span>`;};
+ const cs=(s,n)=>(s.match(/../g)||[]).map(c=>sz(c,n)).join('');
+ const me=b.f==='first'?'BB':'BTN',op=b.f==='first'?'BTN':'BB';
+ const pre=b.s==='3BP100A'?'BTN 오픈 → BB 3벳 → BTN 콜':'BTN 오픈 → BB 콜';
+ const act=(k,v)=>((LINE[k]||{})[v]||'').replace(/^[^:]*:\s*/,'');
+ const row=(i,tag,body)=>`<div class="rvr" style="animation-delay:${(i*0.5).toFixed(1)}s;display:flex;gap:10px;align-items:center;padding:9px 0;border-top:1px solid rgba(0,0,0,.12)"><div style="flex:0 0 56px;font-size:15px;font-weight:900;color:#555">${tag}</div><div style="flex:1;min-width:0">${body}</div></div>`;
+ const sub=t=>`<div style="font-size:17px;font-weight:700;margin-top:3px;color:#333">${t}</div>`;
+ const q=b.f==='first'?'리버, 내가 먼저 행동해요. 어떻게 할까요?':b.f==='check'?'리버, BB가 체크했어요. 어떻게 할까요?':`리버, BB가 ${b.bt||75}% 벳 (<span style="color:#c62828">${bb(b.p*(b.bt||75)/100)}</span>)을 했어요. 어떻게 할까요?`;
+ return `<style>.rvr{opacity:0;animation:rvIn .35s ease forwards}@keyframes rvIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@media (prefers-reduced-motion:reduce){.rvr{opacity:1;animation:none}}</style>
+ <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><div style="font-size:17px;font-weight:900">${esc(SPOT[b.s]||b.s)}</div><div style="font-size:16px">상대 <b>${op}</b> · 나 <b style="background:#9a5a2d;color:#fff;padding:2px 10px;border-radius:10px">${me}</b></div></div>
+ <div style="margin-top:10px;font-size:17px;font-weight:700">내 패 ${cs(b.h,32)}</div>
+ <div style="margin-top:6px">${row(0,'프리플랍',sub(pre))}${row(1,'플랍',cs(b.b.slice(0,6),26)+sub(act('f',b.l[0])))}${row(2,'턴',cs(b.b.slice(6,8),26)+sub(act('t',b.l[1])))}${row(3,'리버',cs(b.b.slice(8,10),26)+`<div style="font-size:18px;margin-top:3px">팟 <b>${bb(b.p)}</b> · 남은 스택 <b>${bb(b.e)}</b></div>`)}</div>
+ <div class="rvr" style="animation-delay:2s;margin-top:8px;padding:12px;border-radius:10px;background:rgba(154,90,45,.1);border:2px solid rgba(154,90,45,.4);font-size:20px;font-weight:900;line-height:1.5;text-align:center">${q}</div>`;}
 function frs(b){return Object.keys(b.fr).filter(k=>b.fr[k]>0).sort((x,y)=>b.fr[y]-b.fr[x]).map(k=>`${FRN[k]||k} ${b.fr[k]}%`).join(' · ');}
 G.push({k:'riverq',cat:'홀덤',e:'🌊',n:'리버 트레이너',d:'헤즈업 리버 · 벳·체크·콜·폴드를 솔버 정답으로 맞히기',
  start(){this.lv=null;this.fb=null;this.over=false;rr();},
@@ -682,11 +690,11 @@ G.push({k:'riverq',cat:'홀덤',e:'🌊',n:'리버 트레이너',d:'헤즈업 �
   <div class="m" style="text-align:center;margin-top:10px">${esc(NOTE)}</div>`;},
  view(){if(!this.lv)return this.menu();const q=this.q,W=this.lv==='W';
   const nextBtn=(this.fb&&!this.over)?` <button class="btn g" style="padding:6px 14px;font-size:14px;margin-left:8px;white-space:nowrap" onclick="CUR.next()">다음 ▶</button>`:'';
-  const hd=`<div class="gst"><span>${W?'📒 오답노트':'리버'} · ${W?`${Math.min(this.i+(this.fb||this.over?0:1),this.N)} / ${this.N}`:`🔥 연속 <b>${this.ok}</b> · 최고 ${stkBest('riverq')}연속`}</span><span>정답 <b>${this.ok}</b>${nextBtn} <a onclick="CUR.start()" style="color:var(--blue);cursor:pointer;margin-left:6px">처음으로</a></span></div>`;
-  const fbCard=L=>{const b=L.q.b,w=(WHY[b.a]||{})[b.k]||'';return `<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:16px">${L.ok?'✅ 정답':'❌ 오답'} · ${L.t.toFixed(1)}초 <span class="m">· ${CAT[b.f]}</span>${typeof qrepBtn==='function'?qrepBtn('riverq',b.id,b.s+' '+b.b+' '+b.h+' '+b.f+'→'+b.a):''}</div>
+  const hd=`<div class="gst" style="font-size:17px"><span>${W?'📒 오답노트':'리버'} · ${W?`${Math.min(this.i+(this.fb||this.over?0:1),this.N)} / ${this.N}`:`🔥 연속 <b>${this.ok}</b> · 최고 ${stkBest('riverq')}연속`}</span><span>정답 <b>${this.ok}</b>${nextBtn} <a onclick="CUR.start()" style="color:var(--blue);cursor:pointer;margin-left:6px">처음으로</a></span></div>`;
+  const fbCard=L=>{const b=L.q.b,w=(WHY[b.a]||{})[b.k]||'';return `<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:22px;font-weight:900">${L.ok?'✅ 정답':'❌ 오답'} · ${L.t.toFixed(1)}초 <span class="m">· ${CAT[b.f]}</span>${typeof qrepBtn==='function'?qrepBtn('riverq',b.id,b.s+' '+b.b+' '+b.h+' '+b.f+'→'+b.a):''}</div>
    <div style="margin:6px 0 2px">${cards(b.b)} &nbsp; 내 패 ${cards(b.h)}</div>
-   <div style="font-size:14.5px;margin-top:4px">정답: <b>${esc(L.q.opts[L.q.a][1])}</b>${L.ok?'':`<br><span style="color:var(--red)">내 선택: ${esc(L.q.opts[L.o][1])}</span>`}</div>
-   <div style="font-size:14px;line-height:1.75;margin-top:8px">솔버 빈도: ${esc(frs(b))}<br>내 패: ${esc(KIND[b.k]||'')}${w?'<br>'+esc(w):''}</div>
+   <div style="font-size:19px;line-height:1.6;margin-top:6px">정답: <b>${esc(L.q.opts[L.q.a][1])}</b>${L.ok?'':`<br><span style="color:var(--red)">내 선택: ${esc(L.q.opts[L.o][1])}</span>`}</div>
+   <div style="font-size:17px;line-height:1.8;margin-top:10px">솔버 빈도: ${esc(frs(b))}<br>내 패: ${esc(KIND[b.k]||'')}${w?'<br>'+esc(w):''}</div>
    <div class="m" style="margin-top:8px;line-height:1.55">${esc(NOTE)}</div></div>`;};
   if(this.over){const L=this.fb;
    return hd+(L?fbCard(L):'')+`<div class="gbig">${W?this.ok+'/'+this.N:'🔥 '+this.ok+'연속'}</div>${!W&&this.nb?'<div style="text-align:center;font-weight:900;color:#c62828;margin:-4px 0 8px">🏆 내 최고 연속 기록!</div>':''}<div class="card" style="text-align:center;font-size:15px;line-height:1.8">총 ${this.tsum.toFixed(1)}초 · 평균 ${(this.tsum/this.N).toFixed(1)}초<br><span class="m">${W?`맞힌 문제는 오답노트에서 빠졌어요 · 남은 오답 ${lsGet('wn_riverq',[]).length}개`:'점수·랭킹 없음 · 틀린 문제는 오답노트에 쌓여요'}</span></div>
@@ -694,7 +702,7 @@ G.push({k:'riverq',cat:'홀덤',e:'🌊',n:'리버 트레이너',d:'헤즈업 �
     <button class="btn full" onclick="CUR.go('${W?'W':'A'}')">${W?'남은 오답 다시 풀기':'다시 하기'}</button><button class="btn full gr" style="margin-top:8px" onclick="CUR.start()">처음으로</button>`;}
   if(this.fb)return hd+fbCard(this.fb)+`<button class="btn full g" style="font-size:17px;padding:13px" onclick="CUR.next()">다음 문제${W?` (${this.i+1}/${this.N})`:''}</button>`;
   return hd+`<div class="card" style="font-size:16px;line-height:1.6">${sit(q.b)}</div>
-   <div style="display:grid;grid-template-columns:repeat(${q.opts.length},1fr);gap:8px;margin-top:10px">${q.opts.map((o,k)=>`<button class="btn b2" style="padding:14px 6px;font-size:16px" onclick="CUR.ans(${k})">${esc(o[1])}</button>`).join('')}</div>
+   <div style="display:grid;grid-template-columns:repeat(${q.opts.length},1fr);gap:8px;margin-top:10px">${q.opts.map((o,k)=>`<button class="btn b2" style="padding:20px 6px;font-size:19px;font-weight:900" onclick="CUR.ans(${k})">${esc(o[1])}</button>`).join('')}</div>
    <div class="m" style="text-align:center;margin-top:8px">${esc(NOTE)}</div>`;}});
 })();
 // GORDER:pushfold,potodds,nutadv,hustudy,huview,geom,aofprac,rulequiz,riverq
