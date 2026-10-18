@@ -851,8 +851,7 @@ function drawStatic(){
   if(!document.activeElement||!document.activeElement.dataset||document.activeElement.dataset.behind==null)
     $("behindBox").innerHTML = P.map((p,i)=>i===st.hero
       ? `<div class="seat" style="border-color:var(--accent)"><div class="pn">${p} · 나</div><div class="num"><input type="number" value="${st.heroStack}" disabled></div></div>`
-      : `<div class="seat"><div class="pn">${p}${i>st.hero?" · 뒤":""}</div><div class="num"><input type="number" inputmode="decimal" step="0.1" min="0.1" placeholder="평균 ${r1(avgBB())}" value="${st.tbl[i]??""}" data-behind="${i}"></div>`+
-        `<button type="button" class="tend t${st.tend[i]||0}" data-tend="${i}">${tendN(i)}</button></div>`).join("");
+      : `<div class="seat"><div class="pn">${p}${i>st.hero?" · 뒤":""}</div><div class="num"><input type="number" inputmode="decimal" step="0.1" min="0.1" placeholder="평균 ${r1(avgBB())}" value="${st.tbl[i]??""}" data-behind="${i}"></div></div>`).join("");
   $("heroPos").innerHTML=P.map((p,i)=>`<button type="button" class="chip hero ${i===st.hero?"on":""}" data-hp="${i}">${p}</button>`).join("");
   $("qvPos").innerHTML=st.hero<1?`<span class="hint">${P[st.hero]}는 첫 자리라 앞에서 올인할 사람이 없어요.</span>`:
      P.map((p,i)=>{const ok=i<st.hero&&i<=n-2;return ok?`<button type="button" class="chip vil ${i===st.qvil?"on":""}" data-qv="${i}">${p}</button>`:"";}).join("");
@@ -994,7 +993,7 @@ function rangeText(freq){
   return parts.length?parts.join(" "):"없음";
 }
 const TEND=[{f:1,name:"보통"},{f:0.6,name:"타이트"},{f:1.6,name:"루즈"}];
-const tendF=i=>st.ui==="easy"?1:(TEND[st.tend[i]||0]||TEND[0]).f, tendN=i=>(TEND[st.tend[i]||0]||TEND[0]).name;   // 이지 모드는 자리별 성향 없음
+const tendF=i=>1/*notend*/, tendN=i=>(TEND[st.tend[i]||0]||TEND[0]).name;   // 이지 모드는 자리별 성향 없음
 let E_UI=null; const EUI=()=>E_UI||(E_UI=decodeE(EQB64));
 
 // ===== 딥스택(25BB 초과) 오픈: 올인/폴드 계산이 안 맞는 구간이라 일반 오픈 범위 + 올인 받았을 때 콜은 '유효 스택' 기준으로 =====
