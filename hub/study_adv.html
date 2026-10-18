@@ -637,8 +637,29 @@ function solveVs(ctx,hero,heroBB,vil,vilBB,extra){/*aofadv2*/
   const eqv=h=>{let a=0;for(let k=0;k<169;k++)a+=W[k]*sr[k]*Eq[h][k];return sw?a/sw:0;};
   call=shrinkRange(call,CALL_TIGHT,ord);   // 경계 핸드만 조이기: 승률이 필요 승률보다 3%p 이상 높은 핸드는 다시 콜 (예: SB 2.5BB vs BTN 올인 82o 32% > 28%)
   for(let h=0;h<169;h++)if(keep[h]>call[h]&&eqv(h)>=x.need+0.03)call[h]=keep[h];}
+ /*aofovc 10/18*/   // 뒤에 남은 사람 오버콜: 내가 콜한 뒤 뒤 사람이 2명 상대로 들어오는 경우까지 계산 (근사)
+ // 엔진(SAT.solve)은 콜러를 올인한 사람과 1:1로만 계산함 → 내 스택이 올인 금액보다 크고 뒤에 사람이 있으면 콜 범위가 넓게 나옴
+ // 오버콜 범위 = 그 사람의 1:1 콜 범위의 절반(최대 6%). 3명 승률 = 1:1 승률로 근사(브래들리-테리). ICM은 1:1 필요 승률에서 구한 손실 가중치(lam)를 그대로 씀
+ const n=ctx.n,H=st[hero],m=x.eff,b=posted(n,hero),dead=0.1*n+1.5-posted(n,vil)-b;
+ const ov=[];let P=0;
+ {let reach=1;const mm=Math.min(m,H);
+  for(let j=hero+1;j<n;j++){const cj=r.callers.indexOf(j);if(cj<0||st[j]<mm)continue;
+   const p=Math.min(0.06,0.5*r.csPct[cj]);if(p<0.002)continue;
+   ov.push({i:j,p,w:reach*p,rng:SAT.topRange(p,Eq),sj:st[j]});reach*=1-p;}
+  P=1-reach;}
+ if(ov.length&&m>b){
+  const need=Math.min(0.97,x.need),lam=need*(m+dead+b)/((1-need)*(m-b)),L=v=>v>=0?v:lam*v;
+  const eqR=(h,rg)=>{let a=0,w=0;for(let k=0;k<169;k++)if(rg[k]){a+=W[k]*rg[k]*Eq[h][k];w+=W[k]*rg[k];}return w?a/w:0.5;};
+  for(let h=0;h<169;h++){if(!call[h])continue;
+   const eS=eqR(h,r.sh);let ev=(1-P)*(eS*(m+dead+b)-(1-eS)*lam*(m-b));
+   for(const o of ov){const eO=eqR(h,o.rng),sS=(1-eS)/Math.max(eS,1e-3),sO=(1-eO)/Math.max(eO,1e-3),pm=1/(1+sS+sO);
+    const mm=Math.min(m,H),E2=Math.min(H,o.sj),inv=E2-b,main=3*mm+dead-posted(n,o.i),side=2*(E2-mm);
+    ev+=o.w*(pm*(main+side-inv)+Math.max(0,eO-pm)*L(side-inv)+(1-eO)*L(-inv));}
+   if(ev<=0)call[h]=0;}
+ }
  callPct=pct(call);
- return {kind:'vs',sh:r.sh,call,callPct,need:x.need,chipNeed:x.chipNeed,shPct:r.shPct,eff:Math.min(vilBB,heroBB)};
+ return {kind:'vs',sh:r.sh,call,callPct,need:x.need,chipNeed:x.chipNeed,shPct:r.shPct,eff:Math.min(vilBB,heroBB),
+  ovP:P,ov:ov.map(o=>({i:o.i,p:o.p,sj:o.sj,rng:o.rng}))};
 }
 
 // ---- 3) 앞에서 오픈: 오픈한 사람(vil, 오픈 크기 R, 남은 스택 vilBB) → 나(hero) 3벳 올인/콜/폴드 ----
@@ -1044,7 +1065,7 @@ function buildX(p,S){const {e,r,rb}=S,k=p.k,xs=p.xs||'o',P=POSN(e.n),D=e.D,hn=SA
  let main;
  if(xs==='o'){const rows=r.callers.map((i,c)=>`${P[i]} <b>${N1(p.st[i])}BB</b> · 콜 범위 <b>${pct(r.cs[c])}</b>${p.st[i]<p.hb?' <span class="m">(나보다 짧음 — 이 사람이 콜하면 그만큼만 걸림)</span>':''}`).join('<br>');
   main=`이 테이블 올인 범위 <b>${pct(r.shPct)}</b> · 나머지가 모두 평균 스택(${N1(e.avg)}BB)이면 <b>${pct(rb.shPct)}</b><br><span class="m">뒤에 남은 ${r.callers.length}명 (나를 덮는 스택 ${cov}명)</span><br><span style="font-size:13.5px;line-height:1.7">${rows}</span><br><span class="m">올인: ${rangeText(r.sh)}</span>`;}
- else if(xs==='s'){main=`이 테이블 콜 범위 <b>${pct(r.callPct)}</b> · 필요 승률 ${(r.need*100).toFixed(1)}% (칩 기준 ${(r.chipNeed*100).toFixed(1)}%) · 나머지가 모두 평균 스택이면 콜 <b>${pct(rb.callPct)}</b>`+
+ else if(xs==='s'){main=`이 테이블 콜 범위 <b>${pct(r.callPct)}</b> · 필요 승률 ${(r.need*100).toFixed(1)}% (칩 기준 ${(r.chipNeed*100).toFixed(1)}%) · 나머지가 모두 평균 스택이면 콜 <b>${pct(rb.callPct)}</b>`+(r.ovP?` · 뒤 오버콜 확률 <b>${pct(r.ovP)}</b>`:'')+
    `<br><span class="m">올인한 ${P[p.v]} ${N1(p.st[p.v])}BB · 걸리는 칩 ${N1(Math.min(p.hb,p.st[p.v]))}BB · 내 뒤 ${behind.length}명`+(behind.length?` (${behind.map(i=>P[i]+' '+N1(p.st[i])+'BB').join(' · ')})`:'')+`</span><br><span class="m">콜: ${rangeText(r.call)}</span>`;}
  else{const flat=r.flPct>0;main=`이 테이블 3벳 올인 <b>${pct(r.rsPct)}</b>${flat?` · 콜 <b>${pct(r.flPct)}</b>`:''} · 나머지가 모두 평균 스택이면 3벳 올인 <b>${pct(rb.rsPct)}</b> · 오픈 범위 상위 ${Math.round(r.op*100)}%로 봄`+
    `<br><span class="m">오픈한 ${P[p.v]} 남은 ${N1(p.st[p.v]-p.R)}BB · 내 뒤 ${behind.length}명`+(behind.length?` (${behind.map(i=>P[i]+' '+N1(p.st[i])+'BB').join(' · ')})`:'')+`</span><br><span class="m">3벳 올인: ${rangeText(r.rs)}</span>`+(flat?`<br><span class="m">콜: ${rangeText(r.fl)}</span>`:'');}
@@ -1053,7 +1074,7 @@ function buildX(p,S){const {e,r,rb}=S,k=p.k,xs=p.xs||'o',P=POSN(e.n),D=e.D,hn=SA
   `<br><span class="m">${D.n} · 남은 ${p.pl}명 · 평균 ${N1(e.avg)}BB · 내 ${N1(p.hb)}BB (평균의 ${N1(p.hb/e.avg)}배)</span>`;
  const tail=dif?` (나머지가 평균 스택이라면 ${nm(bs)}이 맞아요)`:'';
  const why={f:'이 테이블에선 들어갈 만한 패예요'+tail,s:(xs==='o'?shWhy(r.shPct,hn,'이 테이블 스택을 보면 범위 밖이에요'):'이 테이블 스택을 보면 3벳 올인 범위 밖이에요')+tail,c:(xs==='s'?'티켓이 걸려 있어서 이 테이블에선 콜하면 손해예요':'이 스택에선 콜보다 올인이나 폴드가 나아요')+tail};
- return {a:ans,opts,why,show,expl,rule:'가정: 자리마다 실제 스택 · ICM(레지 마감 후) · '+(xs==='o'?'15BB 이하라 올인/폴드만':xs==='s'?'올인 외 다른 사람은 폴드':'오픈한 사람 외 다른 사람은 폴드 · [근사]'),
+ return {a:ans,opts,why,show,expl,rule:'가정: 자리마다 실제 스택 · ICM(레지 마감 후) · '+(xs==='o'?'15BB 이하라 올인/폴드만':xs==='s'?'뒤 사람 오버콜 반영 [근사]':'오픈한 사람 외 다른 사람은 폴드 · [근사]'),
   sum:`고급 ${e.n}명 ${XN[xs]} ${P[p.h]} ${N1(p.hb)}BB ${hn}`,tag:TAG.x,p,lv:1,fmt:id=>nm(id),chart:chartHtml(p,r,k)};}
 // ===== 🎮 실전 시뮬레이션: 레잇레지 입장(5~25BB) → 블라인드 상승·탈락 → 결정마다 실제로 카드를 깔아 승패 → 티켓까지 /*aofsim*/
 // 결정 문제는 고급 실전(genX)과 같은 계산. 결과(이기고 지는 것)는 운이라, 졌어도 결정이 맞았으면 '결정은 맞음'으로 보여 줌
@@ -1121,8 +1142,15 @@ function simResolve(S,q,o){const p=q.p,bb=BBT[S.D.tab][S.bi],n=p.n,bl=i=>i===n-1
   else if(p.xs==='s'){vi=p.v;vh=simPickHand(R.sh,used);}
   else if(o==='c'){const win=Math.random()<0.45,dd=0.1*(n-1)+1.5-bl(p.h);S.chips+=(win?p.R+dd:-p.R)*bb;ch(p.v,win?-p.R:p.R+dd);S.chips=Math.max(0,Math.round(S.chips));Object.assign(res,{kind:'flat',w:win?1:-1,after:S.chips});return res;}
   else{vi=p.v;if(o==='s'&&Math.random()<0.45){const ord=F.playOrder(),top=new Float64Array(169);let a=0;for(const h of ord){if(a>=R.op*0.45)break;top[h]=1;a+=SAT.W[h];}vh=simPickHand(top,used);}}
+  let oi=-1,oh=null;/*aofovc2*/if(p.xs==='s'&&o==='c'&&vi>=0&&vh&&R.ov){vh.c.forEach(c=>used.add(c));for(const ov of R.ov){if(Math.random()<ov.p){oh=simPickHand(ov.rng,used);if(oh){oi=ov.i;break;}}}}   // 내가 콜한 뒤 뒤 사람 오버콜
   const dead=0.1*(n-(vi>=0?2:1))+1.5-bl(p.h)-(vi>=0?bl(vi):0);
   if(vi<0||!vh){S.chips+=(dead+(p.xs==='r'?p.R+0.1:0))*bb;res.kind='steal';res.vi=vi;if(p.h!==n-1)ch(n-1,-1);if(p.h!==n-2)ch(n-2,-0.5);if(p.xs==='r')ch(p.v,-p.R);}
+  else if(oh){const cs=[hc,vh.c,oh.c],stk=[p.hb,p.st[vi],p.st[oi]],amt=stk.map((s,j)=>Math.min(s,Math.max(...stk.filter((_,k)=>k!==j)))),d3=dead-0.1-bl(oi);   // 3명 쇼다운 + 사이드팟
+   const pay=rk=>{const out=[0,0,0],lv=[...new Set(amt)].sort((a,b)=>a-b);let prev=0;lv.forEach((L,li)=>{let pot=li===0?d3:0;for(let j=0;j<3;j++)pot+=Math.max(0,Math.min(amt[j],L)-prev);const el=[0,1,2].filter(j=>amt[j]>=L-1e-9),best=Math.max(...el.map(j=>rk[j])),wn=el.filter(j=>rk[j]===best);wn.forEach(j=>out[j]+=pot/wn.length);prev=L;});return out.map((x,j)=>x-amt[j]);};
+   const deal=()=>{const u=new Set([...hc,...vh.c,...oh.c]),b=[];while(b.length<5){const c=Math.floor(Math.random()*52);if(!u.has(c)){u.add(c);b.push(c);}}return {b,rk:cs.map(c=>MW.ev7([...c,...b]))};};
+   const z=deal(),net=pay(z.rk);let ex=0,q=0;for(let t=0;t<600;t++){const y=deal(),nt=pay(y.rk),mx=Math.max(...y.rk);ex+=nt[0];if(y.rk[0]===mx)q+=1/y.rk.filter(v=>v===mx).length;}
+   Object.assign(res,{kind:'sd',hc,vc:vh.c,vk:vh.k,vi,oc:oh.c,ohk:oh.k,oi,b:z.b,w:net[0]>1e-9?1:net[0]<-1e-9?-1:0,eff:amt[0],eq:q/600,dead:d3,net:net[0],exp:ex/600});
+   S.chips+=net[0]*bb;ch(vi,net[1]);ch(oi,net[2]);for(const j of [1,2])if(stk[j]+net[j]<0.05)S.pl=Math.max(1,S.pl-1);}
   else{const vb=p.xs==='r'?p.st[vi]:p.st[vi],eff=Math.min(p.hb,vb),sd=simDeal(hc,vh.c);
    Object.assign(res,{kind:'sd',hc,vc:vh.c,vk:vh.k,vi,b:sd.b,w:sd.w,eff});{let q=0;for(let t=0;t<600;t++){const z=simDeal(hc,vh.c);q+=z.w>0?1:z.w===0?0.5:0;}res.eq=q/600;res.dead=dead;}
    if(sd.w>0){S.chips+=(eff+dead)*bb;ch(vi,-eff);if(vb<=p.hb+1e-9)S.pl=Math.max(1,S.pl-1);}
@@ -1170,9 +1198,9 @@ function build(p){const S=solveP(p);if(!S)return null;if(p.s==='x')return buildX
  else if(p.s==='s'){
   show=head+`<b>${vilP}</b>(${N1(p.vb)}BB)이 올인 → <b>${heroP}</b> · 내 스택 <b>${N1(p.hb)}BB</b><br><span class="hand">${hn}</span>`;
   opts=[['f','폴드'],['c','콜']];
-  expl=`<b>${hn}</b> → <b>${ans==='c'?'콜':'폴드'}</b><br>콜 범위 <b>${pct(r.callPct)}</b> · 필요 승률 ${(r.need*100).toFixed(1)}% (칩 기준 ${(r.chipNeed*100).toFixed(1)}%)<br><span class="m">콜: ${rangeText(r.call)}</span>`;
+  expl=`<b>${hn}</b> → <b>${ans==='c'?'콜':'폴드'}</b><br>콜 범위 <b>${pct(r.callPct)}</b> · 필요 승률 ${(r.need*100).toFixed(1)}% (칩 기준 ${(r.chipNeed*100).toFixed(1)}%)${r.ovP?` · 뒤 오버콜 확률 ${pct(r.ovP)}`:''}<br><span class="m">콜: ${rangeText(r.call)}</span>`;
   why={c:'티켓이 걸려 있어서 칩만 보면 이득이어도 콜하면 손해예요',f:'이 패는 승률이 필요 승률을 넘어요'};
-  rule='가정: 올인 외 다른 사람은 폴드 · ICM(레지 마감 후)';}
+  rule='가정: 뒤 사람은 평균 스택 · 오버콜 반영 [근사] · ICM(레지 마감 후)';}
  else if(p.s==='m'||p.s==='q'){const M=p.s==='m',act=M?'콜':'올인',ck=(r.chk&&r.chk[k])||(r.chk=r.chk||{},r.chk[k]=r.check(k,2500));
   show=head+(p.t==='b'?'<b style="color:var(--red)">💰 머니인 직전</b> · ':p.t==='s'?'<b>숏스택</b> · ':'')+(M?`<b>${P[p.v]}</b>(${N1(p.vb)}BB) 올인 → <b>${P[p.v2]}</b>(${N1(p.vb2)}BB) ${p.vb2>p.vb?'더 크게 올인':'올인 콜'}`
    :`<b>${P[p.v]}</b>이 ${N1(p.R)}BB 오픈 (남은 ${N1(p.vb)}BB) → <b>${P[p.v2]}</b>(${N1(p.vb2)}BB) 3벳 올인`)+` → <b>${heroP}</b> · 내 스택 <b>${N1(p.hb)}BB</b><br><span class="hand">${hn}</span>`;
@@ -1328,11 +1356,11 @@ ${(()=>{const k=this.gsel&&this.gsel!=='rand'?this.gsel:null,x=k&&(this.cfg||[])
   const hdOf=(ch,nb)=>{if(nb)return '';/*aofhd2*/const r=estRank(ch/bb,S.en*START/S.pl/bb,S.pl);return `<div style="display:flex;justify-content:space-between;align-items:baseline;font-size:16px;margin:-2px 0 8px"><span><b>${S.D.n}</b> &nbsp;${ch>0?`<b style="font-size:22px;color:${r<=(S.stage===1?S.goal:S.goal2)?'#2e7d32':'var(--ink)'}">${r}/${S.pl}</b> &nbsp;·&nbsp; `:''}${nb?'Lv.'+(S.bi+1):'블라인드 '+(bb/2).toLocaleString()+'/'+bb.toLocaleString()+' (Lv.'+(S.bi+1)+')'}${S.pre?' · 레지 중':''}</span><a onclick="CUR.toMenu()" style="color:var(--blue);cursor:pointer;font-size:13.5px">메뉴</a></div>`;};   // 실제 게임처럼: 대회 · 내 등수/남은 인원 · 블라인드만
   const hd=hdOf(S.chips);   // 시뮬: 위 작은 글씨 줄 없앰(문제 카드와 같은 내용이라 헷갈림) /*aofsimclean*/
   const rpH=x=>{const r=x.r,q=x.q;if(!r||!q)return '';/*aofrp*/const P=POSN(q.p.n),b=x.bb||1,f=v=>N1(Math.round(v/b*10)/10),ans=typeof q.fmt==='function'?q.fmt(q.a):q.a;
-   return `<div style="padding:6px 2px 4px;font-size:14px;line-height:1.7">`+(r.kind==='sd'&&r.hc?`<div>나 ${r.hc.map(cardH).join('')} vs <b>${P[r.vi]}</b> ${r.vc.map(cardH).join('')}</div><div style="background:#1f5f3f;border-radius:10px;padding:6px 4px;text-align:center">${r.b.map(cardH).join('')}</div><div style="font-weight:800;color:${r.w>0?'#2e7d32':r.w<0?'#c62828':'inherit'}">${r.w>0?'🎉 이겼어요':r.w<0?'💥 졌어요':'🤝 무승부'}</div>`:'')
+   return `<div style="padding:6px 2px 4px;font-size:14px;line-height:1.7">`+(r.kind==='sd'&&r.hc?`<div>나 ${r.hc.map(cardH).join('')} vs <b>${P[r.vi]}</b> ${r.vc.map(cardH).join('')}${r.oc?` · <b>${P[r.oi]}</b> ${r.oc.map(cardH).join('')}`:''}</div><div style="background:#1f5f3f;border-radius:10px;padding:6px 4px;text-align:center">${r.b.map(cardH).join('')}</div><div style="font-weight:800;color:${r.w>0?'#2e7d32':r.w<0?'#c62828':'inherit'}">${r.w>0?'🎉 이겼어요':r.w<0?'💥 졌어요':'🤝 무승부'}</div>`:'')
     +`<div>${f(r.before)}BB → <b>${f(r.after)}BB</b></div><div style="font-weight:800;color:${x.ok?'#2e7d32':'#c62828'}">${x.ok?'✅ 결정 정답':'❌ 결정 오답 · 정답 '+ans}</div>${x.ok&&r.w<0?'<div class="m">결정은 맞았어요 — 카드 운이 없었을 뿐이에요</div>':''}<div style="margin-top:4px">${q.expl||''}${q.chart||''}</div></div>`;};
   const logH=()=>`<div class="card"><div class="t">결정 기록 <span class="m" style="font-size:12px">· 누르면 리플레이·해설</span></div>${S.log.map((x,k)=>`<details style="border-bottom:1px solid var(--line);padding:5px 0"><summary style="cursor:pointer;display:flex;justify-content:space-between;gap:6px"><span>▸ ${k+1}. ${x.sum} → ${x.ok?'✅':'❌'}</span><span class="m">${x.kind==='fold'?'폴드':x.kind==='flat'?'콜(플랍)':x.kind==='steal'?'가져감':x.w>0?'승':x.w<0?'패':'무'} ${x.d>=0?'+':''}${x.d.toLocaleString()}</span></summary>${rpH(x)}</details>`).join('')||'<div class="m">없음</div>'}</div>`;
   const repH=()=>{/*aofrep*/const L=S.log;if(!L.length)return '';const n=L.length,ok=L.filter(x=>x.ok).length,pct=Math.round(ok/n*100),fw=L.filter(x=>!x.ok&&x.o==='f').length,pw=L.filter(x=>!x.ok&&x.o!=='f').length,sd=L.filter(x=>x.r&&x.r.kind==='sd'&&x.r.eq!=null);
-   let lk=0,ev=0,W=0,Lo=0;for(const x of sd){const r=x.r,e=r.eff,dd=r.dead||0,act=r.w>0?e+dd:r.w<0?-e:dd/2,exp=r.eq*(e+dd)-(1-r.eq)*e;lk+=act-exp;ev+=r.eq;if(r.w>0)W++;else if(r.w<0)Lo++;}
+   let lk=0,ev=0,W=0,Lo=0;for(const x of sd){const r=x.r,e=r.eff,dd=r.dead||0,act=r.net!=null?r.net:r.w>0?e+dd:r.w<0?-e:dd/2,exp=r.exp!=null?r.exp:r.eq*(e+dd)-(1-r.eq)*e;lk+=act-exp;ev+=r.eq;if(r.w>0)W++;else if(r.w<0)Lo++;}
    const bad=sd.filter(x=>x.ok&&x.r.w<0&&x.r.eq>=0.5).length,la=L[L.length-1],E=S.end||{};
    const lastH=!E.win&&la&&la.r&&la.r.kind==='sd'&&la.r.eq!=null?`💥 마지막 올인: ${la.ok?'<b style="color:#2e7d32">맞는 결정</b>':'<b style="color:#c62828">틀린 결정</b>'} · 승률 ${Math.round(la.r.eq*100)}%${la.ok&&la.r.eq>=0.5?' — 앞서다 진 판이에요':''}<br>`:'';
    const msg=pct>=80?(lk<-3?'결정은 좋았어요 — 이번 결과는 카드 운 탓이 커요':'결정이 좋았어요 — 이대로 반복하면 돼요'):pct>=60?'절반 넘게 맞았지만 '+(fw>=pw?'올인해야 할 때 폴드한 게':'폴드해야 할 때 들어간 게')+' 많아요':'결과보다 결정 정답률부터 올려요 — 오답노트로 복습하세요';
@@ -1341,7 +1369,7 @@ ${(()=>{const k=this.gsel&&this.gsel!=='rand'?this.gsel:null,x=k&&(this.cfg||[])
   if(S.res){const r=S.res,q=S.q,P=POSN(q.p.n);
    /*aofsimres*/const bbN=BBT[S.D.tab][S.bi],B0=N1(Math.round(r.before/bbN*10)/10),B1=N1(Math.round(r.after/bbN*10)/10),dB=Math.round((r.after-r.before)/bbN*10)/10,isSd=r.kind==='sd';
    const ttl=r.kind==='steal'?(q.p.xs==='r'?'🎉 다들 폴드 — 3벳 올인으로 팟을 가져왔어요':'🎉 다들 폴드했어요 — 블라인드 스틸 성공!'):r.kind==='fold'?(r.to?'⏰ 시간 초과 — 자동 폴드':'폴드했어요'):r.kind==='flat'?(r.w>0?'콜 → 플랍 이후 팟을 가져왔어요':'콜 → 플랍 이후 접었어요'):'';
-   const sdH=isSd?`<style>@keyframes sdIn{from{opacity:0;transform:translateY(-6px) scale(.9)}to{opacity:1;transform:none}}.sd{display:inline-block;opacity:0;animation:sdIn .3s forwards}</style><div style="margin:4px 0">나 ${r.hc.map(cardH).join('')} vs <b>${P[r.vi]}</b> <span class="sd" style="animation-delay:.3s">${r.vc.map(cardH).join('')}</span></div><div style="background:#1f5f3f;border-radius:10px;padding:6px 4px;text-align:center">${r.b.map((c,j)=>`<span class="sd" style="animation-delay:${j<3?0.9+j*0.12:j===3?1.8:2.6}s">${cardH(c)}</span>`).join('')}</div><div class="sd" style="animation-delay:3.1s;display:block;font-weight:800;margin-top:4px;color:${r.w>0?'#2e7d32':r.w<0?'#c62828':'inherit'}"><span style="font-size:20px">${r.w>0?'🎉 이겼어요':r.w<0?'💥 졌어요':'🤝 무승부'}</span>${r.eq!=null?` <span style="font-size:14px;color:var(--sub)">(올인 때 내 승률 ${Math.round(r.eq*100)}%)</span>`:''}</div>`:'';
+   const sdH=isSd?`<style>@keyframes sdIn{from{opacity:0;transform:translateY(-6px) scale(.9)}to{opacity:1;transform:none}}.sd{display:inline-block;opacity:0;animation:sdIn .3s forwards}</style><div style="margin:4px 0">나 ${r.hc.map(cardH).join('')} vs <b>${P[r.vi]}</b> <span class="sd" style="animation-delay:.3s">${r.vc.map(cardH).join('')}</span>${r.oc?` · <b>${P[r.oi]}</b> <span class="sd" style="animation-delay:.5s">${r.oc.map(cardH).join('')}</span>`:''}</div><div style="background:#1f5f3f;border-radius:10px;padding:6px 4px;text-align:center">${r.b.map((c,j)=>`<span class="sd" style="animation-delay:${j<3?0.9+j*0.12:j===3?1.8:2.6}s">${cardH(c)}</span>`).join('')}</div><div class="sd" style="animation-delay:3.1s;display:block;font-weight:800;margin-top:4px;color:${r.w>0?'#2e7d32':r.w<0?'#c62828':'inherit'}"><span style="font-size:20px">${r.w>0?'🎉 이겼어요':r.w<0?'💥 졌어요':'🤝 무승부'}</span>${r.eq!=null?` <span style="font-size:14px;color:var(--sub)">(올인 때 내 승률 ${Math.round(r.eq*100)}%)</span>`:''}</div>`:'';
    const luck=isSd?(r.w<0&&r.ok?`<div class="sd" style="animation-delay:3.1s;display:block;color:#2e7d32;font-weight:700">결정은 맞았어요 — 이번엔 카드 운이 없었을 뿐이에요</div>`:r.w>0&&!r.ok?`<div class="sd" style="animation-delay:3.1s;display:block;color:#b26a00;font-weight:700">이겼지만 결정은 틀렸어요 — 길게 보면 손해예요</div>`:''):'';
    const big=`<div class="${isSd?'sd':''}" style="${isSd?'display:block;animation-delay:3.1s;':''}text-align:center;margin-top:6px"><span style="font-size:26px;font-weight:900">${B0}BB → <span style="color:${dB>0?'#2e7d32':dB<0?'#c62828':'inherit'}">${B1}BB</span></span> <span style="font-size:15px;font-weight:800;color:${dB>0?'#2e7d32':dB<0?'#c62828':'var(--sub)'}">(${dB>0?'+':''}${N1(dB)}BB)</span></div>`;
    const dec=`<div style="text-align:center;font-size:15px;font-weight:800;margin-top:8px;color:${r.ok?'#2e7d32':'#c62828'}">${r.ok?'✅ 결정 정답':'❌ 결정 오답 · 정답 '+q.fmt(q.a)}</div>`;
