@@ -340,31 +340,34 @@ G.push({k:'geom',cat:'홀덤',e:'📐',n:'팟 지오메트리',d:'SPR · 베팅 
  start(){this.lv=null;this.fb=null;this.over=false;rr();},
  stop(){},
  go(lv){let n=9999,queue=null;/*streak*/
+  if(lv==='A'){n=20;this.al=1;this.amx=1;this.up=0;this.dn=0;this.lvMsg='';this.nb=false;}   // 🎚 자동 난이도 /*adapt*/
   if(lv==='W'){const wn=lsGet('wn_geom',[]);queue=[];for(const x of shuf(wn)){try{const p=JSON.parse(x.k);if(p&&p.lv>=1&&p.lv<=4)queue.push(p);}catch(e){}if(queue.length>=10)break;}
    if(!queue.length){toast('오답노트가 비어 있어요');return;}n=queue.length;}
   Object.assign(this,{lv,N:n,queue,i:0,ok:0,tsum:0,over:false,fb:null,log:[]});this.nq();rr();},
- nq(){const qp=this.queue&&this.queue[this.i];this.q=qp?mk(qp.lv,qp):mk(this.lv);this.t0=Date.now();},
+ nq(){const qp=this.queue&&this.queue[this.i];this.q=qp?mk(qp.lv,qp):mk(this.lv==='A'?this.al:this.lv);this.t0=Date.now();},
  ans(o){if(this.over||this.fb)return;const q=this.q,t=(Date.now()-this.t0)/1000,ok=o===q.a;
   this.i++;this.tsum+=t;if(ok)this.ok++;const L={q,o,ok,t};this.log.push(L);this.fb=L;
   studyLog('geom',q.tag,q.lv,ok,Math.round(t*1000),q.p);
-  if(!ok&&this.lv!=='W')this.N=this.i;   // 🔥 틀리면 끝
-  if(this.i>=this.N){this.over=true;if(this.lv!=='W')this.nb=stkSave('geom_'+this.lv,this.ok);}rr();},
+  if(this.lv==='A')this.adapt(ok,4);else if(!ok&&this.lv!=='W')this.N=this.i;   // 🔥 틀리면 끝 (자동 난이도는 20문제)
+  if(this.i>=this.N){this.over=true;if(this.lv!=='W'&&this.lv!=='A')this.nb=stkSave('geom_'+this.lv,this.ok);}rr();},
  next(){this.fb=null;this.nq();rr();},
+ adapt(ok,mx){/*adapt 10/18*/if(ok){this.dn=0;if(++this.up>=3&&this.al<mx){this.al++;this.up=0;this.lvMsg='⬆ 3연속 정답 — Lv.'+this.al+'로 올라가요';}else this.lvMsg='';}else{this.up=0;if(++this.dn>=2&&this.al>1){this.al--;this.dn=0;this.lvMsg='⬇ 2연속 오답 — Lv.'+this.al+'로 내려가요';}else this.lvMsg='';}this.amx=Math.max(this.amx||1,this.al);},
  fx(L){const q=L.q;return q.expl+(!L.ok&&q.why[L.o]!=null?`<br><span style="color:var(--red)">내 선택 ${q.fmt(L.o)} → ${q.why[L.o]}</span>`:'');},
  menu(){const st=lsGet('st_geom',{}),wn=lsGet('wn_geom',[]).length;
   return `<div class="card"><div class="t">📐 팟 지오메트리</div><div class="m" style="margin-top:4px;line-height:1.6">스택이 몇 번의 베팅에 다 들어가는지(SPR)를 계산으로 익혀요. 틀릴 때까지 🔥 연속 도전 · 정답 확인 후 바로 다음 문제 · 점수·랭킹 없이 정답률 중심이에요.</div></div>
   <div style="display:grid;gap:8px">${LV.map(l=>{const s=st[l.tag],pc=s&&s[1]?Math.round(s[0]/s[1]*100)+'% ('+s[0]+'/'+s[1]+')':'아직 안 풀었어요';
    return `<button class="btn ${l.id===1?'':'b2'}" style="text-align:left;padding:12px 14px" onclick="CUR.go(${l.id})"><b>Lv.${l.id} ${l.n}</b> · ${l.d}<br><span style="font-size:12.5px;opacity:.9">🔥 최고 ${stkBest('geom_'+l.id)}연속 · 정답률 ${pc}</span></button>`;}).join('')}</div>
+  <button class="btn full" style="margin-top:10px" onclick="CUR.go('A')">🎚 자동 난이도 (20문제)</button><div class="m" style="text-align:center;margin-top:4px">Lv.1부터 · 3연속 정답이면 레벨 업 · 2연속 오답이면 레벨 다운</div>
   ${wn?`<button class="btn full g" style="margin-top:10px" onclick="CUR.go('W')">📒 오답노트 풀기 (${wn}개)</button><div class="m" style="text-align:center;margin-top:4px">틀린 문제를 다시 풀어요 · 맞히면 목록에서 빠져요</div>`:''}`;},
- view(){if(!this.lv)return this.menu();const q=this.q,W=this.lv==='W';
-  const hd=`<div class="gst"><span>${W?'📒 오답노트':'Lv.'+this.lv} · ${W?`${Math.min(this.i+(this.fb||this.over?0:1),this.N)} / ${this.N} · 정답 <b>${this.ok}</b>`:`🔥 연속 <b>${this.ok}</b> · 최고 ${stkBest('geom_'+this.lv)}연속`}</span><span><a onclick="CUR.start()" style="color:var(--blue);cursor:pointer">레벨 선택</a></span></div>`;
-  const rule=`<div class="m" style="text-align:center;margin-top:8px">${W?'오답노트 복습 · 맞히면 목록에서 빠져요':q.rule}</div>`;
+ view(){if(!this.lv)return this.menu();const q=this.q,A=this.lv==='A',W=this.lv==='W'||A;
+  const hd=`<div class="gst"><span>${A?'🎚 자동 Lv.'+this.al:W?'📒 오답노트':'Lv.'+this.lv} · ${W?`${Math.min(this.i+(this.fb||this.over?0:1),this.N)} / ${this.N} · 정답 <b>${this.ok}</b>`:`🔥 연속 <b>${this.ok}</b> · 최고 ${stkBest('geom_'+this.lv)}연속`}</span><span><a onclick="CUR.start()" style="color:var(--blue);cursor:pointer">레벨 선택</a></span></div>`;
+  const rule=`<div class="m" style="text-align:center;margin-top:8px">${A?'🎚 자동 난이도 · 3연속 정답이면 레벨 업 · 2연속 오답이면 레벨 다운 · 20문제':W?'오답노트 복습 · 맞히면 목록에서 빠져요':q.rule}</div>`;
   const fbCard=L=>`<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:16px">${L.ok?'✅ 정답':'❌ 오답 · 정답 '+L.q.fmt(L.q.a)} · ${L.t.toFixed(1)}초</div><div style="font-size:14.5px;line-height:1.75;margin-top:6px">${this.fx(L)}</div></div>`;
   if(this.over){const L=this.fb;
-   return hd+(L?fbCard(L):'')+`<div class="gbig">${W?this.ok+'/'+this.N:'🔥 '+this.ok+'연속'}</div>${!W&&this.nb?'<div style="text-align:center;font-weight:900;color:#c62828;margin:-4px 0 8px">🏆 내 최고 연속 기록!</div>':''}<div class="card" style="text-align:center;font-size:15px;line-height:1.8">총 ${this.tsum.toFixed(1)}초 · 평균 ${(this.tsum/this.N).toFixed(1)}초<br><span class="m">${W?`맞힌 문제는 오답노트에서 빠졌어요 · 남은 오답 ${lsGet('wn_geom',[]).length}개`:`Lv.${this.lv} 누적 정답률 ${(()=>{const s=lsGet('st_geom',{})[q.tag];return s&&s[1]?Math.round(s[0]/s[1]*100)+'% ('+s[0]+'/'+s[1]+')':'-';})()} · 랭킹 없음`}</span></div>`
+   return hd+(L?fbCard(L):'')+`<div class="gbig">${W?this.ok+'/'+this.N:'🔥 '+this.ok+'연속'}</div>${!W&&this.nb?'<div style="text-align:center;font-weight:900;color:#c62828;margin:-4px 0 8px">🏆 내 최고 연속 기록!</div>':''}<div class="card" style="text-align:center;font-size:15px;line-height:1.8">총 ${this.tsum.toFixed(1)}초 · 평균 ${(this.tsum/this.N).toFixed(1)}초<br><span class="m">${A?`최종 Lv.${this.al} · 최고 Lv.${this.amx||1} · 정답률 ${Math.round(this.ok/Math.max(1,this.N)*100)}%`:W?`맞힌 문제는 오답노트에서 빠졌어요 · 남은 오답 ${lsGet('wn_geom',[]).length}개`:`Lv.${this.lv} 누적 정답률 ${(()=>{const s=lsGet('st_geom',{})[q.tag];return s&&s[1]?Math.round(s[0]/s[1]*100)+'% ('+s[0]+'/'+s[1]+')':'-';})()} · 랭킹 없음`}</span></div>`
     +`<div class="card"><div class="t">문제별 기록</div>${this.log.map((x,k)=>`<div class="row"><span>${k+1}. ${x.q.sum} → ${x.q.fmt(x.q.a)}</span><span class="m">${x.ok?'✅':'❌ '+x.q.fmt(x.o)} ${x.t.toFixed(1)}초</span></div>`).join('')}</div>
-    <button class="btn full" onclick="CUR.go(${W?"'W'":this.lv})">${W?'남은 오답 다시 풀기':'다시 하기'}</button><button class="btn full gr" style="margin-top:8px" onclick="CUR.start()">레벨 선택</button>`+rule;}
-  if(this.fb)return hd+fbCard(this.fb)+`<button class="btn full g" style="font-size:17px;padding:13px" onclick="CUR.next()">다음 문제${W?` (${this.i+1}/${this.N})`:''}</button>`+rule;
+    <button class="btn full" onclick="CUR.go(${A?"'A'":W?"'W'":this.lv})">${A?'다시 하기':W?'남은 오답 다시 풀기':'다시 하기'}</button><button class="btn full gr" style="margin-top:8px" onclick="CUR.start()">레벨 선택</button>`+rule;}
+  if(this.fb)return hd+(A&&this.lvMsg?`<div class="card" style="text-align:center;font-weight:900;color:${this.lvMsg[0]==='⬆'?'#2e7d32':'#c62828'}">${this.lvMsg}</div>`:'')+fbCard(this.fb)+`<button class="btn full g" style="font-size:17px;padding:13px" onclick="CUR.next()">다음 문제${W?` (${this.i+1}/${this.N})`:''}</button>`+rule;
   const btns=q.kind==='yn'?`<div class="g2b"><button class="btn gr" style="font-size:19px;padding:15px" onclick="CUR.ans(0)">아니요</button><button class="btn" style="font-size:19px;padding:15px" onclick="CUR.ans(1)">네</button></div>`
    :`<div class="g4b">${q.opts.map(o=>`<button class="btn" onclick="CUR.ans(${o})">${q.fmt(o)}</button>`).join('')}</div>`;
   return hd+`<div class="card" style="text-align:center;font-size:17px;line-height:1.8">${q.show}</div>`+btns+rule;}});
