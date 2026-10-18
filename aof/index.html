@@ -729,7 +729,8 @@ function snapToSt(r){
   return {ok:true,scen:'vr',patch:Object.assign(patch,{proV:'vr',qvil:a.j,qvStack:R1(toBB(a.s.stack)),vraise:R1(toBB(a.s.bet))}),note};
 }
 
-const SNAP_URL='http://127.0.0.1:8765/ocrtable';
+const SNAP_API="https://211-233-211-164.sslip.io";   /*snapsrv*/
+const SNAP_URL=SNAP_API?SNAP_API+'/api/snap/read':'http://127.0.0.1:8765/ocrtable';
 function snapApply(res){
   const p=Object.assign({},res.patch); Object.keys(p).forEach(k=>{if(p[k]===undefined) delete p[k];});
   clearSit(); Object.assign(st,p);
@@ -744,13 +745,13 @@ window.addEventListener('load',()=>{
   f.type='file'; f.accept='image/*'; f.style.display='none';
   b.onclick=()=>f.click();
   f.onchange=async()=>{
-    const file=f.files[0]; if(!file) return; b.textContent='읽는 중…';
+    const file=f.files[0]; if(!file) return; const T0=b.textContent; b.textContent='읽는 중…';
     try{
       const b64=await new Promise((ok,ng)=>{const fr=new FileReader(); fr.onload=()=>ok(String(fr.result).split(',')[1]); fr.onerror=ng; fr.readAsDataURL(file);});
       const resp=await fetch(SNAP_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({imgs:[{mime:file.type||'image/jpeg',b64}]})});
-      const res=snapToSt(await resp.json());
+      const j=await resp.json(); if(j&&j.err){ alert(j.err); b.textContent=T0; f.value=''; return; } const res=snapToSt(j);
       if(!res.ok) alert(res.why); else { snapApply(res); if(res.note) alert(res.note); }
-    }catch(e){ alert('스샷 읽기 실패: 8_stack_input.bat 이 켜져 있는지 확인해 주세요'); }
+    }catch(e){ alert('스샷 읽기 실패: 잠시 뒤 다시 해 주세요 (PC 입력기로 쓰는 중이면 8_stack_input.bat 확인)'); }
     b.textContent=SNAPT; f.value='';
   };
   {const h=document.querySelector('header h1'); if(h) h.append(b); else document.body.append(b);} document.body.append(f); /*snapbig*/
