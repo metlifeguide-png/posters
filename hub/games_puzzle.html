@@ -240,9 +240,9 @@ let SWH=null;function swipe(fn){SWH=fn;}
 // ===== 🧩 퍼즐 =====
 const secs=t0=>Math.round((Date.now()-t0)/1000);
 // 지뢰찾기
-G.push({k:'mines',cat:'퍼즐',e:'💣',n:'지뢰찾기',d:'쉬움·보통·어려움 · 시간 기록',
+G.push({k:'mines',cat:'퍼즐',e:'💣',n:'지뢰찾기',d:'쉬움·보통·어려움·극악 · 시간 기록',
  start(){this.lv=null;rr();},
- go(lv){const [w,h,m]={'쉬움':[8,8,10],'보통':[10,10,16],'어려움':[10,13,26]}[lv];Object.assign(this,{lv,w,h,m,b:null,op:new Set(),fl:new Set(),flag:false,over:0,t0:0});clock(()=>this.t0&&!this.over?secs(this.t0):null);rr();},
+ go(lv){const [w,h,m]={'쉬움':[8,8,10],'보통':[10,10,16],'어려움':[10,13,26],'극악':[12,18,54]}[lv];Object.assign(this,{lv,w,h,m,b:null,op:new Set(),fl:new Set(),flag:false,over:0,t0:0});clock(()=>this.t0&&!this.over?secs(this.t0):null);rr();},
  nb(i){const x=i%this.w,y=Math.floor(i/this.w),o=[];for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){if(!dx&&!dy)continue;const X=x+dx,Y=y+dy;if(X>=0&&Y>=0&&X<this.w&&Y<this.h)o.push(Y*this.w+X);}return o;},
  init(safe){const N=this.w*this.h,ban=new Set([safe,...this.nb(safe)]);this.b=new Set(shuf([...Array(N).keys()].filter(i=>!ban.has(i))).slice(0,this.m));this.t0=Date.now();},
  cnt(i){return this.nb(i).filter(j=>this.b.has(j)).length;},
@@ -256,7 +256,7 @@ G.push({k:'mines',cat:'퍼즐',e:'💣',n:'지뢰찾기',d:'쉬움·보통·어�
  rc(i,e){if(e&&e.preventDefault)e.preventDefault();if(Date.now()-(this.lp||0)<1500||Date.now()-(this.ck||0)<600)return false;if(this.over||this.op.has(i))return false;this.fl.has(i)?this.fl.delete(i):this.fl.add(i);rr();return false;},
  ts(i){clearTimeout(this.lpT);this.lpT=setTimeout(()=>{this.lpT=0;if(this.over||this.op.has(i))return;this.lp=Date.now();this.fl.has(i)?this.fl.delete(i):this.fl.add(i);try{if(navigator.vibrate)navigator.vibrate(15);}catch(e){}rr();},380);},
  te(){clearTimeout(this.lpT);},
- view(){if(!this.lv)return lvPick('CUR.go');const C=['','#1f5fae','#3a9d3f','#d33b3b','#6a3fb5','#9a5a2a','#178f8f','#222','#777'];
+ view(){if(!this.lv)return lvPick('CUR.go')+'<div style="text-align:center;margin-top:10px"><button onclick="CUR.go(\'극악\')" style="padding:12px 22px;border:0;border-radius:10px;background:#3b0d0d;color:#fff;font-weight:900;font-size:15px">💀 극악 · 12×18 지뢰 54</button></div>'/*mineX*/;const C=['','#1f5fae','#3a9d3f','#d33b3b','#6a3fb5','#9a5a2a','#178f8f','#222','#777'];
   const cells=[...Array(this.w*this.h).keys()].map(i=>{const o=this.op.has(i),bm=this.b&&this.b.has(i)&&this.over===2;const n=o?this.cnt(i):0;
    return `<div onclick="CUR.tap(${i})" oncontextmenu="return CUR.rc(${i},event)" onmousedown="CUR.md(${i},event)" ontouchstart="CUR.ts(${i})" ontouchend="CUR.te()" ontouchmove="CUR.te()" ontouchcancel="CUR.te()" style="-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;touch-action:manipulation;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:16px;border-radius:4px;background:${o?'#f7f3e8':bm?'#f2b8b8':'#b9c7d8'};color:${C[n]}">${bm?'💣':o?(n||''):this.fl.has(i)?'🚩':''}</div>`;}).join('');
   return `<div class="gst"><span>${this.lv} · 💣 ${this.m-this.fl.size}</span><span>⏱ <b id="clk">${this.t0?fmtScore('memory',secs(this.t0)):'0분 00초'}</b></span></div>
