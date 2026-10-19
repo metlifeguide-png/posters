@@ -193,6 +193,7 @@ body.isetc .noetc{display:none!important}
   </div>
   <div class="k" id="ezRankHint" style="margin:4px 2px 0;font-size:12px;color:var(--muted)"></div>
   <div class="k" id="ezHeroChips" style="margin:2px 2px 0;font-size:12px;color:var(--muted)"></div>
+  <div class="ez-ctl" id="ezAvgBox" style="margin-top:6px"><div class="k"><b>평균 스택 BB</b> (알면 입력 · 비우면 자동 계산)</div><div class="row2"><input id="ezAvg" type="number" inputmode="decimal" step="0.1" min="1" placeholder="자동"></div></div>
   <div class="f2t" id="ezSafe" style="margin-top:8px">안정권 계산 중…</div>
   <h3>테이블 인원 <span class="hint">내 테이블에 앉은 사람 수 (나 포함)</span></h3>
   <div class="chips" id="ezTsize"></div>
@@ -258,6 +259,7 @@ body.isetc .noetc{display:none!important}
   <div class="chips" id="heroPos"></div>
   <div class="grid2" style="margin-top:12px">
     <label class="f">총 바이인 수(엔트리)<div class="num"><input id="entries" type="number" inputmode="numeric" min="2" step="1"></div></label>
+    <label class="f">평균 스택 BB (알면 입력 · 비우면 자동)<div class="num"><input id="avgIn" type="number" inputmode="decimal" min="1" step="0.1" placeholder="자동"></div></label>
     <label class="f">현재 인원(라이브)<div class="num"><input id="players" type="number" inputmode="numeric" min="2" step="1"></div></label>
     <label class="f">내 칩 등수 (로비 순위, 모르면 비움)<div class="num"><input id="proRank" type="number" inputmode="numeric" min="1" step="1" placeholder="예: 20"></div><span class="hint" id="proRankHint"></span></label>
     <label class="f">테이블 인원<select id="tsize"><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></label>
@@ -509,18 +511,18 @@ function exploitOpener(r,E,factors,floor){
     cs.push(adjustRange(r.cs[c],fc_,E)); rs.push(adjustRange(r.rs[c],f,E)); fc.push(adjustRange(r.fc[c],Math.max(1,f),E));}
   const eqC=[],pC=[],eqR=[],pR=[],eqF=[],pF=[];
   for(let c=0;c<n;c++){let x=eqVs(E,cs[c]);eqC.push(x[0]);pC.push(x[1]); if(r.canRaise){x=eqVs(E,rs[c]);eqR.push(x[0]);pR.push(x[1]);x=eqVs(E,fc[c]);eqF.push(x[0]);pF.push(x[1]);}}
-  const sh=new Float64Array(169),ra=new Float64Array(169),rcall=new Float64Array(169);
+  const sh=new Float64Array(169),ra=new Float64Array(169),rcall=new Float64Array(169), rcc=cs.map(()=>new Float64Array(169));
   for(let h=0;h<169;h++){
     let reach=1,ev=0; for(let c=0;c<n;c++){const I=r.info[c],p=pC[c],e=eqC[c][h];ev+=reach*p*(e*I.Wo+(1-e)*I.Lo);reach*=1-p;}
     const evS=ev+reach*r.Aval; let evR=-1, callW=0, rsW=0;
     if(r.canRaise){reach=1;ev=0;
       for(let c=0;c<n;c++){const I=r.info[c],e=eqR[c][h],ce=e*I.Wo+(1-e)*I.Lo,call=I.autoCall||ce>I.RFo;
-        const eo=1-(1-eqF[c][h])*I.real; const w=reach*pR[c];
+        const eo=1-(1-eqF[c][h])*I.real; const w=reach*pR[c]; rcc[c][h]=call?1:0;
         ev+=w*(call?ce:I.RFo)+reach*pF[c]*(eo*I.FWo+(1-eo)*I.FLo); rsW+=w; if(call) callW+=w; reach*=Math.max(0,1-pR[c]-pF[c]);}
       evR=ev+reach*r.Aval;}
     if(evS>r.F||evR>r.F){ if(r.canRaise&&evR>evS){ra[h]=1; rcall[h]=rsW>1e-12?callW/rsW:0;} else sh[h]=1; }
   }
-  return {sh,ra,rcall,csPct:cs.map(pct),rsPct:rs.map(pct)};
+  return {sh,ra,rcall,rcc,csPct:cs.map(pct),rsPct:rs.map(pct)};
 }
 // 빌런이 먼저 올인했을 때 내 콜: 빌런 올인 범위를 성향대로 바꾼 뒤 필요 승률과 비교
 function exploitCaller(r,E,c,factor){
@@ -958,7 +960,7 @@ function drawStatic(){
   const g=GAMES[st.game];
   const lines=g.bubbles.map(b=>st.players>b.n?`${b.label}까지 ${st.players-b.n}명`:`${b.label} 확정권`);
   const warn = (avg>400||avg<2) ? `<br>⚠️ 평균 ${r1(avg)}BB — 전체 인원·현재 인원·레벨을 확인해 주세요.` : "";
-  $("info").innerHTML=`${lvLabel()} · 평균 스택 <b>${r1(avg)}BB</b> <span style="font-weight:500">(${st.entries}명 × ${START.toLocaleString()} ÷ ${st.players}명)</span>`+
+  $("info").innerHTML=`${lvLabel()} · 평균 스택 <b>${r1(avg)}BB</b> <span style="font-weight:500">${+st.avgOv>0?"(직접 입력)":`(${st.entries}명 × ${START.toLocaleString()} ÷ ${st.players}명)`}</span>`+
      (curLevel()<=REG_LEVEL?`<br>레지 마감 전 (${REG_LEVEL}레벨까지) → 칩EV`:`<br>레지 마감 후 → ICM`)+(st.modeManual?" · 계산 기준은 직접 고른 값":"")+warn+
      (st.mode==="icm"?`<br>${lines.join(" · ")}`:`<br>레지 마감 전: 칩EV로 계산해요 (인원이 더 늘 수 있음)`);
   $("safePanel").style.display = "";
@@ -1015,7 +1017,7 @@ function shorterCount(){
   return (st.shorter===""||st.shorter==null)?null:+st.shorter;
 }
 function fmtChip(c){return c>=10000?(Math.round(c/1000)/10)+"만":Math.round(c).toLocaleString();}
-function schedule(){applyGame();applyLevel();rescaleOK=false;fix();drawStatic();drawEasy();save();clearTimeout(schedule.t);$("result").classList.add("busy");$("quick").classList.add("busy");
+function schedule(){applyGame();applyLevel();if(+st.avgOv>0) START=st.avgOv*Math.max(1,st.bb)*Math.max(2,st.players)/Math.max(1,st.entries);rescaleOK=false;fix();drawStatic();drawEasy();save();clearTimeout(schedule.t);$("result").classList.add("busy");$("quick").classList.add("busy");
   schedule.t=setTimeout(()=>{
     const g=GAMES[st.game], sc=st.scen, n=st.tsize;
     // 한게임: 20명(머니인) 전까지는 1장 확보가 목표 → 20위까지 같은 가치로 계산. 머니인 뒤엔 2장(9위) 구조
@@ -1091,7 +1093,21 @@ let E_UI=null; const EUI=()=>E_UI||(E_UI=decodeE(EQB64));
 const CALL_TIGHT=0.88, SHOVE_TIGHT=0.93;   // 콜 범위 12%, 올인 범위 7% 좁힘 (6BB 이하 올인은 그대로)
 function shrinkRange(a,f){ if(f>=1) return a; const W=SAT.W, o=Float64Array.from(a), ord=playOrder(); let tot=0; for(let k=0;k<169;k++) tot+=W[k]*o[k];
   let cut=tot*(1-f); for(let i=ord.length-1;i>=0&&cut>1e-9;i--){ const h=ord[i], m=W[h]*o[h]; if(!m) continue; if(m<=cut){cut-=m;o[h]=0;} else {o[h]-=cut/W[h];cut=0;} } return o; }
-function rcCallArr(r,c){ if(r._cc&&r._cc[c]) return r._cc[c]; const a=new Float64Array(169); for(let h=0;h<169;h++) a[h]=r.ra[h]*r.rc[c][h]; r._cc=r._cc||[]; return (r._cc[c]=shrinkRange(a,CALL_TIGHT)); }
+/*rsadj*/ function rsAdj(r){   // 이지·스샷의 콜 차트도 openAdjust와 같은 상대 올인 상한(실전 보정)·성향·레귤러 기준으로 다시 계산
+  r._rxk=r.callers.map(i=>tendF(i)).join(',')+'|'+st.tsize; if(r._rxs===r._rxk) return r._rx; r._rxs=r._rxk; r._rx=null;
+  if(!(r.canRaise&&r.rsPct)) return null;
+  const baseFloor=tsty().floor, bbF=eff=>Math.min(0.40,Math.max(0.10,0.48-0.015*eff));
+  const floor= baseFloor ? ((seat,I)=>{ const n=st.tsize, e=I&&I.eff?I.eff:20; return seat===n-1?Math.max(baseFloor,bbF(e)):seat===n-2?Math.max(baseFloor,0.7*bbF(e)):baseFloor; }) : 0;
+  const factors={}; let any=false;
+  r.callers.forEach((i,c)=>{ factors[i]=tendF(i); if(factors[i]!==1) any=true;
+    const I=r.info[c], e=(I&&I.eff)?I.eff:20, cap=Math.min(0.45,Math.max(0.08,0.60-0.023*e)), rp=r.rsPct[c]||0;
+    if(factors[i]===1 && rp>cap){ factors[i]=cap/rp; any=true; } });
+  if(!any && !(floor && r.csPct.some((p,c)=>p<floor(r.callers[c],r.info[c])))) return null;
+  r._rx=SAT.exploitOpener(r,EUI(),factors,floor); return r._rx;
+}
+function rcCallArr(r,c){ const x=rsAdj(r); if(r._cck!==r._rxk){ r._cc=null; r._cck=r._rxk; } if(r._cc&&r._cc[c]) return r._cc[c];
+  const a=new Float64Array(169); for(let h=0;h<169;h++) a[h]=r.ra[h]*((x&&x.rcc)?x.rcc[c][h]:r.rc[c][h]);
+  r._cc=r._cc||[]; return (r._cc[c]=x?a:shrinkRange(a,CALL_TIGHT)); }
 const DEEP_BB=25, SHORT_OPEN=15;   // SHORT_OPEN 이하: 오픈-올인 받으면 콜할 패는 처음부터 올인
 let PLAY_ORDER=null;
 function playOrder(){ if(PLAY_ORDER) return PLAY_ORDER; const E=EUI(), W=SAT.W, sc=new Float64Array(169);
@@ -1237,6 +1253,8 @@ function openAdjust(r){
   const floor= baseFloor ? ((seat,I)=>{ const n=st.tsize, e=I&&I.eff?I.eff:20; return seat===n-1?Math.max(baseFloor,bbF(e)):seat===n-2?Math.max(baseFloor,0.7*bbF(e)):baseFloor; }) : 0;
   r.callers.forEach(i=>{factors[i]=tendF(i); if(tendF(i)!==1) adj.push(`${P[i]} ${tendN(i)}`);});
   if(floor && r.csPct.some((p,c)=>p<floor(r.callers[c],r.info[c]))) adj.unshift(`레귤러 기준(뒤 사람들 최소 상위 ${Math.round(baseFloor*100)}%는 콜 · 블라인드는 스택이 짧을수록 더 넓게 콜)`);
+  /*rsprac*/ if(r.canRaise && r.rsPct){ r.callers.forEach((i,c)=>{ const I=r.info[c], e=(I&&I.eff)?I.eff:20, cap=Math.min(0.45,Math.max(0.08,0.60-0.023*e)), rp=r.rsPct[c]||0;   // 상대 올인 상한 = 유효스택별(19BB≈16%·25BB≈8%·10BB≈37%). 성향을 직접 고른 자리는 그대로
+    if((factors[i]||1)===1 && rp>cap){ factors[i]=cap/rp; adj.push(`${P[i]} 올인 ${Math.round(rp*100)}%→${Math.round(cap*100)}% (실전 보정)`); } }); }
   let sh,ra,rcall,callPcts;
   if(adj.length){const x=SAT.exploitOpener(r,EUI(),factors,floor); sh=x.sh; ra=x.ra; rcall=x.rcall; callPcts=x.csPct;}
   else {sh=r.sh; ra=r.ra; rcall=SAT.raiseCallMix(r); callPcts=r.csPct;}
@@ -1420,6 +1438,7 @@ function drawEasy(){
   $("ezStatus").innerHTML=`${lvLabel()} · 평균 ${r1(av)}BB <span style="font-weight:500">(바이인 ${st.entries} ÷ 남은 ${st.players}명)</span> · ${st.mode==="icm"?"ICM(마감 후)":"칩EV(마감 전)"}<br>${clk}<br>${lines.join(" · ")}`+
     (bad?`<br><b style="color:var(--push)">⚠️ 평균 ${r1(av)}BB는 이상해요. 총 바이인 수·남은 인원을 먼저 맞춰주세요.</b>`:"");
   if(document.activeElement!==$("ezPlayersIn")) $("ezPlayersIn").value=st.players;
+  for(const id of ["ezAvg","avgIn"]){ const a=$(id); if(a&&document.activeElement!==a) a.value=st.avgOv||""; }
   document.querySelectorAll("[data-tstyle]").forEach(b=>b.className="chip"+(b.dataset.tstyle===st.tstyle?" on":""));
   {const h=$("ezHero"); if(document.activeElement!==h || Date.now()-(h._typed||0)>1500) h.value=st.heroStack;}
   $("ezHeroChips").textContent=`내 스택 = ${Math.round(st.heroStack*st.bb).toLocaleString()}칩`;
@@ -1765,7 +1784,7 @@ function drawResult(){
 document.addEventListener("click",e=>{
   const ez=e.target.closest("[data-ezk]"); if(ez){st.pick={k:+ez.dataset.ezk}; save(); drawVerdict(); const v=$("ezVerdict"); if(v.getBoundingClientRect().top>window.innerHeight-120) v.scrollIntoView({behavior:"smooth",block:"center"}); return;}
   const t=e.target.closest("button,a,[data-k]"); if(!t) return;
-  if(t.dataset.g){st.game=t.dataset.g;st.level=st.game==="etc"?1:null;st.modeManual=false;st.bustLog=[];st.tsize=GAMES[st.game].tsize||9;applyGame();schedule();return;}
+  if(t.dataset.g){st.game=t.dataset.g;st.level=st.game==="etc"?1:null;st.modeManual=false;st.bustLog=[];st.avgOv="";st.tsize=GAMES[st.game].tsize||9;applyGame();schedule();return;}
   if(t.dataset.m){st.mode=t.dataset.m;st.modeManual=true;schedule();return;}
   if(t.dataset.sc){st.scen=t.dataset.sc;schedule();return;}
   if(t.dataset.st){ setStart(t.dataset.st==="auto"?null:t.dataset.st); schedule(); return; }
@@ -1828,6 +1847,7 @@ document.addEventListener("input",e=>{
   if(t.id==="ezPlayersIn"){ if(v>=2){ st.players=Math.round(v); clearTimeout(t._t); t._t=setTimeout(schedule,700);} return; }   // 직접 고치는 건 탈락 기록에 안 남겨요
   if(t.id==="ezRank"){ st.rank=t.value===""?"":Math.max(1,Math.round(v)); clearTimeout(t._t); t._t=setTimeout(schedule,600); return; }
   if(t.id==="ezFin"){ st.finEnt=st.finEnt||{}; if(t.value==="") delete st.finEnt[st.game]; else if(v>0) st.finEnt[st.game]=Math.round(v); clearTimeout(t._t); t._t=setTimeout(schedule,700); return; }
+  /*avov*/if(t.id==="ezAvg"||t.id==="avgIn"){ st.avgOv=v>0?v:""; clearTimeout(t._t); t._t=setTimeout(schedule,700); return; }
   if(t.id==="ezEntries"){ if(v>0){st.entries=v; clearTimeout(t._t); t._t=setTimeout(schedule,700);} return; }
   if(t.id==="ezOpenIn"){ st[st.ezScen==="open"?"rraise":"vraise"]=t.value===""?"":v; clearTimeout(t._t); t._t=setTimeout(schedule,600); return; }
   if(t.id==="ezVilStack"){ st.qvStack=t.value===""?"":v; clearTimeout(t._t); t._t=setTimeout(schedule,600); return; }
