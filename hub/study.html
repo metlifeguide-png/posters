@@ -842,6 +842,12 @@ function rvPct(b,key){const f=b.fr||{},n=k=>Number(f[k])||0,ks=Object.keys(f);
  if(key==='raise')return n('allin')+ks.filter(k=>/^r/.test(k)).reduce((s,k)=>s+n(k),0);
  return n(key);}
 function rvOkFr(q,k){try{const o=q.opts[k];return !!o&&rvPct(q.b,o[0])>=RV_OKPCT;}catch(e){return false;}}
+/*rvrep*/
+function rvRepSum(b,L){const base=b.s+' '+b.b+' '+b.h+' '+b.f+'→'+b.a;
+ try{const bd=b.b.match(/../g)||[],h=b.h.match(/../g)||[],fr=b.fr||{},o=L.q.opts,raw=L.q.b.k,w=(WHY[b.a]||{})[b.k]||'';
+  const f=Object.keys(fr).filter(k=>fr[k]>0).sort((x,y)=>fr[y]-fr[x]).map(k=>(FRN[k]||k)+' '+fr[k]).join('/');
+  return (base+' | '+b.k+(raw!==b.k?'(원본 '+raw+')':'')+' | '+rvName(rvBest(bd.concat(h)))+' | 솔버 '+f+' | 내선택 '+o[L.o][1]+(L.ok?' 정답':' 오답')+(w?' | 해설: '+w:'')).slice(0,200);
+ }catch(e){return base;}}
 function frs(b){return Object.keys(b.fr).filter(k=>b.fr[k]>0).sort((x,y)=>b.fr[y]-b.fr[x]).map(k=>`${FRN[k]||k} ${b.fr[k]}%`).join(' · ');}
 G.push({k:'riverq',cat:'홀덤',e:'🌊',n:'리버 트레이너',d:'헤즈업 리버 · 벳·체크·콜·폴드를 솔버 정답으로 맞히기',
  start(){SKIP=false;this.lv=null;this.fb=null;this.over=false;rr();},
@@ -875,7 +881,7 @@ G.push({k:'riverq',cat:'홀덤',e:'🌊',n:'리버 트레이너',d:'헤즈업 �
    const mine=k=>my==='bet'?(/^b\d+$/.test(k)||k==='allin'):my==='raise'?(k==='allin'||/^r/.test(k)):k===my;
    const bars=Object.keys(fr).filter(k=>fr[k]>0).sort((x,y)=>fr[y]-fr[x]).map(k=>`<div style="display:flex;align-items:center;gap:8px;margin:3px 0"><span style="width:84px;font-weight:${mine(k)?900:500}">${esc(FRN[k]||k)}</span><div style="flex:1;background:rgba(0,0,0,.08);border-radius:6px;height:16px"><div style="width:${Math.min(100,fr[k])}%;height:16px;border-radius:6px;background:${mine(k)?'#d33b3b':'#3a7bd5'}"></div></div><span style="width:48px;text-align:right">${fr[k]}%</span>${mine(k)?'<span>👈</span>':''}</div>`).join('');
    const ver=L.ok?(L.o!==L.q.a?`<span style="color:#2e7d32">✅ 정답 인정</span> · 내 선택 ${esc(o[L.o][1])} (솔버도 ${rvPct(b,my)}% 사용)`:`<span style="color:#2e7d32">✅ 정답</span> · <b>${esc(o[L.q.a][1])}</b>`):`<span style="color:var(--red)">❌ 오답</span> · 정답 <b>${esc(o[L.q.a][1])}</b> · 내 선택 ${esc(o[L.o][1])}${L.alt?`<br><span style="color:#b26a00;font-size:16px">🟡 솔버도 ${rvPct(b,my)}% 쓰는 선택이지만 최다 행동은 아니라서 오답이에요</span>`:''}`;
-   return `<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:20px;font-weight:900">🧠 솔버는 이렇게 풀었어요 <span class="m">· ${CAT[b.f]} · ${L.t.toFixed(1)}초</span>${typeof qrepBtn==='function'?qrepBtn('riverq',b.id,b.s+' '+b.b+' '+b.h+' '+b.f+'→'+b.a):''}</div>
+   return `<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:20px;font-weight:900">🧠 솔버는 이렇게 풀었어요 <span class="m">· ${CAT[b.f]} · ${L.t.toFixed(1)}초</span>${typeof qrepBtn==='function'?qrepBtn('riverq',b.id,rvRepSum(b,L)):''}</div>
    <div style="margin:6px 0 2px">${cards(b.b)} &nbsp; 내 패 ${cards(b.h)}</div>
    <div style="font-size:17px;line-height:1.7;margin-top:8px">${bars}</div>
    <div style="font-size:17px;line-height:1.8;margin-top:10px">내 패: ${esc(rvHandLbl(b))}${w?'<br>'+esc(w):''}${rvDescHtml(b)}</div>
