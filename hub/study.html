@@ -751,7 +751,7 @@ const LINE={f:{b:'플랍: BB 체크 → BTN 33% 벳 → BB 콜',x:'플랍: 체�
 const valid=x=>x&&x.id&&x.b&&x.h&&OPT[x.f]&&OPT[x.f].some(o=>o[0]===x.a);
 const bank=()=>(typeof RIVER_QS!=='undefined'?RIVER_QS:[]).filter(valid).filter(x=>!(typeof qblkHas==='function'&&qblkHas('riverq',x.id)));
 function mk(p){const B=bank();let b=p&&p.id?B.find(x=>x.id===p.id):null;if(!b)b=pick(B);
- const opts=OPT[b.f];return {b,opts,a:opts.findIndex(o=>o[0]===b.a),tag:'rv_'+b.f,p:Object.assign({lv:1,id:b.id},p&&p.rs?{rs:1}:{})};}
+ const opts=RV4;return {b,opts,a:rvTop(b),tag:'rv_'+b.f,p:Object.assign({lv:1,id:b.id},p&&p.rs?{rs:1}:{})};}
 /*rvsim*/
 let SKIP=false,RVTOK=0;
 // 프리플랍 사이즈를 알면 채우세요 (o=오픈, t=3벳). 비워두면 팟에서 역산해요. 예: {SRP100A:{o:2.5},'3BP100A':{o:2.5,t:10}}
@@ -871,8 +871,8 @@ function rvPct(b,key){const f=b.fr||{},n=k=>Number(f[k])||0,ks=Object.keys(f);
  if(key==='bet')return ks.filter(k=>/^b\d+$/.test(k)).reduce((s,k)=>s+n(k),0)+n('allin');
  if(key==='raise')return n('allin')+ks.filter(k=>/^r/.test(k)).reduce((s,k)=>s+n(k),0);
  return n(key);}
-function rvOkFr(q,k){try{const o=q.opts[k];return !!o&&rvPct(q.b,o[0])>=RV_OKPCT;}catch(e){return false;}}
-/*rvrep*/
+function rvOkFr(q,k){try{const o=q.opts[k];return !!o&&rvGp(q.b,o[0])>=RV_OKPCT;}catch(e){return false;}}
+function rvGp(b,g){var f=(b&&b.fr)||{},n=function(k){return Number(f[k])||0;},ks=Object.keys(f);if(g==='fold')return n('fold');if(g==='call')return n('call')+n('check');if(g==='allin')return n('allin');return ks.filter(function(k){return /^b\d+$/.test(k)||/^r/.test(k);}).reduce(function(s,k){return s+n(k);},0);}var RV4=[['fold','폴드'],['call','체크·콜'],['bet','벳·레이즈'],['allin','올인']];function rvIn(g,k){return g==='fold'?k==='fold':g==='call'?(k==='call'||k==='check'):g==='allin'?k==='allin':(/^b\d+$/.test(k)||/^r/.test(k));}function rvTop(b){var best=-1,bi=-1;for(var i=0;i<4;i++){var v=rvGp(b,RV4[i][0]);if(v>best){best=v;bi=i;}}if(best<=0){var a=b&&b.a;return a==='fold'?0:(a==='call'||a==='check')?1:a==='allin'?3:2;}return bi;}/*rvbtn4*//*rvrep*/
 function rvRepSum(b,L){const base=b.s+' '+b.b+' '+b.h+' '+b.f+'→'+b.a;
  try{const bd=b.b.match(/../g)||[],h=b.h.match(/../g)||[],fr=b.fr||{},o=L.q.opts,raw=L.q.b.k,w=(WHY[b.a]||{})[b.k]||'';
   const f=Object.keys(fr).filter(k=>fr[k]>0).sort((x,y)=>fr[y]-fr[x]).map(k=>(FRN[k]||k)+' '+fr[k]).join('/');
@@ -898,7 +898,7 @@ G.push({k:'riverq',cat:'홀덤',e:'🌊',n:'리버 트레이너',d:'헤즈업 �
   if(this.i>=this.N){this.over=true;if(this.lv!=='W')this.nb=stkSave('riverq',this.ok);}rr();scrollTo(0,0);},
  next(){if(!this.fb||this.over)return;this.fb=null;this.nq();rr();scrollTo(0,0);},
  menu(){const st=lsGet('st_riverq',{}),wn=lsGet('wn_riverq',[]).length,B=bank(),n=B.length,cs=this.cat||'R';
-  return `<div class="card"><div class="t">🌊 리버 트레이너</div><div class="m" style="margin-top:4px;line-height:1.6">헤즈업으로 리버까지 온 상황에서 벳할지, 체크할지, 콜할지, 폴드할지 골라요. 정답은 솔버가 80% 이상 고른 행동이에요. 틀릴 때까지 🔥 연속 도전이고, 점수·랭킹은 없어요.<br>지금 문제 ${n}개 중에서 무작위로 나와요.</div></div>
+  return `<div class="card"><div class="t">🌊 리버 트레이너</div><div class="m" style="margin-top:4px;line-height:1.6">헤즈업으로 리버까지 온 상황에서 벳할지, 체크할지, 콜할지, 폴드할지 골라요. 정답은 솔버가 가장 많이 고른 행동이에요. 틀릴 때까지 🔥 연속 도전이고, 점수·랭킹은 없어요.<br>지금 문제 ${n}개 중에서 무작위로 나와요.</div></div>
   <div class="card"><div class="t" style="font-size:15px">상황 고르기</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">${[['R','🎲 랜덤',n]].concat(Object.keys(CAT).map(c=>[c,CAT[c],B.filter(x=>x.f===c).length])).map(([c,l,k])=>`<button class="btn ${cs===c?'g':'gr'}" style="flex:1 1 45%;padding:10px" onclick="CUR.cat='${c}';rr()">${l} · ${k}문제</button>`).join('')}</div></div>
   <button class="btn full g" style="font-size:17px;padding:14px" onclick="CUR.go('A',CUR.cat)">🔥 연속 도전 시작 · 최고 ${stkBest('riverq')}연속</button>
   <div class="card" style="margin-top:10px"><div class="t" style="font-size:15px">상황별 정답률</div>${Object.keys(CAT).map(c=>{const s=st['rv_'+c],pc=s&&s[1]?Math.round(s[0]/s[1]*100)+'% ('+s[0]+'/'+s[1]+')':'아직 안 풀었어요';return `<div class="row"><span>${CAT[c]}</span><span class="m">${pc}</span></div>`;}).join('')}</div>
@@ -908,9 +908,9 @@ G.push({k:'riverq',cat:'홀덤',e:'🌊',n:'리버 트레이너',d:'헤즈업 �
   const nextBtn=(this.fb&&!this.over)?` <button class="btn g" style="padding:6px 14px;font-size:14px;margin-left:8px;white-space:nowrap" onclick="CUR.next()">다음 ▶</button>`:'';
   const hd=`<div class="gst" style="font-size:17px"><span>${W?'📒 오답노트':'리버'} · ${W?`${Math.min(this.i+(this.fb||this.over?0:1),this.N)} / ${this.N}`:`🔥 연속 <b>${this.ok}</b> · 최고 ${stkBest('riverq')}연속`}</span><span>정답 <b>${this.ok}</b>${nextBtn} <a onclick="CUR.start()" style="color:var(--blue);cursor:pointer;margin-left:6px">처음으로</a></span></div>`;
   const fbCard=L=>{const b=bdFix(L.q.b),w=(WHY[b.a]||{})[b.k]||'',o=L.q.opts,my=o[L.o][0],fr=b.fr||{};
-   const mine=k=>my==='bet'?(/^b\d+$/.test(k)||k==='allin'):my==='raise'?(k==='allin'||/^r/.test(k)):k===my;
+   const mine=k=>rvIn(my,k);
    const bars=Object.keys(fr).filter(k=>fr[k]>0).sort((x,y)=>fr[y]-fr[x]).map(k=>`<div style="display:flex;align-items:center;gap:8px;margin:3px 0"><span style="width:84px;font-weight:${mine(k)?900:500}">${esc(FRN[k]||k)}</span><div style="flex:1;background:rgba(0,0,0,.08);border-radius:6px;height:16px"><div style="width:${Math.min(100,fr[k])}%;height:16px;border-radius:6px;background:${mine(k)?'#d33b3b':'#3a7bd5'}"></div></div><span style="width:48px;text-align:right">${fr[k]}%</span>${mine(k)?'<span>👈</span>':''}</div>`).join('');
-   const ver=L.ok?(L.o!==L.q.a?`<span style="color:#2e7d32">✅ 정답 인정</span> · 내 선택 ${esc(o[L.o][1])} (솔버도 ${rvPct(b,my)}% 사용)`:`<span style="color:#2e7d32">✅ 정답</span> · <b>${esc(o[L.q.a][1])}</b>`):`<span style="color:var(--red)">❌ 오답</span> · 정답 <b>${esc(o[L.q.a][1])}</b> · 내 선택 ${esc(o[L.o][1])}${L.alt?`<br><span style="color:#b26a00;font-size:16px">🟡 솔버도 ${rvPct(b,my)}% 쓰는 선택이지만 최다 행동은 아니라서 오답이에요</span>`:''}`;
+   const ver=L.ok?(L.o!==L.q.a?`<span style="color:#2e7d32">✅ 정답 인정</span> · 내 선택 ${esc(o[L.o][1])} (솔버도 ${rvGp(b,my)}% 사용)`:`<span style="color:#2e7d32">✅ 정답</span> · <b>${esc(o[L.q.a][1])}</b>`):`<span style="color:var(--red)">❌ 오답</span> · 정답 <b>${esc(o[L.q.a][1])}</b> · 내 선택 ${esc(o[L.o][1])}${L.alt?`<br><span style="color:#b26a00;font-size:16px">🟡 솔버도 ${rvGp(b,my)}% 쓰는 선택이지만 최다 행동은 아니라서 오답이에요</span>`:''}`;
    return `<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:20px;font-weight:900">🧠 솔버는 이렇게 풀었어요 <span class="m">· ${CAT[b.f]} · ${L.t.toFixed(1)}초</span>${typeof qrepBtn==='function'?qrepBtn('riverq',b.id,rvRepSum(b,L)):''}</div>
    <div style="margin:6px 0 2px">${cards(b.b)} &nbsp; 내 패 ${cards(b.h)}</div>
    <div style="font-size:17px;line-height:1.7;margin-top:8px">${bars}</div>
@@ -923,7 +923,7 @@ G.push({k:'riverq',cat:'홀덤',e:'🌊',n:'리버 트레이너',d:'헤즈업 �
     <button class="btn full" onclick="CUR.go('${W?'W':'A'}',CUR.cat)">${W?'남은 오답 다시 풀기':'다시 하기'}</button><button class="btn full gr" style="margin-top:8px" onclick="CUR.start()">처음으로</button>`;}
   if(this.fb)return hd+fbCard(this.fb)+`<button class="btn full g" style="font-size:17px;padding:13px" onclick="CUR.next()">다음 문제${W?` (${this.i+1}/${this.N})`:''}</button>`;
   return hd+`<div class="card" style="font-size:16px;line-height:1.5;padding:8px 10px">${sit(q.b)}</div>
-   <div style="display:grid;grid-template-columns:repeat(${q.opts.length},1fr);gap:8px;margin-top:10px">${q.opts.map((o,k)=>`<button class="btn b2" style="padding:15px 6px;font-size:19px;font-weight:900" onclick="CUR.ans(${k})">${esc(o[1])}</button>`).join('')}</div>
+   <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px">${q.opts.map((o,k)=>`<button class="btn b2" style="padding:15px 6px;font-size:19px;font-weight:900" onclick="CUR.ans(${k})">${esc(o[1])}</button>`).join('')}</div>
    <div class="m" style="text-align:center;margin-top:8px">${esc(NOTE)}</div>`;}});
 })();
 // GORDER:pushfold,potodds,nutadv,hustudy,huview,geom,aofprac,rulequiz,riverq
