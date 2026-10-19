@@ -653,25 +653,26 @@ const bank=()=>(typeof RIVER_QS!=='undefined'?RIVER_QS:[]).filter(valid).filter(
 function mk(p){const B=bank();let b=p&&p.id?B.find(x=>x.id===p.id):null;if(!b)b=pick(B);
  const opts=OPT[b.f];return {b,opts,a:opts.findIndex(o=>o[0]===b.a),tag:'rv_'+b.f,p:{lv:1,id:b.id}};}
 /*rvsim*/
-let SKIP=false;
-// 프리플랍 사이즈를 알면 채우세요 (o=오픈, t=3벳). 비워두면 팟에서 역산해서 보여줘요. 예: {SRP100A:{o:2.5},'3BP100A':{o:2.5,t:10}}
+let SKIP=false,RVTOK=0;
+// 프리플랍 사이즈를 알면 채우세요 (o=오픈, t=3벳). 비워두면 팟에서 역산해요. 예: {SRP100A:{o:2.5},'3BP100A':{o:2.5,t:10}}
 const PRE_SZ={};
+const SPD=0.55; // 재생 속도: 작을수록 빨라요
 const nb=x=>{const r=Math.round(x*10)/10;return r.toLocaleString()+'BB';};
-let RVTOK=0;
 // 모션은 JS(Web Animations)로 직접 재생: 브라우저/사이트의 '애니메이션 줄이기' CSS에 막히지 않게
 function rvPlay(){const tok=++RVTOK,root=document.querySelector('.rvT');if(!root)return;
- const frs=[...root.querySelectorAll('.rvFr')],bar=root.querySelector('.rvBar');
+ const frs=[...root.querySelectorAll('.rvFr')],bar=root.querySelector('.rvBar'),hist=[...document.querySelectorAll('.rvHist [data-at]')];
  const KF={pop:[{transform:'scale(.4)',opacity:0},{transform:'scale(1.12)',opacity:1,offset:.7},{transform:'scale(1)',opacity:1}],
-  deal:[{transform:'translate(120px,-140px) rotate(25deg) scale(.4)',opacity:0},{opacity:1,offset:.25},{transform:'none',opacity:1}],
+  deal:[{transform:'translate(120px,-120px) rotate(25deg) scale(.4)',opacity:0},{opacity:1,offset:.25},{transform:'none',opacity:1}],
   lift:[{transform:'scale(1)'},{transform:'scale(1.18)'},{transform:'scale(1)'}],
-  flyT:[{transform:'translateY(-85px) scale(.5)',opacity:0},{opacity:1,offset:.3},{transform:'none',opacity:1}],
-  flyB:[{transform:'translateY(85px) scale(.5)',opacity:0},{opacity:1,offset:.3},{transform:'none',opacity:1}],
-  colT:[{transform:'none',opacity:1},{transform:'translateY(45px) scale(.5)',opacity:0}],
-  colB:[{transform:'none',opacity:1},{transform:'translateY(-135px) scale(.5)',opacity:0}]};
- const DUR={pop:450,deal:550,lift:500,flyT:700,flyB:700,colT:800,colB:800};
+  flyT:[{transform:'translateY(-65px) scale(.5)',opacity:0},{opacity:1,offset:.3},{transform:'none',opacity:1}],
+  flyB:[{transform:'translateY(65px) scale(.5)',opacity:0},{opacity:1,offset:.3},{transform:'none',opacity:1}],
+  colT:[{transform:'none',opacity:1},{transform:'translateY(35px) scale(.5)',opacity:0}],
+  colB:[{transform:'none',opacity:1},{transform:'translateY(-90px) scale(.5)',opacity:0}]};
+ const DUR={pop:350,deal:400,lift:380,flyT:480,flyB:480,colT:550,colB:550};
  if(bar&&bar.animate)bar.animate([{width:'0%'},{width:'100%'}],{duration:(+bar.dataset.total)*1000,fill:'forwards'});
  let t=0;
- frs.forEach(f=>{setTimeout(()=>{if(tok!==RVTOK)return;frs.forEach(x=>{x.style.opacity=0;});f.style.opacity=1;
+ frs.forEach((f,i)=>{setTimeout(()=>{if(tok!==RVTOK)return;frs.forEach(x=>{x.style.opacity=0;});f.style.opacity=1;
+  hist.forEach(h=>{h.style.display=(+h.dataset.at<=i)?'':'none';});
   f.querySelectorAll('[data-an]').forEach(el=>{const a=el.dataset.an;if(el.animate&&KF[a])el.animate(KF[a],{duration:DUR[a],delay:(+el.dataset.dl)*1000,easing:'ease-out',fill:'both'});});},t);
   t+=(+f.dataset.d)*1000;});}
 // 실제 테이블에서 플레이하듯 '장면(프레임)' 목록을 만듦: 프리플랍 → 플랍 → 턴 → 리버
@@ -683,33 +684,33 @@ function steps(b){
  const c0=ps.t&&three?ps.t:(ps.o&&!three?ps.o:r5(Pf/2));
  const o=three?(ps.o||Math.max(2,r5(c0/3))):c0,t3=c0;
  const st={BTN:S,BB:S},ch={BTN:0,BB:0};let pot=0,board=0,say={};const F=[];
- const snap=(d,act,cap,x)=>F.push(Object.assign({d,act,cap,board,pot,st:{...st},ch:{...ch},say:{...say},deal:null,col:null,first:false,pop:false},x||{}));
+ const snap=(d,act,cap,x)=>F.push(Object.assign({d:d*SPD,act,cap,board,pot,st:{...st},ch:{...ch},say:{...say},deal:null,col:null,first:false,pop:false},x||{}));
  const put=(who,amt,txt,base)=>{say[who]=txt;if(amt>0){ch[who]=amt;st[who]=base-amt;}};
- const street=(name,n,potv,stk,from)=>{const col={...ch};ch.BTN=ch.BB=0;st.BTN=st.BB=stk;pot=potv;board=n;say={};
-  snap(n===3?2.6:2.1,null,`${name} · 칩이 팟으로 · 팟 <b>${nb(potv)}</b>`,{deal:from,col,pop:true});};
+ const street=(name,n,potv,stk,from,cards)=>{const col={...ch};ch.BTN=ch.BB=0;st.BTN=st.BB=stk;pot=potv;board=n;say={};
+  snap(n===3?2.6:2.1,null,`${name} · 칩이 팟으로 · 팟 <b>${nb(potv)}</b>`,{deal:from,col,pop:true,hrow:{name,cards,pot:potv}});};
  // 프리플랍
- snap(1.9,null,`프리플랍 · 시작 스택 <b>${S}BB</b> · 나는 <b>${me}</b>`,{first:true});
- put('BTN',o,'오픈',S);snap(1.7,'BTN',`프리플랍 · BTN ${nb(o)} 오픈`);
- if(three){put('BB',t3,'3벳',S);snap(1.7,'BB',`프리플랍 · BB ${nb(t3)}으로 3벳`);
-  put('BTN',t3,'콜',S);snap(1.7,'BTN','프리플랍 · BTN 콜');}
- else{put('BB',o,'콜',S);snap(1.7,'BB','프리플랍 · BB 콜');}
+ snap(1.9,null,`프리플랍 · 시작 스택 <b>${S}BB</b> · 나는 <b>${me}</b>`,{first:true,hrow:{name:'프리플랍'}});
+ put('BTN',o,'오픈',S);snap(1.7,'BTN',`프리플랍 · BTN ${nb(o)} 오픈`,{hact:`BTN ${nb(o)} 오픈`});
+ if(three){put('BB',t3,'3벳',S);snap(1.7,'BB',`프리플랍 · BB ${nb(t3)}으로 3벳`,{hact:`BB ${nb(t3)} 3벳`});
+  put('BTN',t3,'콜',S);snap(1.7,'BTN','프리플랍 · BTN 콜',{hact:'BTN 콜'});}
+ else{put('BB',o,'콜',S);snap(1.7,'BB','프리플랍 · BB 콜',{hact:'BB 콜'});}
  // 플랍
- const Fs=S-c0;street('플랍',3,Pf,Fs,0);
- put('BB',0,'체크');snap(1.4,'BB','플랍 · BB 체크');
- if(l0==='b'){put('BTN',fb,'벳 33%',Fs);snap(1.7,'BTN',`플랍 · BTN 33% 벳 (${nb(fb)})`);
-  put('BB',fb,'콜',Fs);snap(1.6,'BB','플랍 · BB 콜');}
- else{put('BTN',0,'체크');snap(1.4,'BTN','플랍 · BTN 체크');}
+ const Fs=S-c0;street('플랍',3,Pf,Fs,0,b.b.slice(0,6));
+ put('BB',0,'체크');snap(1.4,'BB','플랍 · BB 체크',{hact:'BB 체크'});
+ if(l0==='b'){put('BTN',fb,'벳 33%',Fs);snap(1.7,'BTN',`플랍 · BTN 33% 벳 (${nb(fb)})`,{hact:`BTN 33% 벳 ${nb(fb)}`});
+  put('BB',fb,'콜',Fs);snap(1.6,'BB','플랍 · BB 콜',{hact:'BB 콜'});}
+ else{put('BTN',0,'체크');snap(1.4,'BTN','플랍 · BTN 체크',{hact:'BTN 체크'});}
  // 턴
- const Ts=Fs-fb;street('턴',4,Pt,Ts,3);
- put('BB',0,'체크');snap(1.4,'BB','턴 · BB 체크');
- if(l1==='b'){put('BTN',tb,'벳 75%',Ts);snap(1.7,'BTN',`턴 · BTN 75% 벳 (${nb(tb)})`);
-  put('BB',tb,'콜',Ts);snap(1.6,'BB','턴 · BB 콜');}
- else{put('BTN',0,'체크');snap(1.4,'BTN','턴 · BTN 체크');}
+ const Ts=Fs-fb;street('턴',4,Pt,Ts,3,b.b.slice(6,8));
+ put('BB',0,'체크');snap(1.4,'BB','턴 · BB 체크',{hact:'BB 체크'});
+ if(l1==='b'){put('BTN',tb,'벳 75%',Ts);snap(1.7,'BTN',`턴 · BTN 75% 벳 (${nb(tb)})`,{hact:`BTN 75% 벳 ${nb(tb)}`});
+  put('BB',tb,'콜',Ts);snap(1.6,'BB','턴 · BB 콜',{hact:'BB 콜'});}
+ else{put('BTN',0,'체크');snap(1.4,'BTN','턴 · BTN 체크',{hact:'BTN 체크'});}
  // 리버
- const Rs=Ts-tb;street('리버',5,P,Rs,4);
+ const Rs=Ts-tb;street('리버',5,P,Rs,4,b.b.slice(8,10));
  let q;
- if(b.f==='check'){put('BB',0,'체크');snap(1.5,'BB','리버 · BB 체크');q='리버, BB가 체크했어요. 어떻게 할까요?';}
- else if(b.f==='bet'){const a=P*bt/100;put('BB',a,`벳 ${bt}%`,Rs);snap(1.8,'BB',`리버 · BB ${bt}% 벳 (${nb(a)})`);
+ if(b.f==='check'){put('BB',0,'체크');snap(1.5,'BB','리버 · BB 체크',{hact:'BB 체크'});q='리버, BB가 체크했어요. 어떻게 할까요?';}
+ else if(b.f==='bet'){const a=P*bt/100;put('BB',a,`벳 ${bt}%`,Rs);snap(1.8,'BB',`리버 · BB ${bt}% 벳 (${nb(a)})`,{hact:`BB ${bt}% 벳 ${nb(a)}`});
   q=`리버, BB가 ${bt}% 벳 (<span style="color:#ff8a80">${nb(a)}</span>)을 했어요. 어떻게 할까요?`;}
  else q='리버, 내가 먼저 행동해요. 어떻게 할까요?';
  say[me]='나는?';snap(0,me,q);
@@ -718,45 +719,52 @@ function sit(b){
  const sk=SKIP;
  if(!sk)setTimeout(rvPlay,30);
  const sz=(c,n)=>{const s=SU[c[1]]||['?','#000'];return `<span style="display:inline-block;min-width:${n+14}px;padding:5px 6px;margin:2px 4px 2px 0;border:2px solid #aaa;border-radius:8px;background:#fff;color:${s[1]};font-weight:900;font-size:${n}px;line-height:1.1;text-align:center">${c[0]==='T'?'10':c[0]}${s[0]}</span>`;};
+ const mc=c=>{const s=SU[c[1]]||['?','#000'];return `<span style="display:inline-block;padding:0 4px;margin:0 1px;border:1px solid #bbb;border-radius:4px;background:#fff;color:${s[1]};font-weight:900;font-size:14px">${c[0]==='T'?'10':c[0]}${s[0]}</span>`;};
  const me=b.f==='first'?'BB':'BTN',op=b.f==='first'?'BTN':'BB';
  const F=steps(b);let T=0;const ts=F.map(f=>{const t=T;T+=f.d;return t;});
  const bdc=b.b.match(/../g)||[],hc=b.h.match(/../g)||[];
  const an=(c,cls,dly)=>c&&!sk?`data-an="${cls}" data-dl="${(dly||0).toFixed(2)}"`:'';
- const dl=x=>x.toFixed(2);
- const backCard='<span style="display:inline-block;width:28px;height:40px;margin:2px;border:2px solid #fff;border-radius:6px;background:repeating-linear-gradient(45deg,#7b1e1e 0 4px,#a12f2f 4px 8px)"></span>';
+ const backCard='<span style="display:inline-block;width:26px;height:36px;margin:2px;border:2px solid #fff;border-radius:6px;background:repeating-linear-gradient(45deg,#7b1e1e 0 4px,#a12f2f 4px 8px)"></span>';
  const zone=(top,inner)=>`<div style="position:absolute;left:0;right:0;top:${top}px;display:flex;justify-content:center">${inner}</div>`;
- const bub=(f,pos,t)=>{const s=f.say[pos];if(!s)return '';return `<div ${an(f.act===pos,'pop',.15)} style="display:inline-block;padding:5px 11px;border-radius:12px;font-weight:900;font-size:16px;white-space:nowrap;background:${s==='나는?'?'#ffd54f':'#fff'};color:#222;box-shadow:0 2px 6px rgba(0,0,0,.4)">${esc(s)}</div>`;};
- const seat=(f,pos,t)=>{const hero=pos===me;
-  const cards=hero?hc.map((c,i)=>`<span ${an(f.first,'deal',.2+i*.3)} style="display:inline-block">${sz(c,26)}</span>`).join(''):[0,1].map(i=>`<span ${an(f.first,'deal',.5+i*.3)} style="display:inline-block">${backCard}</span>`).join('');
-  return `<div style="display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:16px;background:rgba(0,0,0,.5);border:2px solid ${hero?'#ffd54f':'rgba(255,255,255,.25)'}">
-  <div style="text-align:center;color:#fff"><div style="font-weight:900;font-size:15px;padding:2px 10px;border-radius:10px;background:${hero?'#9a5a2d':'#555'};white-space:nowrap">${pos}${hero?' · 나':''}${pos==='BTN'?'<span style="display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;background:#fff;color:#222;font-size:11px;margin-left:5px">D</span>':''}</div><div style="font-size:15px;font-weight:700;margin-top:3px">${nb(f.st[pos])}</div></div>
-  <div style="white-space:nowrap">${cards}</div><div style="min-width:84px;text-align:left">${bub(f,pos,t)}</div></div>`;};
- const chipEl=(amt,cls,delay)=>`<span ${cls?an(1,cls,delay):''} style="display:inline-flex;align-items:center;gap:6px;padding:3px 12px;border-radius:16px;background:rgba(0,0,0,.45);color:#ffe082;font-weight:900;font-size:17px"><span style="width:16px;height:16px;border-radius:50%;background:#e53935;border:3px dashed #fff;box-sizing:border-box;display:inline-block"></span>${nb(amt)}</span>`;
- const chips=(f,pos,t)=>{const top=pos===op,old=f.col&&f.col[pos],cur=f.ch[pos];
+ const bub=(f,pos)=>{const s=f.say[pos];if(!s)return '';return `<div ${an(f.act===pos,'pop',.1)} style="display:inline-block;padding:4px 10px;border-radius:12px;font-weight:900;font-size:15px;white-space:nowrap;background:${s==='나는?'?'#ffd54f':'#fff'};color:#222;box-shadow:0 2px 6px rgba(0,0,0,.4)">${esc(s)}</div>`;};
+ const seat=(f,pos)=>{const hero=pos===me;
+  const cards=hero?hc.map((c,i)=>`<span ${an(f.first,'deal',.1+i*.2)} style="display:inline-block">${sz(c,24)}</span>`).join(''):[0,1].map(i=>`<span ${an(f.first,'deal',.3+i*.2)} style="display:inline-block">${backCard}</span>`).join('');
+  return `<div style="display:flex;align-items:center;gap:8px;padding:4px 10px;border-radius:16px;background:rgba(0,0,0,.5);border:2px solid ${hero?'#ffd54f':'rgba(255,255,255,.25)'}">
+  <div style="text-align:center;color:#fff"><div style="font-weight:900;font-size:14px;padding:1px 9px;border-radius:10px;background:${hero?'#9a5a2d':'#555'};white-space:nowrap">${pos}${hero?' · 나':''}${pos==='BTN'?'<span style="display:inline-block;width:17px;height:17px;line-height:17px;border-radius:50%;background:#fff;color:#222;font-size:11px;margin-left:5px">D</span>':''}</div><div style="font-size:14px;font-weight:700;margin-top:2px">${nb(f.st[pos])}</div></div>
+  <div style="white-space:nowrap">${cards}</div><div style="min-width:80px;text-align:left">${bub(f,pos)}</div></div>`;};
+ const chipEl=(amt,cls,delay)=>`<span ${cls?an(1,cls,delay):''} style="display:inline-flex;align-items:center;gap:6px;padding:2px 12px;border-radius:16px;background:rgba(0,0,0,.45);color:#ffe082;font-weight:900;font-size:16px"><span style="width:15px;height:15px;border-radius:50%;background:#e53935;border:3px dashed #fff;box-sizing:border-box;display:inline-block"></span>${nb(amt)}</span>`;
+ const chips=(f,pos)=>{const top=pos===op,old=f.col&&f.col[pos],cur=f.ch[pos];
   if(old>0)return chipEl(old,top?'colT':'colB',0);
-  if(cur>0)return chipEl(cur,f.act===pos?(top?'flyT':'flyB'):'',.1);
+  if(cur>0)return chipEl(cur,f.act===pos?(top?'flyT':'flyB'):'',.05);
   return '';};
  const pile=v=>{const n=v<=0?0:Math.min(8,2+Math.floor(v/8)),cl=['#e53935','#fafafa','#1e63c6','#2e7d32'];let h='';
   for(let i=0;i<n;i++)h+=`<span style="position:absolute;left:${(i%3)*3}px;bottom:${i*4}px;width:30px;height:12px;border-radius:50%;background:${cl[i%4]};border:2px dashed rgba(255,255,255,.85);box-sizing:border-box;box-shadow:0 2px 0 rgba(0,0,0,.4)"></span>`;
-  return `<span style="position:relative;display:inline-block;width:38px;height:46px">${h}</span>`;};
- const slot=(f,k,t)=>k<f.board?`<span ${f.deal!=null&&k>=f.deal?an(1,'deal',(f.col?.9:.1)+(k-(f.deal||0))*.4):''} style="display:inline-block">${sz(bdc[k],24)}</span>`:`<span style="display:inline-block;border:2px dashed rgba(255,255,255,.35);border-radius:9px;margin:2px 4px 2px 0"><span style="visibility:hidden">${sz('As',24)}</span></span>`;
- const fr=(f,i)=>{const last=i===F.length-1,t=ts[i];
+  return `<span style="position:relative;display:inline-block;width:38px;height:44px">${h}</span>`;};
+ const slot=(f,k)=>k<f.board?`<span ${f.deal!=null&&k>=f.deal?an(1,'deal',(f.col?.55:.1)+(k-(f.deal||0))*.25):''} style="display:inline-block">${sz(bdc[k],22)}</span>`:`<span style="display:inline-block;border:2px dashed rgba(255,255,255,.35);border-radius:9px;margin:2px 4px 2px 0"><span style="visibility:hidden">${sz('As',22)}</span></span>`;
+ const fr=(f,i)=>{const last=i===F.length-1;
   if(sk&&!last)return '';
   const tot=f.pot+f.ch.BTN+f.ch.BB,lift=f.pop||(f.act&&f.ch.BTN+f.ch.BB>0);
-  return `<div class="rvFr" data-d="${f.d}" style="opacity:${sk&&last?1:0}">
-   ${zone(8,seat(f,op,t))}${zone(94,chips(f,op,t))}
-   ${zone(132,`<div ${an(lift,'lift',f.col?.7:.45)} style="display:flex;align-items:flex-end;gap:8px">${pile(tot)}<span style="color:#fff;font-weight:900;font-size:18px;padding-bottom:6px">팟 ${nb(tot)}</span></div>`)}
-   ${zone(184,[0,1,2,3,4].map(k=>slot(f,k,t)).join(''))}
-   ${zone(276,chips(f,me,t))}${zone(330,seat(f,me,t))}
-   <div style="position:absolute;left:0;right:0;bottom:0;padding:9px 10px;background:rgba(0,0,0,.6);color:#fff;text-align:center;font-weight:700;font-size:${last?20:17}px;line-height:1.4;min-height:54px;box-sizing:border-box;display:flex;align-items:center;justify-content:center">${f.cap}</div></div>`;};
- const bar=`<div style="position:absolute;left:0;right:0;top:0;height:5px;background:rgba(255,255,255,.2);z-index:2"><div class="rvBar" data-total="${T}" style="height:100%;background:#ffd54f;width:${sk?'100%':'0'}"></div></div>`;
- return `<style>.rvFr{position:absolute;inset:0}</style>
- <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><div style="font-size:17px;font-weight:900">${esc(SPOT[b.s]||b.s)}</div><div style="font-size:16px">상대 <b>${op}</b> · 나 <b style="background:#9a5a2d;color:#fff;padding:2px 10px;border-radius:10px">${me}</b></div></div>
- <div style="display:flex;justify-content:flex-end;gap:6px;margin:8px 0 6px"><button class="btn gr" style="padding:5px 12px;font-size:14px" onclick="CUR.replay()">🔁 다시 보기</button><button class="btn gr" style="padding:5px 12px;font-size:14px" onclick="CUR.skip()">⏩ 바로 결정</button></div>
- <div class="rvT" style="position:relative;height:470px;overflow:hidden;border-radius:18px;background:#1b1410;border:3px solid #3b2a1a">${bar}
-  <div style="position:absolute;left:3%;right:3%;top:50px;bottom:100px;border-radius:50%/42%;background:radial-gradient(ellipse at center,#2f8f5b 0%,#1d6b42 65%,#145232 100%);border:7px solid #5d3a1a;box-shadow:inset 0 0 30px rgba(0,0,0,.45)"></div>
-  <div style="position:absolute;right:8%;top:70px;transform:rotate(12deg)">${backCard}</div>
-  ${F.map(fr).join('')}</div>`;}
+  return `<div class="rvFr" data-d="${f.d.toFixed(3)}" style="opacity:${sk&&last?1:0}">
+   ${zone(4,seat(f,op))}${zone(66,chips(f,op))}
+   ${zone(96,`<div ${an(lift,'lift',f.col?.45:.3)} style="display:flex;align-items:flex-end;gap:8px">${pile(tot)}<span style="color:#fff;font-weight:900;font-size:17px;padding-bottom:5px">팟 ${nb(tot)}</span></div>`)}
+   ${zone(146,[0,1,2,3,4].map(k=>slot(f,k)).join(''))}
+   ${zone(204,chips(f,me))}${zone(256,seat(f,me))}
+   <div style="position:absolute;left:0;right:0;bottom:0;padding:6px 10px;background:rgba(0,0,0,.6);color:#fff;text-align:center;font-weight:700;font-size:${last?19:16}px;line-height:1.35;min-height:42px;box-sizing:border-box;display:flex;align-items:center;justify-content:center">${f.cap}</div></div>`;};
+ const bar=`<div style="position:absolute;left:0;right:0;top:0;height:4px;background:rgba(255,255,255,.2);z-index:2"><div class="rvBar" data-total="${T}" style="height:100%;background:#ffd54f;width:${sk?'100%':'0'}"></div></div>`;
+ // 히스토리: 지나간 액션이 줄마다 쌓임 (놓쳐도 확인 가능)
+ const hid=i=>sk?'':`data-at="${i}" style="display:none"`;
+ let H='',open=false,first=true;
+ F.forEach((f,i)=>{
+  if(f.hrow){if(open)H+='</div>';open=true;first=true;const r=f.hrow;
+   H+=`<div ${hid(i)}><b style="color:#9a5a2d">${r.name}</b>${r.cards?' '+(r.cards.match(/../g)||[]).map(mc).join(''):''}${r.pot!=null?` <span style="color:#777">팟 ${nb(r.pot)}</span>`:''} · `;}
+  if(f.hact){H+=`<span ${hid(i)}>${first?'':' → '}<b>${f.hact}</b></span>`;first=false;}});
+ if(open)H+='</div>';
+ return `<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:6px"><span style="font-size:15px;font-weight:900">${esc(SPOT[b.s]||b.s)}</span><span style="font-size:14px">상대 <b>${op}</b> · 나 <b style="background:#9a5a2d;color:#fff;padding:1px 8px;border-radius:10px">${me}</b></span><button class="btn gr" style="padding:3px 9px;font-size:13px;margin-left:2px" onclick="CUR.replay()">🔁 다시 보기</button><button class="btn gr" style="padding:3px 9px;font-size:13px" onclick="CUR.skip()">⏩ 바로 결정</button></div>
+ <div class="rvT" style="position:relative;height:380px;overflow:hidden;border-radius:16px;background:#1b1410;border:3px solid #3b2a1a">${bar}
+  <div style="position:absolute;left:3%;right:3%;top:42px;bottom:70px;border-radius:50%/42%;background:radial-gradient(ellipse at center,#2f8f5b 0%,#1d6b42 65%,#145232 100%);border:7px solid #5d3a1a;box-shadow:inset 0 0 30px rgba(0,0,0,.45)"></div>
+  <div style="position:absolute;right:8%;top:54px;transform:rotate(12deg)">${backCard}</div>
+  <style>.rvFr{position:absolute;inset:0}</style>${F.map(fr).join('')}</div>
+ <div class="rvHist" style="margin-top:6px;padding:6px 10px;border-radius:10px;background:rgba(0,0,0,.06);font-size:14px;line-height:1.55;min-height:96px;box-sizing:border-box">${H}</div>`;}
 function frs(b){return Object.keys(b.fr).filter(k=>b.fr[k]>0).sort((x,y)=>b.fr[y]-b.fr[x]).map(k=>`${FRN[k]||k} ${b.fr[k]}%`).join(' · ');}
 G.push({k:'riverq',cat:'홀덤',e:'🌊',n:'리버 트레이너',d:'헤즈업 리버 · 벳·체크·콜·폴드를 솔버 정답으로 맞히기',
  start(){SKIP=false;this.lv=null;this.fb=null;this.over=false;rr();},
@@ -794,8 +802,8 @@ G.push({k:'riverq',cat:'홀덤',e:'🌊',n:'리버 트레이너',d:'헤즈업 �
     <div class="card"><div class="t">문제별 기록</div>${this.log.map((x,k)=>`<div class="row"><span>${k+1}. ${CAT[x.q.b.f]} → ${esc(x.q.opts[x.q.a][1])}</span><span class="m">${x.ok?'✅':'❌'} ${x.t.toFixed(1)}초</span></div>`).join('')}</div>
     <button class="btn full" onclick="CUR.go('${W?'W':'A'}')">${W?'남은 오답 다시 풀기':'다시 하기'}</button><button class="btn full gr" style="margin-top:8px" onclick="CUR.start()">처음으로</button>`;}
   if(this.fb)return hd+fbCard(this.fb)+`<button class="btn full g" style="font-size:17px;padding:13px" onclick="CUR.next()">다음 문제${W?` (${this.i+1}/${this.N})`:''}</button>`;
-  return hd+`<div class="card" style="font-size:16px;line-height:1.6">${sit(q.b)}</div>
-   <div style="display:grid;grid-template-columns:repeat(${q.opts.length},1fr);gap:8px;margin-top:10px">${q.opts.map((o,k)=>`<button class="btn b2" style="padding:20px 6px;font-size:19px;font-weight:900" onclick="CUR.ans(${k})">${esc(o[1])}</button>`).join('')}</div>
+  return hd+`<div class="card" style="font-size:16px;line-height:1.5;padding:8px 10px">${sit(q.b)}</div>
+   <div style="display:grid;grid-template-columns:repeat(${q.opts.length},1fr);gap:8px;margin-top:10px">${q.opts.map((o,k)=>`<button class="btn b2" style="padding:15px 6px;font-size:19px;font-weight:900" onclick="CUR.ans(${k})">${esc(o[1])}</button>`).join('')}</div>
    <div class="m" style="text-align:center;margin-top:8px">${esc(NOTE)}</div>`;}});
 })();
 // GORDER:pushfold,potodds,nutadv,hustudy,huview,geom,aofprac,rulequiz,riverq
