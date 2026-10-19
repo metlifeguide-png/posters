@@ -49,7 +49,7 @@ input[type=text],input[type=number],select{background:var(--pn);border:1px solid
 .kl{display:grid;grid-template-columns:repeat(3,1fr);gap:6px 5px}.kr{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) minmax(0,1.6fr);gap:6px 5px;grid-template-rows:repeat(4,38px)}#kp .kr .s{grid-row:2/4;height:auto}#kp .kr .j{grid-column:5;grid-row:2;height:auto}#kp .kr .q{grid-column:5;grid-row:3;height:auto}#kp .kr .fx{grid-column:1/6;grid-row:4;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}#kp .kr .d{grid-row:1/3;grid-column:6;height:auto;font-size:13px;font-weight:700;line-height:1.4;white-space:nowrap}
 .sv{display:grid;grid-template-columns:1fr 2fr;gap:8px;margin:10px 0 16px}.sv button{padding:14px;font-size:17px}
 .hc{background:var(--pn);border:1px solid var(--ln);border-radius:12px;padding:10px;margin-top:8px}
-.hc .t{font-weight:700}.hc .bt{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.hc .bt .btn{padding:7px 10px;font-size:13px}
+.hc .t{font-weight:700}.hc .cds{cursor:pointer}.hc .bt{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.hc .bt .btn{padding:7px 10px;font-size:13px}
 .tag{display:inline-block;font-size:12px;border:1px solid var(--gd);color:var(--gd);border-radius:20px;padding:0 8px;margin-right:4px}
 #ts{position:fixed;left:50%;bottom:calc(var(--kh,0px) + 20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:30;background:var(--tx);color:var(--bg);padding:8px 16px;border-radius:20px;opacity:0;pointer-events:none;transition:opacity .2s}
 #ts.on{opacity:1}
@@ -589,7 +589,7 @@ function kp(){const B=(k,c='')=>`<button class="${c}" data-k="${k}">${k}</button
 function hands(){const H=T.hands;$('#tb1').textContent='🔍 복기 ('+H.length+')';$('#hh').textContent=`저장한 핸드 (${H.length})`;
  $('#hands').innerHTML=H.length?H.map(h=>{const Q=sim(h.L,h.S),miss=!Q.hp||!Object.keys(Q.st).length||h.d,qs=Q.q.length;
   return `<div class="hc" data-id="${h.id}"><div class="t">${Q.hp||'?'} vs ${Q.vil.join(', ')||'?'} ${h.S.blind?'· '+esc(h.S.blind):''}</div>
-  <div>${cH(Q.hc)} ${Q.board.length?'· '+cH(Q.board):''}</div>
+  <div class="cds">${cH(Q.hc)} ${Q.board.length?'· '+cH(Q.board):''}</div>
   <div class="mu">${Q.es!=null?'유효 스택 '+f(Q.es*Q.u)+' ('+f(Q.es)+'bb)':''} ${qs?`<span class="tag">고민: ${Q.q.join('·')}</span>`:''}${miss?'<span class="tag">입력 누락</span>':''}</div>
   ${h.L.memo?`<div class="mu">${esc(h.L.memo)}</div>`:''}
   <div class="bt"><button class="btn" data-a="eq">🔍 스트리트별 보기</button><button class="btn" data-a="gto">GTO Wizard 복사</button><button class="btn" data-a="cl">Claude 복기용 복사</button><button class="btn" data-a="rv">✍️ 리뷰 작성</button><button class="btn" data-a="ed">${h.d?'이어서 쓰기':'수정'}</button><button class="btn" data-a="del">삭제</button></div></div>`}).join(''):'<p class="mu">아직 저장한 핸드가 없습니다. 위에서 기록하고 [저장]을 눌러 보세요.</p>'}
@@ -630,7 +630,7 @@ function init(){mk();kp();$('#tb0').onclick=()=>tab(0);$('#tb1').onclick=()=>tab
  $('#fresh').onclick=()=>{if(K.some(k=>el(k).value.trim())&&!confirm('입력한 내용을 모두 지우고 새로 쓸까요?'))return;ed=null;T.form={};setL({});T.S.blind='';T.S.sb=0;T.S.bb=0;T.S.at=0;$('#bi').value='';blFill();aK='card';sv();upd();window.scrollTo(0,0);el('card').focus();toast('새로 쓰기 · 블라인드도 초기화')};$('#save').onclick=()=>saveH(false);
  $('#exp').onclick=()=>{const hs=T.hands.filter(h=>!h.d&&h.S.bb).reverse(),t=hs.map(ps).join('\n\n\n');if(hs.length<T.hands.filter(h=>!h.d).length)toast('BB를 안 적은 핸드는 빼고 복사했어요');if(!t){toast('내보낼 핸드가 없습니다');return}cp(t);
   try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));a.download=T.name+'.txt';a.click()}catch(e){}};
- $('#hands').onclick=e=>{const b=e.target.closest('button[data-a]');if(!b)return;const id=b.closest('.hc').dataset.id,h=T.hands.find(x=>x.id===id),a=b.dataset.a;
+ $('#hands').onclick=e=>{/*cdtap*/let b=e.target.closest('button[data-a]');if(!b){const c=e.target.closest('.hc .cds');if(c)b=c.closest('.hc').querySelector('button[data-a="eq"]')}if(!b)return;const id=b.closest('.hc').dataset.id,h=T.hands.find(x=>x.id===id),a=b.dataset.a;
   if(a==='gto'){if(!h.S.bb){toast('blind 줄에 BB를 입력하면 GTO Wizard 복사가 돼요');return}cp(ps(h))}else if(a==='cl')cp(cl(h));else if(a==='eq')revToggle(b,h);else if(a==='rv')toReview(h);
   else if(a==='ed'){ed=id;T.S={...h.S};let L2=h.L;if(T.S.v!==2){if(T.S.bb>0)L2=conv(norm(h.L),T.S.bb);T.S.v=2}T.form=L2;ses();setL(L2);sv();upd();window.scrollTo(0,0);tab(0);toast('불러왔습니다. 저장하면 덮어씁니다')}
   else if(a==='del'&&confirm('이 핸드를 삭제할까요?')){T.hands=T.hands.filter(x=>x.id!==id);sv();hands()}};
