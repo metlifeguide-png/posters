@@ -651,12 +651,12 @@ const LINE={f:{b:'플랍: BB 체크 → BTN 33% 벳 → BB 콜',x:'플랍: 체�
 const valid=x=>x&&x.id&&x.b&&x.h&&OPT[x.f]&&OPT[x.f].some(o=>o[0]===x.a);
 const bank=()=>(typeof RIVER_QS!=='undefined'?RIVER_QS:[]).filter(valid).filter(x=>!(typeof qblkHas==='function'&&qblkHas('riverq',x.id)));
 function mk(p){const B=bank();let b=p&&p.id?B.find(x=>x.id===p.id):null;if(!b)b=pick(B);
- const opts=OPT[b.f];return {b,opts,a:opts.findIndex(o=>o[0]===b.a),tag:'rv_'+b.f,p:{lv:1,id:b.id}};}
+ const opts=OPT[b.f];return {b,opts,a:opts.findIndex(o=>o[0]===b.a),tag:'rv_'+b.f,p:Object.assign({lv:1,id:b.id},p&&p.rs?{rs:1}:{})};}
 /*rvsim*/
 let SKIP=false,RVTOK=0;
 // 프리플랍 사이즈를 알면 채우세요 (o=오픈, t=3벳). 비워두면 팟에서 역산해요. 예: {SRP100A:{o:2.5},'3BP100A':{o:2.5,t:10}}
 const PRE_SZ={};
-const SPD=0.55; // 재생 속도: 작을수록 빨라요
+const SPD=0.35; // 재생 속도: 작을수록 빨라요
 const nb=x=>{const r=Math.round(x*10)/10;return r.toLocaleString()+'BB';};
 // 모션은 JS(Web Animations)로 직접 재생: 브라우저/사이트의 '애니메이션 줄이기' CSS에 막히지 않게
 function rvPlay(){const tok=++RVTOK,root=document.querySelector('.rvT');if(!root)return;
@@ -771,9 +771,10 @@ G.push({k:'riverq',cat:'홀덤',e:'🌊',n:'리버 트레이너',d:'헤즈업 �
  stop(){},
  replay(){SKIP=false;rr();},
  skip(){SKIP=true;rr();},
- go(mode){const B=bank();if(!B.length){toast('문제가 없어요');return;}let queue;
+ go(mode,cat){cat=cat||this.cat||'R';this.cat=cat;const B0=bank(),B=(mode==='W'||cat==='R')?B0:B0.filter(x=>x.f===cat);if(!B.length){toast('문제가 없어요');return;}let queue;
   if(mode==='W'){const wn=lsGet('wn_riverq',[]);queue=[];for(const x of shuf(wn)){try{const p=JSON.parse(x.k);if(p&&B.some(y=>y.id===p.id))queue.push(p);}catch(e){}if(queue.length>=10)break;}
    if(!queue.length){toast('오답노트가 비어 있어요');return;}}
+  else if(cat==='R'){const g={};shuf(B).forEach(b=>{(g[b.f]=g[b.f]||[]).push(b);});const ks=Object.keys(g);queue=[];for(;;){const r=ks.filter(c=>g[c].length);if(!r.length)break;queue.push({id:g[pick(r)].pop().id,rs:1});}}
   else queue=shuf(B).map(b=>({id:b.id}));
   Object.assign(this,{lv:mode,N:queue.length,queue,i:0,ok:0,tsum:0,over:false,fb:null,log:[]});this.nq();rr();scrollTo(0,0);},
  nq(){SKIP=false;this.q=mk(this.queue[this.i]);this.t0=Date.now();},
@@ -783,9 +784,10 @@ G.push({k:'riverq',cat:'홀덤',e:'🌊',n:'리버 트레이너',d:'헤즈업 �
   if(!ok&&this.lv!=='W')this.N=this.i;
   if(this.i>=this.N){this.over=true;if(this.lv!=='W')this.nb=stkSave('riverq',this.ok);}rr();scrollTo(0,0);},
  next(){if(!this.fb||this.over)return;this.fb=null;this.nq();rr();scrollTo(0,0);},
- menu(){const st=lsGet('st_riverq',{}),wn=lsGet('wn_riverq',[]).length,n=bank().length;
+ menu(){const st=lsGet('st_riverq',{}),wn=lsGet('wn_riverq',[]).length,B=bank(),n=B.length,cs=this.cat||'R';
   return `<div class="card"><div class="t">🌊 리버 트레이너</div><div class="m" style="margin-top:4px;line-height:1.6">헤즈업으로 리버까지 온 상황에서 벳할지, 체크할지, 콜할지, 폴드할지 골라요. 정답은 솔버가 80% 이상 고른 행동이에요. 틀릴 때까지 🔥 연속 도전이고, 점수·랭킹은 없어요.<br>지금 문제 ${n}개 중에서 무작위로 나와요.</div></div>
-  <button class="btn full g" style="font-size:17px;padding:14px" onclick="CUR.go('A')">🔥 연속 도전 시작 · 최고 ${stkBest('riverq')}연속</button>
+  <div class="card"><div class="t" style="font-size:15px">상황 고르기</div><div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px">${[['R','🎲 랜덤',n]].concat(Object.keys(CAT).map(c=>[c,CAT[c],B.filter(x=>x.f===c).length])).map(([c,l,k])=>`<button class="btn ${cs===c?'g':'gr'}" style="flex:1 1 45%;padding:10px" onclick="CUR.cat='${c}';rr()">${l} · ${k}문제</button>`).join('')}</div></div>
+  <button class="btn full g" style="font-size:17px;padding:14px" onclick="CUR.go('A',CUR.cat)">🔥 연속 도전 시작 · 최고 ${stkBest('riverq')}연속</button>
   <div class="card" style="margin-top:10px"><div class="t" style="font-size:15px">상황별 정답률</div>${Object.keys(CAT).map(c=>{const s=st['rv_'+c],pc=s&&s[1]?Math.round(s[0]/s[1]*100)+'% ('+s[0]+'/'+s[1]+')':'아직 안 풀었어요';return `<div class="row"><span>${CAT[c]}</span><span class="m">${pc}</span></div>`;}).join('')}</div>
   ${wn?`<button class="btn full b2" style="margin-top:10px" onclick="CUR.go('W')">📒 오답노트 풀기 (${wn}개)</button><div class="m" style="text-align:center;margin-top:4px">틀린 문제를 다시 풀어요 · 맞히면 목록에서 빠져요</div>`:''}
   <div class="m" style="text-align:center;margin-top:10px">${esc(NOTE)}</div>`;},
@@ -800,7 +802,7 @@ G.push({k:'riverq',cat:'홀덤',e:'🌊',n:'리버 트레이너',d:'헤즈업 �
   if(this.over){const L=this.fb;
    return hd+(L?fbCard(L):'')+`<div class="gbig">${W?this.ok+'/'+this.N:'🔥 '+this.ok+'연속'}</div>${!W&&this.nb?'<div style="text-align:center;font-weight:900;color:#c62828;margin:-4px 0 8px">🏆 내 최고 연속 기록!</div>':''}<div class="card" style="text-align:center;font-size:15px;line-height:1.8">총 ${this.tsum.toFixed(1)}초 · 평균 ${(this.tsum/this.N).toFixed(1)}초<br><span class="m">${W?`맞힌 문제는 오답노트에서 빠졌어요 · 남은 오답 ${lsGet('wn_riverq',[]).length}개`:'점수·랭킹 없음 · 틀린 문제는 오답노트에 쌓여요'}</span></div>
     <div class="card"><div class="t">문제별 기록</div>${this.log.map((x,k)=>`<div class="row"><span>${k+1}. ${CAT[x.q.b.f]} → ${esc(x.q.opts[x.q.a][1])}</span><span class="m">${x.ok?'✅':'❌'} ${x.t.toFixed(1)}초</span></div>`).join('')}</div>
-    <button class="btn full" onclick="CUR.go('${W?'W':'A'}')">${W?'남은 오답 다시 풀기':'다시 하기'}</button><button class="btn full gr" style="margin-top:8px" onclick="CUR.start()">처음으로</button>`;}
+    <button class="btn full" onclick="CUR.go('${W?'W':'A'}',CUR.cat)">${W?'남은 오답 다시 풀기':'다시 하기'}</button><button class="btn full gr" style="margin-top:8px" onclick="CUR.start()">처음으로</button>`;}
   if(this.fb)return hd+fbCard(this.fb)+`<button class="btn full g" style="font-size:17px;padding:13px" onclick="CUR.next()">다음 문제${W?` (${this.i+1}/${this.N})`:''}</button>`;
   return hd+`<div class="card" style="font-size:16px;line-height:1.5;padding:8px 10px">${sit(q.b)}</div>
    <div style="display:grid;grid-template-columns:repeat(${q.opts.length},1fr);gap:8px;margin-top:10px">${q.opts.map((o,k)=>`<button class="btn b2" style="padding:15px 6px;font-size:19px;font-weight:900" onclick="CUR.ans(${k})">${esc(o[1])}</button>`).join('')}</div>
