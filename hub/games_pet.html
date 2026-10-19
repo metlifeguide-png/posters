@@ -669,7 +669,7 @@ G.push({k:'pet',cat:'펫',e:'🐣',n:'뚝섬펫',d:'30일 동안 키우는 다�
  shopHTML(v){const L=this.list||{},W=L.wallet||{coins:0,shards:0},S=L.shop||[],inv=v.inv||{};
   return `<div class="card" style="margin-top:8px"><div class="row"><b>🛒 상점</b><span>${petCoin(15)} ${W.coins} · 🔮 ${W.shards}</span></div>`
    +S.map(it=>`<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px dashed #f0d9a8"><span style="font-size:22px">${it.e}</span><span style="flex:1;min-width:0;font-size:12.5px;line-height:1.4"><b>${it.name}</b> <span class="m">(가방 ${inv[it.key]||0})</span><br><span class="m">${it.desc}</span></span><button class="btn g" style="flex:none;padding:5px 12px" onclick="CUR.buy('${it.key}')">${petCoin(14)} ${it.price}</button></div>`).join('')
-   +this.shardShopHTML(v)+this.decoShopHTML(v)+this.bgShopHTML(v)+`<div class="m" style="font-size:12px;margin-top:6px;line-height:1.6">🍚 기본 밥·🥗 채소는 무료예요<br>${petCoin(13)} 코인: 게임 한 판 +2(하루 ${W.gameCap||40}까지) · 오늘의 문제 +10 · 출석 +5 · 모든 펫이 같이 써요<br>🔮 별조각: 게임 1위 · 오늘의 문제로 받아요(하루 ${W.shardCap||2}개) · 진화할 때 써요 (개수는 펫 화면에서 골라요)</div></div>`;},
+   +this.shardShopHTML(v)+this.decoShopHTML(v)+this.bgShopHTML(v)+`<div class="m" style="font-size:12px;margin-top:6px;line-height:1.6">🍚 기본 밥·🥗 채소는 무료예요<br>${petCoin(13)} 코인: 게임 한 판 +8(하루 ${W.gameCap||40}까지) · 오늘의 문제 +10 · 출석 +5 · 모든 펫이 같이 써요<br>🔮 별조각: 게임 1위 · 오늘의 문제로 받아요(하루 ${W.shardCap||2}개) · 진화할 때 써요 (개수는 펫 화면에서 골라요)</div></div>`;},
  buy(k){if(this._buying)return;if(typeof MEM==='undefined'||!MEM.tok||!this.list)return;this._buying=1;
   petApi('/api/pet/shop',{mtok:MEM.tok,token:this.tok(),act:k,arg:1}).then(r=>{this._buying=0;
    if(r&&r.wallet&&this.list)this.list.wallet=r.wallet;
