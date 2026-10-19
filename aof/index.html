@@ -398,7 +398,7 @@ function solve(cfg, E){
   const b=new Array(T).fill(0); b[T-2]=Math.min(0.5,s[T-2]); b[T-1]=Math.min(1,s[T-1]);
   const A=a.reduce((x,y)=>x+y,0), B=b.reduce((x,y)=>x+y,0);
   const off=Array.isArray(cfg.off)?cfg.off.map(Number):new Array(Math.max(0,(cfg.players||T)-T)).fill(Number(cfg.avg)||10);
-  const pay=cfg.pay;
+  const pay=cfg.pay; const btyOn=cfg.mode==="icm"&&(Number(cfg.btyMy)>0||Number(cfg.btyOpp)>0), bt=j=>j===cfg.btyHero?(Number(cfg.btyMy)||0):(Number(cfg.btyOpp)||0);
   // 블라인드 압박: 판이 끝난 뒤 모두가 한 바퀴 블라인드(pressure BB)를 더 낸다고 보고 ICM 계산 (짧은 스택일수록 폴드가 공짜가 아님)
   const pr=Number(cfg.pressure)||0;
   const squeeze=arr=>pr>0?arr.map(x=>x>1e-9?Math.max(0,x-pr):0):arr;
@@ -424,7 +424,7 @@ function solve(cfg, E){
       Wo:val(win,o),Lo:val(lose,o),RFo:val(rf,o),FWo:val(fw,o),FLo:val(fl,o),
       CW:val(lose,i),CL:val(win,i),CF:val(fAll,i),RSw:val(rf,i),FWi:val(fl,i),FLi:val(fw,i),
       real:(i>=T-2)?0.75:0.9};
-    I.need=(I.CW-I.CL)>1e-12?(I.CF-I.CL)/(I.CW-I.CL):1;
+    const bW=btyOn&&s[i]<=s[o]+1e-9?bt(i):0, bL=btyOn&&s[o]<=s[i]+1e-9?bt(o):0; I.Wo+=bW; I.CW+=bL; I.need=(I.CW-I.CL)>1e-12?(I.CF-I.CL)/(I.CW-I.CL):1;
     I.chipNeed=Math.max(0,m-b[i])/(2*m+dead);
     I.oNeed=(I.Wo-I.Lo)>1e-12?(I.RFo-I.Lo)/(I.Wo-I.Lo):1;
     I.oChipNeed=Math.max(0,m-R)/(2*m+dead);
@@ -648,7 +648,7 @@ const GAMES={
          b.push(mk(`ITM (${c.itm}위 안)`,+c.itm)); if(+c.itm>ft) b.push(mk(`파이널 테이블 (${ft}명)`,ft)); return b;},
        get start(){return +EC().start||10000;},get ante(){return etcAnte();},levelMin:20,get regLevel(){return EC().reg==="open"?1:0;},get tsize(){return +EC().tsize||9;}},
 };
-const ETC_DEF={name:"",itmPct:15,day2Pct:20,itmMode:"pct",kind:"mtt",sb:200,bb:400,anteType:"big",ante:400,start:30000,tsize:9,reg:"closed",itm:15,pool:1000,payList:"",seats:10,val:10};
+const ETC_DEF={btyType:"none",btyMy:0,btyOpp:0,name:"",itmPct:15,day2Pct:20,itmMode:"pct",kind:"mtt",sb:200,bb:400,anteType:"big",ante:400,start:30000,tsize:9,reg:"closed",itm:15,pool:1000,payList:"",seats:10,val:10};
 function EC(){ try{ st; }catch(e){ return ETC_DEF; } st.etc=Object.assign({},ETC_DEF,st.etc||{}); const c=st.etc;
   if(c.name==="그외 게임"||c.name==="멀티데이") c.name="";
   // 💡 대회 종류: one(선택형 원데이) · multi(멀티데이) · sat(새틀) / 단계: open(레지 중) · closed(레지 마감) · pre(ITM 전) · post(ITM 후)
@@ -663,7 +663,7 @@ function EC(){ try{ st; }catch(e){ return ETC_DEF; } st.etc=Object.assign({},ETC
   if(c.type==="multi"){ const d=Math.min(90,Math.max(1,+c.day2Pct||20)); c.day2=Math.max(+c.itm,Math.ceil((+st.entries||0)*d/100)); }
   return c; }
 // 1인당 앤티 (BB 대비) — 빅앤티는 BB가 혼자 내는 금액 ÷ 테이블 인원으로 환산
-function etcAnte(){const c=EC(),bb=Math.max(1,+c.bb||1),t=+c.tsize||9;if(c.anteType==="none")return 0;if(c.anteType==="big")return (+c.ante||bb)/bb/t;return (+c.ante||0)/bb;}
+function btyVal(w){ if(st.game!=="etc") return 0; const c=EC(); if(c.type==="sat"||!c.btyType||c.btyType==="none") return 0; const v=+(c.btyType==="myst"?c.btyOpp:(w==="my"?c.btyMy:c.btyOpp))||0; return v>0?v:0; }function btyForm(c,seg,inp){ const t=c.btyType||"none"; return "<h3>바운티</h3>"+seg("btyType",[["none","없음"],["ko","KO 바운티"],["myst","미스터리"]])+(t==="none"?"":(t==="myst"?'<div class="grid2">'+inp("btyOpp","미스터리 평균 바운티 (만원)","number",'min="0" step="0.1"')+"</div>":'<div class="grid2">'+inp("btyOpp","상대 바운티 (이기면 받는 현금, 만원)","number",'min="0" step="0.1"')+inp("btyMy","내 바운티 (지면 상대가 받는 현금, 만원)","number",'min="0" step="0.1"')+"</div>")+'<div class="hint">내가 상대를 덮고 올인에서 이길 때만 상대 바운티가 가치로 더해져요 (반대도 같음). 레지 마감 후(ICM)에서만 적용돼요.</div>'); }/*bty*/function etcAnte(){const c=EC(),bb=Math.max(1,+c.bb||1),t=+c.tsize||9;if(c.anteType==="none")return 0;if(c.anteType==="big")return (+c.ante||bb)/bb/t;return (+c.ante||0)/bb;}
 // 상금표 자동 분배(1위 약 20~30%): 총상금·ITM 인원으로 표준 MTT 분배
 function etcAutoPay(n,pool){const a=n<=10?1.25:n<=30?1.1:1.0;const w=[...Array(n)].map((_,i)=>1/Math.pow(i+1,a));const sw=w.reduce((x,y)=>x+y,0);
   return w.map(x=>Math.round(pool*x/sw*10)/10);}
@@ -684,7 +684,7 @@ function etcStage(){const c=EC(),p=+st.players||0,sg=c.stage;
 // ITM·Day2 인원 안내 (엔트리 × 비율)
 function etcItmHint(){const c=EC(),dd=c.type==="multi"&&(c.stage==="open"||c.stage==="closed");
   return `전체 엔트리 ${st.entries}명 × ${c.itmPct}% = <b>ITM ${c.itm}명</b>`+(c.type==="multi"?` · ${st.entries}명 × ${c.day2Pct}% = <b>Day2 ${c.day2}명</b>`:"")+` · 지금 ${st.players}명 생존 (${dd?`Day2까지 ${Math.max(0,st.players-c.day2)}명 · `:""}ITM까지 ${Math.max(0,st.players-c.itm)}명)`;}
-function etcRender(id,html){ const eb=$(id); if(!eb) return; const c=EC(); const sig=st.game==="etc"?`${c.type}|${c.stage}|${c.anteType}|${c.itmMode}`:"";
+function etcRender(id,html){ const eb=$(id); if(!eb) return; const c=EC(); const sig=st.game==="etc"?`${c.type}|${c.stage}|${c.anteType}|${c.itmMode}|${c.btyType}`:"";
   if(eb.dataset.sig!==sig||!eb.firstChild){ eb.innerHTML=html(); eb.dataset.sig=sig; return; }
   if(!sig) return; const pay=etcPay(),avg=Math.round((+st.entries||0)*(+c.start||0)/Math.max(1,+st.players||1));
   eb.querySelectorAll(".etc-stage").forEach(x=>x.textContent=etcStage()); eb.querySelectorAll(".etc-itm").forEach(x=>x.innerHTML=etcItmHint()); eb.querySelectorAll(".etc-sum").forEach(x=>x.textContent=etcSum());
@@ -705,10 +705,10 @@ function etcForm(easy){ if(st.game!=="etc") return ""; const c=EC();
   return `<div class="info" style="margin-top:10px"><b>그외 게임들</b> · 선택형 원데이·멀티데이·새틀 어떤 대회든 구조를 넣으면 그 구간에 맞춰 차트가 계산돼요<br><b style="color:var(--accent)" class="etc-stage">${etcStage()}</b></div>
    <h3>대회 종류</h3>${seg("type",[["one","선택형 원데이 게임"],["multi","멀티데이 게임"],["sat","새틀"]])}
    <h3>지금 단계</h3>${seg("stage",c.kind==="sat"?[["open","레지 중"],["closed","레지 마감"]]:[["open","레지 중"],["closed","레지 마감"],["pre","ITM 전"],["post","ITM 후"]])}<div class="hint">${stageHint}</div>
-   <h3>블라인드</h3><div class="grid2">${inp("sb","SB","number",'min="1"')}${inp("bb","BB","number",'min="1"')}</div>
+   <h3>블라인드</h3><div class="grid2">${inp("bb","BB (빅블라인드)","number",'min="1"')}</div>
    ${seg("anteType",[["big","빅앤티 (BB가 냄)"],["each","1인당 앤티"],["none","앤티 없음"]])}
    ${c.anteType!=="none"?`<div class="grid2">${inp("ante",c.anteType==="big"?"빅앤티 금액 (보통 BB와 같음)":"1인당 앤티 금액","number",'min="0"')}</div>`:""}
-   <h3>구조</h3><div class="grid2">${inp("start","시작 칩 (평균 스택 계산용)","number",'min="1"')}${inp("tsize","테이블 인원","number",'min="2" max="9"')}${inp("name","대회 이름 (선택)","text",'placeholder="그외 게임들"')}</div>
+   ${c.kind==="sat"?"":btyForm(c,seg,inp)}<h3>구조</h3><div class="grid2">${inp("tsize","테이블 인원","number",'min="2" max="9"')}</div>${/*etcadv*/""}<details class="more" id="etcAdv" ${st.etcAdv?"open":""} ontoggle="st.etcAdv=this.open" style="margin:6px 0"><summary>고급 (SB · 시작 칩 · 대회 이름)</summary><div class="grid2">${inp("sb","SB (표시용)","number",'min="1"')}${inp("start","시작 칩 (평균 스택 BB를 직접 넣으면 필요 없어요)","number",'min="1"')}${inp("name","대회 이름 (선택)","text",'placeholder="그외 게임들"')}</div></details>
    ${c.type==="multi"?`<h3>ITM · Day2 비율</h3><div class="grid2">${inp("itmPct","ITM 비율 (%)","number",'min="1" max="60" step="0.5"')}${inp("day2Pct","Day2 비율 (%)","number",'min="1" max="90" step="0.5"')}</div><div class="hint etc-itm">${etcItmHint()}</div>`:c.kind==="mtt"?`<h3>ITM 인원</h3>${seg("itmMode",[["pct","전체 엔트리 × 비율(%)"],["num","인원 직접 입력"]])}<div class="grid2">${c.itmMode==="pct"?inp("itmPct","ITM 비율 (%)","number",'min="1" max="60" step="0.5"'):inp("itm","ITM 인원 (몇 위까지 상금)","number",'min="1"')}${inp("pool","총 상금 (만원)","number",'min="1"')}</div>${c.itmMode==="pct"?`<div class="hint etc-itm">전체 엔트리 ${st.entries}명 × ${c.itmPct}% = <b>ITM ${c.itm}명</b> · 지금 ${st.players}명 생존 (ITM까지 ${Math.max(0,st.players-c.itm)}명)</div>`:""}
      ${inp("payList","등수별 상금 직접 입력 (만원, 쉼표로 · 비우면 자동 분배)","text",'placeholder="예: 300,180,120,90,70,60,50,45,40"')}
      <div class="hint etc-pay">상금표: ${pay.slice(0,9).map((x,i)=>`${i+1}위 ${x}`).join(" · ")}${pay.length>9?` … ${pay.length}위 ${pay[pay.length-1]}`:""}</div>`
@@ -730,7 +730,7 @@ function snapToSt(r){
   const R1=x=>Math.round(x*10)/10, no=why=>({ok:false,why});
   if(!r||typeof r!=='object') return no('읽기 결과가 비었어요');
   const pre=(r.turn!=='my_turn'); /*snappre*/
-  const game0={hg:'hg',wpl:'wpl',pm:'pm'}[r.app]; const game=game0||(GAMES[st.game]&&st.game!=='etc'?st.game:'hg'); window._snapGmiss=!game0; /*snapgame2*/
+  const game0={hg:'hg',wpl:'wpl',pm:'pm'}[r.app]; const game=game0||(GAMES[st.game]?st.game:'hg'); window._snapGmiss=!game0&&game!=='etc'; /*snapgame2*/
   const bb=+r.bb; if(!(bb>0)) return no('블라인드를 못 읽었어요');
   const seats=r.seats||[], toBB=v=>r.unit==='bb'?+v:(+v)/bb;
   const sit=seats.map((s,i)=>Object.assign({i},s)).filter(s=>!s.out);
@@ -759,7 +759,7 @@ const SNAP_URL=SNAP_API?SNAP_API+'/api/snap/read':'http://127.0.0.1:8765/ocrtabl
 function snapApply(res){
   const p=Object.assign({},res.patch); Object.keys(p).forEach(k=>{if(p[k]===undefined) delete p[k];});
   if(!st.snapMode) st.easyBak={level:st.level,mode:st.mode,modeManual:st.modeManual,startPick:st.startPick?JSON.parse(JSON.stringify(st.startPick)):null};   /*snapsep*/
-  clearSit(); Object.assign(st,p);
+  clearSit(); Object.assign(st,p);/*snapetc*/ if(st.game==='etc'){ const c=EC(); c.bb=Math.max(1,Math.round(+st.bb)||+c.bb); c.sb=Math.round(c.bb/2); if(c.anteType==='big') c.ante=c.bb; c.tsize=Math.min(9,Math.max(2,+st.tsize||+c.tsize)); st.level=1; }
   st.tend=new Array(st.tsize).fill(0); st.settled={}; st.hist=[];
   if(res.scen==='open') st.proV='vs';
   {const g=GAMES[st.game]; if(g&&g.blinds){ let bi=0,bd=1e18; g.blinds.forEach((b,i)=>{const d=Math.abs(b-(+st.bb)); if(d<bd){bd=d;bi=i;}}); st.level=bi+1; st.bbPrev=g.blinds[bi];
@@ -1022,7 +1022,7 @@ function schedule(){applyGame();applyLevel();if(+st.avgOv>0) START=st.avgOv*Math
     const g=GAMES[st.game], sc=st.scen, n=st.tsize;
     // 한게임: 20명(머니인) 전까지는 1장 확보가 목표 → 20위까지 같은 가치로 계산. 머니인 뒤엔 2장(9위) 구조
     const payNow = (st.game==="hg" && st.players>20) ? Array(20).fill(TV.hg) : g.pay();
-    const base={pay:payNow,players:+st.players,avg:avgBB(),ante:ANTE,mode:st.mode,iters:300,
+    const base={pay:payNow,players:+st.players,avg:avgBB(),ante:ANTE,mode:st.mode,iters:300,btyMy:btyVal("my"),btyOpp:btyVal("opp"),btyHero:st.hero,
                 pressure: st.mode==="icm" ? (1.5+ANTE*st.tsize)/4 : 0};   // 블라인드 압박: 다음 기회까지 내는 블라인드(한 바퀴의 1/4)
     const job=(kind,cfg)=>{const id=++seq;pending[id]=kind;want[kind]=id;cfg.off=fieldOff(cfg.stacks);send({type:"solve",id,cfg:Object.assign({},base,cfg)});};
     if(st.hero<=n-2) job("qa",{stacks:quickStacks(),opener:st.hero,raise:(st.ui==="easy"&&myR())?myR():+st.raise}); else {want.qa=null; lastQA=null; drawQuickA(null);}
