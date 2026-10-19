@@ -705,6 +705,36 @@ function rvDescHtml(b){try{const bd=b.b.match(/../g)||[],h=b.h.match(/../g)||[];
  const pct=Math.round(R.nb/R.tot*1000)/10;
  const rk=R.nb===0?'이 보드에서 나올 수 있는 가장 센 패예요':'나보다 센 패 '+R.nb+'콤보 ('+ct+') · 상위 '+pct+'%'+(R.tie?' · 같은 강도 '+R.tie+'콤보':'');
  return rvCtxHtml(b)+'<br>📊 가능한 '+R.tot+'콤보 중: '+esc(rk)+' <span class="m">(상대 레인지는 반영 안 함)</span><br>🃏 보드: '+esc(rvBoardTx(bd))+'<br>🎲 '+esc(rvFrTx(b));}catch(e){return '';}}
+/*rvdesc2*/
+const RV_AC={call:'#3a7bd5',fold:'#8a8a8a',raise:'#d33b3b',bet:'#e08a00',check:'#2e9d6f'};
+function rvStBar(o){if(!o||o.n<20)return '';const ks=Object.keys(o).filter(k=>k!=='n').sort((x,y)=>o[y]-o[x]);
+ const seg=ks.map(k=>'<div style="width:'+(o[k]/o.n*100)+'%;background:'+(RV_AC[k]||'#aaa')+'"></div>').join('');
+ const lg=ks.map(k=>'<span style="white-space:nowrap"><i style="display:inline-block;width:9px;height:9px;border-radius:2px;background:'+(RV_AC[k]||'#aaa')+';margin-right:4px"></i>'+esc(RV_AN[k]||k)+' <b>'+Math.round(o[k]/o.n*100)+'%</b></span>').join('');
+ return '<div style="display:flex;height:12px;border-radius:6px;overflow:hidden;background:rgba(0,0,0,.08)">'+seg+'</div><div style="display:flex;flex-wrap:wrap;gap:3px 12px;margin-top:5px;font-size:14px">'+lg+'</div>';}
+function rvRow(l,v){return '<div style="display:flex;gap:10px;padding:8px 0;border-top:1px solid rgba(0,0,0,.08)"><div style="flex:0 0 46px;font-size:14px;font-weight:700;opacity:.55;padding-top:2px">'+l+'</div><div style="flex:1;min-width:0;font-size:16px;line-height:1.55">'+v+'</div></div>';}
+function rvChips(t){return String(t).split(' · ').map(x=>'<span style="display:inline-block;margin:2px 4px 2px 0;padding:2px 9px;border-radius:10px;background:rgba(0,0,0,.07);font-size:14px">'+esc(x)+'</span>').join('');}
+function rvDescV2(b,w){try{const bd=b.b.match(/../g)||[],h=b.h.match(/../g)||[];
+ if(bd.length!==5||h.length!==2)return '<div style="font-size:17px;margin-top:10px">내 패: '+esc(rvHandLbl(b))+'</div>';
+ const key=b.b+b.h;let R=RV_DC[key];if(!R){R=RV_DC[key]=rvAll(bd,h);}
+ const nm=rvName(rvBest(bd.concat(h))),kd=(b.k==='strong'||!KIND[b.k])?'':KIND[b.k];
+ const pct=Math.round(R.nb/R.tot*1000)/10;
+ let o='<div style="margin-top:10px"><div style="font-size:21px;font-weight:900;line-height:1.35">'+esc(nm)+'</div>'
+  +(kd?'<div style="margin-top:3px"><span style="display:inline-block;padding:2px 9px;border-radius:10px;background:rgba(58,123,213,.14);color:#2a5fa8;font-size:14px;font-weight:700">'+esc(kd)+'</span></div>':'')
+  +(w?'<div style="margin-top:4px;font-size:15px;opacity:.75;line-height:1.5">'+esc(w)+'</div>':'')+'</div>';
+ o+='<div style="margin-top:8px">';
+ const sp=rvSpot(b.s),fl=(RV_LN[b.l]||b.l);
+ o+=rvRow('스팟','<b>'+esc(sp)+'</b><br><span style="opacity:.8">'+esc(fl)+' 후 리버'+(b.p>0&&b.e>0?' · 스택 <b>'+(Math.round(b.e/b.p*10)/10)+'</b>배':'')+'</span>');
+ o+=rvRow('순위',R.nb===0?'<b style="color:#2e7d32">이 보드에서 가장 센 패</b>':'상위 <b>'+pct+'%</b> <span style="opacity:.7;font-size:14px">(나보다 센 패 '+R.nb+'콤보 / 전체 '+R.tot+')</span>'+(R.tie?'<br><span style="opacity:.7;font-size:14px">같은 강도 '+R.tie+'콤보</span>':''));
+ o+=rvRow('보드',rvChips(rvBoardTx(bd)));
+ o+='</div>';
+ let dt='';const st=rvStats(),a=st[b.l+'|'+b.f],c=st[b.l+'|'+b.f+'|'+b.k];
+ const ba=rvStBar(a);if(ba)dt+='<div style="margin-top:8px;font-size:14px;font-weight:700;opacity:.7">같은 흐름·상황 '+a.n+'문제의 정답</div>'+ba;
+ const bc=rvStBar(c);if(bc&&RV_KS[b.k])dt+='<div style="margin-top:10px;font-size:14px;font-weight:700;opacity:.7">그중 '+esc(RV_KS[b.k])+' '+c.n+'개</div>'+bc;
+ if(R.nb>0){const ct=Object.keys(R.beat).map(Number).sort((x,y)=>y-x).map(k=>RV_HN[k]+' '+R.beat[k]).join(' · ');dt+='<div style="margin-top:10px;font-size:14px;font-weight:700;opacity:.7">나보다 센 패 종류</div><div style="font-size:15px;line-height:1.5">'+esc(ct)+'</div>';}
+ const fr=rvFrTx(b);if(fr)dt+='<div style="margin-top:10px;font-size:15px">🎲 '+esc(fr)+'</div>';
+ dt+='<div style="margin-top:8px;font-size:13px;opacity:.6">※ 순위는 상대 레인지를 반영하지 않은 값이에요</div>';
+ o+='<details style="margin-top:4px;border-top:1px solid rgba(0,0,0,.08);padding-top:8px"><summary style="cursor:pointer;color:var(--blue);font-size:15px;font-weight:700;padding:2px 0">더보기 ▾ 같은 상황 통계 · 센 패 종류</summary>'+dt+'</details>';
+ return o;}catch(e){return '<div style="font-size:17px;margin-top:10px">내 패: '+esc(rvHandLbl(b))+(w?'<br>'+esc(w):'')+'</div>';}}
 const bdFix=b=>{const bd=b.b.match(/../g)||[],h=b.h.match(/../g)||[];return bd.length===5&&h.length===2&&rvCmp(rvBest(bd.concat(h)),rv5(bd))===0?Object.assign({},b,{k:'board'}):b;};
 KIND.board='보드 그대로 (내 카드가 보드를 못 넘어서, 상대도 보드면 반반 나눔)';
 WHY.bet.board='이 패로는 반반 나눔이 최선이라, 벳으로 상대가 나눠 가질 패까지 접게 해서 팟을 다 가져가려는 블러프예요.';
@@ -884,9 +914,9 @@ G.push({k:'riverq',cat:'홀덤',e:'🌊',n:'리버 트레이너',d:'헤즈업 �
    return `<div class="card" style="border-color:${L.ok?'#3a9d3f':'#d33b3b'}"><div class="t" style="font-size:20px;font-weight:900">🧠 솔버는 이렇게 풀었어요 <span class="m">· ${CAT[b.f]} · ${L.t.toFixed(1)}초</span>${typeof qrepBtn==='function'?qrepBtn('riverq',b.id,rvRepSum(b,L)):''}</div>
    <div style="margin:6px 0 2px">${cards(b.b)} &nbsp; 내 패 ${cards(b.h)}</div>
    <div style="font-size:17px;line-height:1.7;margin-top:8px">${bars}</div>
-   <div style="font-size:17px;line-height:1.8;margin-top:10px">내 패: ${esc(rvHandLbl(b))}${w?'<br>'+esc(w):''}${rvDescHtml(b)}</div>
+   ${rvDescV2(b,w)}
    <div style="font-size:19px;line-height:1.6;margin-top:12px;padding-top:10px;border-top:1px solid rgba(0,0,0,.12)">${ver}</div>
-   <div class="m" style="margin-top:8px;line-height:1.55">${esc(NOTE)}</div></div>`;};
+   <div class="m" style="margin-top:10px;line-height:1.5;font-size:12px;opacity:.6">${esc(NOTE)}</div></div>`;};
   if(this.over){const L=this.fb;
    return hd+(L?fbCard(L):'')+`<div class="gbig">${W?this.ok+'/'+this.N:'🔥 '+this.ok+'연속'}</div>${!W&&this.nb?'<div style="text-align:center;font-weight:900;color:#c62828;margin:-4px 0 8px">🏆 내 최고 연속 기록!</div>':''}<div class="card" style="text-align:center;font-size:15px;line-height:1.8">총 ${this.tsum.toFixed(1)}초 · 평균 ${(this.tsum/this.N).toFixed(1)}초<br><span class="m">${W?`맞힌 문제는 오답노트에서 빠졌어요 · 남은 오답 ${lsGet('wn_riverq',[]).length}개`:'점수·랭킹 없음 · 틀린 문제는 오답노트에 쌓여요'}</span></div>
     <div class="card"><div class="t">문제별 기록</div>${this.log.map((x,k)=>`<div class="row"><span>${k+1}. ${CAT[x.q.b.f]} → ${esc(x.q.opts[x.q.a][1])}</span><span class="m">${x.ok?'✅':'❌'} ${x.t.toFixed(1)}초</span></div>`).join('')}</div>
