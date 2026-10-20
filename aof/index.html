@@ -763,12 +763,12 @@ function snapInfoText(I){ const n=x=>(typeof x==='number'&&isFinite(x)); const L
   if(n(I.entries)) L.push('엔트리 '+I.entries+(n(I.buyin)&&n(I.rebuy)?' (바인 '+I.buyin+' + 리바인 '+I.rebuy+')':''));
   if(n(I.chips)) L.push('총칩 '+I.chips.toLocaleString()); if(n(I.avg)) L.push('평균 스택 '+I.avg.toLocaleString());
   if(n(I.bb)) L.push('블라인드 '+(n(I.sb)?I.sb+'/':'')+I.bb+(n(I.ante)?' · 앤티 '+I.ante:'')+(n(I.level)?' · '+I.level+'레벨':''));
-  if(n(I.itm)) L.push('ITM '+I.itm+'등까지'); if((I.prizes||[]).length) L.push('상금표 '+I.prizes.length+'줄 ('+I.prizes[0].unit+')');
+  if(n(I.my_rank)) L.push('내 순위 '+I.my_rank+'등'); if(n(I.my_bb)) L.push('내 스택 '+I.my_bb+'BB'); else if(n(I.my_chips)) L.push('내 칩 '+I.my_chips.toLocaleString()); if(n(I.avg_bb)) L.push('평균 스택 '+I.avg_bb+'BB'); if(n(I.itm)) L.push('ITM '+I.itm+'등까지'); if((I.prizes||[]).length) L.push('상금표 '+I.prizes.length+'줄 ('+I.prizes[0].unit+')');
   if(!L.length) L.push('읽은 값이 없어요');
   return '📸 읽은 값\n'+L.join('\n')+((I.warn||[]).length?'\n\n⚠ '+I.warn.join('\n⚠ '):'')+'\n\n이 값으로 채울까요?'; }
 function snapInfoApply(I){ const num=x=>(typeof x==='number'&&isFinite(x))?x:null; const live=num(I.live), ent=num(I.entries), bb=num(I.bb), P=I.prizes||[];
   const cash=P.some(p=>p.unit==='won'||p.unit==='usd');
-  if(live) st.players=live; if(ent) st.entries=ent; if(bb) st.bb=bb; if(P.length) st.prizeInfo={n:P.length,unit:P[0].unit};
+  if(live) st.players=live; if(ent) st.entries=ent; if(bb) st.bb=bb; {const mr=num(I.my_rank); if(mr) st.rank=String(mr); const bq=bb||(+st.bb)||0; let mb=num(I.my_bb); const mc=num(I.my_chips); if(!(mb>0)&&mc>0&&bq>0) mb=Math.round(mc/bq*10)/10; if(mb>0) st.heroStack=mb; const ab=num(I.avg_bb); if(ab>0) st.avgOv=ab;}/*snaprank*/ if(P.length) st.prizeInfo={n:P.length,unit:P[0].unit};
   if(cash&&st.game!=='etc') snapGame('etc');
   const g=GAMES[st.game];
   if(bb&&g&&g.blinds&&st.game!=='etc'){ let bi=0,bd=1e18; g.blinds.forEach((x,i)=>{const d=Math.abs(x-bb); if(d<bd){bd=d;bi=i;}}); st.level=bi+1; st.bbPrev=g.blinds[bi]; }
@@ -820,10 +820,10 @@ window.addEventListener('load',()=>{
           const j=await call(file); if(j&&j.err){ snapAlert(j.err); return; }
           const res=snapToSt(j); if(res.ok){ tbl=res; continue; }
           const k=await call(file,'info'); if(k&&k.err){ snapAlert(k.err); return; }
-          if(k&&(k.type==='clock'||k.type==='prize')) infos.push(k); else { snapAlert(res.why); return; }
+          if(k&&(k.type==='clock'||k.type==='prize'||k.type==='players')) infos.push(k); else { snapAlert(res.why); return; }
         } else {
           const k=await call(file,'info'); if(k&&k.err){ snapAlert(k.err); return; }
-          if(k&&(k.type==='clock'||k.type==='prize')) infos.push(k);
+          if(k&&(k.type==='clock'||k.type==='prize'||k.type==='players')) infos.push(k);
           else { const j=await call(file); if(j&&j.err){ snapAlert(j.err); return; } const res=snapToSt(j); if(res.ok) tbl=res; else why.push(res.why); }
         } }
       if(!tbl&&!infos.length){ snapAlert(why[0]||'읽을 수 있는 화면이 없어요'); return; }
