@@ -773,7 +773,7 @@ function rvPlay(){const tok=++RVTOK,root=document.querySelector('.rvT');if(!root
  if(bar&&bar.animate)bar.animate([{width:'0%'},{width:'100%'}],{duration:(+bar.dataset.total)*1000/RVX,fill:'forwards'});
  let t=0;
  frs.forEach((f,i)=>{setTimeout(()=>{if(tok!==RVTOK)return;frs.forEach(x=>{x.style.opacity=0;});f.style.opacity=1;
-  hist.forEach(h=>{h.style.display=(+h.dataset.at<=i)?'':'none';});
+  hist.forEach(h=>{h.style.visibility=(+h.dataset.at<=i)?'visible':'hidden';});
   f.querySelectorAll('[data-an]').forEach(el=>{const a=el.dataset.an;if(el.animate&&KF[a])el.animate(KF[a],{duration:DUR[a]/RVX,delay:(+el.dataset.dl)*1000/RVX,easing:'ease-out',fill:'both'});});},t);
   t+=(+f.dataset.d)*1000/RVX;});}
 // 실제 테이블에서 플레이하듯 '장면(프레임)' 목록을 만듦: 프리플랍 → 플랍 → 턴 → 리버
@@ -853,7 +853,7 @@ function sit(b){
    <div style="position:absolute;left:0;right:0;bottom:0;padding:6px 10px;background:rgba(0,0,0,.6);color:#fff;text-align:center;font-weight:700;font-size:${last?19:16}px;line-height:1.35;min-height:42px;box-sizing:border-box;display:flex;align-items:center;justify-content:center">${f.cap}</div></div>`;};
  const bar=`<div style="position:absolute;left:0;right:0;top:0;height:4px;background:rgba(255,255,255,.2);z-index:2"><div class="rvBar" data-total="${T}" style="height:100%;background:#ffd54f;width:${sk?'100%':'0'}"></div></div>`;
  // 히스토리: 지나간 액션이 줄마다 쌓임 (놓쳐도 확인 가능)
- const hid=i=>sk?'':`data-at="${i}" style="display:none"`;
+ /*rvhist*/const hid=i=>sk?'':`data-at="${i}" style="visibility:hidden"`;
  let H='',open=false,first=true;
  F.forEach((f,i)=>{
   if(f.hrow){if(open)H+='</div>';open=true;first=true;const r=f.hrow;
