@@ -479,6 +479,7 @@ G.push({k:'blackjack',cat:'카드',e:'🂡',n:'블랙잭 트레이너',d:'스플
  tc(){return this.rc/Math.max(.5,this.shoe.length/52);},
  addBet(v){if(this.ph!=='bet')return;this.bet=Math.max(0,Math.min(this.chips,this.bet+v));rr();},
  setBet(v){if(this.ph!=='bet')return;this.bet=Math.max(0,Math.min(this.chips,Math.round(v)));rr();},
+ setBetIn(v){const n=Math.round(parseFloat(String(v==null?'':v).replace(/[,\s]/g,'')));if(!(n>=0)){toast('숫자로 입력해 주세요',1400);return;}this.setBet(n);},
  deal(){if(this.ph!=='bet'||this.bet<10){toast('최소 베팅 10');return;}if(this.quiz){toast('카운트 퀴즈부터 맞혀요');return;}
   if(this.shoe.length<this.cut)this.newShoe();this.lastBet=this.bet;this.chips-=this.bet;this.ins=0;this.fb=[];this.msg='';
   const p1=this.draw(),d1=this.draw(),p2=this.draw(),d2=this.draw(false);this.hole=d2;this.dl=[d1,d2];this.holeOpen=false;
@@ -544,6 +545,7 @@ G.push({k:'blackjack',cat:'카드',e:'🂡',n:'블랙잭 트레이너',d:'스플
    return tabs+top+cnt+`<div class="gbig" style="font-size:38px">${this.bet.toLocaleString()}</div><div class="lbl">베팅 금액</div>
     <div class="g4b" style="grid-template-columns:repeat(4,1fr)">${[10,50,100,500].map(v=>`<button class="btn b2" onclick="CUR.addBet(${v})">+${v}</button>`).join('')}</div>
     <div class="g4b" style="grid-template-columns:repeat(4,1fr);margin-top:8px"><button class="btn gr" onclick="CUR.setBet(0)">지우기</button><button class="btn gr" onclick="CUR.setBet(CUR.bet/2)">½</button><button class="btn gr" onclick="CUR.setBet(CUR.bet*2)">×2</button><button class="btn gr" onclick="CUR.setBet(CUR.chips)">올인</button></div>
+    <div style="display:flex;gap:6px;margin-top:8px"><input class="q" id="betin" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="numeric" placeholder="금액 직접 입력 (예: 2500)" onkeydown="if(event.key==='Enter')CUR.setBetIn(this.value)"><button class="btn" style="flex:none" onclick="CUR.setBetIn($('betin').value)">적용</button></div>
     <button class="btn full g" style="margin-top:12px;font-size:17px" onclick="CUR.deal()">딜 (${this.bet.toLocaleString()})</button>
     <div class="m" style="text-align:center;margin-top:10px">6덱 슈 · 딜러 소프트17 스탠드 · 블랙잭 3:2 · 스플릿 최대 4핸드 · 스플릿 후 더블 · 레이트 서렌더 · 남은 카드 ${left}장 (75% 지점에서 셔플)</div>`;}
   const dc=this.holeOpen?this.dl:[this.dl[0],null];const can=this.ph==='play'&&this.cur<this.H.length?this.can():{};
