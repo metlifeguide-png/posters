@@ -734,12 +734,12 @@ function snapToSt(r){
   const bb=+r.bb; if(!(bb>0)) return no('블라인드를 못 읽었어요');
   const seats=r.seats||[], toBB=v=>r.unit==='bb'?+v:(+v)/bb;
   const sit=seats.map((s,i)=>Object.assign({i},s)).filter(s=>!s.out);
-  const k=sit.findIndex(s=>s.btn==='BB'); if(k<0||sit.length<3) return no('BB 자리를 못 찾았어요');
+  let k=sit.findIndex(s=>s.btn==='BB'); /*snapbb2*/ if(k<0&&sit.length>=3){const dI=sit.findIndex(s=>s.btn==='D'); if(dI>=0) k=(dI+2)%sit.length;} if(k<0||sit.length<3) return no('BB 자리를 못 찾았어요');
   const ring=sit.slice(k+1).concat(sit.slice(0,k+1));   // 0=UTG … n-3=BTN, n-2=SB, n-1=BB (aof.html posted() 기준)
   const n=ring.length, hero=ring.findIndex(s=>s.i===0), hs=ring[hero];
   const tbl=new Array(n).fill(null);
   ring.forEach((s,j)=>{ if(j!==hero){ const sv=+s.stack>0?+s.stack:(+s.bet>0?+s.bet:0); if(sv>0) tbl[j]=R1(toBB(sv)); } }); /*snapallin*/
-  const patch={game,tsize:n,hero,heroStack:R1(toBB(hs.stack)),bb,players:+r.total||undefined,rank:r.rank!=null?String(r.rank):"",tbl,ui:'pro'};
+  let hsv=toBB(hs.stack),est=false; /*snapest*/ if(!(hsv>0)&&+r.pot_bb>0){const an=+r.ante||0,dead=1.5+(an>0&&an<bb*0.5?an*n/bb:(an>0?an/bb:1)); hsv=(+r.pot_bb-dead)/2; est=hsv>0;} window._snapEst=est?R1(hsv):0; const patch={game,tsize:n,hero,heroStack:R1(hsv),bb,players:+r.total||undefined,rank:r.rank!=null?String(r.rank):"",tbl,ui:'pro'};
   const others=ring.map((s,j)=>({s,j})).filter(o=>o.j!==hero);
   const aggr=pre?[]:others.filter(o=>o.s.act==='allin'||o.s.act==='raise'||(+o.s.bet>bb*1.0001&&o.j<n-2));
   if(!aggr.length){
@@ -764,7 +764,7 @@ function snapApply(res){
   if(res.scen==='open') st.proV='vs';
   {const g=GAMES[st.game]; if(g&&g.blinds){ let bi=0,bd=1e18; g.blinds.forEach((b,i)=>{const d=Math.abs(b-(+st.bb)); if(d<bd){bd=d;bi=i;}}); st.level=bi+1; st.bbPrev=g.blinds[bi];
     if(bd>0) res.note=(res.note?res.note+'\n':'')+'블라인드 '+st.bb+'이(가) 목록에 없어 가장 가까운 '+(bi+1)+'레벨로 맞췄어요'; }
-   if(window._snapGmiss) res.note=(res.note?res.note+'\n':'')+'게임을 못 알아봐서 '+GAMES[st.game].name+' 기준이에요. 차트 위 게임 버튼으로 바꿔 주세요'; st.snapMode=true; st.ui='snap'; window.scrollTo(0,0); st.modeManual=false; rescaleOK=false;}   /*snapmode*/
+   if(window._snapEst) res.note=(res.note?res.note+'\n':'')+'내 스택이 화면에 안 보여 팟 기준으로 추정했어요: '+window._snapEst+'BB (팟−블라인드·앤티÷2, 올인 두 명일 때만 맞고 ±1BB 오차). 틀리면 내 스택 칸에서 고쳐 주세요'; if(window._snapGmiss) res.note=(res.note?res.note+'\n':'')+'게임을 못 알아봐서 '+GAMES[st.game].name+' 기준이에요. 차트 위 게임 버튼으로 바꿔 주세요'; st.snapMode=true; st.ui='snap'; window.scrollTo(0,0); st.modeManual=false; rescaleOK=false;}   /*snapmode*/
   schedule();
 }
 window.addEventListener('load',()=>{
