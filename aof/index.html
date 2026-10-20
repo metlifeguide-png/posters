@@ -724,7 +724,7 @@ const SCEN={
   rc:{name:"내 레이즈 → 빌런 올인 [근사]",vil:"뒤에서 올인한 빌런",vilAfter:true},
 };
 const $=id=>document.getElementById(id);
-const st={game:"hg",mode:"icm",entries:150,players:40,bb:400,tsize:9,scen:"open",hero:6,vil:8,qvil:5,heroStack:20,vilStack:30,others:{},tbl:[],tend:[],hist:[],ui:"easy",ezScen:null,pick:{k:null},settled:{},bustLog:[],caller:null,shorter:"",rank:"",tstyle:"normal",raise:"2",qvStack:"",level:null,modeManual:false,starts:{}};
+const st={game:"hg",mode:"icm",entries:"",players:"",bb:400,tsize:9,scen:"open",hero:6,vil:8,qvil:5,heroStack:"",vilStack:"",others:{},tbl:[],tend:[],hist:[],ui:"easy",ezScen:null,pick:{k:null},settled:{},bustLog:[],caller:null,shorter:"",rank:"",tstyle:"normal",raise:"2",qvStack:"",level:null,modeManual:false,starts:{}};
 /*snapmap*/ // 표읽기(/ocrtable) 결과 → aof.html st 값. 반환 {ok, why} 또는 {ok:true, scen, patch, note}
 function snapToSt(r){
   const R1=x=>Math.round(x*10)/10, no=why=>({ok:false,why});
@@ -1501,6 +1501,7 @@ function drawEzSafe(){
   const gap=hero-sf.p90, tag=gap>=0?`<b>안정권 넘음 ✅</b> — 티켓 우선, 무리하지 마세요`:`<b>안정권까지 ${r1(-gap)}BB 부족</b> — 칩을 모아야 하는 자리`;
   el.innerHTML=`🎫 ${b.label}까지 <b>${st.players-b.n}명</b> · 안정권 <b>${fmtBB(sf.p90)}</b> (${fmtChip(sf.p90*st.bb)}칩) · 내 ${r1(hero)}BB · 티켓 확률 ${p}%<br>${tag}`;
 }
+/*rngshow*/function rngHTML(q){const o=[],m=[];for(const h of playOrder()){const v=q.sh[h];if(v>=0.5)o.push(SAT.handName(h));else if(v>=0.15)m.push(SAT.handName(h)+" "+Math.round(v*100)+"%");}if(!o.length&&!m.length)return "";return '<details style="margin-top:6px"><summary>\ud83d\udccb 올인 범위 보기 ('+Math.round((q.shPct||0)*100)+'%)</summary><div class="note" style="line-height:1.7">'+o.join(" ")+(m.length?'<br>가끔: '+m.join(" · "):"")+'</div></details>';}
 function drawVerdict(){
   if(!$("ezVerdict")) return; paintEz();
   const P=POSN(), k=handIdx(), el=$("ezVerdict"), n=st.tsize, sc=ezMode();
@@ -1520,7 +1521,7 @@ function drawVerdict(){
     else if(b>=0.5) el.innerHTML+=`<div class="why">⚠️ [근사] 레이즈 계산은 작은 3벳·플랍 이후를 빼고 한 거라 방향만 참고하세요.</div>`;
     if(a<0.5&&b<0.5&&a>=0.1&&+st.heroStack<=10) el.innerHTML+=`<div class="why">⚠️ 숏스택 경계 패예요. 계산이 짧은 스택의 생존을 조금 후하게 봐서, 블라인드가 곧 오르면 올인 쪽이 나아요.</div>`;
     if(a>=0.5||b>=0.5) el.innerHTML+=f2tNote();
-    drawResultBtns(a>=0.5?"shove":null);
+    try{el.innerHTML+=rngHTML(q);}catch(e){}drawResultBtns(a>=0.5?"shove":null);
   }else if(sc==="vr"){
     if(st.hero<1){set("","—","UTG 앞에는 사람이 없어요.");return;}
     const q=window.QC; if(!q){set("","계산 중…","");return;}
