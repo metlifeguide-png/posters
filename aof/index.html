@@ -1224,16 +1224,16 @@ function drawEzAll(){
   const T1='① 앞 모두 폴드 → '+P[st.hero]+' 액션';
   if(st.hero===n-1) h+='<div class="note" style="margin:14px 0">BB는 앞이 다 폴드하면 이긴 판이라 ①②는 없어요.</div>';
   else if(qa&&qa.sh){
-    h+=sec(T1,'👉 올인: '+rangeText(qa.sh),[[qa.sh,COL.push],[qa.rz,COL.raise]],[["올인",COL.push],["오픈 레이즈",COL.raise]]);
-    if(qa.canRaise&&qa.rc&&qa.rf) h+=sec('② 내가 오픈 → 올인 받으면','👉 콜: '+rangeText(qa.rc)+'<br>👉 폴드: '+rangeText(qa.rf),[[qa.rc,COL.call],[qa.rf,COL.fold2]],[["올인 받고 콜",COL.call],["올인 받고 폴드",COL.fold2]]);
+    h+=sec(T1,'',[[qa.sh,COL.push],[qa.rz,COL.raise]],[["올인",COL.push],["오픈 레이즈",COL.raise]]);
+    if(qa.canRaise&&qa.rc&&qa.rf) h+=sec('② 내가 오픈 → 올인 받으면','',[[qa.rc,COL.call],[qa.rf,COL.fold2]],[["올인 받고 콜",COL.call],["올인 받고 폴드",COL.fold2]]);
   } else h+=wait(T1);
   const T3='③ 앞에서 오픈 → 내 액션';
   if(st.hero<1) h+='<div class="note" style="margin:14px 0">맨 앞 자리라 ③④(앞에서 오픈·올인)는 없어요.</div>';
   else {
-    if(qc&&qc.noRaise) h+='<div style="margin:14px 0 20px"><b>'+T3+'</b><br><span class="note">오픈한 사람 스택이 10BB 미만이면 오픈 대신 올인이라 ④로 봐요.</span></div>';
-    else if(qc&&qc.rs) h+=sec('③ '+P[st.qvil]+' '+qc.R+'BB 오픈 → 내 액션','👉 '+(qc.deep?"3벳":"올인")+': '+rangeText(qc.rs)+'<br>👉 콜: '+rangeText(qc.fl)+'<br>👉 나머지는 폴드',[[qc.rs,COL.push],[qc.fl,COL.flat]],[[qc.deep?"3벳 (크게)":"올인 (3벳 셔브)",COL.push],["콜 (플랍 보기)",COL.flat]]);
+    if(qc&&qc.noRaise) h+='';/*ezclean*/
+    else if(qc&&qc.rs) h+=sec('③ '+P[st.qvil]+' '+qc.R+'BB 오픈 → 내 액션','',[[qc.rs,COL.push],[qc.fl,COL.flat]],[[qc.deep?"3벳 (크게)":"올인 (3벳 셔브)",COL.push],["콜 (플랍 보기)",COL.flat]]);
     else h+=wait(T3);
-    if(qb&&qb.call) h+=sec('④ '+P[st.qvil]+' 올인 → 내 콜','👉 콜: '+rangeText(qb.call)+' <span class="note">(필요 승률 '+pp(qb.need)+')</span>',[[qb.call,COL.call]],[["콜",COL.call]]);
+    if(qb&&qb.call) h+=sec('④ '+P[st.qvil]+' 올인 → 내 콜','<span class="note">필요 승률 '+pp(qb.need)+'</span>',[[qb.call,COL.call]],[["콜",COL.call]]);
     else h+=wait('④ 앞에서 올인 → 내 콜');
   }
   h+='</div>'; box.innerHTML=h; box.style.opacity=busy?".45":"1";
@@ -1259,17 +1259,17 @@ function drawSnapTab(){
   const T1='① 앞 모두 폴드 → '+P[st.hero]+' 액션';
   if(st.hero===n-1) h+='<div class="note" style="margin:14px 0">BB는 앞이 다 폴드하면 이긴 판이라 ①②는 없어요.</div>';
   else if(qa&&qa.sh){
-    h+=sec(T1,'👉 올인: '+rangeText(qa.sh),[[qa.sh,COL.push],[qa.rz,COL.raise]],[["올인",COL.push],["오픈 레이즈",COL.raise]]);
-    if(qa.canRaise&&qa.rc&&qa.rf) h+=sec('② 내가 오픈 → 올인 받으면','👉 콜: '+rangeText(qa.rc)+'<br>👉 폴드: '+rangeText(qa.rf),[[qa.rc,COL.call],[qa.rf,COL.fold2]],[["올인 받고 콜",COL.call],["올인 받고 폴드",COL.fold2]]);
+    h+=sec(T1,'',[[qa.sh,COL.push],[qa.rz,COL.raise]],[["올인",COL.push],["오픈 레이즈",COL.raise]]);
+    if(qa.canRaise&&qa.rc&&qa.rf) h+=sec('② 내가 오픈 → 올인 받으면','',[[qa.rc,COL.call],[qa.rf,COL.fold2]],[["올인 받고 콜",COL.call],["올인 받고 폴드",COL.fold2]]);
   } else h+=wait(T1);
   const T3='③ 앞에서 오픈 → 내 액션';
   if(st.hero<1) h+='<div class="note" style="margin:14px 0">맨 앞 자리라 ③④(앞에서 오픈·올인)는 없어요.</div>';
   else {
-    if(qc&&qc.noRaise) h+='<div style="margin:14px 0 20px"><b>'+T3+'</b><br><span class="note">오픈한 사람 스택이 10BB 미만이면 오픈 대신 올인이라 ④로 봐요.</span></div>';
-    else if(qc&&qc.rs) h+=sec('③ '+P[st.qvil]+' '+qc.R+'BB 오픈 → 내 액션','👉 '+(qc.deep?"3벳":"올인")+': '+rangeText(qc.rs)+'<br>👉 콜: '+rangeText(qc.fl)+'<br>👉 나머지는 폴드',[[qc.rs,COL.push],[qc.fl,COL.flat]],[[qc.deep?"3벳 (크게)":"올인 (3벳 셔브)",COL.push],["콜 (플랍 보기)",COL.flat]]);
+    if(qc&&qc.noRaise) h+='';/*ezclean*/
+    else if(qc&&qc.rs) h+=sec('③ '+P[st.qvil]+' '+qc.R+'BB 오픈 → 내 액션','',[[qc.rs,COL.push],[qc.fl,COL.flat]],[[qc.deep?"3벳 (크게)":"올인 (3벳 셔브)",COL.push],["콜 (플랍 보기)",COL.flat]]);
     else h+=wait(T3);
     const T4='④ 앞에서 올인 → 내 콜';
-    if(qb&&qb.call) h+=sec('④ '+P[st.qvil]+' 올인 → 내 콜','👉 콜: '+rangeText(qb.call)+' <span class="note">(필요 승률 '+pp(qb.need)+')</span>',[[qb.call,COL.call]],[["콜",COL.call]]);
+    if(qb&&qb.call) h+=sec('④ '+P[st.qvil]+' 올인 → 내 콜','<span class="note">필요 승률 '+pp(qb.need)+'</span>',[[qb.call,COL.call]],[["콜",COL.call]]);
     else h+=wait(T4);
     h+='<div class="note">③④의 상대는 내 바로 앞 자리('+P[st.qvil]+')로 계산했어요. 다른 자리·스택은 ⚡이지 모드에서 바꿔요.</div>';
   }
