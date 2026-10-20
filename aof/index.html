@@ -623,12 +623,14 @@ let LEVEL_MIN=7, REG_LEVEL=15; const SEC_PER_HAND=40;
 const TSTYLE={nash:{floor:0,shove:0.65,name:"타이트"},normal:{floor:0.08,shove:0.8,name:"보통"},loose:{floor:0.10,shove:1.0,name:"어그레시브"}};
 const TS_CHIP={floor:0,shove:1,name:"계산 그대로"};
 const tsty=()=>st.mode==="icm"?TSTYLE.normal:TS_CHIP;   // 테이블 성향 입력은 없앰: 항상 레귤러(보통) 기준
-const pmSeats=()=>25;
+const pmSeats=()=>25; const hgsSeats=()=>{const n=Math.max(+st.entries||0,+st.players||0)||110;return Math.max(1,Math.floor(n/11));};
 const GAMES={
   wpl:{blinds:STD_BB,times:["15:00","16:00","17:00","18:00","19:00","20:00","21:00","22:00","23:00"],name:"WPL 새틀",desc:`1~10위 메인(${TV.wpl}만)<br>11~12위 미니메인(${TV.wplm}만)`,pay:()=>Array(10).fill(TV.wpl).concat(Array(2).fill(TV.wplm)),
        bubbles:[{key:"t1",label:"미니메인 이상 (12위 안)",n:12},{key:"t2",label:"메인 (10위 안)",n:10}]},
   hg:{blinds:STD_BB,times:["17:30","19:00","20:30","22:00","23:30"],name:"한게임 새틀",desc:`1~9위 2장(${r1(TV.hg*2)}만)<br>10~20위 1장`,pay:()=>Array(9).fill(TV.hg*2).concat(Array(11).fill(TV.hg)),
        bubbles:[{key:"t1",label:"1장 (20위 안)",n:20},{key:"t2",label:"2장 (9위 안)",n:9}]},
+  /*hgs*/hgs:{levelMin:5,blinds:STD_BB,times:["12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00","22:00","23:00"],name:"한게임 새새틀",get desc(){const n=hgsSeats();return `11명당 1장 (지금 ${n}장)<br>1~${n}위 새틀 참여권 1장씩`;},pay:()=>Array(hgsSeats()).fill(1),
+       get bubbles(){return [{key:"t1",label:`새틀 참여권 (${hgsSeats()}위 안)`,n:hgsSeats()}];}},
   pm:{ante:0.15,blinds:PM_BB,times:["18:00","19:30","21:00","22:30"],name:"피망 새틀",desc:`1~25위 메인 1장<br>(${TV.pm}만)`,pay:()=>Array(pmSeats()).fill(TV.pm),
        get bubbles(){return [{key:"t1",label:`메인 티켓 (${pmSeats()}위 안)`,n:pmSeats()}];}},
   // 그외 게임: MTT(상금) · 새틀(티켓) 무엇이든 직접 입력
@@ -724,7 +726,7 @@ function snapToSt(r){
   const R1=x=>Math.round(x*10)/10, no=why=>({ok:false,why});
   if(!r||typeof r!=='object') return no('읽기 결과가 비었어요');
   const pre=(r.turn!=='my_turn'); /*snappre*/
-  let game0={hg:'hg',wpl:'wpl',pm:'pm'}[r.app]; /*snapkind*/ if(!game0&&GAMES.etc&&(r.app==='etc'||/^(ko|pko|myst)$/.test(r.kind||''))) game0='etc'; const game=(st.game==='etc'&&GAMES.etc)?'etc':(game0||(GAMES[st.game]?st.game:'hg'));/*snapetc2*/ window._snapGmiss=!game0&&game!=='etc'; /*snapgame2*/
+  let game0={hg:'hg',wpl:'wpl',pm:'pm'}[r.app]; /*snapkind*/ if(!game0&&GAMES.etc&&(r.app==='etc'||/^(ko|pko|myst)$/.test(r.kind||''))) game0='etc'; const game=(st.game==='etc'&&GAMES.etc)?'etc':(st.game==='hgs'&&GAMES.hgs&&game0==='hg')?'hgs':(game0||(GAMES[st.game]?st.game:'hg'));/*snapetc2*/ window._snapGmiss=!game0&&game!=='etc'; /*snapgame2*/
   let bb=+r.bb,bbFb=false; /*snapbb0*/ if(!(bb>0)&&r.unit==='bb'){bb=1;bbFb=true;} window._snapNoBB=bbFb; if(!(bb>0)) return no('블라인드를 못 읽었어요');
   const seats=r.seats||[], toBB=v=>r.unit==='bb'?+v:(+v)/bb;
   const sit=seats.map((s,i)=>Object.assign({i},s)).filter(s=>!s.out);
@@ -733,7 +735,7 @@ function snapToSt(r){
   const n=ring.length, hero=ring.findIndex(s=>s.i===0), hs=ring[hero];
   const tbl=new Array(n).fill(null);
   ring.forEach((s,j)=>{ if(j!==hero){ const sv=+s.stack>0?+s.stack:(+s.bet>0?+s.bet:0); if(sv>0) tbl[j]=R1(toBB(sv)); } }); /*snapallin*/
-  let hsv=toBB(hs.stack),est=false; /*snapest*/ if(!(hsv>0)&&+r.pot_bb>0){const an=+r.ante||0,dead=1.5+(an>0&&an<bb*0.5?an*n/bb:(an>0?an/bb:1)); hsv=(+r.pot_bb-dead)/2; est=hsv>0;} window._snapEst=est?R1(hsv):0; const patch={game,tsize:n,hero,heroStack:R1(hsv),bb:bbFb?undefined:bb,players:+r.total||undefined,rank:r.rank!=null?String(r.rank):"",tbl,ui:'pro'};
+  let hsv=toBB(hs.stack),est=false; /*snapest*/ if(!(hsv>0)&&+r.pot_bb>0){const an=+r.ante||0,dead=1.5+(an>0&&an<bb*0.5?an*n/bb:(an>0?an/bb:1)); hsv=(+r.pot_bb-dead)/2; est=hsv>0;} window._snapEst=est?R1(hsv):0; const patch={game,tsize:n,hero,heroStack:R1(hsv),bb:bbFb?undefined:bb,players:+r.total||undefined,rank:r.rank!=null?String(r.rank):"",tbl,ui:'pro'}; if(game==='hgs'&&+r.total>0) patch.entries=String(Math.max(+st.entries||0,+r.total));
   /*snapkind*/ window._snapEtc=null; if(game==='etc'){ const EK=r.kind, EU=0.14, EO={}; /* 1$=약 1,400원=0.14만원 */
     if(EK==='sat'){EO.type='sat';EO.btyType='none';}
     else if(EK==='reg'){EO.btyType='none'; if(EC().type==='sat') EO.type='one';}
@@ -1195,7 +1197,7 @@ function snapModeBtns(){return [["chip","칩EV (마감 전)"],["icm","ICM (마�
 /*snapgame*/function snapGame(k){var g=GAMES[k]; if(!g) return; st.game=k; st.level=null; st.modeManual=false;if(g.blinds){var bi=0,bd=1e18; g.blinds.forEach(function(b,i){var d=Math.abs(b-(+st.bb)); if(d<bd){bd=d;bi=i;}}); st.level=bi+1; st.bbPrev=g.blinds[bi];}applyGame();/*snapetc3*/if(k==='etc'){const c=EC();c.bb=Math.max(1,Math.round(+st.bb)||+c.bb);c.sb=Math.round(c.bb/2);if(c.anteType==='big')c.ante=c.bb;c.tsize=Math.min(9,Math.max(2,+st.tsize||+c.tsize));st.level=1;} try{save();}catch(e){} schedule(); try{drawSnapTab();}catch(e){}}
 /*snapkind*/function snapEtcKind(v){ if(st.game!=='etc') return; const c=EC(); if(v==='sat'){c.type='sat';c.btyType='none';} else { if(c.type==='sat') c.type='one'; c.btyType=(v==='reg')?'none':v; } try{save();}catch(e){} schedule(); try{drawSnapTab();}catch(e){} }
 function snapEtcRow(){ if(st.game!=='etc') return ''; const c=EC(), cur=c.type==='sat'?'sat':((c.btyType&&c.btyType!=='none')?c.btyType:'reg'); const o=[['reg','일반 NLH'],['ko','KO 바운티'],['pko','PKO'],['myst','미스터리'],['sat','새틀']]; return '<div style="margin:4px 0;font-size:13px">형식 '+o.map(function(a){return '<button type="button" onclick="snapEtcKind(\''+a[0]+'\')" style="margin-right:6px;padding:4px 10px;border-radius:8px;border:1px solid #2f7d5b;font-size:13px;font-weight:700;cursor:pointer;'+(cur===a[0]?'background:#2f7d5b;color:#fff':'background:#fff;color:#2f7d5b')+'">'+a[1]+'</button>';}).join('')+'</div>'; }
-function snapGameBtns(){return ["wpl","pm","hg","etc"].filter(function(k){return GAMES[k];}).map(function(k){return '<button type="button" onclick="snapGame(\''+k+'\')" style="margin-right:6px;padding:4px 10px;border-radius:8px;border:1px solid #2f7d5b;font-size:13px;font-weight:700;cursor:pointer;'+(st.game===k?'background:#2f7d5b;color:#fff':'background:#fff;color:#2f7d5b')+'">'+GAMES[k].name+'</button>';}).join("");}
+function snapGameBtns(){return ["wpl","pm","hg","hgs","etc"].filter(function(k){return GAMES[k];}).map(function(k){return '<button type="button" onclick="snapGame(\''+k+'\')" style="margin-right:6px;padding:4px 10px;border-radius:8px;border:1px solid #2f7d5b;font-size:13px;font-weight:700;cursor:pointer;'+(st.game===k?'background:#2f7d5b;color:#fff':'background:#fff;color:#2f7d5b')+'">'+GAMES[k].name+'</button>';}).join("");}
 /*chsize*/function szClick(b){st[b.dataset.szk]=(b.dataset.szv==="1");try{save();}catch(e){}szApply();}
 function szBar(k){return [["1","작은 차트 (한 화면)"],["0","큰 차트"]].map(function(x){return '<button type="button" class="szb'+((!!st[k])===(x[0]==="1")?' on':'')+'" data-szk="'+k+'" data-szv="'+x[0]+'" onclick="szClick(this)">'+x[1]+'</button>';}).join("");}
 /*ezfold*/function szSetD(){var g=document.querySelector("#easy .ez-grid.noetc");if(!g)return;var d=document.getElementById("ezSetD");if(!d){d=document.createElement("details");d.className="more noetc";d.id="ezSetD";d.innerHTML='<summary>⚙️ 게임 시작 시각 · 블라인드 레벨 <span class="hint">(눌러서 수정)</span></summary>';g.parentNode.insertBefore(d,g);d.appendChild(g);}var need=!st.level&&!hasStart();if(window._setNeed!==need){window._setNeed=need;d.open=need;}}
@@ -1653,7 +1655,7 @@ function applyResult(res){
 }
 function logBust(){ st.bustLog=(st.bustLog||[]).concat([{t:Date.now(),p:st.players}]).slice(-40); }
 // ===== 레지 마감 전: 마감 시점을 예상해서 '그때부터 폴드만 하면' 티켓 확률 =====
-const TYPICAL_FIN={pm:109,hg:196,wpl:137};   // 최종 바이인 평소 값(예시 게임 기준). 칸에 넣으면 그 값
+const TYPICAL_FIN={pm:109,hg:196,wpl:137,hgs:110};   // 최종 바이인 평소 값(예시 게임 기준). 칸에 넣으면 그 값
 const isPreReg=()=>curLevel()<=REG_LEVEL;
 // 바이인 수를 고칠 때마다 시각과 함께 기록 → 최근 들어오는 속도로 마감 때 바이인 예상 (마감 5분 전부터는 몰려서 1.5배)
 function logEntries(){ st.entLog=st.entLog||{}; const L=st.entLog[st.game]||[], now=Date.now(), last=L[L.length-1];
