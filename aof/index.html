@@ -761,6 +761,32 @@ function snapToSt(r){
 
 const SNAP_API="https://211-233-211-164.sslip.io";   /*snapsrv*/
 const SNAP_URL=SNAP_API?SNAP_API+'/api/snap/read':'http://127.0.0.1:8765/ocrtable';
+/*snapinfo*/function snapMerge(list){ const o={}; let pr=[], wr=[]; list.forEach(x=>{ Object.keys(x).forEach(k=>{ if(k==='prizes'){ if(Array.isArray(x.prizes)&&x.prizes.length) pr=x.prizes; } else if(k==='warn'){ wr=wr.concat(x.warn||[]); } else if(x[k]!=null&&x[k]!=='') o[k]=x[k]; }); }); o.prizes=pr; o.warn=wr; return o; }
+function snapInfoText(I){ const n=x=>(typeof x==='number'&&isFinite(x)); const L=[];
+  if(n(I.live)) L.push('남은 인원 '+I.live+'명');
+  if(n(I.entries)) L.push('엔트리 '+I.entries+(n(I.buyin)&&n(I.rebuy)?' (바인 '+I.buyin+' + 리바인 '+I.rebuy+')':''));
+  if(n(I.chips)) L.push('총칩 '+I.chips.toLocaleString()); if(n(I.avg)) L.push('평균 스택 '+I.avg.toLocaleString());
+  if(n(I.bb)) L.push('블라인드 '+(n(I.sb)?I.sb+'/':'')+I.bb+(n(I.ante)?' · 앤티 '+I.ante:'')+(n(I.level)?' · '+I.level+'레벨':''));
+  if(n(I.itm)) L.push('ITM '+I.itm+'등까지'); if((I.prizes||[]).length) L.push('상금표 '+I.prizes.length+'줄 ('+I.prizes[0].unit+')');
+  if(!L.length) L.push('읽은 값이 없어요');
+  return '📸 읽은 값\n'+L.join('\n')+((I.warn||[]).length?'\n\n⚠ '+I.warn.join('\n⚠ '):'')+'\n\n이 값으로 채울까요?'; }
+function snapInfoApply(I){ const num=x=>(typeof x==='number'&&isFinite(x))?x:null; const live=num(I.live), ent=num(I.entries), bb=num(I.bb), P=I.prizes||[];
+  const cash=P.some(p=>p.unit==='won'||p.unit==='usd');
+  if(live) st.players=live; if(ent) st.entries=ent; if(bb) st.bb=bb;
+  if(cash&&st.game!=='etc') snapGame('etc');
+  const g=GAMES[st.game];
+  if(bb&&g&&g.blinds&&st.game!=='etc'){ let bi=0,bd=1e18; g.blinds.forEach((x,i)=>{const d=Math.abs(x-bb); if(d<bd){bd=d;bi=i;}}); st.level=bi+1; st.bbPrev=g.blinds[bi]; }
+  if(st.game==='etc'){ const c=EC();
+    if(bb){ c.bb=bb; c.sb=num(I.sb)||Math.round(bb/2); }
+    const an=num(I.ante); if(an!=null&&an>0){ if(bb&&an===bb){ c.anteType='big'; c.ante=bb; } else { c.anteType='each'; c.ante=an; } }
+    const ch=num(I.chips); if(ch&&live&&c.bb) st.avgOv=Math.round(ch/live/c.bb*10)/10;
+    const itm=num(I.itm);
+    if(itm&&c.kind==='mtt'&&c.type!=='multi'){ c.itmMode='num'; c.itm=itm; }
+    if(itm&&c.kind==='sat') c.seats=itm;
+    if(P.length&&c.kind==='mtt'&&P.every(p=>p.unit==='won'||p.unit==='usd')){ const L=[]; P.forEach(p=>{ const f=+p.from||1, t=+p.to||f, v=(p.unit==='usd'?p.amt*0.14:p.amt/10000); for(let r=f;r<=t;r++) L[r-1]=Math.round(v*100)/100; });
+      const A=Array.from(L); if(A.length&&A.every(x=>x>0)){ c.payList=A.join(','); c.pool=Math.round(A.reduce((x,y)=>x+y,0)*100)/100; } }
+  }
+  try{ save(); }catch(e){} schedule(); try{ drawSnapTab(); }catch(e){} }
 function snapApply(res){
   const p=Object.assign({},res.patch); Object.keys(p).forEach(k=>{if(p[k]===undefined) delete p[k];});
   if(!st.snapMode) st.easyBak={level:st.level,mode:st.mode,modeManual:st.modeManual,startPick:st.startPick?JSON.parse(JSON.stringify(st.startPick)):null};   /*snapsep*/
@@ -776,7 +802,7 @@ window.addEventListener('load',()=>{
   const b=document.createElement('button'), f=document.createElement('input');
   const SNAPT='📸 스샷으로 채우기 (스샷만으로 분석가능해요)'; b.type='button'; b.textContent=SNAPT;
   b.style.cssText='display:inline-block;vertical-align:middle;margin:6px 0 6px 12px;padding:12px 18px;border-radius:12px;border:0;background:#2f7d5b;color:#fff;font-size:15px;font-weight:700;line-height:1.3;cursor:pointer;max-width:100%';
-  f.type='file'; f.accept='image/*'; f.style.display='none';
+  f.type='file'; f.accept='image/*'; f.style.display='none'; f.multiple=true;
   b.onclick=()=>f.click();
   const run=async(file)=>{
     if(!file) return; const T0=b.textContent; b.textContent='읽는 중…';
@@ -789,11 +815,32 @@ window.addEventListener('load',()=>{
     b.textContent=SNAPT; f.value='';
   };
   let busy=false; const runB=async(file)=>{ if(busy) return; busy=true; try{ await run(file); } finally{ busy=false; } };
-  f.onchange=()=>runB(f.files[0]);
+  const rd=file=>new Promise((ok,ng)=>{const fr=new FileReader(); fr.onload=()=>ok(String(fr.result).split(',')[1]); fr.onerror=ng; fr.readAsDataURL(file);});
+  const call=async(file,mode)=>{ const body={imgs:[{mime:file.type||'image/jpeg',b64:await rd(file)}]}; if(mode) body.mode=mode; const resp=await fetch(SNAP_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); return resp.json(); };
+  const runN=async(files)=>{ files=files.filter(x=>/^image\//.test(x.type)).slice(0,6); if(!files.length||busy) return; busy=true;
+    try{ const infos=[]; let tbl=null; const why=[];
+      for(let i=0;i<files.length;i++){ b.textContent='읽는 중 ('+(i+1)+'/'+files.length+')…'; const file=files[i];
+        if(files.length===1){
+          const j=await call(file); if(j&&j.err){ snapAlert(j.err); return; }
+          const res=snapToSt(j); if(res.ok){ tbl=res; continue; }
+          const k=await call(file,'info'); if(k&&k.err){ snapAlert(k.err); return; }
+          if(k&&(k.type==='clock'||k.type==='prize')) infos.push(k); else { snapAlert(res.why); return; }
+        } else {
+          const k=await call(file,'info'); if(k&&k.err){ snapAlert(k.err); return; }
+          if(k&&(k.type==='clock'||k.type==='prize')) infos.push(k);
+          else { const j=await call(file); if(j&&j.err){ snapAlert(j.err); return; } const res=snapToSt(j); if(res.ok) tbl=res; else why.push(res.why); }
+        } }
+      if(!tbl&&!infos.length){ snapAlert(why[0]||'읽을 수 있는 화면이 없어요'); return; }
+      let I=null; if(infos.length){ I=snapMerge(infos); if(!confirm(snapInfoText(I))) return; }
+      if(tbl){ snapApply(tbl); if(tbl.note) snapAlert(tbl.note); }
+      if(I) snapInfoApply(I);
+    }catch(e){ snapAlert('스샷 읽기 실패: 잠시 뒤 다시 해 주세요'); }
+    finally{ b.textContent=SNAPT; f.value=''; busy=false; } };
+  f.onchange=()=>runN(Array.from(f.files));
   const dz=e=>!!(e.dataTransfer&&Array.from(e.dataTransfer.types||[]).indexOf('Files')>=0);
   window.addEventListener('dragover',e=>{ if(dz(e)){ e.preventDefault(); document.body.style.outline='4px dashed #2f7d5b'; } });
   window.addEventListener('dragleave',e=>{ if(!e.relatedTarget) document.body.style.outline=''; });
-  window.addEventListener('drop',e=>{ if(!dz(e)) return; e.preventDefault(); document.body.style.outline=''; const fl=Array.from(e.dataTransfer.files).find(x=>/^image\//.test(x.type)); if(fl) runB(fl); }); /*snapdrop*/
+  window.addEventListener('drop',e=>{ if(!dz(e)) return; e.preventDefault(); document.body.style.outline=''; runN(Array.from(e.dataTransfer.files)); }); /*snapdrop*/
   {const h=document.querySelector('header h1'); if(h) h.append(b); else document.body.append(b);} document.body.append(f); /*snapbig*/
 });
 
