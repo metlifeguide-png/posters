@@ -731,7 +731,7 @@ function snapToSt(r){
   if(!r||typeof r!=='object') return no('읽기 결과가 비었어요');
   const pre=(r.turn!=='my_turn'); /*snappre*/
   const game0={hg:'hg',wpl:'wpl',pm:'pm'}[r.app]; const game=game0||(GAMES[st.game]?st.game:'hg'); window._snapGmiss=!game0&&game!=='etc'; /*snapgame2*/
-  const bb=+r.bb; if(!(bb>0)) return no('블라인드를 못 읽었어요');
+  let bb=+r.bb,bbFb=false; /*snapbb0*/ if(!(bb>0)&&r.unit==='bb'){bb=1;bbFb=true;} window._snapNoBB=bbFb; if(!(bb>0)) return no('블라인드를 못 읽었어요');
   const seats=r.seats||[], toBB=v=>r.unit==='bb'?+v:(+v)/bb;
   const sit=seats.map((s,i)=>Object.assign({i},s)).filter(s=>!s.out);
   let k=sit.findIndex(s=>s.btn==='BB'); /*snapbb2*/ if(k<0&&sit.length>=3){const dI=sit.findIndex(s=>s.btn==='D'); if(dI>=0) k=(dI+2)%sit.length;} if(k<0||sit.length<3) return no('BB 자리를 못 찾았어요');
@@ -739,7 +739,7 @@ function snapToSt(r){
   const n=ring.length, hero=ring.findIndex(s=>s.i===0), hs=ring[hero];
   const tbl=new Array(n).fill(null);
   ring.forEach((s,j)=>{ if(j!==hero){ const sv=+s.stack>0?+s.stack:(+s.bet>0?+s.bet:0); if(sv>0) tbl[j]=R1(toBB(sv)); } }); /*snapallin*/
-  let hsv=toBB(hs.stack),est=false; /*snapest*/ if(!(hsv>0)&&+r.pot_bb>0){const an=+r.ante||0,dead=1.5+(an>0&&an<bb*0.5?an*n/bb:(an>0?an/bb:1)); hsv=(+r.pot_bb-dead)/2; est=hsv>0;} window._snapEst=est?R1(hsv):0; const patch={game,tsize:n,hero,heroStack:R1(hsv),bb,players:+r.total||undefined,rank:r.rank!=null?String(r.rank):"",tbl,ui:'pro'};
+  let hsv=toBB(hs.stack),est=false; /*snapest*/ if(!(hsv>0)&&+r.pot_bb>0){const an=+r.ante||0,dead=1.5+(an>0&&an<bb*0.5?an*n/bb:(an>0?an/bb:1)); hsv=(+r.pot_bb-dead)/2; est=hsv>0;} window._snapEst=est?R1(hsv):0; const patch={game,tsize:n,hero,heroStack:R1(hsv),bb:bbFb?undefined:bb,players:+r.total||undefined,rank:r.rank!=null?String(r.rank):"",tbl,ui:'pro'};
   const others=ring.map((s,j)=>({s,j})).filter(o=>o.j!==hero);
   const aggr=pre?[]:others.filter(o=>o.s.act==='allin'||o.s.act==='raise'||(+o.s.bet>bb*1.0001&&o.j<n-2));
   if(!aggr.length){
@@ -763,7 +763,7 @@ function snapApply(res){
   st.tend=new Array(st.tsize).fill(0); st.settled={}; st.hist=[];
   if(res.scen==='open') st.proV='vs';
   {const g=GAMES[st.game]; if(g&&g.blinds){ let bi=0,bd=1e18; g.blinds.forEach((b,i)=>{const d=Math.abs(b-(+st.bb)); if(d<bd){bd=d;bi=i;}}); st.level=bi+1; st.bbPrev=g.blinds[bi];
-    if(bd>0) res.note=(res.note?res.note+'\n':'')+'블라인드 '+st.bb+'이(가) 목록에 없어 가장 가까운 '+(bi+1)+'레벨로 맞췄어요'; }
+    if(bd>0&&!window._snapNoBB) res.note=(res.note?res.note+'\n':'')+'블라인드 '+st.bb+'이(가) 목록에 없어 가장 가까운 '+(bi+1)+'레벨로 맞췄어요'; }
    if(window._snapEst) res.note=(res.note?res.note+'\n':'')+'내 스택이 화면에 안 보여 팟 기준으로 추정했어요: '+window._snapEst+'BB (팟−블라인드·앤티÷2, 올인 두 명일 때만 맞고 ±1BB 오차). 틀리면 내 스택 칸에서 고쳐 주세요'; if(window._snapGmiss) res.note=(res.note?res.note+'\n':'')+'게임을 못 알아봐서 '+GAMES[st.game].name+' 기준이에요. 차트 위 게임 버튼으로 바꿔 주세요'; st.snapMode=true; st.ui='snap'; window.scrollTo(0,0); st.modeManual=false; rescaleOK=false;}   /*snapmode*/
   schedule();
 }
@@ -792,7 +792,7 @@ window.addEventListener('load',()=>{
   {const h=document.querySelector('header h1'); if(h) h.append(b); else document.body.append(b);} document.body.append(f); /*snapbig*/
 });
 
-function load(){try{const s=JSON.parse(localStorage.getItem("sat_v15")||"null");if(s) Object.assign(st,s); if(st.ezScen==="rc") st.ezScen="open";}catch(e){}}
+function load(){try{const s=JSON.parse(localStorage.getItem("sat_v15")||"null");if(s) Object.assign(st,s); if(st.ezScen==="rc") st.ezScen="open"; /*autoreset*/ if(!st.snapMode){st.level=st.game==="etc"?1:null; st.modeManual=false; const sp=st.startPick||{}; Object.keys(sp).forEach(g=>{if(sp[g]&&!sp[g].auto) delete sp[g];});}}catch(e){}}
 function save(){try{localStorage.setItem("sat_v15",JSON.stringify(st));}catch(e){}}
 const POSN=()=>SAT.POS[st.tsize];
 const avgBB=()=>Math.max(1,st.entries*START/Math.max(2,st.players)/Math.max(1,st.bb));
