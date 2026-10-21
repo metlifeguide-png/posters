@@ -1583,7 +1583,7 @@ function paintEz(){
   $("ezFinBox").style.display=isPreReg()?"":"none";
   if(document.activeElement!==$("ezFin")) $("ezFin").value=((st.finEnt||{})[st.game])||"";
   $("ezFin").placeholder=`평소 ${TYPICAL_FIN[st.game]||"-"}`;
-  { const fe=finEstimate(); $("ezFinHint").textContent=`지금 ${st.entries}바이인 → 마감 때 약 ${fe.v}바이인 (${fe.how})`; }
+  { const fe=finEstimate(); $("ezFinHint").textContent=`지금 ${st.entries}바이인 → 마감 때 약 ${fe.v}바이인 (${fe.how})`; } /*hgsbind*/try{hgsBindRender();}catch(e){}
   if(+st.rank>st.players) st.rank=st.players;
   if(document.activeElement!==$("ezRank")) $("ezRank").value=st.rank||"";
   { const sc=shorterCount(); $("ezRankHint").innerHTML = +st.rank>0 ? `${st.players}명 중 ${st.rank}등 · 나보다 적은 사람 <b>${sc}명</b>` : "넣으면 폴드로 버틸지·먼저 올인할지가 정확해져요"; }
@@ -1747,6 +1747,24 @@ function minsToClose(){ const L=curLevel(); if(L>REG_LEVEL) return 0;
   return m+breaks; }
 function entryRate(){ const L=((st.entLog||{})[st.game]||[]), now=Date.now(); const R=L.filter(x=>now-x.t<=12*60000);
   if(R.length<2) return null; const a=R[0], b=R[R.length-1], min=(b.t-a.t)/60000; if(min<1) return null; return Math.max(0,(b.e-a.e)/min); }
+/*hgsbind*/function hgsBindRender(){
+  const fb=$("ezFinBox"); if(!fb||!fb.parentNode) return;
+  let box=$("hgsBind");
+  if(!box){ box=document.createElement("div"); box.id="hgsBind"; box.style.cssText="margin:8px 0;padding:10px 12px;border-radius:12px;border:1px solid #cfe3d8;background:#f6fbf8";
+    const inp=(id,lb)=>'<label style="flex:1;font-size:12px">'+lb+'<input id="'+id+'" type="number" inputmode="decimal" style="width:100%;box-sizing:border-box;padding:6px;border:1px solid #bbb;border-radius:8px" oninput="st.'+id+'=+this.value;try{save();}catch(e){}hgsBindRender()"></label>';
+    box.innerHTML='<div style="font-weight:800;font-size:15px;margin-bottom:6px">🎟 새틀바인지수</div><div id="hgsBindOut"></div><div style="display:flex;gap:8px;margin-top:8px">'+inp("hgsC","바인 비용 (선택)")+inp("hgsV","메인새틀권 가치 (선택)")+'</div><div class="hint" style="margin-top:6px">뒤에 들어올 바인은 계산에 넣지 않은 값이에요 (지금 마감한다고 가정)</div>';
+    fb.parentNode.insertBefore(box,fb); $("hgsC").value=st.hgsC||""; $("hgsV").value=st.hgsV||""; }
+  box.style.display=(st.game==="hgs")?"":"none"; if(st.game!=="hgs") return;
+  const out=$("hgsBindOut"), N=+st.entries||0; if(!(N>0)){ out.innerHTML="총 바이인을 넣어 주세요"; return; }
+  const pre=isPreReg(), M=pre?N+1:N, eff=m=>m>0?Math.floor(m/11)*11/m*100:0, e=eff(M), t=Math.floor(M/11);
+  const lv=e>=97?["아주좋음","#1b8a4b"]:e>=92?["좋음","#4aa35a"]:e>=86?["보통","#c99a00"]:e>=78?["나쁨","#e07b00"]:["매우나쁨","#d33"];
+  const c=+st.hgsC||0, V=+st.hgsV||0, rt=m=>(c>0&&V>0&&m>0)?" · 환급율 <b>"+Math.round(Math.floor(m/11)*V/(m*c)*100)+"%</b>":"";
+  const k=(11-M%11)%11;
+  let h='<div style="font-size:26px;font-weight:900;color:'+lv[1]+'">'+(pre?"지금 바인: ":"현재: ")+lv[0]+'</div>';
+  h+='<div style="font-size:13px;margin-top:4px">지금 마감하면 · '+N+'명 → 티켓 <b>'+Math.floor(N/11)+'장</b> · 효율 '+Math.round(eff(N))+'%'+rt(N)+'</div>';
+  if(pre) h+='<div style="font-size:13px;margin-top:2px">내가 바인하면 · '+M+'명 → 티켓 <b>'+t+'장</b> · 효율 '+Math.round(e)+'%'+rt(M)+'</div>';
+  h+='<div style="font-size:12px;margin-top:4px;color:#555">'+(k===0?'딱 떨어져서 버려지는 바인이 없어요':'다음 티켓까지 '+k+'명 더 필요 (그때 효율 100%)')+'</div>';
+  out.innerHTML=h; }
 function finEstimate(){ const manual=+((st.finEnt||{})[st.game]); if(manual) return {v:Math.max(manual,+st.entries),how:"직접 넣은 값"};
   const r=entryRate(), m=minsToClose(), cur=+st.entries;
   if(r==null) return {v:Math.max(cur,TYPICAL_FIN[st.game]||cur),how:"게임별 평소 값 · 바이인 수를 몇 분 간격으로 고치면 들어오는 속도로 예상해요"};
