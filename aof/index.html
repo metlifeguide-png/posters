@@ -783,6 +783,9 @@ function snapInfoApply(I){ const num=x=>(typeof x==='number'&&isFinite(x))?x:nul
       const A=Array.from(L); if(A.length&&A.every(x=>x>0)){ c.payList=A.join(','); c.pool=Math.round(A.reduce((x,y)=>x+y,0)*100)/100; } }
   }
   try{ save(); }catch(e){} schedule(); try{ drawSnapTab(); }catch(e){} }
+/*pzsave*/function pzSave(){ try{ const c=EC(); if(!(st.prizeInfo||String(c.payList||'').trim())) return; localStorage.setItem('aof_pz',JSON.stringify({t:Date.now(),game:st.game,entries:st.entries,avgOv:st.avgOv,prizeInfo:st.prizeInfo||null,etc:{payList:c.payList,pool:c.pool,itm:c.itm,itmMode:c.itmMode,seats:c.seats,kind:c.kind,type:c.type}})); }catch(e){} }
+function pzAsk(){ try{ if(st.prizeInfo) return null; const z=JSON.parse(localStorage.getItem('aof_pz')||'null'); if(!z||Date.now()-z.t>6*3600*1000) return null; if(!confirm('같은 경기인가요?\n확인 = 이전 상금 정보 그대로\n취소 = 새로 측정')){ localStorage.removeItem('aof_pz'); return null; } return z; }catch(e){ return null; } }
+function pzRestore(z){ if(!z) return; try{ if(z.game==='etc'&&st.game!=='etc') snapGame('etc'); if(z.entries) st.entries=z.entries; if(z.avgOv) st.avgOv=z.avgOv; st.prizeInfo=z.prizeInfo; Object.assign(EC(),z.etc||{}); save(); schedule(); try{ drawSnapTab(); }catch(e){} }catch(e){} }
 function snapApply(res){
   const p=Object.assign({},res.patch); Object.keys(p).forEach(k=>{if(p[k]===undefined) delete p[k];});
   if(!st.snapMode) st.easyBak={level:st.level,mode:st.mode,modeManual:st.modeManual,startPick:st.startPick?JSON.parse(JSON.stringify(st.startPick)):null};   /*snapsep*/
@@ -828,8 +831,8 @@ window.addEventListener('load',()=>{
         } }
       if(!tbl&&!infos.length){ snapAlert(why[0]||'읽을 수 있는 화면이 없어요'); return; }
       let I=null; if(infos.length){ I=snapMerge(infos); if(!confirm(snapInfoText(I))) return; }
-      if(tbl){ snapApply(tbl); if(tbl.note) snapAlert(tbl.note); }
-      if(I) snapInfoApply(I);
+      if(tbl){ const z=I?null:pzAsk(); snapApply(tbl); pzRestore(z); if(tbl.note) snapAlert(tbl.note); }
+      if(I){ snapInfoApply(I); pzSave(); }
     }catch(e){ snapAlert('스샷 읽기 실패: 잠시 뒤 다시 해 주세요'); }
     finally{ b.textContent=SNAPT; f.value=''; busy=false; } };
   f.onchange=()=>runN(Array.from(f.files));
