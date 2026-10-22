@@ -783,8 +783,8 @@ function snapInfoApply(I){ const num=x=>(typeof x==='number'&&isFinite(x))?x:nul
       const A=Array.from(L); if(A.length&&A.every(x=>x>0)){ c.payList=A.join(','); c.pool=Math.round(A.reduce((x,y)=>x+y,0)*100)/100; } }
   }
   try{ save(); }catch(e){} schedule(); try{ drawSnapTab(); }catch(e){} }
-/*pzsave*/function pzSave(){ try{ const c=EC(); if(!(st.prizeInfo||String(c.payList||'').trim())) return; localStorage.setItem('aof_pz',JSON.stringify({t:Date.now(),game:st.game,entries:st.entries,avgOv:st.avgOv,prizeInfo:st.prizeInfo||null,etc:{payList:c.payList,pool:c.pool,itm:c.itm,itmMode:c.itmMode,seats:c.seats,kind:c.kind,type:c.type}})); }catch(e){} }
-function pzAsk(){ try{ if(st.prizeInfo) return null; const z=JSON.parse(localStorage.getItem('aof_pz')||'null'); if(!z||Date.now()-z.t>6*3600*1000) return null; if(!confirm('같은 경기인가요?\n확인 = 이전 상금 정보 그대로\n취소 = 새로 측정')){ localStorage.removeItem('aof_pz'); return null; } return z; }catch(e){ return null; } }
+/*pzsave*//*aofguest*/function aofGuest(){try{return !localStorage.getItem('mtok');}catch(e){return true;}}function pzSave(){ try{ if(aofGuest()) return; const c=EC(); if(!(st.prizeInfo||String(c.payList||'').trim())) return; localStorage.setItem('aof_pz',JSON.stringify({t:Date.now(),game:st.game,entries:st.entries,avgOv:st.avgOv,prizeInfo:st.prizeInfo||null,etc:{payList:c.payList,pool:c.pool,itm:c.itm,itmMode:c.itmMode,seats:c.seats,kind:c.kind,type:c.type}})); }catch(e){} }
+function pzAsk(){ try{ if(st.prizeInfo) return null; if(aofGuest()) return null; const z=JSON.parse(localStorage.getItem('aof_pz')||'null'); if(!z||Date.now()-z.t>6*3600*1000) return null; if(!confirm('같은 경기인가요?\n확인 = 이전 상금 정보 그대로\n취소 = 새로 측정')){ localStorage.removeItem('aof_pz'); return null; } return z; }catch(e){ return null; } }
 function pzRestore(z){ if(!z) return; try{ if(z.game==='etc'&&st.game!=='etc') snapGame('etc'); if(z.entries) st.entries=z.entries; if(z.avgOv) st.avgOv=z.avgOv; st.prizeInfo=z.prizeInfo; Object.assign(EC(),z.etc||{}); save(); schedule(); try{ drawSnapTab(); }catch(e){} }catch(e){} }
 function snapApply(res){
   const p=Object.assign({},res.patch); Object.keys(p).forEach(k=>{if(p[k]===undefined) delete p[k];});
@@ -844,7 +844,7 @@ window.addEventListener('load',()=>{
 });
 
 function load(){try{/*aofclr*/if((!window.__aofClr&&(window.__aofClr=1))||localStorage.getItem("sat_clr1")==="1"){localStorage.removeItem("sat_v15");localStorage.removeItem("sat_clr1");}const s=JSON.parse(localStorage.getItem("sat_v15")||"null");if(s) Object.assign(st,s); if(st.game==="apl") st.game="wpl";/*noapl*/ if(st.ezScen==="rc") st.ezScen="open"; /*autoreset*/ if(!st.snapMode){st.level=st.game==="etc"?1:null; st.modeManual=false; const sp=st.startPick||{}; Object.keys(sp).forEach(g=>{if(sp[g]&&!sp[g].auto) delete sp[g];});}}catch(e){}}
-function save(){try{localStorage.setItem("sat_v15",JSON.stringify(st));}catch(e){}}
+function save(){try{if(aofGuest())return;localStorage.setItem("sat_v15",JSON.stringify(st));}catch(e){}}
 const POSN=()=>SAT.POS[st.tsize];
 const avgBB=()=>Math.max(1,st.entries*START/Math.max(2,st.players)/Math.max(1,st.bb));
 // 시작 시각 자동: 가장 최근에 시작한 게임을 기본으로 보되, 그 바로 앞 게임의 레지 마감까지 AUTO_SWITCH_MIN분보다 많이 남았으면 앞 게임을 유지해요
