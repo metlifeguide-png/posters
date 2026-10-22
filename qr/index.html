@@ -124,7 +124,7 @@ function norm(L){L={...L};if(L.card===undefined&&L.hero!==undefined)L.card=L.her
   if(raw){const ci=raw.indexOf(':');if(ci>=0){l=raw.slice(0,ci);r=raw.slice(ci+1)}else if(cards(raw.split(/[\s,]/)[0]).length){l=raw;r=''}}
   L[s+'b']=l.trim();L[s]=r.trim()}});return L}
 const BLV=[[50,100],[100,200],[150,300],[200,400],[300,600],[400,800],[500,1000],[600,1200],[800,1600],[1000,2000],[1500,3000],[2000,4000],[2500,5000],[3000,6000],[4000,8000],[5000,10000]];
-let D={tours:[]},T=null,ed=null,aK='card',R=null,U=null,pend=null;
+let D={tours:[]},T=null,ed=null,aK='card',R=null,U=null,pend=null;/*guesthand*/let GUEST=0;
 const MTOK=(()=>{try{return localStorage.getItem("mtok")||""}catch(e){return ""}})();   // 👤 뚝섬 회원 token (홈 로그인)
 const API="https://211-233-211-164.sslip.io",H={"Content-Type":"application/json","ngrok-skip-browser-warning":"true"};
 // 📣 광고 띠 (광고 자리 'bar' = 휴대폰 하단 고정 띠, 'side' = PC 좌우 여백 세로 배너)
@@ -207,7 +207,7 @@ if(API)fetch(API+'/api/ads/live',{headers:{'ngrok-skip-browser-warning':'1'}}).t
 try{U=JSON.parse(localStorage.getItem('qr_sess')||'null')}catch(e){}
 const ck=()=>'hr1_'+U.login.toLowerCase();
 const dk=()=>'hrd_'+U.login.toLowerCase();
-function sv(){if(!U)return;try{localStorage.setItem(ck(),JSON.stringify(D));localStorage.setItem(dk(),'1')}catch(e){}clearTimeout(pend);pend=setTimeout(()=>{pend=null;push()},800);$('#sst').textContent='저장 중…'}
+function sv(){if(GUEST){$('#sst').textContent='저장 안 됨 · 가입하면 저장돼요';return}if(!U)return;try{localStorage.setItem(ck(),JSON.stringify(D));localStorage.setItem(dk(),'1')}catch(e){}clearTimeout(pend);pend=setTimeout(()=>{pend=null;push()},800);$('#sst').textContent='저장 중…'}
 function flush(){if(pend){clearTimeout(pend);pend=null;push(true)}}
 window.__qrFlush=flush;addEventListener('pagehide',flush);document.addEventListener('visibilitychange',()=>{if(document.hidden)flush()});
 async function push(ka){if(!U)return;try{const body=JSON.stringify({token:U.token,data:D}),go=k=>fetch(API+'/api/qr/save',{method:'POST',headers:H,body,keepalive:k});let r;try{r=await go(!!ka&&body.length<60000)}catch(e){if(!ka)throw e;r=await go(false)}
@@ -396,7 +396,7 @@ function cl(h){
  if(Q.q.length)o+=`고민 지점: ${Q.q.join(', ')}\n`;if(L.show)o+=`공개 패: ${L.show}\n`;if(L.memo)o+=`메모: ${L.memo}\n`;
  return o+'\n이 핸드의 판단을 GTO 관점에서 복기해줘.';
 }
-function toReview(h){/*qr2rv*/   // ✍️ 이 핸드를 핸드리뷰 작성 화면으로 넘김 (같은 기기 저장소 hr_import)
+function toReview(h){/*qr2rv*/if(GUEST){toast('핸드리뷰로 보내기는 가입하면 쓸 수 있어요');return}   // ✍️ 이 핸드를 핸드리뷰 작성 화면으로 넘김 (같은 기기 저장소 hr_import)
  if(!h.S.bb){toast('blind 줄에 BB를 넣어야 리뷰로 보낼 수 있어요');return}
  const S=h.S,Q=sim(h.L,S),bb=S.bb,ord=Q.order,ix=p=>ord.indexOf(p),c=x=>Math.round(x*bb);
  if(!Q.hp||Q.hc.length<2||ix(Q.hp)<0){toast('card 줄에 내 포지션·카드 2장을 넣어 주세요 ('+S.max+'max 자리)');return}
@@ -650,5 +650,13 @@ function memGate(){if(document.getElementById("memGate"))return;const w=document
  w.style.cssText="position:fixed;inset:0;z-index:99999;background:rgba(20,24,30,.72);display:flex;align-items:center;justify-content:center;padding:18px";
  w.innerHTML='<div style="background:#fff;color:#222;border-radius:16px;padding:22px 18px;max-width:340px;width:100%;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.35)"><div style="font-size:30px">🔒</div><div style="font-weight:900;font-size:17px;margin:6px 0">로그인 후 이용해 주세요</div><div style="font-size:13.5px;color:#555;line-height:1.6;margin-bottom:14px">핸드 기록은 뚝섬 회원 아이디로 바로 쓸 수 있어요.<br>뚝섬 홈 오른쪽 위에서 로그인(회원가입)한 뒤 다시 열어주세요.</div><a href="../hub/" target="_top" style="display:block;background:#1f5fae;color:#fff;text-decoration:none;border-radius:11px;padding:12px;font-weight:800">뚝섬 홈으로 가기</a><button type="button" onclick="location.reload()" style="margin-top:8px;width:100%;border:0;background:none;padding:10px;color:#666;font-size:14px">로그인했어요 · 다시 열기</button></div>';
  document.body.appendChild(w);}
-if(!MTOK)memGate();
+/*guesthand2*/function qrGuest(){GUEST=1;U={login:'비회원',token:''};D={tours:[]};T=null;
+  $('#auth').hidden=true;$('#who').textContent='비회원 (저장 안 됨)';
+  const b=document.createElement('div');b.id='gBn';
+  b.style.cssText='position:sticky;top:0;z-index:60;background:#fff4d6;color:#6b4a00;border-bottom:1px solid #e0c36a;padding:8px 12px;font-size:13px;line-height:1.5;display:flex;gap:8px;align-items:center;justify-content:space-between';
+  b.innerHTML='<span>👤 비회원 모드 · 기능은 그대로 쓸 수 있지만 <b>기록은 저장되지 않아요</b></span><a href="../hub/" target="_top" style="flex-shrink:0;background:#1f5fae;color:#fff;text-decoration:none;border-radius:8px;padding:6px 10px;font-weight:800;font-size:12.5px">가입·로그인하면 저장돼요</a>';
+  document.body.insertBefore(b,document.body.firstChild);
+  addEventListener('beforeunload',e=>{if(GUEST&&D.tours.some(t=>t.hands.length)){e.preventDefault();e.returnValue=''}});
+  home()}
+if(!MTOK)qrGuest();
 </script></body></html>
