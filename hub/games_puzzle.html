@@ -87,8 +87,9 @@ function hs(s){let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function toast(t,ms){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(()=>e.classList.remove('on'),ms||1700);}
-function lsGet(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}}
-function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+/*gstudy*//*gstudy2*/const GMEM={};function gk(k){return (/^(st_|wn_|stk_|best_|bd_|om_|ot_|ch2_|jg_|bj3)/.test(k)||/_st_/.test(k)||/^(study_q|pf_stat|mylv|hu_tot|lg_st|sc_star|ld_res|petfish)$/.test(k))?(typeof window.STUDY_GUEST==='function'&&!MEM.tok):false;}
+function lsGet(k,d){if(gk(k))return (k in GMEM)?JSON.parse(GMEM[k]):d;try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v);}catch(e){return d;}}
+function lsSet(k,v){if(gk(k)){GMEM[k]=JSON.stringify(v);return;}try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
 const R=n=>Math.floor(Math.random()*n),pick=a=>a[R(a.length)],shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=R(i+1);[a[i],a[j]]=[a[j],a[i]];}return a;};
 function copy(t){(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('복사했어요')).catch(()=>{const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');toast('복사했어요');}catch(e){}a.remove();});}
 let NICK=lsGet('nick2','')||(()=>{try{return localStorage.getItem('nick')||'';}catch(e){return '';}})();
@@ -1047,7 +1048,7 @@ function coffeeBox(full){loadMissions();const all=MISSIONS||[];const on=all.filt
  else body=full?missionBox(on):`<div style="margin-top:8px;font-size:15.5px;line-height:1.7">${on.map(m=>`<div ${m.game?`onclick="event.stopPropagation();location.hash='g=${m.game}'" style="cursor:pointer"`:''}>🎮 <b>${esc(m.gname||'')}${m.lv?' '+esc(m.lv):''}</b> · 🎁 <b style="color:#c62828">${esc(m.reward||'-')}</b><br><span class="m">${esc(m.title)}</span></div>`).join('')}</div><div style="margin-top:8px"><span class="btn" style="display:inline-block;padding:8px 16px;font-size:15px">${on.length===1&&on[0].game?'바로 도전하기 ›':'이벤트 보기 ›'}</span></div>`;
  return `<div class="card" style="${full?'':'cursor:pointer;'}padding:16px;border:${lit?'3px solid #f6c344;background:linear-gradient(135deg,#fff8e1,#ffecb3)':'2px dashed #ccc;background:#f7f7f7'}" ${full?'':`onclick="location.hash='${lit&&on.length===1&&on[0].game?'g='+on[0].game:'event'}'"`}>${head}${body}</div>`;}
 // 👤 로그인한 회원만 쓰는 게임(그 밖의 게임은 누구나, 기록만 회원) · 온라인 대전은 p9o.js olOpen에서 따로 막음
-const MEM_ONLY=['pet'];
+const MEM_ONLY=[];   /*guestpet*/ // 🐣 펫도 비회원 맛보기 가능 (회원 전용 게임 잠금 목록 비움)
 function memLockView(g){return `<div class="card" style="text-align:center;padding:26px 16px"><div style="font-size:44px">${g.e}</div><div style="font-size:18px;font-weight:900;margin-top:6px">${esc(g.nm)}</div><div class="m" style="margin:8px 0 16px;line-height:1.6">회원만 이용할 수 있어요<br>로그인하면 바로 이어서 열려요</div><div style="background:#ecfdf3;border:2px solid #3a9d3f;border-radius:12px;padding:10px 12px;margin:0 0 12px;text-align:center;line-height:1.55"><div style="font-size:16px;font-weight:900;color:#1f6b3a">✨ 가입 10초! 정말 쉬워요</div><div style="font-size:14px;color:#1f4d2e;margin-top:3px"><b>아이디 + 숫자 6자리 + 카톡 닉네임</b>만 적으면 끝<br>카톡 채팅방 닉네임으로 연동돼요 · 모든 기능 무료</div></div><button class="btn" style="width:100%;max-width:280px;font-size:16px;padding:12px" onclick="memOpen('login')">로그인</button><div style="margin-top:8px"><button class="btn" style="width:100%;max-width:280px;background:var(--green,#3a9d3f)" onclick="memOpen('reg')">처음이면 회원가입</button></div></div>`;}
 function memNeed(what){toast(`${what}은(는) 로그인 후 이용해 주세요`,2600);setTimeout(()=>memOpen('login'),300);}
 // 📣 광고 자리 (서버 ads.py · 관리자 '광고' 탭) · list=목록 맨 위 배너, end=게임 끝나면 아래서 올라오는 카드
@@ -1259,7 +1260,7 @@ function render(){const hsh=location.hash.slice(1);if(CUR&&CUR.stop)CUR.stop();S
  if(hsh.startsWith('g=')){const key=hsh.slice(2).split('&')[0];const g=G.find(x=>x.k===key);if(g&&g.stub){location.replace(g.stub+location.search+location.hash);return;}
   if(window.DAILY&&DAILY.k!==key)dailyEnd();
   if(g&&MEM_ONLY.includes(key)&&!MEM.tok){CUR=null;setTitle(g.e+' '+g.nm);back.style.display=key==='pet'?'none':'';newBtnSync();show(memLockView(g));memNeed(g.nm);scrollTo(0,0);return;}   // 회원 전용: 주소(#g=)는 그대로 두고 잠금 화면 → 로그인하면 바로 그 게임 (예전엔 목록으로 갔다가 다시 넘어왔음)
-  else if(g){gvisit((g.study?'':'게임·')+g.nm+(window.DAILY&&DAILY.k===key?' (오늘의 문제)':''));CUR=g;const dly=window.DAILY&&DAILY.k===key;setTitle((dly?'📅 오늘의 문제 · ':'')+g.e+' '+g.nm);back.style.display=(g.study||key==='pet')?'none':'';g.start();if(WN_AUTO===key||/&w=1/.test(hsh)){WN_AUTO=null;if(g.go)g.go('W');}   /* 10/16: 뚝섬펫은 '목록' 버튼 숨김 (펫 화면 안에 자체 메뉴가 있음) */newBtnSync();
+  else if(g){gvisit((g.study?'':'게임·')+g.nm+(window.DAILY&&DAILY.k===key?' (오늘의 문제)':''));CUR=g;const dly=window.DAILY&&DAILY.k===key;setTitle((dly?'📅 오늘의 문제 · ':'')+g.e+' '+g.nm);back.style.display=(g.study||(key==='pet'&&typeof MEM!=='undefined'&&MEM.tok))?'none':'';g.start();if(WN_AUTO===key||/&w=1/.test(hsh)){WN_AUTO=null;if(g.go)g.go('W');}   /* 10/16: 뚝섬펫은 '목록' 버튼 숨김 (펫 화면 안에 자체 메뉴가 있음) */newBtnSync();
    if(dly){if(key==='logic')g.go('오늘');else if(DAILY.lv&&g.go)g.go(DAILY.lv);}scrollTo(0,0);return;}}
  if(window.DAILY)dailyEnd();
  CUR=null;back.style.display='none';newBtnSync();
