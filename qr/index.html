@@ -321,7 +321,7 @@ function mkPub(F){
  const c=F.querySelector('.ln[data-k="card"]'),s=F.querySelector('.ln[data-k="show"]');if(!c||!s)return;
  const h=document.createElement('div');h.className='pubh';h.innerHTML='<b>공개된 카드</b> <span class="mu">알고 있는 카드만 적어 두세요 · 모르면 비움</span>';F.insertBefore(h,c);
  const v=document.createElement('div');v.id='vl';v.className='vl';s.after(v);
- const a=document.createElement('button');a.type='button';a.className='btn pubadd';a.id='vadd';a.textContent='＋ 상대 추가';s.after(a);
+ const a=document.createElement('button');a.type='button';a.className='btn pubadd';a.id='vadd';a.textContent='＋ 상대 추가';s.after(a);/*vrm*/const rb=document.createElement('button');rb.type='button';rb.className='btn pubadd';rb.id='vrm';rb.textContent='－ 상대 제거';rb.style.marginLeft='6px';a.after(rb);rb.onclick=vRmEmpty;
  a.onclick=()=>{const r=vInputs(),l=r[r.length-1];if(l.value.trim())vAdd(false);const i=vInputs().pop();VA=i;const t=i.value.trim();
   if(t&&!/,$/.test(t)){const ls=t.split(',').pop().trim(),pm=ls.match(/^(\S+)\s+(.*)$/);if(pos(ls)||(pm&&pos(pm[1])&&cards(pm[2]).length>=2))i.value=t+','}
   i.focus();const n=i.value.length;try{i.setSelectionRange(n,n)}catch(e){}chg()}}
@@ -453,6 +453,11 @@ function setKb(v){kOn=v;sync()}
 let VA=null;const vInputs=()=>[...document.querySelectorAll('#form input[data-k="show"]')],el=k=>k==='show'?((VA&&VA.isConnected&&VA)||vInputs()[0]):$(`#form input[data-k="${k}"]`),getL=()=>Object.fromEntries(K.map(k=>[k,k==='show'?vInputs().map(i=>i.value.trim()).filter(Boolean).join(', '):el(k).value]));
 function setL(L){L=norm(L);K.forEach(k=>{if(k==='show')vSet(L.show);else el(k).value=L[k]||''})}
 /*vrows*/ // 👥 Villain 줄: 상대마다 한 줄 · 합쳐서 show 한 줄로 저장
+function vRmEmpty(){/*vrm*/   // 입력 안 한 빈 Villain 줄 하나 삭제 (지금 누른 줄이 비어 있으면 그 줄, 아니면 맨 아래 빈 줄) · 최소 1줄은 남김
+ const r=vInputs();if(r.length<2){toast('상대 줄은 최소 1개는 있어야 해요');return}
+ const em=r.filter(i=>!i.value.trim());if(!em.length){toast('비어 있는 상대 줄이 없어요');return}
+ const t=em.includes(VA)?VA:em[em.length-1],i=r.indexOf(t);t.closest('.ln').remove();vLbl();
+ const rest=vInputs();VA=rest[Math.max(0,i-1)];chg();toast('빈 상대 줄을 지웠어요')}
 function vLbl(){vInputs().forEach((i,n)=>{const b=i.closest('.ln').querySelector('b');if(b)b.textContent=n?'Villain '+(n+1)+':':'Villain:'})}
 function vAdd(f){const r=vInputs(),l=r[r.length-1].closest('.ln'),d=l.cloneNode(true),i=d.querySelector('input');d.classList.remove('on');i.value='';l.after(d);vLbl();if(f){VA=i;i.focus()}return i}
 function vTrim(n){const r=vInputs();while(r.length>n){r.pop().closest('.ln').remove()}while(r.length<n){r.push(vAdd(false))}vLbl()}
@@ -498,6 +503,9 @@ function kpTurn(k0,items){   // 액션 칸 k0 에서 items(이미 적은 액션�
   for(let j=0;j<ord.length;j++){const p=ord[(start+j)%ord.length];if(need.includes(p)){next=p;break}}
   res={next,tc:Math.max(0,Math.min(cur-(bt[next]||0),rem[next])),cur,al:can,bt:{...bt},rem:{...rem}}}
  return res||{done:true}}
+function kpWritten(tbl){/*stpos*/   // stack 칸 키패드: Hero·Villain 줄에 적힌 포지션만 (아직 아무것도 안 적었으면 테이블 전체)
+ const o=[],pk=t=>{const p=pos((String(t).trim().split(/\s+/)[0])||'');if(p&&tbl.includes(p)&&!o.includes(p))o.push(p)};
+ pk(el('card').value);vInputs().forEach(i=>i.value.split(',').forEach(pk));return o.length?o:tbl}
 function kpState(){
  const k0=aK,e=el(k0);if(!e||k0==='memo'||!T)return null;
  const s=e.selectionStart==null?e.value.length:e.selectionStart,b=e.value.slice(0,s),atEnd=!e.value.slice(s).trim();
@@ -510,12 +518,12 @@ function kpState(){
  const wantPos=(list,msg)=>{add(list.map(kpLab));return{en,msg:list.length?msg:'✅ 더 적을 자리가 없어요 → ↵ 다음 줄'}};
  if(pm&&(!posOK(P)||!pm[2])&&!(BK.includes(k0)))return bad;   // 포지션 자리에 이상한 글자
  if(BK.includes(k0)){const need=k0==='flopb'?3:1,c=kpCards(b,need,kpUsed(k0,b));if(!c)return bad;add(c.en);return{en,msg:c.done?'✅ 다 적었어요 → ↵ 다음 줄':c.msg}}
- if(k0==='stack'){
+ if(k0==='stack'){const wp=kpWritten(tbl);
   const used=prev.map(x=>pos(x.split(/\s+/)[0])).filter(Boolean);
-  if(!pm)return wantPos(tbl.filter(p=>!used.includes(p)),prev.length?'다음 <span class="st">포지션</span>을 누르세요 (다 적었으면 ↵)':'① <span class="st">포지션</span>을 누르세요');
+  if(!pm)return wantPos(wp.filter(p=>!used.includes(p)),prev.length?'다음 <span class="st">포지션</span>을 누르세요 (다 적었으면 ↵)':'① <span class="st">포지션</span>을 누르세요');
   if(!rest){add(KD19);return{en,msg:`② <span class="st">${pm[1]}</span> 스택을 숫자(칩)로 누르세요`}}
   if(!/^\d+(\.\d*)?$/.test(rest))return bad;
-  add(KD09);en.add('00');if(!rest.includes('.'))en.add('.');add(tbl.filter(p=>p!==P&&!used.includes(p)).map(kpLab));
+  add(KD09);en.add('00');if(!rest.includes('.'))en.add('.');add(wp.filter(p=>p!==P&&!used.includes(p)).map(kpLab));
   return{en,msg:`숫자를 더 누르거나, 다음 <span class="st">포지션</span> · 다 적었으면 ↵`}}
  if(k0==='card'){
   if(!pm)return wantPos(seat,'① 내 <span class="st">포지션</span>을 누르세요');
