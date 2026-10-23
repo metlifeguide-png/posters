@@ -438,7 +438,7 @@ function blInput(e){const id=e.target.id;blMan[id]=e.target.value.trim()?1:0;e.t
   if(!blMan.bat&&$('#an').value!=='all'){$('#bat').value=bb?blAnte(bb):'';$('#bat').classList.add('au')}}
  blSave()}
 function mk(){const F=$('#form');F.innerHTML=FD.map(d=>`<div class="ln" data-k="${d.k}"><b>${d.lb}:</b><input data-k="${d.k}" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${d.ph}" ${d.k==='memo'?'type="text"':'type="text" inputmode="none"'}></div>`).join('');
- mkPub(F);F.addEventListener('focusin',e=>{const k=e.target.dataset.k;if(k==='show')VA=e.target;if(K.includes(k)){if(kLocked(k)){aK=kFirst();setTimeout(()=>el(aK).focus(),0);toast('위 칸부터 먼저 입력해 주세요');return}aK=k;mark();setKb(k!=='memo');if(k!=='memo')setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}});F.addEventListener('input',chg);F.addEventListener('click',()=>setTimeout(kpApply,0));F.addEventListener('keyup',kpApply);F.addEventListener('keydown',e=>{if(PC&&e.key==='Enter'&&e.target.dataset&&e.target.dataset.k){e.preventDefault();next()}});F.addEventListener('click',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k==='show'&&e.target.tagName==='INPUT')VA=e.target;if(k&&K.includes(k)&&k!=='memo'&&!kOn&&!kLocked(k)){aK=k;mark();setKb(true);setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}})}
+ mkPub(F);F.addEventListener('focusin',e=>{const k=e.target.dataset.k;if(k==='show')VA=e.target;if(K.includes(k)){if(kLocked(k)){aK=kFirst();setTimeout(()=>el(aK).focus(),0);toast('위 칸부터 먼저 입력해 주세요');return}aK=k;mark();setKb(k!=='memo');if(k!=='memo')setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}});F.addEventListener('input',chg);F.addEventListener('click',()=>setTimeout(kpApply,0));F.addEventListener('keyup',kpApply);F.addEventListener('keydown',bsPos);F.addEventListener('keydown',e=>{if(PC&&e.key==='Enter'&&e.target.dataset&&e.target.dataset.k){e.preventDefault();next()}});F.addEventListener('click',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k==='show'&&e.target.tagName==='INPUT')VA=e.target;if(k&&K.includes(k)&&k!=='memo'&&!kOn&&!kLocked(k)){aK=k;mark();setKb(true);setTimeout(()=>e.target.scrollIntoView({block:'nearest'}),30)}})}
 let kOn=true,TAB=0;
 const PC=matchMedia('(hover:hover) and (pointer:fine)').matches; /* PC(마우스+키보드): 플로팅 키패드도 뜨고, [키패드 끄기]를 누르면 실제 키보드로 직접 입력 (10/14) */
 let kOff=false;try{localStorage.removeItem('qr_kpoff')}catch(e){}   // 끄기는 이번 화면에서만 (다시 열면 키패드 켜짐)   // PC에서 키패드를 끈 상태 (다른 칸을 눌러도 안 뜸, 기기에 기억)
@@ -453,11 +453,13 @@ function setKb(v){kOn=v;sync()}
 let VA=null;const vInputs=()=>[...document.querySelectorAll('#form input[data-k="show"]')],el=k=>k==='show'?((VA&&VA.isConnected&&VA)||vInputs()[0]):$(`#form input[data-k="${k}"]`),getL=()=>Object.fromEntries(K.map(k=>[k,k==='show'?vInputs().map(i=>i.value.trim()).filter(Boolean).join(', '):el(k).value]));
 function setL(L){L=norm(L);K.forEach(k=>{if(k==='show')vSet(L.show);else el(k).value=L[k]||''})}
 /*vrows*/ // 👥 Villain 줄: 상대마다 한 줄 · 합쳐서 show 한 줄로 저장
-function vRmEmpty(){/*vrm*/   // 입력 안 한 빈 Villain 줄 하나 삭제 (지금 누른 줄이 비어 있으면 그 줄, 아니면 맨 아래 빈 줄) · 최소 1줄은 남김
- const r=vInputs();if(r.length<2){toast('상대 줄은 최소 1개는 있어야 해요');return}
- const em=r.filter(i=>!i.value.trim());if(!em.length){toast('비어 있는 상대 줄이 없어요');return}
- const t=em.includes(VA)?VA:em[em.length-1],i=r.indexOf(t);t.closest('.ln').remove();vLbl();
- const rest=vInputs();VA=rest[Math.max(0,i-1)];chg();toast('빈 상대 줄을 지웠어요')}
+function vRmEmpty(){/*vrm*/   // 상대 한 줄 삭제: 빈 줄 먼저(누르고 있던 빈 줄 → 맨 아래 빈 줄), 빈 줄이 없으면 누르고 있던 줄(없으면 맨 아래 줄) · 줄이 1개만 남으면 지우지 않고 내용만 비움
+ const r=vInputs();
+ if(r.length<2){if(r[0].value.trim()){r[0].value='';VA=r[0];chg();toast('Villain 줄을 비웠어요')}else toast('상대 줄은 최소 1개는 있어야 해요');return}
+ const em=r.filter(i=>!i.value.trim()),t=em.includes(VA)?VA:em.length?em[em.length-1]:r.includes(VA)?VA:r[r.length-1],i=r.indexOf(t);
+ const lb=t.closest('.ln').querySelector('b').textContent.replace(':',''),tx=t.value.trim();
+ t.closest('.ln').remove();vLbl();
+ const rest=vInputs();VA=rest[Math.max(0,i-1)];chg();toast(lb+(tx?' ('+tx+')':'')+' 줄을 지웠어요')}
 function vLbl(){vInputs().forEach((i,n)=>{const b=i.closest('.ln').querySelector('b');if(b)b.textContent=n?'Villain '+(n+1)+':':'Villain:'})}
 function vAdd(f){const r=vInputs(),l=r[r.length-1].closest('.ln'),d=l.cloneNode(true),i=d.querySelector('input');d.classList.remove('on');i.value='';l.after(d);vLbl();if(f){VA=i;i.focus()}return i}
 function vTrim(n){const r=vInputs();while(r.length>n){r.pop().closest('.ln').remove()}while(r.length<n){r.push(vAdd(false))}vLbl()}
@@ -576,14 +578,22 @@ function upd(){R=sim(getL(),T.S);kpPos();vlDraw();
  document.querySelectorAll('.ln').forEach(n=>{n.classList.toggle('dim',!!R.dim[n.dataset.k]);const lk=kLocked(n.dataset.k);n.classList.toggle('lock',lk);const i=n.querySelector('input');if(i)i.readOnly=lk});
  if(kLocked(aK)){const was=document.activeElement===el(aK);aK=kFirst();if(was)el(aK).focus()}mark()}
 function next(){const i=K.indexOf(aK);let j=i+1;while(j<K.length-1&&R.dim[K[j]])j++;aK=K[Math.min(j,K.length-1)];el(aK).focus();mark()}
+function posDel(e,s){/*posdel*/   // 커서 앞(또는 커서가 걸친) 글자가 포지션(UTG·U+2·LJ·BB…)이면 한 번에 통째로 지움 · 포지션 뒤 공백이 있든 없든, 앞의 쉼표까지 · 지웠으면 true
+ const v=e.value,bef=v.slice(0,s),aft=v.slice(s);let m=bef.match(/(,\s*)?([^\s,]+)\s+$/),a,z=s;
+ if(m){if(!pos(m[2]))return false;a=s-m[0].length}
+ else{m=bef.match(/(,\s*)?([^\s,]+)$/);if(!m)return false;const sf=aft.match(/^[^\s,]*/)[0];if(!pos(m[2]+sf))return false;a=s-m[0].length;z=s+sf.length;
+  if(!m[1]){const t=aft.slice(sf.length).match(/^\s*,\s*/);if(t)z+=t[0].length}}
+ e.setRangeText('',a,z,'end');return true}
+function bsPos(e){/*posdel*/   // PC 키보드 Backspace도 같은 규칙 (memo·글자 선택 중·Ctrl/Alt 조합·한글 입력 중은 그대로)
+ const t=e.target;if(e.key!=='Backspace'||e.isComposing||e.ctrlKey||e.metaKey||e.altKey||e.shiftKey||!t||t.tagName!=='INPUT'||!t.dataset.k||t.dataset.k==='memo'||t.readOnly)return;
+ const s=t.selectionStart;if(s==null||s!==t.selectionEnd||s<1)return;
+ if(posDel(t,s)){e.preventDefault();chg()}}
 function key(k){
  const e=el(aK);if(!e)return;if(kLocked(aK)){toast('위 칸부터 먼저 입력해 주세요');return}e.focus();const k0=aK,s=e.selectionStart==null?e.value.length:e.selectionStart,en=e.selectionEnd==null?s:e.selectionEnd,v=e.value,b=v.slice(0,s).trimEnd();
  const put=t=>e.setRangeText(t,s,en,'end'),isB=BK.includes(k0);
  if(k==='↵'){next();return}if(k==='⌫'&&k0==='show'&&!v.trim()&&vInputs().length>1){vDel();chg();return}if(k0==='show'&&PK.includes(k)&&b){vAdd(true);key(k);return}
  if(k==='⌫'){if(s!==en)e.setRangeText('',s,en,'end');
-  else if(s>0){const pm=v.slice(0,s).match(/(,\s*)?([^\s,]+)\s+$/);   // 방금 누른 포지션(예: 'BTN ', ', BB ')은 한 번에 통째로 지움 (앞의 쉼표까지)
-   if(pm&&k0!=='memo'&&pos(pm[2]))e.setRangeText('',s-pm[0].length,s,'end');
-   else e.setRangeText('',s-1,s,'end')}}
+  else if(s>0){if(k0==='memo'||!posDel(e,s))e.setRangeText('',s-1,s,'end')}}
  else if(PK.includes(k)){let p='';if(b&&k0!=='card'&&!isB)p=/,$/.test(b)?' ':', ';if(p&&b.length<s)e.setRangeText(p+k+' ',b.length,en,'end');else put(p+k+' ')}
  else if(['f','x','c','jam','?'].includes(k))put((!v.slice(0,s)||/\s$/.test(v.slice(0,s))?'':' ')+k);
  else if(isB&&/^[2-9TJQKA]$/.test(k)&&/[♠♥♦♣]$/.test(v.slice(0,s)))put(' '+k);
