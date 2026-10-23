@@ -105,7 +105,7 @@ const cards=s=>{const r=[];String(s).replace(/([2-9TJQKA])([♠♥♦♣shdc])/g
 const dc=c=>c[0]+SR[c[1]],cH=a=>a.map(c=>{const x=dc(c);return /[♥♦]/.test(x)?`<span class="red">${x}</span>`:x}).join('');
 const FD=[
  {k:'card',lb:'Hero',ph:'내 포지션 + 카드 예) BTN AsKd',hint:'내 포지션 + 내 카드. 예) BTN AsKd'},
- {k:'show',lb:'Villain',ph:'모르면 비움 · 예) BB AhKh',hint:'공개된 상대 카드 (모르면 비워 두세요). 여러 명이면 [＋ 상대 추가]. 예) BB AhKh, SB QdQc'},
+ {k:'show',lb:'Villain',ph:'모르면 비움 · 예) BB AhKh',hint:'공개된 상대 카드 (모르면 비워 두세요). 여러 명이면 [＋ 상대 추가] · 카드를 모르면 포지션만. 예) BB AhKh, SB'},
  {k:'stack',lb:'stack',ph:'포지션 스택 예) BTN 40000, BB 25000',hint:'포지션 + 스택(칩 그대로), 쉼표로 구분. 예) BTN 40000, BB 25000'},
  
  {k:'pre',lb:'pre action',ph:'액션 예) CO 2500, BTN c, BB c',hint:'프리플랍 액션: 포지션 + 칩 금액/f/c/x/jam. 예) CO 2500, BTN c, BB c'},
@@ -277,14 +277,14 @@ function sim(L,S){
   if(raw||bl)rows.push({s:NM[i],board:i>0?board.slice(i===1?0:i+1).map(dc).join(' '):'',t:acts.join(' → '),pot:settled,rq});
   if(comp){if(alive.size===1)ended='fold';else if(act.length<=1)ended='allin'}
  }
- const sh={};(L.show||'').split(',').forEach(t=>{t=t.trim();if(!t)return;const m=t.match(/^(\S+)\s+(.+)$/);let p=m&&pos(m[1]),c=m&&p?cards(m[2]):cards(t);
+ const sh={},vp=[];(L.show||'').split(',').forEach(t=>{t=t.trim();if(!t)return;if(pos(t)){vp.push(pos(t));return}const m=t.match(/^(\S+)\s+(.+)$/);let p=m&&pos(m[1]),c=m&&p?cards(m[2]):cards(t);
   if(!p){const o=[...alive].filter(x=>x!==hp);p=o.length===1?o[0]:null;if(!p){W.push('show: 포지션이 필요합니다');return}}sh[p]=c;used.push(...c)});
  if(ended==='fold')dim.show=true;
  const dup=used.filter((c,i)=>used.indexOf(c)!==i);if(dup.length)W.push('중복 카드: '+[...new Set(dup)].map(dc).join(' '));
  let vil=[...alive].filter(p=>p!==hp);
  if(!vil.length){const o=ev.map(e=>e.p).filter(p=>p!==hp);if(o.length)vil=[o[o.length-1]]}
  const es=hp&&st[hp]!=null?Math.min(st[hp],vil.length?Math.max(...vil.map(v=>st[v]||0)):st[hp]):null;
- return{u,rows,W,ev,done,dim,q:[...new Set(q)],board,hp,hc,st,sh,alive,pot:settled,unc,order,ended,vil,es,bbv,sbv,at,ante};
+ return{u,rows,W,ev,done,dim,q:[...new Set(q)],board,hp,hc,st,sh,vp,alive,pot:settled,unc,order,ended,vil,es,bbv,sbv,at,ante};
 }
 
 /*eqrv*/ // 🔍 복기 탭 전용 에퀴티 계산 (기록 화면에서는 쓰지 않음): 카드 7장 평가 + 전수 계산
@@ -323,13 +323,13 @@ function mkPub(F){
  const v=document.createElement('div');v.id='vl';v.className='vl';s.after(v);
  const a=document.createElement('button');a.type='button';a.className='btn pubadd';a.id='vadd';a.textContent='＋ 상대 추가';s.after(a);
  a.onclick=()=>{const i=el('show'),t=i.value.trim();
-  if(t&&!/,$/.test(t)){const pm=t.split(',').pop().trim().match(/^(\S+)\s+(.*)$/);if(pm&&cards(pm[2]).length>=2)i.value=t+','}
+  if(t&&!/,$/.test(t)){const ls=t.split(',').pop().trim(),pm=ls.match(/^(\S+)\s+(.*)$/);if(pos(ls)||(pm&&pos(pm[1])&&cards(pm[2]).length>=2))i.value=t+','}
   i.focus();const n=i.value.length;try{i.setSelectionRange(n,n)}catch(e){}chg()}}
 function vlDraw(){const e=$('#vl');if(!e||!R)return;const sh=Object.entries(R.sh||{}),a=[];
  if(R.hp)a.push(`Hero ${R.hp} ${R.hc.length?cH(R.hc):'<span class="mu">카드 비움</span>'}`);else a.push('<span class="mu">Hero 포지션·카드를 먼저 적어 주세요</span>');
- sh.forEach(([p,c],i)=>a.push(`Villain${i+1} ${p} ${cH(c)}`));
- if(!sh.length)a.push('<span class="mu">Villain 비움</span>');
- e.innerHTML=a.join(' · ')}
+ const vl=[...sh.map(([p,c])=>[p,c]),...(R.vp||[]).filter(p=>!(R.sh||{})[p]).map(p=>[p,[]])];vl.forEach(([p,c],i)=>a.push(`Villain${i+1} ${p} ${c.length?cH(c):'<span class="mu">카드 비움</span>'}`));
+ if(!vl.length)a.push('<span class="mu">Villain 비움</span>');
+ e.innerHTML=a.map(x=>`<div>${x}</div>`).join('')}
 function tab(n){TAB=n;const r=$('#rec'),v=$('#rev');if(!r||!v)return;r.hidden=n!==0;v.hidden=n!==1;
  $('#tb0').classList.toggle('on',n===0);$('#tb1').classList.toggle('on',n===1);if(n===1&&T)hands();sync();window.scrollTo(0,0)}
 function revToggle(b,h){const hc=b.closest('.hc');let d=hc.querySelector('.rv');
@@ -519,8 +519,8 @@ function kpState(){
   const hp=pos((el('card').value.trim().split(/\s+/)[0])||''),used=prev.map(x=>pos(x.split(/\s+/)[0])).filter(Boolean);
   const cand=seat.filter(p=>p!==hp&&!used.includes(p)&&p!==P);
   if(!pm)return wantPos(cand,prev.length?'다른 상대 카드도 알면 <span class="st">포지션</span> · 모르면 비우고 ↵':'① 카드를 아는 상대 <span class="st">포지션</span> (모르면 비우고 ↵)');
-  const c=kpCards(rest,2,kpUsed(k0,b));if(!c)return bad;add(c.en);if(c.done)add(cand.map(kpLab));
-  return{en,msg:c.done?'✅ 다른 상대 카드도 알면 <span class="st">포지션</span> · 아니면 ↵':`② ${pm[1]} 카드: `+c.msg}}
+  const c=kpCards(rest,2,kpUsed(k0,b));if(!c)return bad;add(c.en);if(c.done||!rest)add(cand.map(kpLab));
+  return{en,msg:c.done?'✅ 다른 상대 카드도 알면 <span class="st">포지션</span> · 아니면 ↵':`② ${pm[1]} 카드: `+(rest?'':'모르면 다음 <span class="st">포지션</span>/↵ · ')+c.msg}}
  if(KACT.includes(k0)){   /*kpturn*/ // 🔁 차례대로: 프리 UTG→BB · 플랍부터 SB→BTN (stack 칸에 적은 사람만 · 폴드·올인한 사람 빼고)
   const lastDone=pm&&rest&&/^(\d+(\.\d*)?|f|x|c|jam)\s*\??$/i.test(rest);
   const TN=kpTurn(k0,lastDone?[...prev,last]:prev);
@@ -570,7 +570,7 @@ function key(k){
   else if(s>0){const pm=v.slice(0,s).match(/(,\s*)?([^\s,]+)\s+$/);   // 방금 누른 포지션(예: 'BTN ', ', BB ')은 한 번에 통째로 지움 (앞의 쉼표까지)
    if(pm&&k0!=='memo'&&pos(pm[2]))e.setRangeText('',s-pm[0].length,s,'end');
    else e.setRangeText('',s-1,s,'end')}}
- else if(PK.includes(k)){let p='';if(b&&k0!=='card'&&!isB)p=/,$/.test(b)?' ':', ';put(p+k+' ')}
+ else if(PK.includes(k)){let p='';if(b&&k0!=='card'&&!isB)p=/,$/.test(b)?' ':', ';if(p&&b.length<s)e.setRangeText(p+k+' ',b.length,en,'end');else put(p+k+' ')}
  else if(['f','x','c','jam','?'].includes(k))put((!v.slice(0,s)||/\s$/.test(v.slice(0,s))?'':' ')+k);
  else if(isB&&/^[2-9TJQKA]$/.test(k)&&/[♠♥♦♣]$/.test(v.slice(0,s)))put(' '+k);
  else put(k);
