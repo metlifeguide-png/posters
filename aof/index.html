@@ -62,11 +62,11 @@ input,select{border:1px solid var(--line);background:var(--surface2);color:var(-
 .advice ul{margin:4px 0 0;padding-left:18px}
 details.more{margin-top:12px;font-size:13px}
 details.more summary{cursor:pointer;color:var(--accent);font-weight:600}
-.seats{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px;margin-top:8px}
-.seat{border:1px solid var(--line);border-radius:12px;padding:8px;background:var(--surface2)}
-.seat .pn{font-size:12px;font-weight:700;margin-bottom:5px}
+.seats{display:grid;grid-template-columns:repeat(auto-fill,minmax(58px,1fr));gap:4px;margin-top:6px}
+.seat{border:1px solid var(--line);border-radius:8px;padding:3px 4px;background:var(--surface2)}
+.seat .pn{font-size:10px;font-weight:700;margin-bottom:2px;white-space:nowrap}
 .seat .num{background:var(--surface)}
-.seat input{font-size:15px;padding:7px 4px 7px 8px}
+.seat input{font-size:13px;padding:4px 2px 4px 4px}
 .hint{font-size:12px;color:var(--muted);line-height:1.6}
 .summary{font-size:14px;line-height:1.65;margin:4px 0 12px}
 .summary .note{color:var(--muted);font-size:12px}
@@ -285,6 +285,13 @@ body.isetc .noetc{display:none!important}
 </div>
 
 <!--proalign--><div class="panel pro-only">
+<!--칸정리-->
+  <div class="noetc">
+    <h3>블라인드 레벨 <span id="lvHint" style="display:none"></span></h3>
+    <select id="level"></select>
+    <h3>게임 시작 시각 <span class="hint" id="startHint" style="display:none"></span></h3>
+    <div class="chips" id="startChips"></div>
+  </div>
   <div class="grid2">
     <label class="f" style="grid-column:1/-1">총 바이인 수<div class="num"><input id="entries" type="number" inputmode="numeric" min="2" step="1"></div></label>
     <label class="f">내 스택 (BB)<div class="num"><input id="heroStack" type="number" inputmode="decimal" min="0.5" step="0.1"></div></label>
@@ -295,12 +302,6 @@ body.isetc .noetc{display:none!important}
   </div>
   <h3>포지션</h3>
   <div class="chips" id="heroPos"></div>
-  <div class="noetc">
-    <h3>블라인드 레벨 <span id="lvHint" style="display:none"></span></h3>
-    <select id="level"></select>
-    <h3>게임 시작 시각 <span class="hint" id="startHint" style="display:none"></span></h3>
-    <div class="chips" id="startChips"></div>
-  </div>
   <div class="info" id="info" style="display:none"></div>
 </div>
 
@@ -311,9 +312,8 @@ body.isetc .noetc{display:none!important}
   <div class="row" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
     <button type="button" class="chip hero on" id="nextHand">▶ 다음 핸드 (포지션 한 칸 이동)</button>
     <button type="button" class="chip" id="undoHand">↶ 되돌리기</button>
-    <button type="button" class="chip" id="clearTbl">스택·성향 모두 지우기</button>
+    <button type="button" class="chip" id="clearTbl">스택 모두 지우기</button>
   </div>
-  <div class="hint" style="margin-top:6px">자리마다 <b>보통/타이트/루즈</b>를 누르면 그 사람 성향에 맞춰 내 액션을 다시 계산해요. <b>타이트</b> = 먼저 올인하는 범위가 계산값의 60% (콜 범위는 그대로), <b>루즈</b> = 올인·콜 범위 모두 1.6배.</div>
   <div class="hint" id="nextHint" style="display:none">다음 핸드: 모두 한 칸씩 이동하고, 새 판 앤티 0.1BB·새 SB 0.5BB·새 BB 1BB를 빼요 (게임 화면에 보이는 스택과 같게). 판을 이긴 사람은 스택을 고쳐주세요.</div>
   <div style="height:12px"></div>
   <div class="sizebar" id="proSizeBar"></div><div class="qa">
