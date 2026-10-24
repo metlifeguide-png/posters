@@ -161,6 +161,14 @@ label.f:has(#avgIn){display:none!important}
 #ezVar .ez-row3 .ez-ctl .k{margin:0;flex:0 0 84px;font-size:16px;font-weight:800;color:var(--text);line-height:1.25}
 #ezVar .ez-row3 .ez-ctl .row2{flex:1 1 auto;min-width:0}
 #ezVar .ez-row3 .ez-ctl:nth-child(3){order:-1}
+/*ezalign*/#ezAvgBox,#ezFinHint{display:none!important}
+#easy .ez-ctl .row2>.bt{flex:0 0 44px;width:44px;height:44px;font-size:24px}
+#easy .ez-ctl .row2>input{height:44px;font-size:22px!important}
+#ezVar .ez-row3{gap:6px}
+#ezVar .ez-row3 .ez-ctl .k{flex:0 0 56px;font-size:15px;white-space:nowrap}
+#ezEntD .ez-ctl{display:flex;align-items:center;gap:10px;background:none;padding:0}
+#ezEntD .ez-ctl .k{flex:0 0 56px;margin:0;font-size:15px;font-weight:800;color:var(--text);white-space:nowrap}
+#ezEntD .ez-ctl .row2{flex:1 1 auto;min-width:0}
 #ezVar .chips{gap:8px}
 #ezVar .posbox .pl{font-size:14px;font-weight:800}
 
@@ -214,19 +222,19 @@ body.isetc .noetc{display:none!important}
     <div class="ez-ctl" style="margin-top:6px"><div class="k"><b>총 바이인 수</b></div><div class="row2"><input id="ezEntries" type="number" inputmode="numeric" min="2" style="font-size:20px;font-weight:800;text-align:center"></div></div>
     <div class="ez-ctl" id="ezFinBox" style="margin-top:6px"><div class="k"><b>마감 예상 바이인</b></div><div class="row2"><input id="ezFin" type="number" inputmode="numeric" min="2" style="font-size:18px;font-weight:800;text-align:center"></div><div class="k" id="ezFinHint" style="margin:4px 0 0"></div></div>
   </details>
-  <h3>계속 바뀌는 3가지 <span class="hint">남은 인원 · 내 등수 · 내 스택</span></h3>
+  <h3>계속 바뀌는 수치</h3>
   <div class="ez-row3">
-    <div class="ez-ctl"><div class="k">라이브 인원</div><div class="row2"><button type="button" class="bt red" data-ez="bust">−</button><input id="ezPlayersIn" type="number" inputmode="numeric" min="2"><button type="button" class="bt" data-ez="p+">+</button></div></div>
+    <div class="ez-ctl"><div class="k">라이브</div><div class="row2"><button type="button" class="bt red" data-ez="bust">−</button><input id="ezPlayersIn" type="number" inputmode="numeric" min="2"><button type="button" class="bt" data-ez="p+">+</button></div></div>
     <div class="ez-ctl"><div class="k">내 등수</div><div class="row2"><input id="ezRank" type="number" inputmode="numeric" min="1" placeholder="예: 20"></div></div>
-    <div class="ez-ctl"><div class="k">내 스택 (BB)</div><div class="row2"><input id="ezHero" type="number" inputmode="decimal" step="0.1" min="0.1"></div></div>
+    <div class="ez-ctl"><div class="k">내 스택</div><div class="row2"><input id="ezHero" type="number" inputmode="decimal" step="0.1" min="0.1"></div></div>
   </div>
   <div class="k" id="ezRankHint" style="margin:4px 2px 0;font-size:12px;color:var(--muted)"></div>
   <div class="k" id="ezHeroChips" style="margin:2px 2px 0;font-size:12px;color:var(--muted)"></div>
   <div class="ez-ctl" id="ezAvgBox" style="margin-top:6px"><div class="k"><b>평균 스택 BB</b> (알면 입력 · 비우면 자동 계산)</div><div class="row2"><input id="ezAvg" type="number" inputmode="decimal" step="0.1" min="1" placeholder="자동"></div></div>
   <div class="f2t" id="ezSafe" style="margin-top:8px">안정권 계산 중…</div>
-  <h3>테이블 인원 <span class="hint">내 테이블에 앉은 사람 수 (나 포함)</span></h3>
+  <h3>테이블 인원</h3>
   <div class="chips" id="ezTsize"></div>
-  <h3>포지션 <span class="hint">위 = 나 · 아래 = 앞에서 액션한 빌런</span></h3>
+  <h3>포지션</h3>
   <div class="posbox">
     <div class="prow h"><span class="pl">Hero</span><div class="chips" id="ezPos"></div></div>
     <div class="prow v"><span class="pl">빌런</span><div class="chips" id="ezVil"></div></div>
@@ -276,24 +284,24 @@ body.isetc .noetc{display:none!important}
   <div class="seg g2" id="modes"></div></div>
 </div>
 
-<div class="panel pro-only">
-  <h2>③ 내 상황</h2>
+<!--proalign--><div class="panel pro-only">
   <div class="grid2">
-    <label class="f noetc"><b style="color:var(--text)">현재 블라인드 레벨</b><span id="lvHint">시작 시각 기준 자동</span><select id="level"></select></label>
-    <label class="f"><b style="color:var(--text)">내 스택 (BB)</b>내 칩 ÷ 빅블라인드<div class="num"><input id="heroStack" type="number" inputmode="decimal" min="0.5" step="0.1"></div></label>
-  </div>
-  <div class="noetc"><h3>게임 시작 시각 <span class="hint" id="startHint"></span></h3>
-  <div class="chips" id="startChips"></div></div>
-  <h3>내 포지션</h3>
-  <div class="chips" id="heroPos"></div>
-  <div class="grid2" style="margin-top:12px">
-    <label class="f">총 바이인 수(엔트리)<div class="num"><input id="entries" type="number" inputmode="numeric" min="2" step="1"></div></label>
-    <label class="f">평균 스택 BB (알면 입력 · 비우면 자동)<div class="num"><input id="avgIn" type="number" inputmode="decimal" min="1" step="0.1" placeholder="자동"></div></label>
-    <label class="f">현재 인원(라이브)<div class="num"><input id="players" type="number" inputmode="numeric" min="2" step="1"></div></label>
-    <label class="f">내 칩 등수 (로비 순위, 모르면 비움)<div class="num"><input id="proRank" type="number" inputmode="numeric" min="1" step="1" placeholder="예: 20"></div><span class="hint" id="proRankHint"></span></label>
+    <label class="f" style="grid-column:1/-1">총 바이인 수<div class="num"><input id="entries" type="number" inputmode="numeric" min="2" step="1"></div></label>
+    <label class="f">내 스택 (BB)<div class="num"><input id="heroStack" type="number" inputmode="decimal" min="0.5" step="0.1"></div></label>
+    <label class="f">라이브 인원<div class="num"><input id="players" type="number" inputmode="numeric" min="2" step="1"></div></label>
+    <label class="f">내 등수<div class="num"><input id="proRank" type="number" inputmode="numeric" min="1" step="1" placeholder="예: 20"></div><span class="hint" id="proRankHint" style="display:none"></span></label>
     <label class="f">테이블 인원<select id="tsize"><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option></select></label>
+    <label class="f" style="display:none"><input id="avgIn" type="number" inputmode="decimal" min="1" step="0.1" placeholder="자동"></label>
   </div>
-  <div class="info" id="info"></div>
+  <h3>포지션</h3>
+  <div class="chips" id="heroPos"></div>
+  <div class="noetc">
+    <h3>블라인드 레벨 <span id="lvHint" style="display:none"></span></h3>
+    <select id="level"></select>
+    <h3>게임 시작 시각 <span class="hint" id="startHint" style="display:none"></span></h3>
+    <div class="chips" id="startChips"></div>
+  </div>
+  <div class="info" id="info" style="display:none"></div>
 </div>
 
 <div class="panel pro-only" id="quick">
@@ -727,18 +735,18 @@ function etcForm(easy){ if(st.game!=="etc") return ""; const c=EC();
   const stageHint={open:"레지 중: 아직 재입장·인원 증가 구간이라 칩 = 가치예요 (칩EV)",
     closed:c.kind==="sat"?"레지 마감: 티켓 수가 정해져서 ICM으로 계산해요":c.type==="multi"?"레지 마감: Day2 진출이 목표예요 (진출자는 모두 같은 가치로 ICM 계산)":"레지 마감: ITM을 향해 ICM으로 계산해요",
     pre:"ITM 전: 버블 구간이에요 (못 들면 0, 들면 상금표대로 ICM)",post:"ITM 후: 이미 상금이 확정돼서 등수별 페이점프를 ICM으로 계산해요"}[c.stage];
-  return `<div class="info" style="margin-top:10px"><b>그외 게임들</b> · 선택형 원데이·멀티데이·새틀 어떤 대회든 구조를 넣으면 그 구간에 맞춰 차트가 계산돼요<br><b style="color:var(--accent)" class="etc-stage">${etcStage()}</b></div>
+  return `<div class="info" style="margin-top:10px"><b style="color:var(--accent)" class="etc-stage">${etcStage()}</b></div>
    <h3>대회 종류</h3>${seg("type",[["one","선택형 원데이 게임"],["multi","멀티데이 게임"],["sat","새틀"]])}
-   <h3>지금 단계</h3>${seg("stage",c.kind==="sat"?[["open","레지 중"],["closed","레지 마감"]]:[["open","레지 중"],["closed","레지 마감"],["pre","ITM 전"],["post","ITM 후"]])}<div class="hint">${stageHint}</div>
+   <h3>지금 단계</h3>${seg("stage",c.kind==="sat"?[["open","레지 중"],["closed","레지 마감"]]:[["open","레지 중"],["closed","레지 마감"],["pre","ITM 전"],["post","ITM 후"]])}
    <h3>블라인드</h3><div class="grid2">${inp("bb","BB (빅블라인드)","number",'min="1"')}</div>
    ${seg("anteType",[["big","빅앤티 (BB가 냄)"],["each","1인당 앤티"],["none","앤티 없음"]])}
-   ${c.anteType!=="none"?`<div class="grid2">${inp("ante",c.anteType==="big"?"빅앤티 금액 (보통 BB와 같음)":"1인당 앤티 금액","number",'min="0"')}</div>`:""}
-   ${c.kind==="sat"?"":btyForm(c,seg,inp)}<h3>구조</h3>${/*etcadv*//*tsizedel*/""}<details class="more" id="etcAdv" ${st.etcAdv?"open":""} ontoggle="st.etcAdv=this.open" style="margin:6px 0"><summary>고급 (SB · 시작 칩 · 대회 이름)</summary><div class="grid2">${inp("sb","SB (표시용)","number",'min="1"')}${inp("start","시작 칩 (평균 스택 BB를 직접 넣으면 필요 없어요)","number",'min="1"')}${inp("name","대회 이름 (선택)","text",'placeholder="그외 게임들"')}</div></details>
+   ${c.anteType!=="none"?`<div class="grid2">${inp("ante",c.anteType==="big"?"빅앤티 금액":"1인당 앤티 금액","number",'min="0"')}</div>`:""}
+   ${c.kind==="sat"?"":btyForm(c,seg,inp)}<h3>구조</h3>${/*etcadv*//*tsizedel*//*etcclean*/""}<details class="more" id="etcAdv" ${st.etcAdv?"open":""} ontoggle="st.etcAdv=this.open" style="margin:6px 0"><summary>고급 (SB · 시작 칩 · 대회 이름)</summary><div class="grid2">${inp("sb","SB (표시용)","number",'min="1"')}${inp("start","시작 칩","number",'min="1"')}${inp("name","대회 이름 (선택)","text",'placeholder="그외 게임들"')}</div></details>
    ${c.type==="multi"?`<h3>ITM · Day2 비율</h3><div class="grid2">${inp("itmPct","ITM 비율 (%)","number",'min="1" max="60" step="0.5"')}${inp("day2Pct","Day2 비율 (%)","number",'min="1" max="90" step="0.5"')}</div><div class="hint etc-itm">${etcItmHint()}</div>`:c.kind==="mtt"?`<h3>ITM 인원</h3>${seg("itmMode",[["pct","전체 엔트리 × 비율(%)"],["num","인원 직접 입력"]])}<div class="grid2">${c.itmMode==="pct"?inp("itmPct","ITM 비율 (%)","number",'min="1" max="60" step="0.5"'):inp("itm","ITM 인원 (몇 위까지 상금)","number",'min="1"')}${inp("pool","총 상금 (만원)","number",'min="1"')}</div>${c.itmMode==="pct"?`<div class="hint etc-itm">전체 엔트리 ${st.entries}명 × ${c.itmPct}% = <b>ITM ${c.itm}명</b> · 지금 ${st.players}명 생존 (ITM까지 ${Math.max(0,st.players-c.itm)}명)</div>`:""}
-     ${inp("payList","등수별 상금 직접 입력 (만원, 쉼표로 · 비우면 자동 분배)","text",'placeholder="예: 300,180,120,90,70,60,50,45,40"')}
+     ${inp("payList","등수별 상금 (만원, 쉼표로)","text",'placeholder="예: 300,180,120,90,70,60,50,45,40"')}
      <div class="hint etc-pay">상금표: ${pay.slice(0,9).map((x,i)=>`${i+1}위 ${x}`).join(" · ")}${pay.length>9?` … ${pay.length}위 ${pay[pay.length-1]}`:""}</div>`
     :`<div class="grid2">${inp("seats","티켓 받는 인원","number",'min="1"')}${inp("val","티켓 1장 가치 (만원)","number",'min="0" step="0.1"')}</div>`}
-   <div class="hint" style="margin-top:6px">${easy?"전체 엔트리(총 바이인)는 바로 아래, 생존 인원·내 스택은 '계속 바뀌는 3가지'에 넣어요":"전체 엔트리·현재 인원·내 스택은 아래 ③ 내 상황에 넣어요"} · 평균 스택 <span class="etc-avg">${avg.toLocaleString()}칩 (${(avg/Math.max(1,+c.bb)).toFixed(1)}BB)</span></div>`; }
+   <div class="hint" style="margin-top:6px">평균 스택 <span class="etc-avg">${avg.toLocaleString()}칩 (${(avg/Math.max(1,+c.bb)).toFixed(1)}BB)</span></div>`; }
 // 💡 게임별 구조 적용 (시작 칩 · 앤티 · 레벨 시간 · 레지 마감 레벨). 없는 값은 기존 게임 기본값
 function applyGame(){ const g=GAMES[st.game]||GAMES.hg; START=g.start||10000; ANTE=(g.ante!=null?g.ante:0.1); LEVEL_MIN=g.levelMin||7; REG_LEVEL=(g.regLevel!=null?g.regLevel:15); }
 const MODES={chip:{name:"레지 마감 전",desc:"칩EV · 칩 = 가치"},icm:{name:"레지 마감 후",desc:"ICM EV · 티켓 확보"}};
@@ -1331,10 +1339,10 @@ function snapEqHTML(){
    const q=sqEq([hc].concat(vill.map(v=>v.c)),bd); eqH=q.eq[0];
    t+='<b>내 승률 '+pc(eqH)+'</b>'+(q.exact?'':' <span class="note">(근사)</span>');
    vill.forEach((v,k)=>{ t+='<br>'+(v.s.name||'상대')+' '+v.s.cards.join(' ')+' → '+pc(q.eq[k+1]); });
-   t+='<br><span class="note">공개된 카드끼리 정확 계산 (무승부는 나눔)</span>';
+   
   } else {
    eqH=sqVsRand(hc,bd);
-   t+='<b>랜덤 핸드 상대 승률 '+pc(eqH)+'</b> <span class="note">(상대 카드가 안 보여 임의의 2장과 비교 · 근사)</span>';
+   t+='<b>랜덤 핸드 상대 승률 '+pc(eqH)+'</b> <span class="note">근사</span>';
   }
   if(r.turn==='my_turn'&&BBv>0){
    let a=null; seats.forEach((s,i)=>{ if(i>0&&s&&!s.out&&(s.act==='allin'||s.act==='raise'||toBB(s.bet||0)>1.0001)){ if(!a||toBB(s.bet||0)>toBB(a.bet||0)) a=s; } });
@@ -1345,8 +1353,8 @@ function snapEqHTML(){
      const need=call/(pot+call), ev=eqH*(pot+call)-call;
      t+='<hr style="border:0;border-top:1px solid rgba(47,125,91,.3);margin:8px 0"><b>📞 올인 콜 수익</b> <span class="note">상대 '+(a.name||'')+' 올인 '+r1(ab)+'BB · 내 스택 '+r1(htot)+'BB</span><br>콜 '+r1(call)+'BB로 팟 '+r1(pot+call)+'BB를 다툼 → <b>필요 승률 '+pc(need)+'</b><br>'
       +(known?'내 승률 '+pc(eqH):'랜덤 상대 승률 '+pc(eqH))+' → 칩 기대값 <b style="color:'+(ev>=0?'#1a7a45':'#c33')+'">'+(ev>=0?'+':'')+r1(ev)+'BB</b> '+(ev>=0?'(콜 이득)':'(콜 손해)')
-      +(known?'':'<br><span class="note">상대 올인 범위는 랜덤보다 강해서 실제 승률은 더 낮아요. 아래 ④ 차트에서 내 핸드가 콜 범위인지 같이 보세요</span>')
-      +'<br><span class="note">칩 EV 기준 (ICM·바운티 제외)</span>';
+      
+      ;
     }
    }
   }
@@ -1356,7 +1364,7 @@ function snapEqHTML(){
 function drawSnapTab(){
   const el=$("snapTab"); if(!el||st.ui!=="snap") return;
   const P=POSN(), n=st.tsize, pp=x=>(x*100).toFixed(1)+"%";
-  if(!st.snapMode){ el.innerHTML='<b>📸 스샷 차트</b><br>위 📸 버튼으로 스샷을 올리거나, 사진을 이 화면에 끌어다 놓으세요. 올리면 모든 상황의 차트가 한 화면에 나와요.'; return; }
+  if(!st.snapMode){ el.innerHTML='<b>📸 스샷 차트</b><br>위 📸 버튼으로 스샷을 올려 주세요'; return; }
   const busy=!!($("quick")&&$("quick").classList.contains("busy")), mf=moneyFirst(110);
   const cells=layers=>{ let h=""; for(let k=0;k<169;k++){ let bars="",tot=0; const off=mf&&moneyFirst(k);
       for(const [arr,col] of layers){ const f=off?0:Math.max(0,Math.min(1,arr[k])); tot+=f; bars+='<i style="height:'+(f*100).toFixed(0)+'%;background:'+col+'"></i>'; }
@@ -1365,7 +1373,7 @@ function drawSnapTab(){
   const sw=(t,c)=>'<span style="display:inline-flex;align-items:center;gap:4px;margin-right:10px"><i style="display:inline-block;width:11px;height:11px;border-radius:3px;background:'+c+'"></i>'+t+'</span>';
   const sec=(title,sum,layers,leg)=>'<div style="margin:14px 0 20px"><div style="font-weight:800;font-size:15px;margin-bottom:4px">'+title+'</div>'+(sum?'<div style="font-size:13px;margin-bottom:6px;line-height:1.5">'+sum+'</div>':'')+'<div class="chart">'+cells(layers)+'</div><div style="font-size:12px;margin-top:4px">'+leg.map(x=>sw(x[0],x[1])).join("")+sw("폴드","var(--cell)")+'</div></div>';
   const wait=t=>'<div style="margin:14px 0 20px"><b>'+t+'</b><br><span class="note">'+(busy?"계산 중…":"이 자리에서는 해당 없음")+'</span></div>';
-  let h='<button type="button" onclick="snapClear()" style="float:right;margin:0 0 6px 8px;padding:8px 14px;border-radius:10px;border:1px solid #c33;background:#fff;color:#c33;font-weight:700;font-size:14px;cursor:pointer">🗑 지우기</button><div style="font-weight:800;font-size:16px">📸 스샷 차트 · '+P[st.hero]+' · 내 '+st.heroStack+'BB · 평균 '+r1(avgBB())+'BB</div><div class="note" style="margin:2px 0"><label>총 엔트리 <input type="number" min="2" step="1" value="'+st.entries+'" style="width:72px;padding:2px 4px" onchange="snapEnt(this.value)"> 명 · 남은 '+st.players+'명 (스샷엔 없는 값이라 직접 맞춰 주세요)</label></div><div style="margin:4px 0;font-size:13px">게임 '+snapGameBtns()+' <span class="note">새틀 게임이 아니면 "그외 게임들"을 눌러 직접 선택해 주세요</span></div>'+snapEtcRow()+'<div style="margin:4px 0;font-size:13px">계산 기준 '+snapModeBtns()+' <span class="note">'+(st.mode==="icm"?"엔트리·남은 인원이 차트에 반영돼요":"칩EV는 엔트리·인원이 차트에 안 들어가요")+'</span></div><div style="margin:4px 0;font-size:13px">보기 '+snapViewBtns()+'</div><div class="note" style="margin-top:2px"><b style="color:var(--push)">⏱ 시작 시각 없음</b> (게임 시간 반영 안 함 · 스샷 블라인드 기준)<span style="display:none">/*snaptime*/</span><br>'+lvLabel()+' · 블라인드 '+st.bb+' · '+n+'명 테이블'+(mf?' · 티켓 우선 구간: 최상위 패만 표시':'')+'</div>';
+  let h='<button type="button" onclick="snapClear()" style="float:right;margin:0 0 6px 8px;padding:8px 14px;border-radius:10px;border:1px solid #c33;background:#fff;color:#c33;font-weight:700;font-size:14px;cursor:pointer">🗑 지우기</button><div style="font-weight:800;font-size:16px">📸 스샷 차트 · '+P[st.hero]+' · 내 '+st.heroStack+'BB · 평균 '+r1(avgBB())+'BB</div><div class="note" style="margin:2px 0"><label>총 엔트리 <input type="number" min="2" step="1" value="'+st.entries+'" style="width:72px;padding:2px 4px" onchange="snapEnt(this.value)"> 명 · 남은 '+st.players+'명</label></div><div style="margin:4px 0;font-size:13px">게임 '+snapGameBtns()+'</div>'+snapEtcRow()+'<div style="margin:4px 0;font-size:13px">계산 기준 '+snapModeBtns()+'</div><div style="margin:4px 0;font-size:13px">보기 '+snapViewBtns()+'</div><div class="note" style="margin-top:2px"><span style="display:none">/*snaptime*//*snapclean*/</span>'+lvLabel()+' · 블라인드 '+st.bb+' · '+n+'명 테이블'+(mf?' · 티켓 우선 구간: 최상위 패만 표시':'')+'</div>';
   h+=snapEqHTML();h+='<div class="sgrid'+(st.snapBig?' big':'')+'">'; const qa=window.QA, qb=window.QB, qc=(st.hero>=1?window.QC:null);
   const T1='① 앞 모두 폴드 → '+P[st.hero]+' 액션';
   if(st.hero===n-1) h+='<div class="note" style="margin:14px 0">BB는 앞이 다 폴드하면 이긴 판이라 ①②는 없어요.</div>';
@@ -1589,13 +1597,13 @@ function paintEz(){
     (st.game==="etc"?`<span class="hint" style="align-self:center">${etcStage()} · <a href="#" onclick="event.preventDefault();const d=document.getElementById('ezEtcD');if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'});}" style="color:var(--accent)">구조 입력·바꾸기</a></span>`:`<span class="hint" style="align-self:center">${startOf()} 게임 · <a href="#" data-ui="pro" style="color:var(--accent)">시간·설정 바꾸기</a></span>`);
   const pj=isPreReg()?projectClose():null;
   const lines=pj
-    ? [`레지 마감 전이라 인원이 계속 늘어요 · 마감 예상 ${pj.fin}바이인 / ${pj.live}명 → ${g.bubbles.map(b=>`${b.label}까지 약 ${Math.max(0,pj.live-b.n)}명`).join(" · ")}`]
+    ? [`마감 예상 ${pj.fin}바이인 / ${pj.live}명 → ${g.bubbles.map(b=>`${b.label}까지 약 ${Math.max(0,pj.live-b.n)}명`).join(" · ")}`]
     : g.bubbles.map(b=>st.players>b.n?`${b.label}까지 <b>${st.players-b.n}명</b>`:`${b.label} ✅`);
   const av=avgBB(), bad=av<3||av>300;
   const clk = st.game==="etc" ? etcStage() : st.level ? `(레벨 직접 고름)` : (hasStart() ? `<span id="ezClk">${clkText()}</span>`
-            : `<b style="color:var(--push)">⏰ 게임 시작 시각을 골라주세요 — 블라인드·BB가 시계에 맞춰 자동으로 바뀌어요</b>`);
+            : `<b style="color:var(--push)">⏰ 게임 시작 시각을 골라주세요</b>`);
   $("ezStatus").innerHTML=`${lvLabel()} · 평균 ${r1(av)}BB · ${st.mode==="icm"?"ICM(마감 후)":"칩EV(마감 전)"}<br>${clk}<br>${lines.join(" · ")}`+
-    (bad?`<br><b style="color:var(--push)">⚠️ 평균 ${r1(av)}BB는 이상해요. 총 바이인 수·남은 인원을 먼저 맞춰주세요.</b>`:"");
+    "";
   try{ezPrizeBox();}catch(e){} if(document.activeElement!==$("ezPlayersIn")) $("ezPlayersIn").value=st.players;
   for(const id of ["ezAvg","avgIn"]){ const a=$(id); if(a&&document.activeElement!==a) a.value=st.avgOv||""; }
   document.querySelectorAll("[data-tstyle]").forEach(b=>b.className="chip"+(b.dataset.tstyle===st.tstyle?" on":""));
@@ -1607,7 +1615,7 @@ function paintEz(){
     $("ezStart").parentElement.style.border="";
     $("ezLevel").innerHTML=levelOptions(g,false); $("ezLevel").value=levelValue(); }
   if(document.activeElement!==$("ezEntries")) $("ezEntries").value=st.entries;
-  { const pre=isPreReg(); $("ezEntSum").innerHTML=`총 바이인 ${st.entries}${pre?" · 마감 예상 "+finEstimate().v:" · 마감됨"} <span class="hint">(눌러서 수정)</span>`;
+  { const pre=isPreReg(); $("ezEntSum").innerHTML=`총 바이인 ${st.entries}${pre?" · 마감 예상 "+finEstimate().v:" · 마감됨"}`;
     if(window._entPre!==pre){ window._entPre=pre; $("ezEntD").open=pre; } }
   $("ezFinBox").style.display=isPreReg()?"":"none";
   if(document.activeElement!==$("ezFin")) $("ezFin").value=((st.finEnt||{})[st.game])||"";
