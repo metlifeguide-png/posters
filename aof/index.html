@@ -135,6 +135,35 @@ body:not(.ezall) #ezAll{display:none}
 /*ezlean*/#ezRankHint,#ezHeroChips,#ezSafe{display:none!important}
 /*ezbtm*/body.easy.ezall .bt[data-ez="next"],body.easy.ezall .bt[data-ez="chart"]{display:none!important}
 /*ezhint*/#ezOpenHint,#ezQvHint{display:none!important}
+/*ezlayout*/
+#easy input[type=number]::-webkit-outer-spin-button,#easy input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+#easy input[type=number]{-moz-appearance:textfield;appearance:textfield}
+body.easy header .sub{display:none}
+body.easy header{padding:12px 0 2px}
+#easy #ezPrizeBox,#easy #ezAvgBox,#easy #ezFinHint,#easy #ezF2T,#easy #ezF2T+details.more,#ezAll .sgrid>.note{display:none!important}
+#easy h3 .hint,#easy summary .hint{display:none}
+label.f:has(#avgIn){display:none!important}
+#easy .ez-status{font-size:15px;line-height:1.6;padding:10px 12px}
+#hgsBind{margin:8px 0;padding:10px 14px;border-radius:12px;background:var(--accent-soft);color:var(--accent);font-size:22px;font-weight:700}
+#hgsBind b{font-size:30px;font-weight:900}
+#easy .chip{font-size:16px;padding:10px 14px}
+#easy details.more>summary{font-size:15px;font-weight:700}
+#easy .sizebar .szb{font-size:16px;padding:12px 6px}
+#easy .ez-ctl .row2{display:flex;align-items:center;gap:8px}
+#easy .ez-ctl .row2>.bt{flex:0 0 52px;width:52px;height:52px;padding:0;font-size:26px;font-weight:800;line-height:1;background:var(--surface);color:var(--text);border:1px solid var(--line);border-radius:12px}
+#easy .ez-ctl .row2>.bt.red{background:var(--surface);color:var(--text);border-color:var(--line)}
+#easy .ez-ctl .row2>input{flex:1 1 auto;min-width:0;height:52px;font-size:24px!important;font-weight:800!important;text-align:center!important;padding:0 4px}
+#ezVar{margin:12px 0 4px;padding:12px;border:2px solid var(--accent);border-radius:16px;background:var(--surface)}
+#ezVar>h3:first-child{display:none}
+#ezVar h3{font-size:16px;font-weight:800;color:var(--text);margin:14px 0 8px}
+#ezVar .ez-row3{display:flex;flex-direction:column;gap:10px}
+#ezVar .ez-row3 .ez-ctl{display:flex;align-items:center;gap:10px;border:0!important;padding:0}
+#ezVar .ez-row3 .ez-ctl .k{margin:0;flex:0 0 84px;font-size:16px;font-weight:800;color:var(--text);line-height:1.25}
+#ezVar .ez-row3 .ez-ctl .row2{flex:1 1 auto;min-width:0}
+#ezVar .ez-row3 .ez-ctl:nth-child(3){order:-1}
+#ezVar .chips{gap:8px}
+#ezVar .posbox .pl{font-size:14px;font-weight:800}
+
 #ezAll .sgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 10px;align-items:start} #ezAll .sgrid>div{margin:0!important;min-width:0} #ezAll .sgrid>.note{grid-column:1/-1} #ezAll .sgrid .chart{gap:1px} #ezAll .sgrid .c{border-radius:2px;font-size:clamp(5px,1.1vw,9px)} #ezAll .sgrid .c em{letter-spacing:-.5px} #ezAll .sgrid>div>div:first-child{font-size:12px!important;margin-bottom:2px!important} #ezAll .sgrid>div>div[style*="font-size:13px"]{font-size:11px!important;line-height:1.35!important} @media(max-width:520px){#ezAll .sgrid{gap:6px 6px}} #ezAll .sgrid.big{display:block} #ezAll .sgrid.big>div{margin:14px 0 20px!important} #ezAll .sgrid.big .chart{gap:2px} #ezAll .sgrid.big .c{border-radius:4px;font-size:clamp(8px,2.4vw,12px)} #ezAll .sgrid.big>div>div:first-child{font-size:15px!important;margin-bottom:4px!important} #ezAll .sgrid.big>div>div[style*="font-size:13px"]{font-size:13px!important;line-height:1.5!important}
 .f2t{margin-top:12px;border-radius:12px;padding:10px 12px;background:var(--gold-soft);color:var(--gold);font-size:13.5px;line-height:1.6}
 .f2t b{font-size:16px}
@@ -178,18 +207,18 @@ body.isetc .noetc{display:none!important}
   <div class="ez-status" id="ezStatus"></div>
   <div id="ezEtcBox"></div>
   <div class="ez-grid noetc">
-    <div class="ez-ctl"><div class="k"><b>게임 시작 시각</b> (자동 · 레잇레지면 직접)</div><select id="ezStart"></select></div>
+    <div class="ez-ctl"><div class="k"><b>게임 시작 시각</b></div><select id="ezStart"></select></div>
     <div class="ez-ctl"><div class="k">블라인드 레벨</div><select id="ezLevel"></select></div>
   </div>
   <details class="more" id="ezEntD"><summary id="ezEntSum">총 바이인 수 · 마감 예상</summary>
-    <div class="ez-ctl" style="margin-top:6px"><div class="k"><b>총 바이인 수</b> (로비 엔트리 · 레지 마감되면 안 건드려도 돼요)</div><div class="row2"><input id="ezEntries" type="number" inputmode="numeric" min="2" style="font-size:20px;font-weight:800;text-align:center"></div></div>
-    <div class="ez-ctl" id="ezFinBox" style="margin-top:6px"><div class="k"><b>레지 마감 때 예상 총 바이인</b> (비우면 자동 예상)</div><div class="row2"><input id="ezFin" type="number" inputmode="numeric" min="2" style="font-size:18px;font-weight:800;text-align:center"></div><div class="k" id="ezFinHint" style="margin:4px 0 0"></div></div>
+    <div class="ez-ctl" style="margin-top:6px"><div class="k"><b>총 바이인 수</b></div><div class="row2"><input id="ezEntries" type="number" inputmode="numeric" min="2" style="font-size:20px;font-weight:800;text-align:center"></div></div>
+    <div class="ez-ctl" id="ezFinBox" style="margin-top:6px"><div class="k"><b>마감 예상 바이인</b></div><div class="row2"><input id="ezFin" type="number" inputmode="numeric" min="2" style="font-size:18px;font-weight:800;text-align:center"></div><div class="k" id="ezFinHint" style="margin:4px 0 0"></div></div>
   </details>
   <h3>계속 바뀌는 3가지 <span class="hint">남은 인원 · 내 등수 · 내 스택</span></h3>
   <div class="ez-row3">
-    <div class="ez-ctl"><div class="k">남은 인원</div><div class="row2"><button type="button" class="bt red" data-ez="bust">−1</button><input id="ezPlayersIn" type="number" inputmode="numeric" min="2"><button type="button" class="bt" data-ez="p+">+</button></div></div>
-    <div class="ez-ctl" style="border:2px solid var(--accent)"><div class="k"><b>내 칩 등수</b></div><div class="row2"><input id="ezRank" type="number" inputmode="numeric" min="1" placeholder="예: 20"></div></div>
-    <div class="ez-ctl"><div class="k">내 스택 <b>BB</b></div><div class="row2"><input id="ezHero" type="number" inputmode="decimal" step="0.1" min="0.1"></div></div>
+    <div class="ez-ctl"><div class="k">라이브 인원</div><div class="row2"><button type="button" class="bt red" data-ez="bust">−</button><input id="ezPlayersIn" type="number" inputmode="numeric" min="2"><button type="button" class="bt" data-ez="p+">+</button></div></div>
+    <div class="ez-ctl"><div class="k">내 등수</div><div class="row2"><input id="ezRank" type="number" inputmode="numeric" min="1" placeholder="예: 20"></div></div>
+    <div class="ez-ctl"><div class="k">내 스택 (BB)</div><div class="row2"><input id="ezHero" type="number" inputmode="decimal" step="0.1" min="0.1"></div></div>
   </div>
   <div class="k" id="ezRankHint" style="margin:4px 2px 0;font-size:12px;color:var(--muted)"></div>
   <div class="k" id="ezHeroChips" style="margin:2px 2px 0;font-size:12px;color:var(--muted)"></div>
@@ -1565,7 +1594,7 @@ function paintEz(){
   const av=avgBB(), bad=av<3||av>300;
   const clk = st.game==="etc" ? etcStage() : st.level ? `(레벨 직접 고름)` : (hasStart() ? `<span id="ezClk">${clkText()}</span>`
             : `<b style="color:var(--push)">⏰ 게임 시작 시각을 골라주세요 — 블라인드·BB가 시계에 맞춰 자동으로 바뀌어요</b>`);
-  $("ezStatus").innerHTML=`${lvLabel()} · 평균 ${r1(av)}BB <span style="font-weight:500">(바이인 ${st.entries} ÷ 남은 ${st.players}명)</span> · ${st.mode==="icm"?"ICM(마감 후)":"칩EV(마감 전)"}<br>${clk}<br>${lines.join(" · ")}`+
+  $("ezStatus").innerHTML=`${lvLabel()} · 평균 ${r1(av)}BB · ${st.mode==="icm"?"ICM(마감 후)":"칩EV(마감 전)"}<br>${clk}<br>${lines.join(" · ")}`+
     (bad?`<br><b style="color:var(--push)">⚠️ 평균 ${r1(av)}BB는 이상해요. 총 바이인 수·남은 인원을 먼저 맞춰주세요.</b>`:"");
   try{ezPrizeBox();}catch(e){} if(document.activeElement!==$("ezPlayersIn")) $("ezPlayersIn").value=st.players;
   for(const id of ["ezAvg","avgIn"]){ const a=$(id); if(a&&document.activeElement!==a) a.value=st.avgOv||""; }
@@ -1747,7 +1776,15 @@ function minsToClose(){ const L=curLevel(); if(L>REG_LEVEL) return 0;
   return m+breaks; }
 function entryRate(){ const L=((st.entLog||{})[st.game]||[]), now=Date.now(); const R=L.filter(x=>now-x.t<=12*60000);
   if(R.length<2) return null; const a=R[0], b=R[R.length-1], min=(b.t-a.t)/60000; if(min<1) return null; return Math.max(0,(b.e-a.e)/min); }
-/*hgsbind*/function hgsBindRender(){
+/*hgsbind2*/function hgsBindRender(){
+  const s0=$("ezStatus"); if(!s0) return;
+  let box=$("hgsBind"); if(!box){ box=document.createElement("div"); box.id="hgsBind"; s0.insertAdjacentElement("afterend",box); }
+  if(st.game!=="hgs"){ box.style.display="none"; return; }
+  box.style.display="";
+  const N=+st.entries||0; if(!(N>0)){ box.textContent="총 바이인을 넣어 주세요"; return; }
+  box.innerHTML="\ud83c\udf9f 티켓 <b>"+Math.floor(N/11)+"장</b>";
+}
+function hgsBindRenderOld(){
   const fb=$("ezFinBox"); if(!fb||!fb.parentNode) return;
   let box=$("hgsBind");
   if(!box){ box=document.createElement("div"); box.id="hgsBind"; box.style.cssText="margin:8px 0;padding:10px 12px;border-radius:12px;border:1px solid #cfe3d8;background:#f6fbf8";
@@ -2008,7 +2045,49 @@ document.addEventListener("input",e=>{
   if(["entries","players","heroStack","vilStack"].includes(t.id)){st[t.id]=v;clearTimeout(t._t);t._t=setTimeout(schedule,700);return;}
   if(t.dataset.seat!=null){st.others[t.dataset.seat]=v;clearTimeout(t._t);t._t=setTimeout(schedule,700);}
 });
-load(); if(!GAMES[st.game]) st.game="hg"; applyGame(); fillPickers(); schedule();
+
+/*ezlayout*/(function(){
+  var CFG={ezHero:{s:1,min:0.1,dec:1},ezRank:{s:1,min:1,dec:0},ezEntries:{s:1,min:2,dec:0},ezFin:{s:1,min:2,dec:0},ezOpenIn:{s:0.5,min:1,dec:1},ezVilStack:{s:1,min:0.1,dec:1},ezOppStack:{s:1,min:0.1,dec:1},ezAllVS:{s:1,min:0.1,dec:1}};
+  function base(id){ try{
+    if(id==="ezRank") return +st.players||1;
+    if(id==="ezEntries"||id==="ezFin") return +st.entries||0;
+    if(id==="ezOpenIn") return +st.raise||2;
+    return Math.round(avgBB())||10;
+  }catch(e){ return 10; } }
+  function addBtns(){
+    for(var id in CFG){
+      var inp=document.getElementById(id); if(!inp) continue;
+      var row=inp.parentElement; if(!row||row.querySelector('[data-stp="'+id+'"]')) continue;
+      var mk=function(t,d){ var b=document.createElement("button"); b.type="button"; b.className="bt stp"; b.dataset.stp=id; b.dataset.d=d; b.textContent=t; return b; };
+      row.insertBefore(mk("\u2212",-1),inp); row.appendChild(mk("+",1));
+    }
+  }
+  function wrapVar(){
+    if(document.getElementById("ezVar")) return;
+    if(window.matchMedia("(min-width:900px) and (min-height:480px)").matches) return;
+    var easy=document.getElementById("easy"); if(!easy) return;
+    var row3=easy.querySelector(".ez-row3"), pb=easy.querySelector(".posbox"); if(!row3||!pb) return;
+    var first=row3.previousElementSibling; if(!(first&&first.tagName==="H3")) first=row3;
+    var w=document.createElement("div"); w.id="ezVar"; first.parentNode.insertBefore(w,first);
+    var n=first;
+    while(n){ var nx=n.nextElementSibling; w.appendChild(n); if(n===pb) break; n=nx; }
+  }
+  document.addEventListener("click",function(e){
+    var b=e.target.closest&&e.target.closest("[data-stp]"); if(!b) return;
+    e.preventDefault();
+    var id=b.dataset.stp, inp=document.getElementById(id), c=CFG[id]; if(!inp||!c) return;
+    var v=parseFloat(inp.value); if(!isFinite(v)) v=base(id);
+    v=v+(+b.dataset.d)*c.s;
+    if(id==="ezRank"&&+st.players>0) v=Math.min(v,+st.players);
+    v=Math.max(c.min,v); v=+v.toFixed(c.dec);
+    inp.value=v; inp.dispatchEvent(new Event("input",{bubbles:true}));
+  });
+  wrapVar(); addBtns();
+  var easy0=document.getElementById("easy");
+  if(easy0&&window.MutationObserver){ new MutationObserver(function(){ addBtns(); }).observe(easy0,{childList:true,subtree:true}); }
+  window.addEventListener("resize",function(){ wrapVar(); });
+})();
+load(); st.avgOv=""; if(!GAMES[st.game]) st.game="hg"; applyGame(); fillPickers(); schedule();
 $("detail").addEventListener("toggle",()=>{ if($("detail").open) schedule(); });
 setInterval(()=>{
   if(autoSwitchCheck()){ st.level=null; st.modeManual=false; rescaleOK=false; schedule(); return; }   // 다음 게임으로 자동 전환
