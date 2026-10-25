@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>헤즈업 턴 프로브: 플랍에서 체크가 돌아오면 BB는 턴에 먼저 벳할까? (헤즈업 기준) · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">스팟</span><span class="n">고급 20번째 글 (전체 122편 중 116번째)</span></div><h1>헤즈업 턴 프로브: 플랍에서 체크가 돌아오면 BB는 턴에 먼저 벳할까? (헤즈업 기준)</h1>
+<article>
+<p>안녕하세요. E06에서 BTN의 플랍 c-bet을 BB 폴드 비율로 읽었죠. 오늘은 반대로 BTN이 플랍에서 <strong>c-bet을 하지 않고 체크</strong>했을 때, BB가 턴에 먼저 벳하는 <strong>프로브</strong>를 봐요.</p>
+<p>오늘 목표는 하나예요. <strong>솔버 표로 BB의 턴 프로브 빈도를 읽고, 7♠6♠가 왜 자주 프로브하는지 본전 폴드율과 "콜 받을 때 남는 몫"으로 설명하기.</strong></p>
+<hr />
+<h2>오늘의 핸드 (헤즈업 기준)</h2>
+<p>헤즈업 100BB·빅앤티. 레인지는 DB의 근사 레인지예요. E26·E04·E06의 플랍 값은 헤즈업 프리플랍 솔버 레인지로 새로 푼 값이지만, 턴 전략은 아직 근사 레인지 DB에만 있어서 이 글은 플랍·턴 모두 근사 레인지 값으로 맞췄어요. 그래서 E06의 숫자와 바로 비교하지는 않아요.</p>
+<p><strong>Hero (BB)</strong></p>
+<p><img src="../카드/7s.svg" width="48"> <img src="../카드/6s.svg" width="48"></p>
+<h3>프리플랍</h3>
+<p>BTN <strong>2.5BB 오픈</strong> → Hero 콜</p>
+<h3>플랍 · 팟 6BB</h3>
+<p><img src="../카드/Js.svg" width="48"> <img src="../카드/8h.svg" width="48"> <img src="../카드/4d.svg" width="48"></p>
+<p>Hero 체크 → BTN 체크(이 보드에서 BTN 체크는 <strong>약 33.3%</strong>)</p>
+<h3>턴 · 팟 6BB</h3>
+<p>Hero가 먼저 <strong>4.5BB(팟의 75%) 프로브</strong>할까?</p>
+<p><strong>프로브</strong> = 앞 스트리트에서 상대가 체크로 넘긴 뒤, 포지션 없는 쪽이 먼저 하는 벳이에요. 비유하면 <strong>문을 안 잠근 집</strong>이에요. 상대가 플랍에서 벳하지 않았으니 강한 핸드가 덜 섞였을 수 있다고 보고 두드려 보는 거예요. 물론 일부러 체크한 강한 핸드도 섞여 있을 수 있어요.</p>
+<p>이 DB의 턴 값은 <strong>나올 수 있는 턴 카드 전체의 평균</strong>이고, 핸드별 값은 <strong>클래스 평균</strong>(76s면 무늬가 같은 76 핸드 전체)이에요.</p>
+<p class="concl"><strong>결론부터 말할게요. 턴 카드 평균으로 솔버는 76s를 약 80% 프로브해요.</strong> 올인이 아니라 남은 베팅이 있어 실제 결과는 달라질 수 있어요.</p>
+<h2>1단계. 레인지 전체 빈도</h2>
+<p>이 지점(E26에서 배운 <strong>노드</strong>)의 빈도예요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>BB 턴 첫 행동</th>
+<th>체크</th>
+<th>4.5BB</th>
+<th>올인</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>레인지 전체</td>
+<td>약 55.3%</td>
+<td>약 43.2%</td>
+<td>약 1.5%</td>
+</tr>
+<tr>
+<td>76s</td>
+<td>18%</td>
+<td>80%</td>
+<td>1%</td>
+</tr>
+<tr>
+<td>76o</td>
+<td>16%</td>
+<td>83%</td>
+<td>1%</td>
+</tr>
+<tr>
+<td>T7o</td>
+<td>21%</td>
+<td>78%</td>
+<td>1%</td>
+</tr>
+</tbody>
+</table></div>
+<p>무늬가 다른 76o도 83%라, <strong>플러시보다 스트레이트 쪽</strong>이 이유라고 읽어요.</p>
+<h2>2단계. 본전 폴드율과 비교</h2>
+<blockquote>
+<p>본전 폴드율 = 4.5(벳) ÷ (6(팟) + 4.5(벳)) = <strong>약 42.9%</strong></p>
+</blockquote>
+<p>BB 프로브에 BTN은 콜 <strong>약 63.4%</strong>, 올인 레이즈 <strong>약 3.1%</strong>, 폴드 <strong>약 33.5%</strong>예요. 폴드가 본전보다 낮아서, <strong>순수 블러프</strong>(콜 받으면 이길 가능성이 거의 없는 벳)로는 이득이 어려워요.</p>
+<h2>3단계. 그런데 왜 7♠6♠는 자주 칠까?</h2>
+<ul>
+<li><strong>체크하면 남는 몫</strong>: 7 하이는 쇼다운에서 이기기 어려워, 체크해도 가져갈 몫이 작아요</li>
+<li><strong>콜 받으면 남는 몫</strong>: 76은 플랍에서 이미 5를 기다리는 드로우(거트샷)예요. 턴 카드에 따라 5면 스트레이트 완성(밸류 벳), 7·6이면 페어, 9면 5나 T를 기다리는 양쪽 드로우로 바뀌어요. 80%는 이 경우가 모두 섞인 평균이고, 드로우인 턴에서는 콜을 받아도 맞을 몫이 남는 <strong>세미블러프</strong>(A22)예요</li>
+</ul>
+<p>콜 받을 때 몫이 있으면, 상대가 본전 폴드율만큼 접지 않아도 벳 쪽이 체크보다 나을 수 있어요. T7o(9가 오면 스트레이트)도 78%로 비슷하게 높아요.</p>
+<hr />
+<h2>"BTN이 체크했으면 무조건 프로브해야 하나요?"</h2>
+<p>좋은 질문이에요. 아니에요. 레인지 전체로는 체크가 약 55.3%로 더 많아요. 프로브는 <strong>체크 몫보다 벳 몫이 큰 핸드</strong>로 골라서 해요.</p>
+<h2>숫자가 뒤집히는 지점</h2>
+<p>기준은 <strong>76s의 콜 받을 때 몫이 체크 몫보다 큰지</strong>예요. 턴 카드가 76과 전혀 이어지지 않아 드로우가 사라지면, 콜 받을 때 몫이 줄어 체크 쪽으로 기울어요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>상대가 체크로 넘기면 <strong>프로브 기회</strong>인지 보기</li>
+<li>먼저 <strong>본전 폴드율</strong>과 상대 폴드 비율 비교</li>
+<li>모자라면 <strong>콜 받을 때 남는 몫</strong>이 있는 핸드로 채우기</li>
+</ol></section>
+<hr />
+<h2>연습 문제 (같은 라인, 보드만 바꿈)</h2>
+<p><strong>문제 1.</strong> 플랍 8♠ 6♥ 5♦, 같은 체크-체크 뒤 턴에서 솔버는 T9o를 <strong>82%</strong>, A3o를 <strong>15%</strong> 프로브해요. 두 핸드의 차이를 오늘 기준으로 설명해 보세요.</p>
+<details>
+<summary>정답 보기</summary>
+<p>T9o는 7이 오면 스트레이트, 그 밖에도 드로우가 생기기 쉬워 <strong>콜 받을 때 몫</strong>이 남아요. A3o는 이 보드와 거의 이어지지 않아 콜 받을 때 몫이 작고, A 하이로 체크해서 가져갈 몫이 있어요. 그래서 T9o는 프로브, A3o는 체크 쪽이에요.</p>
+</details>
+<p><strong>문제 2.</strong> A♠ K♥ 7♦에서 같은 라인이면 BB 레인지 전체 프로브는 <strong>약 31%</strong>, K9o는 <strong>45%</strong>예요. J♠ 8♥ 4♦에서 K9o는 <strong>31%</strong>였어요. 왜 A♠ K♥ 7♦에서 더 자주 칠까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p>A♠ K♥ 7♦에서 K9o는 <strong>K 페어</strong>예요. 체크해도 쇼다운 몫이 있지만, 벳하면 더 약한 페어나 드로우가 콜해 줘서 <strong>벳 몫이 체크 몫보다 클 수 있어요</strong>. 그래서 이 보드 레인지 평균(약 31%)보다 자주 쳐요. J♠ 8♥ 4♦에서 K9o는 K 하이라 콜 받을 때 몫이 작아 덜 쳐요.</p>
+</details>
+<blockquote>
+<p>본전 폴드율은 홀덤학습 <strong>팟 오즈 Lv.5(블러프 본전)</strong>로 연습할 수 있어요. 사이트의 헤즈업 솔버 조회는 대표 보드로 보여 줘 숫자가 다를 수 있어요.</p>
+</blockquote>
+<hr />
+<p><small>AI 작성 · 헤즈업 솔버 DB 기준(6맥스 아님) · 빅앤티 · 100BB 싱글레이즈 · 프리플랍 레인지는 근사 · 턴 값은 턴 카드 전체 평균 · 핸드별은 클래스 평균 정수 % · 이번 한 번의 결정 기준</small></p>
+</article>
+<nav class="nav"><a class="prev" href="115_E18.html"><div class="l">← 이전 글</div><div class="t">헤즈업 프리플랍: 스택 깊이가 바뀌면 SB 첫 행동은 어떻게 달라질까? (헤즈업 기준)</div></a><a class="next" href="117_E20.html"><div class="l">다음 글 →</div><div class="t">상대 리버 벳에 블로커로 레이즈 블러프: 얼마나 접어야 이득일까?</div></a></nav></main>
+</body>
+</html>

@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>레인지 우위와 넛 우위: 평균이 앞서면 가장 강한 핸드도 더 많을까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">개념</span><span class="n">고급 6번째 글 (전체 122편 중 102번째)</span></div><h1>레인지 우위와 넛 우위: 평균이 앞서면 가장 강한 핸드도 더 많을까?</h1>
+<article>
+<p>안녕하세요. A25에서 <strong>레인지 우위</strong>를 숫자로 봤고, E04에서는 텍스처마다 c-bet이 달라지는 이유를 그 우위로 읽었죠.
+오늘은 우위를 하나 더 나눠 봐요. <strong>평균</strong>으로 앞서는 것과 <strong>가장 강한 핸드</strong>를 더 많이 가진 것은 다를 수 있어요.</p>
+<p>오늘 목표는 하나예요. <strong>레인지 우위(평균)와 넛 우위(꼭대기 핸드 비율)를 따로 세고, 둘이 갈리는 보드를 알아보기.</strong></p>
+<hr />
+<h2>1단계. 두 가지 우위</h2>
+<ul>
+<li><strong>레인지 우위</strong> = 두 레인지를 통째로 붙였을 때 에퀴티가 높은 쪽(A25)</li>
+<li><strong>넛</strong> = 그 보드에서 가능한 가장 강한 핸드. <strong>넛 우위</strong> = 넛에 가까운 강한 핸드의 콤보 비율이 높은 쪽</li>
+</ul>
+<p>넛만 세면 콤보가 너무 적어서, 이 글에서는 <strong>투페어 이상</strong>(셋·스트레이트 포함)을 "강한 핸드"의 기준으로 정해 셀게요. 스트레이트가 이미 가능한 보드에서는 투페어가 넛은 아니라는 점을 기억해 두세요.</p>
+<p>비유하면 <strong>반 평균 점수와 90점 넘은 학생 수</strong>예요. 평균이 높은 반이 꼭 90점 넘는 학생도 더 많은 건 아니죠.</p>
+<p><strong>가정 레인지</strong>(솔버 결과 아님, A25와 같음):</p>
+<ul>
+<li>BTN 오픈: 22+, A2s+, A7o+, K8s+, KTo+, Q9s+, QTo+, J9s+, JTo, T8s+, 98s, 87s, 76s, 65s</li>
+<li>BB 콜: 22-JJ, A2s-AJs, A7o-AJo, K5s-KQs, KTo-KQo, Q8s+, QTo+, J8s+, JTo, T7s+, 97s+, 86s+, 75s+, 64s+, 54s</li>
+</ul>
+<p class="concl"><strong>결론부터 말하면, 이 가정에서 A♠ K♦ 7♣는 BTN이 두 우위를 모두 갖고, 7♥ 6♥ 5♣는 평균은 BTN이 근소하게 앞서지만 투페어 이상 콤보는 BB가 조금 더 많아요.</strong></p>
+<h2>2단계. 두 보드 비교</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>보드</th>
+<th>BTN 에퀴티</th>
+<th>투페어 이상 BTN</th>
+<th>투페어 이상 BB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A♠ K♦ 7♣</td>
+<td>약 55.6%</td>
+<td>27 ÷ 282콤보(약 9.6%)</td>
+<td>14 ÷ 286콤보(약 4.9%)</td>
+</tr>
+<tr>
+<td>7♥ 6♥ 5♣</td>
+<td>약 50.5%</td>
+<td>18 ÷ 327콤보(약 5.5%)</td>
+<td>20 ÷ 311콤보(약 6.4%)</td>
+</tr>
+</tbody>
+</table></div>
+<p>넛 우위는 이 <strong>비율</strong>로 비교해요.</p>
+<p>A♠ K♦ 7♣에서는 AK 투페어와 AA·KK 셋이 BTN에만 있어요.</p>
+<blockquote>
+<p>BTN = 3(AA) + 3(KK) + 3(77) + 9(AK, 3 × 3) + 9(A7) = 27
+BB = 3(77) + 9(A7) + 2(K7s) = 14</p>
+</blockquote>
+<h2>3단계. 7♥ 6♥ 5♣를 콤보로 따라가기</h2>
+<p>양쪽에 다 있는 강한 핸드부터 세요.</p>
+<ul>
+<li>셋: 77·66·55는 보드에 한 장씩 있어 남은 3장 중 2장 = 3씩 → 3 × 3 = 9</li>
+<li>98s(스트레이트): 무늬 4가지 = 4</li>
+<li>76s: 7♥·6♥가 보드에 있어 하트를 빼면 4 − 1 = 3</li>
+<li>65s: 6♥·5♣ 때문에 4 − 2 = 2<blockquote>
+<p>9 + 4 + 3 + 2 = 18</p>
+</blockquote>
+</li>
+</ul>
+<p>BTN은 여기서 끝이고, BB는 <strong>75s</strong>가 더 있어요. 75s를 따라가 보면:</p>
+<ul>
+<li>7♥·5♣ 때문에 4 − 2 = 2콤보</li>
+<li>보드와 합쳐 7·5 <strong>투페어</strong>라 오늘 기준에 들어가요</li>
+<li>BTN 오픈 레인지(76s·65s까지)에는 없어요. A25에서 봤듯 BTN 레인지 상대 에퀴티는 약 78.7%예요<blockquote>
+<p>BB = 18 + 2 = 20</p>
+</blockquote>
+</li>
+</ul>
+<p>반대로 BTN은 AA·KK 같은 오버페어와 A 하이로 <strong>평균</strong>을 지켜요. 그래서 이 보드는 <strong>평균은 BTN, 꼭대기는 BB 쪽으로 조금</strong> 갈려요.</p>
+<hr />
+<h2>"넛 우위가 있으면 뭐가 달라져요?"</h2>
+<p>좋은 질문이에요. 이 가정에서는 꼭대기 핸드를 더 가진 쪽이 <strong>큰 벳으로 팟을 키울 근거</strong>가 생긴다고 읽을 수 있어요. E04의 모노톤 보드에서 플러시 개수는 BB가 많아도 A 하이 넛 플러시는 BTN에만 있었고, BTN의 큰 벳 비중이 드라이보다 컸던 것과 같은 방향이에요(E04는 헤즈업 솔버 레인지, 오늘은 A25 가정 레인지라 숫자는 따로예요). 벳 크기와 블러프 구성은 E09에서 다뤄요.</p>
+<h2>숫자가 뒤집히는 지점</h2>
+<p>기준은 <strong>오픈한 쪽에만 있는 강한 핸드(높은 페어·AK)가 그 보드에서 투페어 이상이 되는지</strong>예요. 안 되고, 콜한 쪽에만 있는 커넥터가 투페어 이상이 되면 넛 우위가 콜한 쪽으로 넘어가요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>우위는 <strong>평균(레인지)</strong>과 <strong>꼭대기(넛)</strong>로 나눠 보기</li>
+<li>꼭대기는 <strong>기준 족보를 정하고 콤보로</strong> 세기</li>
+<li>우리 레인지에만 있는 핸드부터 찾기</li>
+</ol></section>
+<hr />
+<h2>연습 문제 (핸드 대 핸드)</h2>
+<p><strong>문제 1.</strong> 7♥ 6♥ 5♣에서 Hero(BB)가 7♠5♠, 상대(BTN)가 A♦A♣예요. Hero의 에퀴티는? 그리고 상대가 A♦A♣ 대신 8♥8♦였다면, 그 핸드는 오늘 기준(투페어 이상)에 들어갈까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>약 72.1%</strong>(상대 약 27.9%). 8♥8♦는 오버페어(원페어)라 <strong>들어가지 않아요</strong>. 평균을 받쳐 주는 핸드와 꼭대기 핸드는 이렇게 달라요.</p>
+</details>
+<p><strong>문제 2.</strong> A♠ K♦ 7♣에서 Hero(BTN)가 A♥K♥, 상대(BB)가 7♦7♥예요. Hero의 에퀴티는?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>약 16.8%</strong>(상대 약 83.2%). BTN이 두 우위를 다 가진 보드라도, 상대 레인지에 남은 77 셋에는 탑 투페어가 크게 뒤져요. 넛 우위는 비율의 이야기이고, 한 핸드의 결과는 따로예요.</p>
+</details>
+<blockquote>
+<p>학습툴 <strong>에퀴티 계산기</strong>에는 레인지 입력이 없어서, 위 두 문제처럼 <strong>내 카드 vs 상대 카드</strong>와 플랍 3장을 넣어 확인해 보세요. 레인지 숫자는 블로그 계산기로 구한 값이에요.</p>
+</blockquote>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 (플랍 뒤 남은 카드를 전부 센 정확값, 콤보 동일 가중) · 가정 레인지 기준 (솔버 결과 아님) · 강한 핸드 기준은 투페어 이상 · 개념 글(콜/폴드 결정 없음)</small></p>
+</article>
+<nav class="nav"><a class="prev" href="101_E04.html"><div class="l">← 이전 글</div><div class="t">보드 텍스처: 드라이·웻·모노톤에서 솔버의 c-bet은 어떻게 달라질까? (헤즈업 기준)</div></a><a class="next" href="103_E06.html"><div class="l">다음 글 →</div><div class="t">헤즈업 SRP c-bet: 상대가 얼마나 접느냐에 따라 c-bet 빈도는 어떻게 바뀔까? (헤즈업 기준)</div></a></nav></main>
+</body>
+</html>

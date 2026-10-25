@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>새틀라이트 버블: 시드권 4장, 5명 남았을 때 큰 스택은 얼마나 조심해야 할까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">토너</span><span class="n">고급 18번째 글 (전체 122편 중 114번째)</span></div><h1>새틀라이트 버블: 시드권 4장, 5명 남았을 때 큰 스택은 얼마나 조심해야 할까?</h1>
+<article>
+<p>안녕하세요. E10에서 ICM으로 기대 상금을 구했죠. 오늘은 상금 대신 <strong>같은 시드권 여러 장</strong>을 나눠 주는 <strong>새틀라이트</strong>예요. <strong>버블</strong>은 한 명만 더 탈락하면 남은 사람이 모두 시드권을 받는 시점이에요.</p>
+<p class="concl"><strong>결론부터 말하면, 이 조건에서 Hero는 승률이 약 76.7%를 넘어야 콜이 이득이고, 같은 스택의 일반 상금 토너먼트(약 57.8%)보다 훨씬 높아요.</strong></p>
+<p>오늘 목표는 하나예요. <strong>시드권 N장을 "같은 상금 N개"로 놓고 ICM을 구해, 이 조건에서 콜 필요 승률이 얼마나 올라가는지 알기.</strong></p>
+<hr />
+<h2>1단계. 새틀라이트 ICM</h2>
+<p>시드권 4장이면 상금표를 <strong>1등 1 · 2등 1 · 3등 1 · 4등 1 · 5등 0</strong>으로 놓아요. 그러면 ICM 기대 상금이 곧 <strong>시드권을 받을 확률</strong>이 돼요.
+비유하면 <strong>의자 뺏기 놀이의 마지막 판</strong>이에요. 의자가 4개, 사람이 5명이면 한 명만 빠지면 끝이라, 이미 의자 근처에 있는 사람은 굳이 다툴 이유가 없죠.</p>
+<p><strong>ICM 필요 승률 = (폴드할 때 − 질 때) ÷ (이길 때 − 질 때)</strong>예요. 세 값은 모두 그 결과 뒤의 시드권 확률(일반 토너먼트면 기대 상금)이고, 승률은 콜 받은 뒤 이길 확률(에퀴티)이에요. 콜해서 이길 확률이 이 값을 넘어야 폴드보다 이득이에요.</p>
+<h2>2단계. 오늘의 조건 (고정)</h2>
+<p>5명 남음, 시드권 <strong>4장</strong>, 전체 칩 <strong>100BB</strong>. 블라인드 SB 0.5BB · BB 1BB, 앤티 없음. 아래 표는 <strong>블라인드를 내기 전</strong> 스택이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>선수</th>
+<th>스택</th>
+<th>시드권 받을 확률</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hero</td>
+<td>35BB</td>
+<td>약 96.7%</td>
+</tr>
+<tr>
+<td>A</td>
+<td>25BB</td>
+<td>약 93.2%</td>
+</tr>
+<tr>
+<td>B</td>
+<td>20BB</td>
+<td>약 89.7%</td>
+</tr>
+<tr>
+<td>C</td>
+<td>15BB</td>
+<td>약 83.4%</td>
+</tr>
+<tr>
+<td>D</td>
+<td>5BB</td>
+<td>약 36.9%</td>
+</tr>
+</tbody>
+</table></div>
+<h2>3단계. Hero(BB 35BB)가 B(SB 20BB)의 올인을 받으면</h2>
+<p>A·C·D는 폴드했어요. Hero는 1BB를 냈고 20 − 1 = <strong>19BB</strong>를 더 내요. 칩 기준 필요 승률 = 더 낼 칩 19 ÷ 콜한 뒤 팟(20 + 20 = <strong>40BB</strong>) = <strong>47.5%</strong>.</p>
+<ul>
+<li>폴드: Hero 35 − 1 = 34BB, B 20 + 1 = 21BB → <strong>약 96.4%</strong></li>
+<li>이김: Hero 35 + 20 = 55BB, B 탈락 → 4명이 남아 시드권 <strong>확정</strong>(확률 1)</li>
+<li>짐: Hero 35 − 20 = 15BB, B 20 + 20 = 40BB → <strong>약 84.6%</strong></li>
+</ul>
+<blockquote>
+<p>ICM 필요 승률 = (0.96401(폴드) − 0.84567(짐)) ÷ (1(이김) − 0.84567(짐)) = <strong>약 76.7%</strong></p>
+</blockquote>
+<p>이기면 1 − 0.96401 = <strong>약 0.036</strong> 느는데, 지면 0.96401 − 0.84567 = <strong>약 0.118</strong> 줄어요. 얻는 것보다 잃는 것이 세 배 넘게 커요.</p>
+<p><strong>같은 스택에 일반 상금(40 · 30 · 20 · 10 · 0, 합계 100점)이었다면</strong> Hero의 기대 상금은 폴드 <strong>약 27.6점</strong>, 이김 <strong>약 33.9점</strong>, 짐 <strong>약 18.98점</strong>이에요.</p>
+<blockquote>
+<p>일반 상금 ICM 필요 승률 = (27.60125 − 18.97727) ÷ (33.89881 − 18.97727) = <strong>약 57.8%</strong></p>
+</blockquote>
+<p>일반 토너먼트에서는 칩을 따면 더 높은 등수 상금을 노릴 수 있어요. 이 조건의 새틀라이트에서는 1등도 4등도 시드권 한 장이라, 칩을 더 따도 얻는 게 거의 없어요.</p>
+<hr />
+<h2>"칩이 제일 많은데 왜 피해요?"</h2>
+<p>좋은 질문이에요. 새틀라이트에서는 칩을 더 모아도 시드권은 한 장뿐이에요. 오늘 Hero는 지면 잃는 확률(약 0.118)이 이기면 얻는 확률(약 0.036)보다 커서, 이 조건에서는 폴드 쪽이 유리해요.</p>
+<h2>숫자가 뒤집히는 지점</h2>
+<p>기준은 <strong>질 때 Hero가 짧은 스택 쪽으로 떨어지는지</strong>예요. 져도 큰 스택이 남으면 질 때 주는 확률이 작아져서, 필요 승률이 칩 기준에 가까워져요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>새틀라이트는 시드권을 <strong>같은 상금 N개</strong>로 놓고 ICM 계산</li>
+<li>콜 필요 승률은 <strong>(폴드 − 짐) ÷ (이김 − 짐)</strong>으로 바로 구하기</li>
+<li>이 조건에서 콜 전에 <strong>질 때 남는 스택</strong>부터 보기</li>
+</ol></section>
+<hr />
+<h2>연습 문제 (같은 5명, 같은 스택)</h2>
+<p><strong>문제 1.</strong> 스택만 바꿔 Hero가 25BB, A가 35BB라면, Hero(BB)가 B(SB 20BB)의 올인을 받아요(다른 선수는 폴드). Hero의 시드권 확률은 폴드(Hero 25 − 1 = 24BB) <strong>약 92.6%</strong>, 이김(B 탈락) <strong>확정</strong>(1), 짐(Hero 25 − 20 = 5BB, B 40BB) <strong>약 56%</strong>예요. ICM 필요 승률은?</p>
+<details>
+<summary>정답 보기</summary>
+<p>(0.92632 − 0.55997) ÷ (1 − 0.55997) = <strong>약 83.3%</strong>. 칩 기준은 똑같이 47.5%예요. 져도 5BB가 남지만 D와 함께 짧은 스택이 되어 확률이 크게 떨어지기 때문이에요.</p>
+</details>
+<p><strong>문제 2.</strong> Hero(BB 35BB)가 D(SB 5BB)의 올인을 받아요. 폴드(Hero 34BB, D 5 + 1 = 6BB) <strong>약 95.93%</strong>, 이김(D 탈락) <strong>확정</strong>(1), 짐(Hero 35 − 5 = 30BB, D 10BB) <strong>약 92.6%</strong>예요. 칩 기준은 4 ÷ 10 = 40%예요. ICM 필요 승률은?</p>
+<details>
+<summary>정답 보기</summary>
+<p>(0.95930 − 0.92629) ÷ (1 − 0.92629) = <strong>약 44.8%</strong>. 칩 기준과 크게 다르지 않아요. 이기면 D가 탈락해 바로 끝나고, 져도 30BB가 남기 때문이에요.</p>
+</details>
+<blockquote>
+<p>뚝섬 <strong>AOF 차트</strong>(새틀 프리플랍 차트)에서 그외 게임들 → 새틀(티켓) → 티켓 받는 인원 4 → 테이블 인원 5명 → 포지션 BB → 앞에서 액션한 자리 SB → 자리별 스택으로 맞추면 같은 방식(시드권 = 같은 상금)으로 계산해요. 화면은 블라인드 압박·실전 보정이 들어가 숫자가 오늘과 다를 수 있어요.</p>
+</blockquote>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 (ICM: 칩 비율로 등수를 차례로 뽑는 방식, 시드권 4장 = 같은 상금 4개) · 스택은 이 예시로 고정(전체 100BB) · 블라인드 압박·앤티는 넣지 않음 · 이번 한 번의 결정 기준</small></p>
+</article>
+<nav class="nav"><a class="prev" href="113_E16.html"><div class="l">← 이전 글</div><div class="t">12BB 리스틸 올인: 오픈한 상대에게 K9o로 다시 올인해도 될까?</div></a><a class="next" href="115_E18.html"><div class="l">다음 글 →</div><div class="t">헤즈업 프리플랍: 스택 깊이가 바뀌면 SB 첫 행동은 어떻게 달라질까? (헤즈업 기준)</div></a></nav></main>
+</body>
+</html>

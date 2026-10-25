@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>파이널 테이블: 같은 핸드인데 왜 스택 분포에 따라 푸시·콜이 바뀔까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">토너</span><span class="n">고급 14번째 글 (전체 122편 중 110번째)</span></div><h1>파이널 테이블: 같은 핸드인데 왜 스택 분포에 따라 푸시·콜이 바뀔까?</h1>
+<article>
+<p>안녕하세요. E11·E12에서 버블의 콜은 ICM 필요 승률이 높아지고, 짧은 스택이 있으면 더 높아진다고 했죠. I19·I20에서는 SB 올인과 BB 콜을 칩 기준으로 계산했고요.
+오늘은 ICM으로 두 자리를 다 봐요. <strong>Hero와 상대 스택은 그대로인데, 다른 두 사람 스택만 바뀌어도</strong> 답이 바뀌어요.</p>
+<p>오늘 목표는 하나예요. <strong>이 조건에서 같은 핸드의 SB 올인·BB 콜이 스택 분포에 따라 어떻게 바뀌는지 알기.</strong></p>
+<hr />
+<h2>오늘의 조건 (고정)</h2>
+<p>4명 남음, 상금 1등 <strong>50</strong> · 2등 <strong>30</strong> · 3등 <strong>20</strong> · 4등 <strong>0</strong>(단위 점). 블라인드 SB 0.5BB · BB 1BB, 앤티 <strong>0</strong>, 전체 칩 <strong>65BB</strong>. CO·BTN은 폴드, <strong>SB 15BB vs BB 15BB</strong>예요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>분포</th>
+<th>CO</th>
+<th>BTN</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>① 짧은 스택 있음 (E11 장면)</td>
+<td>5BB</td>
+<td>30BB</td>
+</tr>
+<tr>
+<td>② 고른 스택</td>
+<td>17.5BB</td>
+<td>17.5BB</td>
+</tr>
+</tbody>
+</table></div>
+<p>숫자는 뚝섬 <strong>AOF 차트 엔진</strong>을 ICM 모드(상금 반영, 블라인드 압박 없음, 올인/폴드만)로 돌린 이론값이에요. 아래 금액은 칩이 아니라 <strong>기대 상금(점)</strong>이에요.</p>
+<p class="concl"><strong>결론부터 말할게요. 이 조건에서 SB의 T♠4♦는 ①에서 올인, ②에서 폴드이고, BB의 A♠J♦는 ①에서 폴드, ②에서 콜이 이득입니다.</strong> T♠4♦의 올인 − 폴드는 ① 약 +0.66, ② 약 −0.003(점)이에요.</p>
+<h2>1단계. BB의 콜 기준이 갈리는 이유</h2>
+<p>BB가 콜하면 15 vs 15라 지면 <strong>두 분포 모두 바로 4등(0)</strong>이에요. 차이는 <strong>폴드했을 때 기대 상금</strong>이에요(E11 방식, BB 14BB · SB 16BB).</p>
+<blockquote>
+<p>① ICM 필요 승률 = 25.55103(폴드) ÷ 38.18681(이김) = <strong>약 66.9%</strong> / ② 22.66692 ÷ 37.24696 = <strong>약 60.9%</strong></p>
+</blockquote>
+<p>①은 CO가 5BB라 BB가 폴드하고 기다릴 때 몫이 커서, 콜에 더 높은 승률이 필요해요. 그래서 엔진에서 BB 콜 범위는 ① <strong>약 3.5%</strong>, ② <strong>약 10.7%</strong>이고, SB 올인 범위는 ① <strong>약 99.6%</strong>, ② <strong>약 87.5%</strong>예요.</p>
+<h2>2단계. Hero가 SB에서 T♠4♦</h2>
+<p><img src="../카드/Ts.svg" width="48"> <img src="../카드/4d.svg" width="48"></p>
+<p>올인 − 폴드 = 접을 때 몫 + 콜 받을 때 몫(I18 방식, 단위 점).</p>
+<blockquote>
+<p>① 0.96494(접는 비율) × 1.38115 = <strong>약 +1.33</strong>, 0.03506(콜 비율) × (−19.14471) = <strong>약 −0.67</strong> → 합 <strong>약 +0.66</strong> → <strong>올인</strong>
+② 0.89347 × 1.60153 = <strong>약 +1.4309</strong>, 0.10653 × (−13.4599) = <strong>약 −1.4339</strong> → 합 <strong>약 −0.003</strong> → <strong>폴드</strong>(거의 본전이라 엔진은 가끔 올인을 섞어요)</p>
+</blockquote>
+<p>콜 받았을 때 평균 손해는 오히려 ①이 더 커요(약 −19.14 vs 약 −13.46). ①에서 올인이 좋은 건 BB가 <strong>거의 콜하지 않기</strong> 때문이에요.</p>
+<h2>3단계. Hero가 BB에서 A♠J♦ (SB가 엔진 범위로 올인)</h2>
+<p><img src="../카드/As.svg" width="48"> <img src="../카드/Jd.svg" width="48"></p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th></th>
+<th>① 짧은 스택 있음</th>
+<th>② 고른 스택</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SB 올인 범위 상대 에퀴티</td>
+<td>약 63.6%</td>
+<td>약 62.9%</td>
+</tr>
+<tr>
+<td>ICM 필요 승률</td>
+<td>약 66.9%</td>
+<td>약 60.9%</td>
+</tr>
+<tr>
+<td>판정</td>
+<td><strong>폴드</strong></td>
+<td><strong>콜</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>에퀴티는 비슷한데, ①은 필요 승률에 모자라고 ②는 넘어요.</p>
+<hr />
+<h2>"SB는 넓게 밀고 BB는 좁게 받으면, BB가 손해 아니에요?"</h2>
+<p>좋은 질문이에요. 이 조건에서는 BB가 블라인드를 자주 내줘도, 콜해서 4등이 될 위험을 피하는 게 기대 상금으로 더 나아요. SB는 그 사정을 알고 넓게 올인하는 거예요.</p>
+<h2>숫자가 뒤집히는 지점</h2>
+<ul>
+<li><strong>SB 올인</strong>: 접을 때 몫 + 콜 받을 때 몫이 0보다 큰지</li>
+<li><strong>BB 콜</strong>: 에퀴티가 ICM 필요 승률(= 폴드 ÷ 이김)을 넘는지</li>
+</ul>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>파이널 테이블에서는 <strong>다른 사람 스택</strong>도 보기</li>
+<li>이 조건에서 짧은 스택이 있으면 <strong>BB는 좁게 콜, SB는 넓게 올인</strong></li>
+<li>판단은 <strong>기대 상금(ICM)</strong> 으로</li>
+</ol></section>
+<hr />
+<h2>연습 문제 (같은 두 분포)</h2>
+<blockquote>
+<p>뚝섬 <strong>AOF 차트</strong>(새틀 프리플랍 차트)에서 그외 게임들 → 앤티 없음 → 테이블 인원 4명 → 포지션 SB(BB 콜은 포지션 BB → 앞에서 액션한 자리 SB) → 자리별 스택·상금 → 마감 후(ICM)로 맞춰 보세요. 화면은 블라인드 압박·실전 보정이 들어가고 15BB는 화면 개선 전이라, 차트 칸은 오늘과 다를 수 있어요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> ②에서 Hero가 SB 9♠9♥예요. 상대가 접는 비율 <strong>약 89.3%</strong>, 접으면 <strong>+1.6</strong>, 콜 받았을 때 평균 <strong>약 −4.37</strong>이에요. 올인?</p>
+<details>
+<summary>정답 보기</summary>
+<p>0.89347 × 1.60153 = <strong>약 +1.43</strong>, 0.10653 × (−4.3697) = <strong>약 −0.47</strong> → 합 <strong>약 +0.97</strong> → <strong>올인</strong>. 콜 받았을 때 손해가 T♠4♦보다 훨씬 작아서, 이 조건의 두 분포 모두에서 올인이에요.</p>
+</details>
+<p><strong>문제 2.</strong> Hero가 BB 9♠9♥예요. SB 올인 범위 상대 에퀴티는 ① <strong>약 72.5%</strong>, ② <strong>약 70.9%</strong>예요. 각각 콜?</p>
+<details>
+<summary>정답 보기</summary>
+<p>① 약 72.5% &gt; 약 66.9%, ② 약 70.9% &gt; 약 60.9% → 둘 다 <strong>콜</strong>. A♠J♦와 달리 에퀴티가 두 기준을 모두 넘어요.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 뚝섬 AOF 차트 엔진의 ICM 이론값 (4명 · 상금 50/30/20/0 · 앤티 없음 · 블라인드 압박·실전 보정 없음 · 올인/폴드만 · 카드 제거 없음) · 스택은 이 예시로 고정(전체 65BB) · 올인 결정이라 이번 결정의 최종 결과</small></p>
+</article>
+<nav class="nav"><a class="prev" href="109_E12.html"><div class="l">← 이전 글</div><div class="t">리스크 프리미엄: 버블에서 콜에 에퀴티가 얼마나 더 필요할까?</div></a><a class="next" href="111_E14.html"><div class="l">다음 글 →</div><div class="t">버블에서 빅스택의 올인은 왜 받기 어려울까?</div></a></nav></main>
+</body>
+</html>

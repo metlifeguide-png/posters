@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>밸런스: 리버 한 번 벳에 밸류와 블러프를 왜 섞을까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">개념</span><span class="n">고급 9번째 글 (전체 122편 중 105번째)</span></div><h1>밸런스: 리버 한 번 벳에 밸류와 블러프를 왜 섞을까?</h1>
+<article>
+<p>안녕하세요. A05에서 <strong>블러프 비중 = 벳 ÷ (팟 + 벳 × 2)</strong> 를 배웠죠. 그때는 "상대 블러프캐처가 본전이 되는 비율"이었어요.
+오늘은 같은 숫자를 <strong>벳하는 쪽의 레인지 전체 손익</strong>으로 다시 봐요. 블러프를 너무 적게, 딱 맞게, 너무 많이 섞으면 각각 얼마를 가져갈까요?</p>
+<p>오늘 목표는 하나예요. <strong>"상대가 가장 잘 대응할 때 내 레인지가 가져가는 돈"으로 밸런스의 뜻을 설명하기.</strong></p>
+<hr />
+<h2>1단계. 장면 정하기</h2>
+<p>리버 팟 <strong>10BB</strong>, 우리가 <strong>10BB(팟벳)</strong> 를 걸어요. 우리 벳 레인지는</p>
+<ul>
+<li><strong>밸류 20콤보</strong>: 콜 받으면 늘 이김</li>
+<li><strong>블러프 몇 콤보</strong>: 콜 받으면 늘 짐(벳하지 않으면 쇼다운에서 져서 0)</li>
+</ul>
+<p>상대는 블러프캐처 하나로 <strong>늘 콜하거나 늘 폴드</strong>한다고 단순화할게요. 상대는 둘 중 <strong>우리에게 더 불리한 쪽</strong>을 고른다고 봐요.</p>
+<blockquote>
+<p>팟벳의 블러프 비중 = 10 ÷ (10 + 10 × 2) = <strong>약 33.33%</strong></p>
+</blockquote>
+<h2>2단계. 블러프 수를 바꿔 보기 (밸류 20콤보 고정)</h2>
+<p>아래 합계는 <strong>벳한 콤보마다 가져가는 돈을 모두 더한 값</strong>이에요. <strong>상대가 늘 폴드</strong>하면 벳한 콤보마다 팟 10BB를 가져와요. <strong>상대가 늘 콜</strong>하면 밸류는 콤보마다 20BB(팟 + 상대 콜)를 벌고, 블러프는 10BB씩 잃어요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>블러프</th>
+<th>블러프 비중</th>
+<th>상대가 늘 폴드</th>
+<th>상대가 늘 콜</th>
+<th>상대의 선택 → 우리 합계</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4콤보</td>
+<td>약 16.67%</td>
+<td>240BB</td>
+<td>360BB</td>
+<td>폴드 → <strong>240BB</strong></td>
+</tr>
+<tr>
+<td>10콤보</td>
+<td>약 33.33%</td>
+<td>300BB</td>
+<td>300BB</td>
+<td>어느 쪽이든 → <strong>300BB</strong></td>
+</tr>
+<tr>
+<td>20콤보</td>
+<td>50%</td>
+<td>400BB</td>
+<td>200BB</td>
+<td>콜 → <strong>200BB</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>블러프 10콤보일 때 하나만 풀어 볼게요.</p>
+<blockquote>
+<p>늘 폴드: (20 + 10) × 10 = <strong>300BB</strong> / 늘 콜: 20 × 20 − 10 × 10 = 400 − 100 = <strong>300BB</strong></p>
+</blockquote>
+<h2>3단계. 표가 말하는 것</h2>
+<ul>
+<li><strong>블러프가 적으면</strong>(4콤보) 상대는 다 접어요. 밸류로 콜을 못 받아서 돈을 덜 벌죠</li>
+<li><strong>블러프가 많으면</strong>(20콤보) 상대는 다 콜해요. 블러프가 잡혀서 돈을 잃죠</li>
+<li><strong>딱 맞게 섞으면</strong>(10콤보) 상대가 무엇을 해도 <strong>300BB</strong> 로 같아요. 상대가 가장 잘 대응해도 이게 가장 큰 값이에요</li>
+</ul>
+<p><strong>밸런스 = 상대가 가장 잘 대응해도 손해를 덜 보도록 섞는 것</strong>이에요. 상대를 읽을 수 없을 때 쓰는 <strong>기본값</strong>이죠.</p>
+<p>비유하면 <strong>가위바위보에서 셋을 고르게 내는 것</strong>이에요. 고르게 내면 상대가 무엇을 내도 평균은 같아요. 한쪽으로 치우치면 그걸 아는 상대에게 져요.</p>
+<h2>4단계. 그럼 늘 밸런스를 맞춰야 할까</h2>
+<p>상대가 <strong>최선으로 대응하지 않는 사람</strong>이라면, 일부러 치우치는 게 더 벌 수 있어요. 예를 들어 늘 콜하는 상대에게는 블러프를 빼고 밸류만 벳하는 게 낫죠(문제 2). 이건 프로 과정의 익스플로잇에서 다뤄요. 고급에서는 먼저 <strong>밸런스가 기준선</strong>이라는 걸 잡아 둬요.</p>
+<hr />
+<h2>"실제로는 상대가 늘 콜·늘 폴드만 하지 않잖아요?"</h2>
+<p>좋은 질문이에요. 맞아요. 실제 상대는 섞어서 대응해요. 오늘은 그 끝 두 개만 보면 원리가 보여서 단순화했어요. 딱 맞게 섞으면 끝 두 개의 값이 같아서, 그 사이 어떤 섞음으로 대응해도 결과가 같아요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>블러프 비중 = <strong>벳 ÷ (팟 + 벳 × 2)</strong> 에서 상대의 콜·폴드 결과가 같아져요</li>
+<li>밸런스 = <strong>상대가 가장 잘 대응해도 손해를 덜 보는</strong> 섞음</li>
+<li>상대가 치우치면 우리도 치우칠 수 있어요 — 기준선은 밸런스</li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>홀덤학습 <strong>에퀴티 계산기</strong>에서 내 카드를 고른 뒤 <strong>[콜 수익]</strong> 칸에 <strong>지금 팟(상대 벳 포함)</strong>과 <strong>콜 금액</strong>을 넣으면 필요 에퀴티가 나와요. 그 값이 블러프 비중과 같은지 확인해 보세요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 리버 팟 10BB에 <strong>5BB(하프팟)</strong> 벳, 밸류 30콤보. 블러프를 10콤보 섞을 때와 15콤보 섞을 때, 상대가 가장 잘 대응하면 우리 합계는 각각?</p>
+<details>
+<summary>정답 보기</summary>
+<p>하프팟의 블러프 비중은 <strong>25%</strong>.</p>
+<ul>
+<li>블러프 10콤보(25%): 늘 폴드 (30 + 10) × 10 = <strong>400BB</strong>, 늘 콜 30 × 15 − 10 × 5 = 450 − 50 = <strong>400BB</strong> → 어느 쪽이든 <strong>400BB</strong></li>
+<li>블러프 15콤보(약 33.33%): 늘 폴드 <strong>450BB</strong>, 늘 콜 450 − 75 = <strong>375BB</strong> → 상대는 콜 → <strong>375BB</strong></li>
+</ul>
+<p>하프팟에는 블러프를 덜 섞어야 해요.</p>
+</details>
+<p><strong>문제 2.</strong> 1단계 장면(팟 10BB, 팟벳)에서 <strong>블러프 0콤보</strong>, 밸류 20콤보로만 벳하면? 상대가 <strong>늘 콜하는 사람</strong>이라면?</p>
+<details>
+<summary>정답 보기</summary>
+<p>가장 잘 대응하는 상대는 다 접어서 <strong>200BB</strong>(20 × 10). 하지만 늘 콜하는 상대라면 20 × 20 = <strong>400BB</strong>로, 밸런스(300BB)보다 더 벌어요. 상대가 치우치면 우리도 치우칠 수 있다는 뜻이에요.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 밸류는 늘 이기고 블러프는 늘 진다고 가정 · 상대는 늘 콜/늘 폴드로 단순화</small></p>
+</article>
+<nav class="nav"><a class="prev" href="104_E07.html"><div class="l">← 이전 글</div><div class="t">헤즈업 3벳팟 플랍: 강한 핸드가 어느 쪽에 몰리면 벳이 달라질까? (헤즈업 기준)</div></a><a class="next" href="106_E09.html"><div class="l">다음 글 →</div><div class="t">리버 폴라라이즈 vs 머지: 벳 레인지의 &quot;모양&quot;은 무엇이 다를까?</div></a></nav></main>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>헤즈업 프리플랍: 스택 깊이가 바뀌면 SB 첫 행동은 어떻게 달라질까? (헤즈업 기준) · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">개념</span><span class="n">고급 19번째 글 (전체 122편 중 115번째)</span></div><h1>헤즈업 프리플랍: 스택 깊이가 바뀌면 SB 첫 행동은 어떻게 달라질까? (헤즈업 기준)</h1>
+<article>
+<p>안녕하세요. I12에서 100BB 헤즈업 SB의 첫 행동 표를 EV로 읽었고, E26에서 솔버 표 읽는 순서를 정리했죠.
+오늘은 같은 표를 <strong>스택 깊이</strong>만 바꿔 가며, 같은 핸드의 선택이 어떻게 바뀌는지 봐요.</p>
+<p>오늘 목표는 하나예요. <strong>깊이가 바뀔 때 선택지와 핸드별 EV 순서가 어떻게 달라지는지 읽고, 다음 깊이를 예측해 보기.</strong></p>
+<hr />
+<h2>1단계. 오늘의 조건과 모델</h2>
+<ul>
+<li>둘만 남은 게임, BB가 <strong>앤티 1BB</strong>를 함께 내는 빅앤티, 시작 팟 <strong>2.5BB</strong>. SB가 버튼이라 플랍부터는 나중에 행동해요</li>
+<li><strong>림프</strong> = 레이즈 없이 BB 금액까지만 맞추는 콜(I12)</li>
+</ul>
+<p>숫자는 뚝섬 <strong>헤즈업 프리플랍 근사 모델</strong>이에요. 플랍 이후를 풀지 않고 <strong>에퀴티 실현 계수</strong>로 단순화했어요. 실현 계수 = 계산된 에퀴티에 곱해 실제로 가져가는 몫을 정하는 값이에요. 이 모델에서 레이즈 팟의 SB는 1.10, 25BB를 넘는 림프 팟의 SB는 0.9이고, SPR과 핸드에 따라 조정돼요. 실제 솔버 결과가 아니에요.</p>
+<p>모델이 깊이마다 다르게 둔 것 중 주요한 것은 이래요.</p>
+<ul>
+<li><strong>올인 선택지</strong>: 첫 행동 올인은 25BB 이하에서만 있어요</li>
+<li><strong>오픈 크기</strong>: 25BB <strong>2BB</strong>, 50BB <strong>2.1BB</strong>, 100BB <strong>2.5BB</strong>, 200BB <strong>2.6BB</strong>(3벳·4벳 크기도 달라요)</li>
+<li><strong>림프 팟 실현 계수</strong>: 25BB 이하와 그 위가 달라요</li>
+</ul>
+<p class="concl"><strong>결론부터 말할게요. 이 모델에서 폴드는 50BB 약 7.2%, 200BB 약 0.02%, 25·100BB 0%이고, 25BB에서는 6♠5♠·5♠4♠가 올인 100%로 가요(25BB 전체 올인은 약 2.8%).</strong></p>
+<h2>2단계. 깊이별 전체 빈도</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>스택</th>
+<th>폴드</th>
+<th>림프</th>
+<th>레이즈</th>
+<th>올인</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>25BB</td>
+<td>0%</td>
+<td>약 38.7%</td>
+<td>약 58.4%</td>
+<td>약 2.8%</td>
+</tr>
+<tr>
+<td>50BB</td>
+<td>약 7.2%</td>
+<td>약 7.8%</td>
+<td>약 85%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>100BB</td>
+<td>0%</td>
+<td>약 33%</td>
+<td>약 67%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>200BB</td>
+<td>약 0.02%</td>
+<td>약 31.3%</td>
+<td>약 68.7%</td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<p>50BB에서 접는 핸드는 7♠2♦·3♠2♦·4♠2♦(폴드 100%), 8♠2♦(99%)·8♠3♦(98%) 같은 약한 오프수트예요. 림프 비중이 깊이마다 크게 움직이는 <strong>원인</strong>은 이 글에서 단정하지 않아요. 모델이 낸 결과를 핸드별 EV로 읽어요.</p>
+<h2>3단계. 6♠5♠ 하나로 따라가기</h2>
+<p>EV는 핸드 시작 전 스택 대비 평균 손익이고, 폴드는 <strong>−0.5BB</strong>예요(I12).</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>스택</th>
+<th>림프 EV</th>
+<th>레이즈 EV</th>
+<th>올인 EV</th>
+<th>모델 선택</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>25BB</td>
+<td>+0.1BB</td>
+<td>+0.12BB</td>
+<td>+0.21BB</td>
+<td>올인 100%</td>
+</tr>
+<tr>
+<td>50BB</td>
+<td>+0.1BB</td>
+<td>+0.19BB</td>
+<td>—</td>
+<td>레이즈 100%</td>
+</tr>
+<tr>
+<td>100BB</td>
+<td>+0.06BB</td>
+<td>+0.03BB</td>
+<td>—</td>
+<td>림프 100%</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>25BB</strong>: 올인 선택지가 있고, 그 EV가 가장 커요. 5♠4♠도 올인 <strong>+0.14BB</strong>로 올인 100%예요</li>
+<li><strong>50BB</strong>: 올인이 사라져, 남은 둘 중 레이즈가 커요</li>
+<li><strong>100BB</strong>: 이 모델에서는 림프가 레이즈보다 0.03BB 커요</li>
+</ul>
+<p>같은 핸드라도 <strong>어떤 선택지가 있는지</strong>, 그리고 깊이에 따라 <strong>EV 순서</strong>가 바뀌어요.</p>
+<hr />
+<h2>"깊어질수록 더 넓게 치는 거 아니에요?"</h2>
+<p>좋은 질문이에요. "넓게"를 <strong>접지 않는 비율</strong>로 보면, 이 모델은 한 방향으로 움직이지 않아요. 7♠2♦는 50BB에서 림프 −0.51BB가 폴드 −0.5BB보다 0.01BB 나빠 접고, 100BB에서는 림프 −0.45BB가 0.05BB 나아서 림프예요. <strong>EV 차이가 아주 작은 핸드는 근사의 오차 안에서도 선택이 뒤집힐 수 있어요.</strong></p>
+<h2>숫자가 뒤집히는 지점</h2>
+<p>기준은 <strong>행동별 EV의 순서</strong>와 <strong>선택지가 생기거나 사라지는 깊이</strong>예요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>깊이가 바뀌면 <strong>올인 선택지·오픈 크기</strong>부터 확인하기</li>
+<li>표의 선택보다 <strong>행동별 EV 순서</strong>를 보기</li>
+<li>EV 차이가 아주 작은 핸드는 <strong>어느 쪽도 큰 손해가 없다</strong>고 읽기</li>
+</ol></section>
+<hr />
+<h2>연습 문제 (같은 조건)</h2>
+<p><strong>문제 1.</strong> 25BB에서 K♠T♠는 레이즈 <strong>+1.47BB</strong>, 올인 <strong>+1.47BB</strong>로 둘을 섞어요. 50BB에는 올인 선택지가 없어요. 50BB에서 무엇이 될지 예측해 보세요.</p>
+<details>
+<summary>정답 보기</summary>
+<p>남은 선택지는 림프와 레이즈예요. 25BB에서도 림프(+1.39BB)가 가장 작았으니 레이즈를 예측할 수 있어요. 모델 값도 50BB 레이즈 <strong>+1.52BB</strong> &gt; 림프 <strong>+1.47BB</strong>로 <strong>레이즈 100%</strong>예요. 레이즈 EV 자체도 깊이에 따라 바뀌었으니, 올인이 사라진 것만이 이유라고 보지는 않아요.</p>
+</details>
+<p><strong>문제 2.</strong> 4♣2♦의 EV예요. 25BB: 폴드 −0.5BB, 림프 <strong>−0.36BB</strong>. 50BB: 폴드 −0.5BB, 림프 <strong>−0.53BB</strong>. 각 깊이에서 무엇을 고르고, 둘 사이 30BB에서는 어떨지 예측해 보세요.</p>
+<details>
+<summary>정답 보기</summary>
+<p>25BB는 림프가 폴드보다 나아 <strong>림프</strong>, 50BB는 림프가 더 나빠 <strong>폴드</strong>예요. 림프 EV가 깊어질수록 폴드 −0.5BB 쪽으로 내려간다고 보면, 30BB는 그 경계 근처일 수 있어요. 실제로 30BB에서는 폴드·림프 모두 <strong>−0.5BB</strong>라 <strong>50%씩 섞어요</strong>. 근사 모델이라 예측과 어긋나는 깊이도 있을 수 있어요.</p>
+</details>
+<blockquote>
+<p>뚝섬 <strong>헤즈업 공부</strong> 화면에서 스택을 바꿔 가며 같은 표를 볼 수 있어요. 오늘 숫자는 위 표의 EV로 직접 비교해 보세요.</p>
+</blockquote>
+<hr />
+<p><small>AI 작성 · 헤즈업·빅앤티 근사 모델 기준(플랍 이후 실현 계수로 단순화, 솔버 결과 아님 · 6맥스 아님) · SB(버튼) 첫 행동 · EV는 핸드 시작 전 스택 대비</small></p>
+</article>
+<nav class="nav"><a class="prev" href="114_E17.html"><div class="l">← 이전 글</div><div class="t">새틀라이트 버블: 시드권 4장, 5명 남았을 때 큰 스택은 얼마나 조심해야 할까?</div></a><a class="next" href="116_E19.html"><div class="l">다음 글 →</div><div class="t">헤즈업 턴 프로브: 플랍에서 체크가 돌아오면 BB는 턴에 먼저 벳할까? (헤즈업 기준)</div></a></nav></main>
+</body>
+</html>

@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>고급 마무리 시험: 8문제로 고급 핵심을 확인해 볼까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">개념</span><span class="n">고급 26번째 글 (전체 122편 중 122번째)</span></div><h1>고급 마무리 시험: 8문제로 고급 핵심을 확인해 볼까?</h1>
+<article>
+<p>안녕하세요. 고급 과정 마지막 글이에요. 앞 글에 없던 <strong>새 상황 8문제</strong>예요. 종이에 먼저 풀어 보세요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>블로커·밸런스로 <strong>리버 콜과 블러프 수</strong>를 정할 수 있는지</li>
+<li>토너먼트에서 <strong>칩 기준과 ICM 기준</strong>을 나란히 놓고 판단할 수 있는지</li>
+<li>딜·푸시/폴드·넛 우위·솔버 표처럼 <strong>기준선과 레인지</strong>로 읽는 문제를 혼자 풀 수 있는지</li>
+</ul></div>
+<p>합격 기준은 이래요. <strong>8문제 중 6문제 이상, 그리고 1·2부(Q1~Q4)는 모두 맞히기.</strong> 콜·폴드 같은 판단과 이유가 맞으면 정답(반올림 차이는 괜찮아요).</p>
+<hr />
+<h2>1부. 블로커와 밸런스 (E01~E03·E08)</h2>
+<p><strong>Q1.</strong> 리버, 팟 20BB에 상대 20BB 벳. 상대 벳 레인지는 밸류 <strong>12콤보</strong>·블러프 <strong>5콤보</strong>로 가정해요. Hero 블러프캐처 X는 상대 콤보를 안 지우고, Y는 <strong>밸류만 3콤보</strong> 지워요. 각각 콜할까요?</p>
+<details>
+<summary>정답</summary>
+<p>필요 에퀴티 = 20(상대 벳) ÷ (20(팟) + 20(상대 벳) + 20(내 콜)) = <strong>33.3%</strong></p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th></th>
+<th>상대 레인지</th>
+<th>에퀴티</th>
+<th>콜 EV(이기면 40 = 팟 + 상대 벳)</th>
+<th>답</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>X</td>
+<td>밸류 12 · 블러프 5</td>
+<td>5 ÷ 17 = 약 29.4%</td>
+<td>0.29412 × 40 − 0.70588 × 20 = 약 −2.35BB</td>
+<td>폴드</td>
+</tr>
+<tr>
+<td>Y</td>
+<td>밸류 9 · 블러프 5</td>
+<td>5 ÷ 14 = 약 35.7%</td>
+<td>0.35714 × 40 − 0.64286 × 20 = 약 +1.43BB</td>
+<td>콜</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>밸류를 지우는 카드</strong>가 답을 바꿔요(E03).</p>
+</details>
+<p><strong>Q2.</strong> 리버, 팟 12BB에 Hero가 9BB 벳. 밸류 <strong>14콤보</strong>는 늘 이기고 블러프는 늘 진다고 봐요. ① 상대 블러프캐처가 본전이 되는 블러프 수는? ② 블러프를 2콤보만 섞으면, 상대가 가장 잘 대응할 때 Hero 벳 레인지 합계가 ①만큼 섞을 때보다 클까요?</p>
+<details>
+<summary>정답</summary>
+<p>① 블러프 비중 = 9 ÷ (12 + 2 × 9) = <strong>30%</strong> → 벳 레인지 = 14 ÷ (1 − 0.3) = 20콤보, 블러프 <strong>6콤보</strong>
+② 합계(E08) = 벳한 콤보마다 가져가는 돈의 합. 콜 받으면 밸류는 21(팟 + 상대 콜)을 벌고 블러프는 9를 잃어요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>블러프</th>
+<th>늘 폴드</th>
+<th>늘 콜</th>
+<th>상대 최선 → 합계</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6콤보</td>
+<td>(14 + 6) × 12 = 240BB</td>
+<td>14 × 21 − 6 × 9 = 240BB</td>
+<td>어느 쪽이든 → 240BB</td>
+</tr>
+<tr>
+<td>2콤보</td>
+<td>(14 + 2) × 12 = 192BB</td>
+<td>14 × 21 − 2 × 9 = 276BB</td>
+<td>폴드 → 192BB</td>
+</tr>
+<tr>
+<td>12콤보</td>
+<td>312BB</td>
+<td>186BB</td>
+<td>콜 → 186BB</td>
+</tr>
+</tbody>
+</table></div>
+<p>2콤보는 <strong>더 작아요</strong>. 딱 맞게 섞을 때가 가장 커요.</p>
+</details>
+<h2>2부. ICM과 새틀 (E10~E14·E17)</h2>
+<p><strong>Q3.</strong> 4명 남은 버블, 상금 50·30·20·0, 전체 칩 100BB. Hero(BB) 25BB, SB 30BB, 나머지 35BB·10BB. SB 올인, Hero 에퀴티는 <strong>55%</strong>로 정해요. ICM 기대 상금은 폴드 약 25.94·이김 약 38.1·짐 0. 칩 기준·ICM 기준으로 각각 콜할까요?</p>
+<details>
+<summary>정답</summary>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Hero</th>
+<th>칩</th>
+<th>ICM 기대 상금</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>더 낼 칩 · 콜한 뒤 팟</td>
+<td>25 − 1(이미 낸 BB) = 24BB · 25 + 25(SB가 맞춰 넣는 칩) = 50BB</td>
+<td>지면 잃는 상금 25.94 · 이기면 얻는 상금 38.1 − 25.94 = 12.16</td>
+</tr>
+<tr>
+<td>폴드</td>
+<td>24BB</td>
+<td>약 25.94</td>
+</tr>
+<tr>
+<td>콜해서 이김</td>
+<td>50BB</td>
+<td>약 38.1</td>
+</tr>
+<tr>
+<td>콜해서 짐</td>
+<td>0BB(탈락)</td>
+<td>0</td>
+</tr>
+<tr>
+<td>필요 에퀴티</td>
+<td>24 ÷ 50 = 48%</td>
+<td>25.94 ÷ (25.94 + 12.16) = 약 68.1%</td>
+</tr>
+<tr>
+<td>에퀴티 55%라면</td>
+<td>콜</td>
+<td>폴드</td>
+</tr>
+</tbody>
+</table></div>
+<p>ICM 필요 에퀴티 = 지면 잃는 상금 ÷ (지는 몫 + 이기면 얻는 상금). 차이 약 20.1%p가 리스크 프리미엄이에요(E12).</p>
+</details>
+<p><strong>Q4.</strong> 새틀라이트, 4명 남았고 시드권 3장. 전체 칩 100BB, Hero(BB) 30BB, SB 10BB, 나머지 40BB·20BB. SB 올인, Hero 에퀴티는 <strong>50%</strong>로 정해요. 시드 확률은 폴드 약 85.5%·이김 100%·짐 70%. 콜할까요?</p>
+<details>
+<summary>정답</summary>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Hero</th>
+<th>칩</th>
+<th>시드 확률</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>더 낼 칩 · 콜한 뒤 팟</td>
+<td>10 − 1 = 9BB · 10 + 10 = 20BB</td>
+<td>지면 잃는 확률 85.545 − 70 = 15.545 · 이기면 얻는 확률 100 − 85.545 = 14.455</td>
+</tr>
+<tr>
+<td>폴드</td>
+<td>29BB</td>
+<td>약 85.5%</td>
+</tr>
+<tr>
+<td>콜해서 이김</td>
+<td>40BB(3명 남음)</td>
+<td>100%</td>
+</tr>
+<tr>
+<td>콜해서 짐</td>
+<td>20BB</td>
+<td>70%</td>
+</tr>
+<tr>
+<td>필요 에퀴티</td>
+<td>9 ÷ 20 = 45%</td>
+<td>15.545 ÷ (15.545 + 14.455) = 약 51.8%</td>
+</tr>
+<tr>
+<td>에퀴티 50%라면</td>
+<td>콜</td>
+<td>폴드</td>
+</tr>
+</tbody>
+</table></div>
+<p>시드는 같은 상금으로 본 ICM이에요. 이 조건에서는 져서 잃는 확률이 이겨서 얻는 확률보다 커요(E17).</p>
+</details>
+<h2>3부. 딜 (E24)</h2>
+<p><strong>Q5.</strong> 3명 남음, 상금 50·30·20(합계 100점), 칩 A 45BB·B 35BB·C 20BB, ICM 기대 상금 A 약 37.05·B 약 34.24·C 약 28.71. <strong>칩 비례 그대로</strong>와 <strong>최저 상금 먼저 + 나머지 칩 비례</strong>로 <strong>ICM − 칩촙</strong>을 구해 보세요(+면 그 사람은 칩촙에서 ICM보다 <strong>덜</strong> 받아요).</p>
+<details>
+<summary>정답</summary>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th></th>
+<th>ICM</th>
+<th>칩 비례 그대로</th>
+<th>ICM − 칩촙</th>
+<th>최저 상금 먼저 + 칩 비례</th>
+<th>ICM − 칩촙</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>약 37.05</td>
+<td>45</td>
+<td>약 −7.95</td>
+<td>38</td>
+<td>약 −0.95</td>
+</tr>
+<tr>
+<td>B</td>
+<td>약 34.24</td>
+<td>35</td>
+<td>약 −0.76</td>
+<td>34</td>
+<td>약 +0.24</td>
+</tr>
+<tr>
+<td>C</td>
+<td>약 28.71</td>
+<td>20</td>
+<td>약 +8.71</td>
+<td>28</td>
+<td>약 +0.71</td>
+</tr>
+</tbody>
+</table></div>
+<p>최저 상금 먼저: 20씩 먼저, 나머지 40은 칩 비율로(A = 20 + 40 × 0.45 = 38). 이 조건에서는 이쪽이 ICM에 가깝고, 칩 비례 그대로면 C가 약 8.71 덜 받아요. 딜 권고는 아니에요(E24).</p>
+</details>
+<h2>4부. 푸시/폴드 (E15·E16)</h2>
+<p><strong>Q6.</strong> 헤즈업, 둘 다 8BB, 앤티 없음. SB인 Hero는 올인 아니면 폴드. BB가 엔진 이론값대로 <strong>약 44.5%</strong> 콜한다고 볼 때, Q♠3♦와 7♥4♥ 중 무엇을 올인할까요? 콜 받았을 때 에퀴티는 각각 <strong>약 34.2%</strong>·<strong>약 36.3%</strong>예요.</p>
+<details>
+<summary>정답</summary>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th></th>
+<th>접을 때 몫</th>
+<th>콜 받을 때 몫</th>
+<th>올인 − 폴드</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>기준(폴드 스택 8 − 0.5 = 7.5BB)</td>
+<td>약 55.5% 접음 × 1.5BB(9 − 7.5)</td>
+<td>약 44.5% 콜 × (이기면 +8.5BB, 지면 −7.5BB)</td>
+<td></td>
+</tr>
+<tr>
+<td>Q♠3♦</td>
+<td>0.55524 × 1.5 = 약 +0.83</td>
+<td>0.44476 × (0.34182 × 8.5 − 0.65818 × 7.5) = 약 −0.9</td>
+<td>약 −0.07BB → 폴드</td>
+</tr>
+<tr>
+<td>7♥4♥</td>
+<td>약 +0.83</td>
+<td>0.44476 × (0.36283 × 8.5 − 0.63717 × 7.5) = 약 −0.75</td>
+<td>약 +0.08BB → 올인</td>
+</tr>
+</tbody>
+</table></div>
+<p>접을 때 몫이 같으니 승부는 <strong>콜 받을 때 몫</strong>에서 갈려요(E15).</p>
+</details>
+<h2>5부. 넛 우위와 솔버 표 (E05·E26)</h2>
+<p><strong>Q7.</strong> 플랍 K♠ Q♦ 2♣, A25·E05의 가정 레인지(BTN 오픈 <strong>302콤보</strong> vs BB 콜 <strong>306콤보</strong>)예요. 페어는 BTN 22 이상 전부, BB 22~JJ. KQ는 둘 다 수딧·오프수트가 다 있고, K2·Q2는 둘 다 없어요. 투페어 이상을 세어 누가 넛 우위인지 말해 보세요.</p>
+<details>
+<summary>정답</summary>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th></th>
+<th>셋(보드에 한 장씩 → 3콤보씩)</th>
+<th>KQ 투페어(남은 K 3장 × Q 3장)</th>
+<th>합계</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BTN</td>
+<td>KK·QQ·22 → 3 × 3 = 9콤보</td>
+<td>9콤보</td>
+<td>18콤보(약 6%)</td>
+</tr>
+<tr>
+<td>BB</td>
+<td>22 → 3콤보</td>
+<td>9콤보</td>
+<td>12콤보(약 3.9%)</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>BTN이 넛 우위</strong>예요. 이 가정에서 BB는 KK·QQ를 3벳해서 콜 레인지에 없어요(E05).</p>
+</details>
+<p><strong>Q8.</strong> 헤즈업 100BB 싱글레이즈(빅앤티, BTN 2.5BB 오픈 · BB 콜), 플랍 K♠ T♥ 6♦. BB 체크 뒤 BTN의 솔버 DB 빈도예요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>BTN</th>
+<th>체크</th>
+<th>2BB(팟의 1/3)</th>
+<th>4.5BB(팟의 75%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>전체</td>
+<td>16.8%</td>
+<td>63%</td>
+<td>20.2%</td>
+</tr>
+<tr>
+<td>KTo(투페어)</td>
+<td>0%</td>
+<td>26%</td>
+<td>74%</td>
+</tr>
+<tr>
+<td>QQ(K 아래 페어)</td>
+<td>37%</td>
+<td>63%</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>QJo(양방 드로우)</td>
+<td>6%</td>
+<td>79%</td>
+<td>15%</td>
+</tr>
+</tbody>
+</table></div>
+<p>① BTN 벳 비율 전체는? ② 세 핸드의 행동이 갈리는 이유는? ③ 6맥스 CO 대 BB에 그대로 써도 될까요?</p>
+<details>
+<summary>정답</summary>
+<p>① 63% + 20.2% = <strong>약 83.2%</strong>
+② KTo는 팟을 키울 강한 핸드라 큰 벳이 많고, QQ는 K에 지지만 약한 페어·드로우에게는 이겨서 작은 벳과 체크를 섞어요. 크게 벳하면 QQ가 이기는 약한 핸드는 접고 K 이상만 남기 쉬워서, 큰 벳은 쓰지 않아요. QJo는 A나 9가 오면 스트레이트가 되는 양방 드로우라 주로 작게 벳하고 크게도 조금 섞어요. 핸드별 값은 클래스 평균이에요(E26)
+③ <strong>안 돼요.</strong> 헤즈업·빅앤티·100BB 값이고, 프리플랍 레인지도 헤즈업 프리플랍 솔버 레인지(BB가 강한 핸드를 넓게 3벳)라 6맥스 CO·BB 레인지와 달라요(E04·E06)</p>
+</details>
+<hr />
+<section class="sec why"><h2>왜 그럴까: 8문제가 모두 묻는 한 가지</h2>
+<p>문제 모양은 다 달랐지만, 사실 여덟 문제는 같은 걸 물었어요. <strong>"이 결정의 기준선은 무엇이고, 그 기준선은 누가 정하나."</strong></p>
+<h3>기준선을 정하는 쪽</h3>
+<ul>
+<li><strong>Q1·Q2</strong>: 콜과 블러프의 기준선은 <strong>벳 크기</strong>가 정해요. 블로커는 기준선이 아니라 상대 레인지의 콤보를 지워서 <strong>내 승률 쪽</strong>을 움직여요</li>
+<li><strong>Q3·Q4</strong>: 같은 올인 콜도 토너먼트에서는 <strong>상금 구조</strong>가 기준선을 끌어올려요. 잃는 칩의 상금 가치가 따는 칩의 상금 가치보다 크니까요</li>
+<li><strong>Q6</strong>: 푸시는 <strong>접을 때 몫과 콜 받을 때 몫</strong>을 합쳐 폴드와 비교해요. 기준선은 폴드예요</li>
+<li><strong>Q5</strong>는 결정이 아니라 분배 문제라 결이 조금 달라요. 여기서는 <strong>어떤 분배 기준</strong>을 쓰느냐가 숫자를 정해요</li>
+</ul>
+<h3>레인지로 읽는 쪽</h3>
+<ul>
+<li><strong>Q7·Q8</strong>: 여기서는 기준선보다 <strong>두 레인지에서 강한 핸드가 어디에 몰렸나</strong>가 답을 정해요. Q8에서 BB 콜 레인지에는 KK·TT·66 셋도 KT 투페어도 없어서(3벳으로 갔어요), BTN이 레인지 대부분으로 벳했죠</li>
+</ul>
+<p>이게 무슨 뜻이냐면, 고급 문제는 <strong>내 핸드 한 장보다 기준선과 레인지 전체</strong>를 먼저 보게 한다는 거예요. 틀린 문제가 있다면 그 문제에서 무엇이 답을 정했는지(기준선인지, 레인지인지)부터 다시 보세요.</p>
+</section><section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. 토너먼트에서 칩 계산만 하고 끝내기</strong>
+칩 기준 필요 에퀴티만 구하면 콜처럼 보이는 자리가 있어요. Q3처럼 칩 기준은 48%인데 ICM 기준은 약 68.1%일 수 있어요. 버블·새틀에서는 그 옆에 <strong>ICM 기준 필요 에퀴티</strong>를 꼭 나란히 적어요(E12).</p></div><div class="mis-card"><p><strong>실수 2. 블로커를 느낌으로 쓰기</strong>
+"좋은 카드를 들었으니 콜"처럼 블로커를 기분으로 쓰는 거예요. Q1에서 밸류만 3콤보 지운 Y는 이길 몫이 약 29.4%에서 약 35.7%로 올랐어요. 블로커는 <strong>밸류를 지우는지, 블러프를 지우는지</strong>에 따라 정반대로 작용하니, 지우는 콤보를 실제로 세어요(E01~E03).</p></div><div class="mis-card"><p><strong>실수 3. 솔버의 섞는 비율을 정답으로 외우기</strong>
+"이 핸드는 몇 % 체크"를 외워서 다른 판에 그대로 쓰는 거예요. Q8의 QQ는 체크 37%·작은 벳 63%였어요. 섞는다는 건 두 행동의 가치가 비슷하다는 뜻이고, 레인지나 조건이 조금만 바뀌어도 비율은 바뀌어요. 대신 <strong>그 핸드가 왜 두 행동 사이에 있는지</strong>를 가져가요(E26).</p></div></section>
+<hr />
+<h2>"몇 개 틀렸는데, 다음 과정 가도 돼요?"</h2>
+<p>좋은 질문이에요. 프로 과정은 준비 중이니, 그 전까지 <strong>틀린 문제의 글</strong>을 복습해요. 고급 핵심만 골라서 '시험 밖' 글은 확인하지 않았어요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>결과</th>
+<th>다시 볼 글</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q1·Q2 틀림</td>
+<td>E01~E03(블로커)·E08(밸런스)을 보고 다시 풀기</td>
+</tr>
+<tr>
+<td>Q3·Q4 틀림</td>
+<td>E10~E14(ICM·리스크 프리미엄)·E17(새틀)을 보고 다시 풀기</td>
+</tr>
+<tr>
+<td>1·2부는 다 맞히고 Q5~Q8에서 두 문제까지 틀림</td>
+<td>목표를 이뤘어요. Q5→E24, Q6→E15·E16, Q7→A25·E05, Q8→E04·E06·E26</td>
+</tr>
+<tr>
+<td>Q5~Q8에서 세 문제 이상 틀림</td>
+<td>위 짝을 복습하고 며칠 뒤 다시 풀기</td>
+</tr>
+<tr>
+<td>시험 밖</td>
+<td>E07(3벳팟 플랍)·E09(폴라라이즈)·E18(헤즈업 프리플랍)·E19(턴 프로브)·E20(레이즈 블러프)·E21(체크 레인지)·E22(씬밸류)·E23(긴장 체크리스트)</td>
+</tr>
+</tbody>
+</table></div>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>블러프캐처는 <strong>상대 레인지에서 무엇을 지우는지</strong>까지 보기</li>
+<li>토너에서는 <strong>칩 기준과 ICM 기준 필요 에퀴티를 나란히</strong></li>
+<li>솔버 표는 <strong>그 조건(헤즈업·빅앤티·100BB·그 프리플랍 레인지) 안에서만</strong> 읽기</li>
+</ol>
+</section><h2>학습툴로 확인하기</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>문제</th>
+<th>학습툴</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q1</td>
+<td>홀덤학습 <strong>에퀴티 계산기</strong>에서 카드를 아무거나 고른 뒤 <strong>[콜 수익]</strong> 칸에 지금 팟 40BB(팟 + 상대 벳)·콜 20BB → 나온 필요 승률을 29.4%·35.7%와 비교</td>
+</tr>
+<tr>
+<td>Q2</td>
+<td>블러프 본전은 <strong>팟 오즈</strong> 퀴즈 <strong>Lv.5(블러프 본전)</strong>, 합계는 위 식으로 직접</td>
+</tr>
+<tr>
+<td>Q3·Q4</td>
+<td>뚝섬 <strong>AOF 차트</strong> → 그외 게임들 → 4명 → 포지션 BB → 앞에서 액션한 자리 SB → 상금(Q4는 새틀(티켓)·티켓 받는 인원 3)·자리별 스택 → 레지 마감 후(ICM). 블라인드 압박이 들어가 숫자가 달라서 <strong>ICM 쪽이 더 높게 나오는지만</strong> 보기</td>
+</tr>
+<tr>
+<td>Q5·Q7</td>
+<td>칸이 없어 위 식으로 직접</td>
+</tr>
+<tr>
+<td>Q6</td>
+<td><strong>AOF 차트</strong> → 그외 게임들 → 2명 → 포지션 SB → 두 스택 8BB (화면은 실전 보정으로 좁게 나올 수 있음)</td>
+</tr>
+<tr>
+<td>Q8</td>
+<td>사이트 헤즈업 솔버 조회는 비슷한 대표 보드와 사이트에 들어 있는 레인지로 보여 줘서 숫자가 다를 수 있음</td>
+</tr>
+</tbody>
+</table></div>
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>리버 콜·블러프의 기준선은 <strong>벳 크기</strong>가, 승률 쪽은 <strong>상대 레인지 구성(블로커 포함)</strong>이 정해요</li>
+<li>토너먼트에서는 <strong>ICM 기준선이 칩 기준선보다 높아요</strong>. 그 차이가 리스크 프리미엄이에요</li>
+<li>푸시/폴드는 <strong>접을 때 몫 + 콜 받을 때 몫</strong>, 딜은 <strong>분배 기준</strong>에 따라 달라져요</li>
+<li>넛 우위와 솔버 표는 <strong>두 레인지에서 강한 핸드가 어디에 있나</strong>로 읽고, 숫자는 그 조건 안에서만 써요</li>
+</ul>
+</section><section class="sec end"><h2>정리하며</h2>
+<p>오늘은 고급 과정의 핵심을 새 상황 8문제로 확인했어요.</p>
+<p>8문제를 풀며 확인한 건 결국 하나의 습관이에요. 결정 앞에서 내 핸드만 보지 말고, <strong>무엇이 이 답을 정하는지</strong>부터 찾는 것이죠.</p>
+<p>다음 과정인 프로 과정은 준비 중이에요. 그 전까지 위 진단 표에서 틀린 문제의 글을 다시 보고, 며칠 뒤 이 시험을 한 번 더 풀어 보세요. 고급 수고 많으셨어요!</p>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · Q1·Q7은 가정 레인지 기준 (솔버 결과 아님) · Q3·Q4 에퀴티는 문제로 정한 값, ICM은 블라인드 압박·앤티 없음 · Q6은 AOF 차트 엔진 올인/폴드 이론값(칩 기준·카드 제거 없음) · Q8은 헤즈업 솔버 DB 기준(6맥스 아님, 프리플랍 레인지는 헤즈업 프리플랍 솔버 빈도)</small></p></section>
+</article>
+<nav class="nav"><a class="prev" href="121_E24.html"><div class="l">← 이전 글</div><div class="t">딜 계산: 3명 남았을 때 ICM 딜과 칩촙은 얼마나 다를까?</div></a></nav></main>
+</body>
+</html>
