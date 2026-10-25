@@ -8,7 +8,7 @@
 </head>
 <body>
 <header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
-<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">개념</span><span class="n">고급 19번째 글 (전체 122편 중 115번째)</span></div><h1>헤즈업 프리플랍: 스택 깊이가 바뀌면 SB 첫 행동은 어떻게 달라질까? (헤즈업 기준)</h1>
+<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">개념</span><span class="n">고급 19번째 글 (전체 132편 중 115번째)</span></div><h1>헤즈업 프리플랍: 스택 깊이가 바뀌면 SB 첫 행동은 어떻게 달라질까? (헤즈업 기준)</h1>
 <article>
 <p>안녕하세요. I12에서 100BB 헤즈업 SB의 첫 행동 표를 행동별 EV로 읽었고, E26에서는 솔버 표를 <strong>전체 빈도 → 사이즈 → 핸드별</strong> 순서로 읽고, 한 핸드가 섞으면 그 행동들의 EV가 거의 같다는 뜻이라고 정리했죠.</p>
 <p>오늘은 I12의 표를 <strong>스택 깊이만</strong> 25BB부터 200BB까지 바꿔 가며 봐요. 같은 핸드가 깊이에 따라 올인에서 레이즈로, 레이즈에서 림프로 옮겨 가는데, 그 변화가 <strong>어디서, 왜</strong> 일어나는지가 오늘의 주제예요.</p>
@@ -28,13 +28,13 @@
 <h3>숫자를 만든 모델</h3>
 <p>숫자는 뚝섬 <strong>헤즈업 프리플랍 근사 모델</strong>이에요. 플랍 이후를 실제로 풀지 않고 <strong>에퀴티 실현 계수</strong>로 단순화했어요. 실제 솔버 결과가 아니에요.</p>
 <p><strong>실현 계수 = 계산된 에퀴티보다 플랍 이후에 실제로 더 가져가는지, 덜 가져가는지를 정하는 값</strong>이에요. 비유하면 <strong>같은 재료로 요리하는 솜씨</strong>예요. 같은 에퀴티라도 나중에 행동하는 쪽은 상대를 보고 움직일 수 있어, 재료보다 조금 더 맛있게 뽑아내요.</p>
-<p>그래서 레이즈 팟의 SB(버튼)는 <strong>1.10</strong>으로 1보다 크고, BB는 1보다 작게 둬요. 모델은 두 사람 몫에 이 계수를 곱한 뒤, 합이 팟 전체가 되게 다시 맞춰요. 약한 핸드일수록 덜 가져가게 하는 조정도 있고, 남은 스택이 얕으면 포지션 효과를 줄여요.</p>
+<p>그래서 레이즈 팟의 SB(버튼)는 <strong>1.10</strong>으로 1보다 크고, BB는 <strong>0.82</strong>로 1보다 작게 둬요(두 값 모두 공개 헤즈업 차트 비율에 맞춰 보정한 값이에요). 모델은 두 사람 몫에 이 계수를 곱한 뒤, 합이 팟 전체가 되게 다시 맞춰요. 약한 핸드일수록 덜 가져가게 하는 조정도 있고, 남은 스택이 얕으면 포지션 효과를 줄여요.</p>
 <h3>깊이마다 모델이 다르게 둔 것</h3>
 <ul>
 <li><strong>첫 행동 올인</strong>: <strong>25BB 이하에서만</strong> 있어요</li>
 <li><strong>림프 팟 SB 계수</strong>: 25BB 이하는 레이즈 팟과 같은 <strong>1.10</strong>, 그 위는 <strong>0.9</strong>(림프 팟에서는 BB가 체크·레이즈를 고르는 쪽이라 SB 몫을 낮춤)</li>
 <li><strong>4벳 올인</strong>(SB가 BB의 3벳을 받고 다시 올인): <strong>60BB 이하에서만</strong> 있어요</li>
-<li><strong>오픈 크기</strong>: 25·30BB <strong>2BB</strong>, 50BB <strong>2.1BB</strong>, 60BB <strong>2.2BB</strong>, 80BB <strong>2.3BB</strong>, 100BB <strong>2.5BB</strong>, 200BB <strong>2.6BB</strong>(3벳·4벳 크기도 깊이마다 조금씩 달라요)</li>
+<li><strong>오픈 크기</strong>: 25·30BB <strong>2BB</strong>, 40·50BB <strong>2.1BB</strong>, 60BB <strong>2.2BB</strong>, 80BB <strong>2.3BB</strong>, 100BB <strong>2.5BB</strong>, 200BB <strong>2.6BB</strong>(3벳·4벳 크기도 깊이마다 조금씩 달라요)</li>
 </ul>
 <p>이게 무슨 뜻이냐면, 이 모델에서 깊이를 바꾸면 핸드의 힘만 바뀌는 게 아니라 <strong>게임의 규칙 몇 개가 같이 바뀌어요.</strong> 그 규칙이 바뀌는 자리가 오늘 표에서 빈도가 뛰는 자리와 겹쳐요.</p>
 <p class="concl"><strong>결론부터 말할게요. 이 모델에서 SB 첫 행동은 깊이를 따라 고르게 변하지 않고, 25BB에서 40BB 사이와 60BB에서 80BB 사이에서 크게 바뀌어요.</strong> 25BB에서는 6♠5♠가 올인 100%, 40~60BB에서는 약한 오프수트 일부를 접고(폴드 약 7%), 80BB 위에서는 다시 거의 접지 않아요.</p>
@@ -273,6 +273,6 @@
 <hr />
 <p><small>AI 작성 · 헤즈업·빅앤티 근사 모델 기준(플랍 이후 실현 계수로 단순화, 솔버 결과 아님 · 6맥스 아님) · SB(버튼) 첫 행동 · EV는 핸드 시작 전 스택 대비(소수 둘째 자리 반올림)</small></p></section>
 </article>
-<nav class="nav"><a class="prev" href="114_E17.html"><div class="l">← 이전 글</div><div class="t">새틀라이트 버블: 시드권 4장, 5명 남았을 때 큰 스택은 얼마나 조심해야 할까?</div></a><a class="next" href="116_E19.html"><div class="l">다음 글 →</div><div class="t">헤즈업 턴 프로브: 플랍에서 체크가 돌아오면 BB는 턴에 먼저 벳할까? (헤즈업 기준)</div></a></nav></main>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="043_I12.html">헤즈업 SB 오픈 레인지 읽기: 왜 모든 핸드로 칠까? (헤즈업 기준)</a></li><li><a href="100_E26.html">헤즈업 솔버 결과 읽는 법: 빈도·사이즈·섞는 전략은 어떻게 볼까? (헤즈업 기준)</a></li></ul><p class="l">이 글 다음에 볼 글</p><ul><li><a href="122_E25.html">고급 마무리 시험: 8문제로 고급 핵심을 확인해 볼까?</a></li></ul></aside><nav class="nav"><a class="prev" href="114_E17.html"><div class="l">← 이전 글</div><div class="t">새틀라이트 버블: 시드권 4장, 5명 남았을 때 큰 스택은 얼마나 조심해야 할까?</div></a><a class="next" href="116_E19.html"><div class="l">다음 글 →</div><div class="t">헤즈업 턴 프로브: 플랍에서 체크가 돌아오면 BB는 턴에 먼저 벳할까? (헤즈업 기준)</div></a></nav></main>
 </body>
 </html>

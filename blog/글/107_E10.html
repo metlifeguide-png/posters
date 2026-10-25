@@ -8,7 +8,7 @@
 </head>
 <body>
 <header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
-<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">토너</span><span class="n">고급 11번째 글 (전체 122편 중 107번째)</span></div><h1>ICM 기초: 토너먼트에서 칩 1개의 가치는 왜 같지 않을까?</h1>
+<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">토너</span><span class="n">고급 11번째 글 (전체 132편 중 107번째)</span></div><h1>ICM 기초: 토너먼트에서 칩 1개의 가치는 왜 같지 않을까?</h1>
 <article>
 <p>안녕하세요. I17에서 푸시/폴드를 <strong>칩 기준</strong>으로 계산했죠. 칩 기준은 "칩을 딸수록 그만큼 좋다"고 봐요. 칩 1000개를 따면 1000개만큼, 잃으면 1000개만큼이요.</p>
 <p>그런데 토너먼트에서 우리가 실제로 받는 건 칩이 아니라 <strong>상금</strong>이에요. 칩을 상금으로 바꾸는 순간, 같은 1000칩이라도 누가 들고 있느냐에 따라 값이 달라져요. 오늘은 그걸 직접 계산하는 <strong>ICM</strong>을 처음부터 해 볼게요.</p>
@@ -84,7 +84,7 @@
 </tr>
 </tbody>
 </table></div>
-<!-- 그림: 칩 비율 vs 상금 비율 막대(A·B·C) -->
+<figure class="fig"><img src="../그림/E10_칩vs상금.svg" alt="칩 비율과 상금 비율"></figure>
 
 <h3>이게 무슨 뜻이냐면</h3>
 <p>칩이 가장 많은 A는 칩 비율보다 <strong>상금 비율이 작고</strong>, 가장 적은 C는 <strong>크게</strong> 받아요. 칩 기준이었다면 A가 상금의 절반을 가져갔겠지만, ICM으로는 그보다 적어요.</p>
@@ -228,8 +228,8 @@ B와 C가 싸우는 동안 A는 아무것도 안 했는데, 기대 상금이 38.
 <p>오늘 하나만 가져가면 돼요. 토너먼트 후반에는 <strong>칩이 아니라 상금으로</strong> 생각하고, 이기는 몫과 지는 몫을 따로 보세요.</p>
 <p>다음 글 E11에서는 이 원리를 <strong>버블 한 판</strong>에 써요. 칩 기준으로는 콜인데 ICM으로는 폴드가 되는 장면을, 두 필요 에퀴티를 나란히 놓고 계산해요.</p>
 <hr />
-<p><small>AI 작성 · 숫자는 계산 검증 (ICM: 칩 비율로 등수를 차례로 뽑는 방식, 뚝섬 AOF 차트 엔진과 같은 모형 — 이 예시는 엔진과 소수 셋째 자리까지 같은 값 확인, 도구/사이트/확인결과.md) · 상금·스택은 예시로 고정한 값 · 블라인드·앤티 없음, 승률 50% 가정 · 탈락한 사람은 남은 마지막 등수 상금 · 이번 한 번의 결정 기준</small></p></section>
+<p><small>AI 작성 · 숫자는 계산 검증 (ICM: 칩 비율로 등수를 차례로 뽑는 방식, 뚝섬 AOF 차트 엔진과 같은 모형 — 이 예시는 엔진과 소수 셋째 자리까지 같은 값 확인, 도구/사이트/확인결과.md) · 상금·스택은 예시로 고정한 값 · 블라인드·앤티 없음, 승률 50% 가정 · 이 판에서 탈락한 사람은 3등 상금(한 명 탈락이라 실제 규정과 같음) · 이번 한 번의 결정 기준</small></p></section>
 </article>
-<nav class="nav"><a class="prev" href="106_E09.html"><div class="l">← 이전 글</div><div class="t">리버 폴라라이즈 vs 머지: 벳 레인지의 &quot;모양&quot;은 무엇이 다를까?</div></a><a class="next" href="108_E11.html"><div class="l">다음 글 →</div><div class="t">버블 한 판: 칩 기준으로는 콜인데 ICM으로는 폴드일까?</div></a></nav></main>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="048_I17.html">푸시/폴드 기초: 짧은 스택은 왜 올인 아니면 폴드로 생각할까?</a></li></ul><p class="l">이 글 다음에 볼 글</p><ul><li><a href="108_E11.html">버블 한 판: 칩 기준으로는 콜인데 ICM으로는 폴드일까?</a></li><li><a href="114_E17.html">새틀라이트 버블: 시드권 4장, 5명 남았을 때 큰 스택은 얼마나 조심해야 할까?</a></li><li><a href="121_E24.html">딜 계산: 3명 남았을 때 ICM 딜과 칩촙은 얼마나 다를까?</a></li></ul></aside><nav class="nav"><a class="prev" href="106_E09.html"><div class="l">← 이전 글</div><div class="t">리버 폴라라이즈 vs 머지: 벳 레인지의 &quot;모양&quot;은 무엇이 다를까?</div></a><a class="next" href="108_E11.html"><div class="l">다음 글 →</div><div class="t">버블 한 판: 칩 기준으로는 콜인데 ICM으로는 폴드일까?</div></a></nav></main>
 </body>
 </html>

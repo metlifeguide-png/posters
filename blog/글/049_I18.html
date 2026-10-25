@@ -8,7 +8,7 @@
 </head>
 <body>
 <header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
-<main class="wrap"><div class="meta"><span class="badge i">중급</span><span class="chip">개념</span><span class="n">중급 18번째 글 (전체 122편 중 49번째)</span></div><h1>폴드 에퀴티: 올인은 왜 두 가지 길로 이길까?</h1>
+<main class="wrap"><div class="meta"><span class="badge i">중급</span><span class="chip">개념</span><span class="n">중급 18번째 글 (전체 132편 중 49번째)</span></div><h1>폴드 에퀴티: 올인은 왜 두 가지 길로 이길까?</h1>
 <article>
 <p>안녕하세요. I17에서 8BB의 K♦7♣는 콜 받으면 손해인데도 올인이 이득이었죠. 이득이 "상대가 접는 판"에서 나온다고만 하고 넘어갔어요.</p>
 <p>오늘은 그 말을 숫자로 쪼개 볼게요. 올인 하나의 손익을 <strong>"상대가 접을 때 몫"</strong>과 <strong>"콜 받을 때 몫"</strong> 두 개로 나누면, 어떤 핸드가 올인이고 어떤 핸드가 폴드인지 그 경계까지 보여요.</p>
@@ -66,7 +66,7 @@
 <li>② 콜 받은 판 평균 = 0.39056 × 8.5 − 0.60944 × 7.5 = 3.31976 − 4.5708 = <strong>약 −1.25BB</strong>, 0.44476 × (−1.25101) = <strong>약 −0.56BB</strong></li>
 <li>③ 0.83286 − 0.5564 = <strong>약 +0.28BB</strong> → 아직 올인</li>
 </ul>
-<!-- 그림: 핸드별 접을 때 몫(+0.83 고정) vs 콜 받을 때 몫(K7o −0.23 · Q5s −0.56 · J4o −0.99) -->
+<figure class="fig"><img src="../그림/I18_접을때vs콜받을때.svg" alt="접을 때 몫과 콜 받을 때 몫 (8BB)"></figure>
 
 <section class="sec why"><h2>왜 그럴까: 접을 때 몫은 같고, 경계는 콜 받을 때에서 생겨요</h2>
 <h3>접을 때 몫은 왜 핸드마다 같을까</h3>
@@ -87,7 +87,8 @@
 <blockquote>
 <p>에퀴티 × 16 = 7.5 − 1.873 = 5.627 → 에퀴티 = 5.627 ÷ 16 = 약 0.352</p>
 </blockquote>
-<p>곧 이 장면에서는 <strong>콜 범위 상대 에퀴티가 0.35쯤(100판에 35판 몫) 넘는 핸드</strong>가 올인이에요. K♦7♣(약 43.6%)·Q♠5♠(약 39.1%)는 넘어요. 핸드의 이름보다 <strong>"상대가 콜할 핸드들 사이에서 얼마나 버티나"</strong>가 올인을 정하는 거예요.</p>
+<p>이 0.352는 엔진이 준 숫자가 아니라 걸음 1·2의 숫자로 직접 나눈 값이에요. 그래서 아래에서는 <strong>0.35쯤</strong>으로 줄여 부를게요.</p>
+<p>정리하면 이 장면에서는 <strong>콜 범위 상대 에퀴티가 0.35쯤(100판에 35판 몫) 넘는 핸드</strong>가 올인이에요. K♦7♣(약 43.6%)·Q♠5♠(약 39.1%)는 넘어요. 핸드의 이름보다 <strong>"상대가 콜할 핸드들 사이에서 얼마나 버티나"</strong>가 올인을 정하는 거예요.</p>
 </section><section class="sec mis"><h2>자주 하는 실수</h2>
 <div class="mis-card"><p><strong>실수 1. "83%나 접어야 하니 올인은 무리"</strong>
 본전 폴드율만 보고 올인을 포기하는 실수예요. 83.3%는 <strong>콜 받으면 늘 진다</strong>고 쳤을 때의 숫자예요. 실제로는 콜 받아도 K♦7♣는 약 43.6%를 가져오니, 상대가 55.5%만 접어도 올인이 이득이었어요. 대신 본전 폴드율은 <strong>블러프만으로 이길 때의 상한</strong>이라고 읽어요.</p></div><div class="mis-card"><p><strong>실수 2. 시작 스택 8BB를 기준으로 금액 세기</strong>
@@ -142,6 +143,6 @@
 <hr />
 <p><small>AI 작성 · 숫자는 계산 검증 · 뚝섬 AOF 차트 엔진의 올인/폴드 이론값 (헤즈업 SB 대 BB · 앤티 없음 · 칩 기준 · 카드 제거 없음 · 화면의 실전 보정은 넣지 않음) · 올인 결정이라 이번 결정의 최종 결과</small></p></section>
 </article>
-<nav class="nav"><a class="prev" href="048_I17.html"><div class="l">← 이전 글</div><div class="t">푸시/폴드 기초: 짧은 스택은 왜 올인 아니면 폴드로 생각할까?</div></a><a class="next" href="050_I19.html"><div class="l">다음 글 →</div><div class="t">SB 8BB, BB와 둘만 남았을 때: Q6o로 올인해도 될까?</div></a></nav></main>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="048_I17.html">푸시/폴드 기초: 짧은 스택은 왜 올인 아니면 폴드로 생각할까?</a></li></ul><p class="l">이 글 다음에 볼 글</p><ul><li><a href="050_I19.html">SB 8BB, BB와 둘만 남았을 때: Q6o로 올인해도 될까?</a></li><li><a href="063_I30.html">중급 마무리 시험: 상급으로 올라갈 준비가 됐을까?</a></li><li><a href="084_A21.html">턴 더블배럴: 6♥5♥ 드로우로 한 번 더 걸까, 체크할까?</a></li></ul></aside><nav class="nav"><a class="prev" href="048_I17.html"><div class="l">← 이전 글</div><div class="t">푸시/폴드 기초: 짧은 스택은 왜 올인 아니면 폴드로 생각할까?</div></a><a class="next" href="050_I19.html"><div class="l">다음 글 →</div><div class="t">SB 8BB, BB와 둘만 남았을 때: Q6o로 올인해도 될까?</div></a></nav></main>
 </body>
 </html>

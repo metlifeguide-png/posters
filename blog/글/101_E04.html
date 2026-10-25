@@ -8,7 +8,7 @@
 </head>
 <body>
 <header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
-<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">개념</span><span class="n">고급 5번째 글 (전체 122편 중 101번째)</span></div><h1>보드 텍스처: 드라이·웻·모노톤에서 솔버의 c-bet은 어떻게 달라질까? (헤즈업 기준)</h1>
+<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">개념</span><span class="n">고급 5번째 글 (전체 132편 중 101번째)</span></div><h1>보드 텍스처: 드라이·웻·모노톤에서 솔버의 c-bet은 어떻게 달라질까? (헤즈업 기준)</h1>
 <article>
 <p>안녕하세요. E26에서 솔버 표를 "전체 빈도 → 사이즈 → 핸드별" 순서로 읽었죠. 오늘은 조건은 그대로 두고 <strong>보드 모양만</strong> 바꿔 볼 거예요.</p>
 <p>같은 BTN, 같은 레인지인데 보드가 바뀌면 c-bet이 확 달라져요. "K 하이 드라이니까 작게", "이어진 보드니까 크게" 같은 말을 들어 봤다면, 오늘은 그 말이 <strong>왜 나오는지</strong>를 솔버 숫자와 레인지 구성으로 따져 봐요.</p>
@@ -81,12 +81,12 @@
 </tbody>
 </table></div>
 <p>2BB는 팟의 약 33.3%, 4.5BB는 팟의 75%예요. 올인 벳은 빈도가 없어 뺐어요.</p>
-<!-- 그림: 세 보드의 체크·2BB·4.5BB 쌓은 막대 -->
+<figure class="fig"><img src="../그림/E04_보드별빈도.svg" alt="보드별 BTN 체크·벳 빈도"></figure>
 
 <p>드라이에서는 거의 다 벳하고, 그것도 <strong>작은 벳</strong>에 몰려요. 웻·모노톤에서는 체크가 크게 늘고 큰 벳 비중도 커져요. 이제 "왜"를 레인지 구성으로 따져 봐요.</p>
 <hr />
 <h2>3단계. 누가 더 많이, 누가 더 세게 맞나</h2>
-<p>블로그 계산기로 두 빈도 레인지를 각 보드에 놓고 세어 봤어요(콤보마다 빈도만큼 셌어요).</p>
+<p>블로그에서 직접 두 빈도 레인지를 각 보드에 놓고 세어 봤어요(콤보마다 빈도만큼 셌어요).</p>
 <div class="tbl"><table>
 <thead>
 <tr>
@@ -383,8 +383,8 @@ J♠ T♥ 9♦에서 BTN이 지키던 마지막 강점(중간 세기 핸드의 �
 <p>먼저 보드에서 무늬·연결·높이를 세고, 두 레인지가 그 보드에 얼마나 많이·얼마나 세게 맞는지 계산기로 따졌어요. BB 레인지를 살려 주는 보드일수록 BTN은 약한 핸드를 체크로 돌리고, 남은 벳은 크게 쳤죠. 실전에서는 보드를 보자마자 <strong>"이 보드는 누구 레인지를 살려 주나"</strong>를 한 줄로 말해 보는 것부터 시작하면 돼요.</p>
 <p>다음 글 E05에서는 오늘 "개수"와 "꼭대기"로 나눠 본 것을 두 개념으로 정리해요. 레인지 전체의 평균 세기와 가장 강한 핸드의 양이 <strong>서로 다른 말</strong>이라는 걸 다뤄요.</p>
 <hr />
-<p><small>AI 작성 · 헤즈업 솔버 DB 기준(6맥스 아님) · 빅앤티 · 100BB 싱글레이즈 · 프리플랍 레인지는 헤즈업 프리플랍 솔버 빈도 · 빈도는 DB 요약값(핸드별은 클래스 평균 정수 %) · 레인지 구성은 블로그 계산기(빈도만큼 셈) · 행동별 EV는 요약에 없음</small></p></section>
+<p><small>AI 작성 · 헤즈업 솔버 DB 기준(6맥스 아님) · 빅앤티 · 100BB 싱글레이즈 · 프리플랍 레인지는 헤즈업 프리플랍 솔버 빈도 · 빈도는 DB 요약값(핸드별은 클래스 평균 정수 %) · 레인지 구성은 직접 계산(빈도만큼 셈) · 행동별 EV는 요약에 없음</small></p></section>
 </article>
-<nav class="nav"><a class="prev" href="100_E26.html"><div class="l">← 이전 글</div><div class="t">헤즈업 솔버 결과 읽는 법: 빈도·사이즈·섞는 전략은 어떻게 볼까? (헤즈업 기준)</div></a><a class="next" href="102_E05.html"><div class="l">다음 글 →</div><div class="t">레인지 우위와 넛 우위: 평균이 앞서면 가장 강한 핸드도 더 많을까?</div></a></nav></main>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="088_A25.html">레인지 대 레인지 에퀴티: 같은 두 레인지인데 보드에 따라 누가 강해질까?</a></li><li><a href="100_E26.html">헤즈업 솔버 결과 읽는 법: 빈도·사이즈·섞는 전략은 어떻게 볼까? (헤즈업 기준)</a></li></ul><p class="l">이 글 다음에 볼 글</p><ul><li><a href="102_E05.html">레인지 우위와 넛 우위: 평균이 앞서면 가장 강한 핸드도 더 많을까?</a></li><li><a href="103_E06.html">헤즈업 SRP c-bet: 상대가 얼마나 접느냐에 따라 c-bet 빈도는 어떻게 바뀔까? (헤즈업 기준)</a></li><li><a href="122_E25.html">고급 마무리 시험: 8문제로 고급 핵심을 확인해 볼까?</a></li></ul></aside><nav class="nav"><a class="prev" href="100_E26.html"><div class="l">← 이전 글</div><div class="t">헤즈업 솔버 결과 읽는 법: 빈도·사이즈·섞는 전략은 어떻게 볼까? (헤즈업 기준)</div></a><a class="next" href="102_E05.html"><div class="l">다음 글 →</div><div class="t">레인지 우위와 넛 우위: 평균이 앞서면 가장 강한 핸드도 더 많을까?</div></a></nav></main>
 </body>
 </html>

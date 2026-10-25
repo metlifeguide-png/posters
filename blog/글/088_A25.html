@@ -8,7 +8,7 @@
 </head>
 <body>
 <header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
-<main class="wrap"><div class="meta"><span class="badge a">상급</span><span class="chip">개념</span><span class="n">상급 25번째 글 (전체 122편 중 88번째)</span></div><h1>레인지 대 레인지 에퀴티: 같은 두 레인지인데 보드에 따라 누가 강해질까?</h1>
+<main class="wrap"><div class="meta"><span class="badge a">상급</span><span class="chip">개념</span><span class="n">상급 25번째 글 (전체 132편 중 88번째)</span></div><h1>레인지 대 레인지 에퀴티: 같은 두 레인지인데 보드에 따라 누가 강해질까?</h1>
 <article>
 <p>안녕하세요. I06에서 Hero 핸드 하나를 상대 <strong>레인지</strong>와 붙여 에퀴티를 구했죠.</p>
 <p>오늘은 한 걸음 더 가요. 우리 쪽도 핸드 하나가 아니라 <strong>레인지 전체</strong>로 보고, 두 레인지를 통째로 붙여요. 그러면 "이 보드는 BTN 보드", "이 보드는 BB 보드" 같은 말이 무슨 뜻인지 숫자로 보여요.</p>
@@ -67,7 +67,7 @@
 </tr>
 </tbody>
 </table></div>
-<!-- 그림: 두 보드의 BTN·BB 레인지 에퀴티 막대 -->
+<figure class="fig"><img src="../그림/A25_보드별에퀴티.svg" alt="두 보드의 레인지 에퀴티"></figure>
 
 <h3>콤보 수도 보드마다 달라요</h3>
 <p>보드에 나온 카드는 누구 손에도 없으니, 그 카드가 든 콤보는 빠져요(I32). A·K가 많은 BTN 레인지는 A♠ K♦ 7♣에서 콤보를 더 많이 잃어서 282콤보로 줄었어요. 7♥ 6♥ 5♣에서는 BB 쪽 작은 카드 핸드가 더 많이 빠져요.</p>
@@ -108,7 +108,7 @@
 <hr />
 <h2>"레인지 우위가 있으면 뭘 할 수 있어요?"</h2>
 <p>좋은 질문이에요. 레인지 우위는 <strong>"이 보드에서 누가 더 자주 벳해도 되는가"</strong>를 정하는 출발점이에요.</p>
-<p>다만 출발점일 뿐이에요. 실제로 얼마나 자주, 얼마나 크게 벳할지는 <strong>넛 우위</strong>(가장 센 핸드를 누가 더 많이 가졌나)와 벳 크기까지 봐야 정해져요. 넛 우위는 E04에서, 레인지 우위와 넛 우위의 차이는 E05에서 다뤄요.</p>
+<p>다만 출발점일 뿐이에요. 실제로 얼마나 자주, 얼마나 크게 벳할지는 <strong>넛 우위</strong>(가장 센 핸드를 누가 더 많이 가졌나)와 벳 크기까지 봐야 정해져요. 보드마다 c-bet이 어떻게 달라지는지는 E04에서, 넛 우위와 레인지 우위의 차이는 E05에서 다뤄요.</p>
 <h2>숫자가 뒤집히는 지점</h2>
 <p>기준은 <strong>한쪽 레인지에만 있는 핸드 중 보드에 맞는 몫</strong>, 즉 1단계 식에서 그 핸드들의 (클래스 에퀴티 × 짝 수) 합이에요. 콜 레인지에만 있는 핸드가 보드에 맞는 몫이, 3벳으로 빠져 오픈 레인지에만 남은 핸드의 몫보다 커지면 레인지 우위가 콜한 쪽으로 넘어가요.</p>
 <section class="sec tip"><h2>선생님의 한마디</h2>
@@ -121,7 +121,7 @@
 <hr />
 <h2>연습 문제</h2>
 <blockquote>
-<p>학습툴 <strong>에퀴티 계산기</strong>에는 레인지 입력이 없어서, 문제 2처럼 <strong>내 카드 vs 상대 카드</strong>와 플랍 3장을 넣어 확인해 보세요. 레인지 대 레인지 숫자는 블로그 계산기로 구한 값이에요.</p>
+<p>학습툴 <strong>에퀴티 계산기</strong>에는 레인지 입력이 없어서, 문제 2처럼 <strong>내 카드 vs 상대 카드</strong>와 플랍 3장을 넣어 확인해 보세요. 레인지 대 레인지 숫자는 글쓴이가 따로 계산한 값이에요.</p>
 </blockquote>
 <p><strong>문제 1.</strong> 같은 두 레인지로 플랍이 <strong>Q♠ J♦ 2♣</strong>로 깔렸어요. 오늘 원리로 어느 쪽이 레인지 우위일지 <strong>먼저 예측</strong>하고, 이유가 되는 핸드를 찾아보세요.</p>
 <details>
@@ -155,6 +155,6 @@ AA는 앞서지만, 8♦6♦가 6 페어에 양방 스트레이트 드로우(9�
 <hr />
 <p><small>AI 작성 · 숫자는 계산 검증 (플랍 뒤 남은 카드를 전부 센 정확값, 콤보 동일 가중, 카드 겹치는 짝 제외) · 가정 레인지 기준 (솔버 결과 아님) · 개념 글(콜/폴드 결정 없음)</small></p></section>
 </article>
-<nav class="nav"><a class="prev" href="087_A24.html"><div class="l">← 이전 글</div><div class="t">리버 2배 오버벳에 탑페어, MDF는 3분의 1만 지키면 된다는데 콜할까?</div></a><a class="next" href="089_A26.html"><div class="l">다음 글 →</div><div class="t">초보의 콜 실수: 리버 큰 벳에 &quot;블러프 같아서&quot; 콜하면 왜 손해일까?</div></a></nav></main>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="037_I06.html">핸드 대 레인지 에퀴티: 상대는 핸드 한 개가 아니라 &quot;여러 핸드 중 하나&quot;다</a></li></ul><p class="l">이 글 다음에 볼 글</p><ul><li><a href="096_A30.html">상급 마무리 시험: 고급으로 올라갈 준비가 됐을까?</a></li><li><a href="100_E26.html">헤즈업 솔버 결과 읽는 법: 빈도·사이즈·섞는 전략은 어떻게 볼까? (헤즈업 기준)</a></li><li><a href="101_E04.html">보드 텍스처: 드라이·웻·모노톤에서 솔버의 c-bet은 어떻게 달라질까? (헤즈업 기준)</a></li></ul></aside><nav class="nav"><a class="prev" href="087_A24.html"><div class="l">← 이전 글</div><div class="t">리버 2배 오버벳에 탑페어, MDF는 3분의 1만 지키면 된다는데 콜할까?</div></a><a class="next" href="089_A26.html"><div class="l">다음 글 →</div><div class="t">초보의 콜 실수: 리버 큰 벳에 &quot;블러프 같아서&quot; 콜하면 왜 손해일까?</div></a></nav></main>
 </body>
 </html>
