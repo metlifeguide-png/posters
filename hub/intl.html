@@ -13,7 +13,7 @@
 <meta property="og:image" content="https://metlifeguide-png.github.io/posters/hub/banner.jpg">
 <!--
   🌏 해외대회일정 독립 페이지 (templates/intl.html → 깃허브 hub/intl.html)
-  · 서버가 {"sch": [], "schc": [], "auto": "", "updated": "10/26 01:37"} 자리에 관리자 🏠 홈 관리 → 🌏 해외대회일정 의 내용을 넣어요
+  · 서버가 {"sch": [], "schc": [], "auto": "", "updated": "10/26 01:42"} 자리에 관리자 🏠 홈 관리 → 🌏 해외대회일정 의 내용을 넣어요
       D.sch  = [{kind, name, color, s:'YYYY-MM-DD', e:'YYYY-MM-DD', t:'막대 글자(생략하면 날짜)'}]
       D.schc = [{title, badge, color, lines:[...]}]
   · 관리자에 아직 아무것도 안 넣었으면 아래 FALL(기본 일정)이 대신 나와요.
@@ -68,7 +68,7 @@ html,body{background:var(--paper);color:var(--ink);font:15px/1.5 system-ui,"Appl
 <body>
 <div class="wrap" id="app"></div>
 <script>
-let D={"sch": [], "schc": [], "auto": "", "updated": "10/26 01:37"}; const B="https://metlifeguide-png.github.io/posters";
+let D={"sch": [], "schc": [], "auto": "", "updated": "10/26 01:42"}; const B="https://metlifeguide-png.github.io/posters";
 try{if(window.self!==window.top)document.documentElement.classList.add('inframe');}catch(e){document.documentElement.classList.add('inframe');}
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const head=(t,m)=>`<div class="h"><h2>${t}</h2><div class="m">${m||''}</div></div>`;
@@ -112,6 +112,7 @@ if(!D||!Array.isArray(D.sch)||!D.sch.length){
 /* 📏 표 범위: 이번 달부터 마지막 일정 달까지 (최소 4개월, 최대 12개월) */
 const MIN_M=4, MAX_M=12;
 const md=s=>{const a=String(s).split('-');return (+a[1])+'/'+(+a[2]);};
+const T0=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
 function span(){const now=new Date(),y=now.getFullYear(),m=now.getMonth()+1;let last=0;
   (D.sch||[]).forEach(x=>{const a=String(x.e||'').split('-').map(Number);if(a.length>=2&&!isNaN(a[0])&&!isNaN(a[1])){const i=(a[0]-y)*12+(a[1]-m);if(i>last)last=i;}});
   return {y,m,n:Math.min(MAX_M,Math.max(MIN_M,last+1))};}
@@ -120,7 +121,9 @@ function pos(str,end,sp){const a=String(str||'').split('-').map(Number);if(a.len
 function rows(sp){
   const list=(D.sch||[]).slice().sort((a,b)=>String(a.s).localeCompare(String(b.s)));
   const out=[{sec:'🎯 새틀라이트 예선',rows:[]},{sec:'🏆 메인 본선',main:1,rows:[]}];
+  const today0=T0();
   list.forEach(x=>{
+    if(x.e&&String(x.e)<today0)return;   // /*enddate*/ 끝난 일정은 표에서 뺌
     let l=pos(x.s,0,sp),r=pos(x.e,1,sp);if(l==null||r==null||r<=0||l>=100)return;
     l=Math.max(0,l);r=Math.min(100,r);let w=Math.max(16*4/sp.n,r-l);if(l+w>100)l=100-w;
     const g=out[x.kind==='main'?1:0];let row=g.rows.find(y=>y[0]===x.name);
@@ -133,7 +136,7 @@ function rows(sp){
 }
 function draw(){
   const sp=span(),R=rows(sp);
-  const today0=new Date().toISOString().slice(0,10);
+  const today0=T0();
   /* 카드: 이미 끝난 대회는 숨기고, 진행 중이면 표시 */
   const C=(D.schc||[]).filter(c=>!c.e||c.e>=today0).sort((a,b)=>String(a.s||'').localeCompare(String(b.s||''))).map(c=>[c.title,c.badge||'',c.color||'#64748b',c.lines||[],c.s&&c.e&&c.s<=today0&&c.e>=today0,/^https?:\/\//.test(c.url||'')?c.url:'',c.sub||'']);
   const title='🌏 해외대회일정';
