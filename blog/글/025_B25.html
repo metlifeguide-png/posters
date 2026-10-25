@@ -10,12 +10,17 @@
 <header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
 <main class="wrap"><div class="meta"><span class="badge b">초급</span><span class="chip">스팟</span><span class="n">초급 25번째 글 (전체 122편 중 25번째)</span></div><h1>EV로 보는 리버 콜: 이길 때 얻는 것과 질 때 잃는 것, 어느 쪽이 클까?</h1>
 <article>
-<p>안녕하세요. B24에서 EV(기대값)를 동전 던지기로 배웠죠. 오늘은 그 EV를 실제 리버 콜에 써 볼게요.
-"얻는 것"과 "잃는 것"을 따로 계산해서 빼는 연습이에요.</p>
-<p>오늘 목표는 하나예요. <strong>콜의 EV = 이길 때 몫 − 질 때 몫, 이 식을 손으로 계산하기.</strong></p>
+<p>안녕하세요. B24에서 EV(기대값)를 동전과 주사위로 배웠죠. 오늘은 그 EV를 실제 리버 콜 한 판에 꽂아 볼게요.</p>
+<p>리버 콜은 <strong>이기거나 지거나</strong>, 일이 딱 두 개뿐이라 EV를 연습하기에 가장 좋은 장면이에요. "얻는 것"과 "잃는 것"을 따로 계산해서 빼고, 그 차이가 어디서 나오는지까지 따라가 볼게요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>리버 콜의 EV를 <strong>이길 때 몫 − 질 때 몫</strong>으로 나눠 손으로 계산하는 법</li>
+<li><strong>돈의 배수</strong>(버는 돈이 잃는 돈의 몇 배인가)와 <strong>횟수의 배수</strong>(질 때가 이길 때의 몇 배인가)를 나란히 놓으면 어느 몫이 큰지 보이는 이유</li>
+<li>EV 식을 정리하면 <strong>(승률 − 필요 에퀴티) × 콜한 뒤 팟</strong>이 되는 과정, 그래서 벳 크기가 EV를 어떻게 바꾸는지</li>
+</ul></div>
 <hr />
 <h2>오늘의 핸드</h2>
 <p><strong>Hero (BB 자리 · 스택 100BB)</strong></p>
+<p>자리 이름 BB와 금액 단위 BB(빅 블라인드 몇 개만큼)는 다른 뜻이에요. "BB 자리, 스택 100BB"는 "빅 블라인드 자리에 앉아 빅 블라인드 100개만큼의 칩을 가졌다"는 뜻이에요.</p>
 <p><img src="../카드/6h.svg" width="48"> <img src="../카드/6c.svg" width="48"></p>
 <h3>프리플랍</h3>
 <p>상대(BTN) <strong>2.5BB 오픈</strong> → SB 폴드 → Hero <strong>콜</strong></p>
@@ -24,7 +29,7 @@
 </blockquote>
 <h3>플랍 · 팟 5.5BB</h3>
 <p><img src="../카드/Kh.svg" width="48"> <img src="../카드/Qd.svg" width="48"> <img src="../카드/4s.svg" width="48"></p>
-<p>Hero 체크 → 상대 <strong>1.75BB 벳</strong> → Hero <strong>콜</strong></p>
+<p>Hero 체크 → 상대 <strong>1.75BB 벳</strong>(팟의 3분의 1쯤) → Hero <strong>콜</strong></p>
 <blockquote>
 <p>Hero는 6 포켓페어. 보드의 K·Q보다 낮아서, K나 Q가 들어간 페어를 가진 상대에게는 져요.</p>
 </blockquote>
@@ -37,77 +42,167 @@
 <h3>리버 · 팟 18BB</h3>
 <p><img src="../카드/Kh.svg" width="48"> <img src="../카드/Qd.svg" width="48"> <img src="../카드/4s.svg" width="48"> <img src="../카드/9c.svg" width="48"> <img src="../카드/2d.svg" width="48"></p>
 <p>Hero 체크 → 상대 <strong>6BB 벳</strong>(팟의 3분의 1) → <strong>Hero는 콜? 폴드?</strong></p>
+<blockquote>
+<p>Hero 핸드 이름은 그대로 <strong>포켓페어(보드 중간)</strong>예요. K·Q·9가 들어간 페어에 져요.</p>
+</blockquote>
 <hr />
 <p class="concl"><strong>결론부터 말할게요. 오늘 가정에서는 콜이 이득입니다.</strong> EV는 <strong>+1.5BB</strong>, 콜할 때마다 평균 1.5BB씩 벌어요.</p>
 <h2>1단계. 콜하려면 몇 번 이겨야 하나 (필요 에퀴티)</h2>
-<p><strong>에퀴티 = 이 팟에서 이길 확률</strong>이에요. "필요 에퀴티"는 콜해서 본전이 되려면 최소한 이 정도는 이겨야 한다는 확률이고요.</p>
+<h3>용어 한 줄</h3>
+<p><strong>필요 에퀴티</strong>는 "콜해서 <strong>본전</strong>이 되려면 최소한 이만큼은 이겨야 한다"는 확률이에요. B24에서 본 말로 하면, <strong>EV가 0이 되는 승률</strong>이죠.</p>
+<h3>경품 뽑기로 생각해 보기</h3>
+<p>비유하면 <strong>5천 원 내고 2만 원짜리 경품을 노리는 뽑기</strong>예요. 내는 돈이 작으니 가끔만 당첨돼도 본전이 되죠. 오늘 Hero는 6BB를 내고, 이기면 원래 팟 18BB와 상대 벳 6BB를 합친 <strong>24BB</strong>를 순이익으로 가져와요.</p>
+<h3>공식으로 구하기</h3>
+<p>B06에서 배운 공식, <strong>우리가 낼 돈 ÷ 콜한 뒤 전체 팟</strong>이에요.</p>
 <blockquote>
-<p>필요 에퀴티 = 6(내 콜) ÷ (18(원래 팟) + 6(상대 벳) + 6(내 콜)) = 6 ÷ 30 = <strong>20%</strong></p>
+<p>필요 에퀴티 = 6(Hero 콜) ÷ (18(원래 팟) + 6(상대 벳) + 6(Hero 콜)) = 6 ÷ 30 = <strong>20%</strong></p>
 </blockquote>
-<p>1/3팟 벳이라 <strong>5번 중 1번</strong>이면 본전이에요. 비유하면 <strong>5천 원 내고 2만 원짜리 경품 뽑기</strong>를 하는 것과 비슷해요. 내는 돈이 작으니 가끔만 당첨돼도 본전이죠.</p>
+<p>팟의 3분의 1 벳이라 <strong>5번 중 1번</strong>이면 본전이에요.</p>
 <h2>2단계. 오늘의 가정 — Hero가 이길 확률</h2>
-<p>Hero의 6 페어는 약하지만, 상대가 리버에 작게 거는 건 약한 핸드로 "조금만 더 받자" 또는 "싸게 블러프하자"일 때도 있어요.
-오늘은 <strong>"이 상대가 이렇게 벳할 때 Hero가 이길 확률은 25%"</strong>, 즉 <strong>4번 중 1번</strong>이라고 가정할게요.</p>
-<p>먼저 비교부터 해 볼게요. 필요 에퀴티 <strong>20%</strong> &lt; Hero 가정 승률 <strong>25%</strong> → 콜 쪽이에요. 이제 "얼마나" 이득인지 EV로 계산해요.</p>
-<h2>3단계. EV 계산 — 얻는 것과 잃는 것을 따로</h2>
-<p>B24에서 배운 EV는 <strong>"일어날 일마다 (확률 × 결과)를 모두 더한 것"</strong> 이에요. 콜에는 일이 두 개뿐이죠. 이기거나, 지거나.</p>
-<p><strong>① 이길 때 몫</strong></p>
+<h3>상대가 벳하는 핸드를 두 묶음으로</h3>
+<p><strong>① Hero를 이기는 핸드.</strong> 보드 K♥ Q♦ 4♠ 9♣ 2♦에서 66을 이기는 핸드를 빠짐없이 보면 이래요.</p>
 <ul>
-<li>이기면 원래 팟 18BB + 상대 벳 6BB = <strong>24BB</strong>를 순수하게 벌어요</li>
-<li>이길 확률 25% → 몫 = 0.25 × 24 = <strong>6BB</strong></li>
+<li><strong>K·Q·9가 들어간 페어</strong>(예: A♠K♣, Q♥J♣, 9♥8♥). K6·Q6·96도 여기 들어가요</li>
+<li>66보다 높은 포켓페어 <strong>77·88·TT·JJ·AA</strong></li>
+<li><strong>셋</strong>: KK·QQ·99·44·22</li>
+<li><strong>투페어</strong>: KQ·K9·K4·K2·Q9·Q4·Q2·94·92·42</li>
+<li><strong>스트레이트</strong>: JT(9-T-J-Q-K) 하나뿐</li>
 </ul>
-<p><strong>② 질 때 몫</strong></p>
+<p>보드에 같은 무늬가 두 장을 넘지 않아서 플러시는 없어요. Hero와 <strong>비기는 핸드는 남은 6♦6♠ 하나</strong>예요.</p>
+<p><strong>② Hero가 이기는 핸드.</strong> ①과 6♦6♠를 뺀 나머지 전부예요.</p>
 <ul>
-<li>지면 내 콜 <strong>6BB</strong>를 잃어요</li>
-<li>질 확률 75% → 몫 = 0.75 × 6 = <strong>4.5BB</strong></li>
+<li><strong>블러프</strong>(이길 수 없는 핸드로 상대를 접게 하려는 벳): A-J·A-T처럼 A-K-Q-J-T 스트레이트를 노리다 빗나간 핸드, J-8·T-8처럼 턴 9 뒤로 가운데 한 장을 기다리다 빗나간 핸드</li>
+<li>66보다 약한 페어: A4·A2처럼 <strong>4나 2가 들어간 페어</strong>, 포켓페어 <strong>55·33</strong></li>
+<li>페어가 없는 핸드: A-7, J-7 같은 높은 카드</li>
 </ul>
-<p><strong>③ 빼기</strong></p>
+<p>헷갈리기 쉬운 두 가지를 짚을게요. <strong>6이 한 장 든 핸드</strong>(A6·J6·T6·86·76 등)는 보드에 6이 없어서 6 페어가 못 돼요. 그냥 높은 카드라 Hero가 이겨요(K6·Q6·96은 K·Q·9 페어라 ①이에요). 또 <strong>64·62</strong>는 투페어처럼 보이지만 6은 짝이 없으니 4 페어·2 페어일 뿐이라, 이것도 Hero가 이겨요.</p>
+<!-- 그림: 상대 리버 벳 = ① Hero를 이기는 핸드 vs ② Hero가 이기는 핸드 -->
+
+<h3>25%라는 가정</h3>
+<p>상대가 리버에 작게 거는 이유는 양쪽에 다 있을 수 있어요. ① 센 핸드는 <strong>"작게 걸어야 콜을 받는다"</strong>고 보고 작게 걸 수 있고, ② 쪽은 약한 페어로 "조금만 더 받자", 또는 블러프로 "싸게 접게 해 보자"일 수 있죠. 그래서 작은 벳 하나만으로 어느 쪽인지 단정할 수는 없어요.</p>
+<p>오늘은 <strong>"이 상대가 이렇게 벳할 때 Hero가 이길 확률은 25%"</strong>, 즉 <strong>4번 중 1번</strong>이라고 가정할게요. 상대가 4번 벳하면 3번은 ①, 1번은 ②라는 뜻이에요.</p>
+<h2>3단계. 나란히 놓고 비교하기</h2>
+<p>먼저 B14에서 연습한 비교부터 해요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th></th>
+<th>확률</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>콜에 필요한 에퀴티</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>Hero 가정 승률</td>
+<td>25%</td>
+</tr>
+</tbody>
+</table></div>
+<!-- 그림: 필요 에퀴티 vs 승률 -->
+
+<p><strong>25% &gt; 20%</strong> → 콜 쪽이에요. 이제 <strong>"얼마나"</strong> 이득인지 EV로 재 볼게요.</p>
+<h2>4단계. EV 계산 — 얻는 것과 잃는 것을 따로</h2>
+<h3>① 이길 때 몫</h3>
+<p>이기면 <strong>24BB</strong>를 벌어요. 이길 확률 25%를 곱하면 0.25 × 24 = <strong>6BB</strong>.</p>
+<h3>② 질 때 몫</h3>
+<p>지면 Hero 콜 <strong>6BB</strong>를 잃어요. 질 확률 75%를 곱하면 0.75 × 6 = <strong>4.5BB</strong>.</p>
+<p>플랍·턴에 낸 칩은 콜하든 폴드하든 이미 팟에 있어서 여기 넣지 않아요("여기까지 넣은 게 아깝다"는 생각은 B26에서 자세히 다뤄요).</p>
+<h3>③ 빼기</h3>
 <blockquote>
 <p>EV = 0.25 × 24 − 0.75 × 6 = 6 − 4.5 = <strong>+1.5BB</strong></p>
 </blockquote>
-<p>폴드의 EV는 0BB. <strong>+1.5BB &gt; 0BB</strong> 이니 콜이에요.</p>
-<h2>4단계. 확인 — 4번 콜하면?</h2>
+<p>폴드의 EV는 0BB. <strong>+1.5BB &gt; 0BB</strong>이니 콜이에요.</p>
+<h3>확인 — 4번 콜하면?</h3>
 <ul>
 <li><strong>1번 이김</strong>: <strong>24BB</strong> 벌어요</li>
 <li><strong>3번 짐</strong>: 6BB씩 → <strong>18BB</strong> 잃어요</li>
 <li>합계: 24 − 18 = <strong>+6BB</strong> → 한 번에 평균 <strong>+1.5BB</strong></li>
 </ul>
-<p>EV 식과 같은 답이 나왔죠. EV는 결국 <strong>"여러 번 했을 때 한 번 평균"</strong> 이에요.</p>
+<p>EV 식과 같은 답이죠. EV는 결국 <strong>"여러 번 했을 때 한 번 평균"</strong>이에요.</p>
+<section class="sec why"><h2>왜 그럴까: 돈은 4배, 횟수는 3배 — 큰 배수가 이겨요</h2>
+<h3>돈의 배수 = 팟오즈</h3>
+<p>이기면 24BB, 지면 6BB. 24 ÷ 6 = 4, 버는 돈이 잃는 돈의 <strong>4배</strong>예요. 이게 B06에서 배운 <strong>팟오즈</strong>, "4 대 1"이에요.</p>
+<p>4 대 1이면 "4번 지고 1번 이겨도 본전"이에요. 이긴 1번에 24BB, 진 4번에 6 × 4 = 24BB니까요. 그래서 4 + 1 = <strong>5번 중 1번</strong>, 1단계의 필요 에퀴티 20%가 나와요.</p>
+<h3>횟수의 배수 = 승률</h3>
+<p>이번엔 횟수예요. 질 확률 75%, 이길 확률 25%라 0.75 ÷ 0.25 = 3, 질 때가 이길 때의 <strong>3배</strong>예요. "몇 대 1"로 말하면 <strong>3 대 1</strong>이죠.</p>
+<h3>두 배수를 나란히 놓으면</h3>
+<p>이길 때 몫은 "큰 돈 × 드문 횟수", 질 때 몫은 "작은 돈 × 잦은 횟수"예요. 두 몫의 크기를 나눠 보면 이렇게 돼요.</p>
+<blockquote>
+<p>(0.25 × 24) ÷ (0.75 × 6) = 6 ÷ 4.5 = 4 ÷ 3</p>
+</blockquote>
+<p>돈에서 <strong>4배</strong> 앞서고, 횟수에서 <strong>3배</strong> 뒤져요. 4가 3보다 크니까 이길 때 몫이 이겨요.</p>
+<p>이게 무슨 뜻이냐면, <strong>"돈의 배수(팟오즈) &gt; 횟수의 배수"</strong>와 <strong>"승률 &gt; 필요 에퀴티"</strong>는 같은 말이라는 거예요. 팟오즈 4 대 1은 "5번 중 1번 이상이면 남는다"이고, Hero는 3 대 1, 곧 4번 중 1번 이기니 그 기준을 넘죠. 다만 4와 3이 가까워서, 두 몫도 6BB와 4.5BB로 <strong>가깝고</strong> 남는 건 1.5BB예요.</p>
+<h3>EV를 한 줄로 바꿔 쓰면</h3>
+<p>같은 이야기를 식으로 이어 보면 이래요. 승률이 들어간 것끼리 모으면 됩니다.</p>
+<blockquote>
+<p>EV = 승률 × 24 − (1 − 승률) × 6 = 승률 × 30 − 6 = (승률 − 6 ÷ 30) × 30</p>
+</blockquote>
+<p>6 ÷ 30은 필요 에퀴티, 30은 콜한 뒤 팟이에요. 그래서 <strong>EV = (승률 − 필요 에퀴티) × 콜한 뒤 팟</strong>이 돼요.</p>
+<blockquote>
+<p>(0.25 − 0.2) × 30 = <strong>1.5BB</strong></p>
+</blockquote>
+<p>4단계와 똑같죠. 이 식으로 보면 EV는 <strong>승률이 기준선을 얼마나 넘었나</strong> × <strong>팟이 얼마나 큰가</strong>예요. 같은 차이라도 팟이 크면 이득이 커지고, 승률이 기준선 아래로 내려가면 괄호 안이 마이너스가 되어 EV도 마이너스가 돼요.</p>
+<h3>벳 크기는 돈의 배수를 바꿔요</h3>
+<p>상대가 더 크게 걸면 무엇이 바뀔까요? 승률(횟수의 배수)은 그대로라도 <strong>돈의 배수가 줄어들어요.</strong> 잃는 돈이 커지는 만큼 버는 돈은 덜 커지니까요.</p>
+<p>돈의 배수가 횟수의 배수 3 아래로 내려가면 질 때 몫이 이기게 돼요. 같은 66, 같은 25%라도 벳 크기에 따라 이득인 콜이 손해인 콜로 바뀔 수 있는 이유예요.</p>
+</section><section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. "이기면 24BB나 버니까 콜"</strong>
+버는 돈만 보는 습관이에요. 오늘은 24BB를 4번 중 1번만 벌고, 6BB를 4번 중 3번 잃어요. 이길 때 몫(6BB)과 질 때 몫(4.5BB)을 나란히 놓아야 이득이 1.5BB라는 게 보여요. 대신 언제나 <strong>돈의 배수와 횟수의 배수를 같이</strong> 봐요.</p></div><div class="mis-card"><p><strong>실수 2. "EV +1.5BB니까 이번 콜로 1.5BB를 번다"</strong>
+실제 한 판의 결과는 <strong>+24BB 아니면 −6BB</strong>뿐이에요. B24에서 본 것처럼 EV는 판이 쌓여야 드러나는 평균이라, 오늘 콜하고 졌다고 잘못된 콜이 아니고 이겼다고 대단한 콜도 아니에요. 대신 결과가 아니라 <strong>콜할 때 두 몫을 제대로 셌는지</strong>로 평가해요.</p></div><div class="mis-card"><p><strong>실수 3. "66은 K·Q·9 페어에만 진다"</strong>
+보드 위 카드만 보고 지는 핸드를 떠올리면 ① 묶음을 작게 보기 쉬워요. 2단계에서 셌듯이 66은 77·88·TT·JJ·AA, 셋 다섯 가지, 투페어 열 가지, JT 스트레이트에도 져요. 반대로 A6·64처럼 6이 들어 있어 무서워 보이는 핸드에는 이기고요. ①을 작게 보면 승률을 실제보다 높게 잡아서, 손해인 콜을 이득으로 읽을 수 있어요. 대신 <strong>페어·포켓페어·셋·투페어·스트레이트·플러시</strong> 순서로 보드를 한 번씩 훑어요.</p></div></section>
 <hr />
-<h2>"필요 에퀴티로 비교하면 되는데, EV는 왜 따로 배워요?"</h2>
-<p>좋은 질문이에요. 필요 에퀴티(20%)와 승률(25%)을 비교하면 <strong>콜이냐 폴드냐</strong>는 알 수 있어요.
-EV는 거기에 더해 <strong>"얼마나" 이득인지</strong>를 알려 줘요. 오늘은 +1.5BB지만, 벳이 커지면 같은 승률로도 손해가 되는데 그 크기가 −4.5BB처럼 숫자로 보여요(문제 2). 나중에 여러 선택지를 비교할 때 이 숫자가 기준이 돼요.</p>
+<h2>"턴에서도 콜했는데, 그때 EV도 이렇게 계산하면 돼요?"</h2>
+<p>좋은 질문이에요. 식은 똑같이 쓸 수 있지만, 그 숫자를 <strong>최종 결과</strong>라고 말할 수는 없어요.</p>
+<p>턴에서 콜하면 리버에 상대가 또 벳할 수 있어요. 그러면 Hero가 더 낼 돈도, 이기는 경우 받는 돈도 달라지죠. 이번 콜 하나의 EV로는 판 전체를 다 담지 못해요.</p>
+<p>리버 콜은 다음 베팅이 없어서 <strong>이기거나 지거나</strong> 두 가지로 끝나요. 그래서 오늘처럼 EV 하나로 깔끔하게 정리돼요. 뒤에 베팅이 남은 경우를 묶어 보는 법은 중급 I09에서 배워요.</p>
 <h2>숫자가 뒤집히는 지점</h2>
 <p>기준은 두 가지예요.</p>
 <ul>
 <li><strong>상대 벳 크기가 바뀌면</strong>: 필요 에퀴티가 다시 계산돼요. 그 값이 Hero 승률(25%)보다 높아지면 폴드, 낮으면 콜</li>
 <li><strong>Hero 승률이 바뀌면</strong>: 지금 필요 에퀴티(20%)보다 높은지 낮은지만 보면 돼요</li>
 </ul>
-<p>문제 1·2에서 직접 계산해 보세요.</p>
 <section class="sec tip"><h2>선생님의 한마디</h2>
+<p>리버에서 EV를 구할 때는 이 순서로 칸을 채워요.</p>
 <ol>
-<li>EV = <strong>(이길 확률 × 버는 돈) − (질 확률 × 잃는 돈)</strong></li>
-<li>버는 돈은 <strong>원래 팟 + 상대 벳</strong>, 잃는 돈은 <strong>우리 콜</strong></li>
-<li>EV가 <strong>0보다 크면 콜, 작으면 폴드</strong></li>
+<li>벳 크기로 <strong>돈의 배수</strong>(몇 대 1)부터 떠올리기: 1/3팟이면 4 대 1</li>
+<li>승률 어림을 <strong>횟수의 배수</strong>로 바꿔 나란히 놓기: 4번 중 1번이면 3 대 1</li>
+<li>두 배수가 <strong>가까우면</strong>, 승률 어림을 한 번 더 의심해 보기</li>
 </ol></section>
 <hr />
 <h2>연습 문제 (같은 보드, 같은 Hero 핸드)</h2>
 <blockquote>
-<p>홀덤학습 <strong>에퀴티 계산기</strong>에서 내 카드를 고른 뒤 <strong>[콜 수익]</strong> 칸에 <strong>지금 팟(상대 벳 포함)</strong>과 <strong>콜 금액</strong>을 넣으면 필요 에퀴티가 나와요. EV는 직접 계산해 보세요.</p>
+<p>홀덤학습 <strong>에퀴티 계산기</strong>에서 내 카드를 고른 뒤 <strong>[콜 수익]</strong> 칸에 <strong>지금 팟(상대 벳 포함)</strong>과 <strong>콜 금액</strong>을 넣으면 필요 에퀴티가 나와요. 지금 팟 칸에는 팟 18BB에 상대 벳을 더한 값을 넣어요. EV는 직접 계산해 보세요.</p>
 </blockquote>
-<p><strong>문제 1.</strong> 벳은 6BB 그대로인데, Hero 가정 승률이 <strong>15%</strong> 라면 EV는?</p>
+<p><strong>문제 1.</strong> 벳은 6BB 그대로인데, 이 상대는 ②를 덜 섞어서 Hero 가정 승률이 <strong>15%</strong>라면 EV는?</p>
 <details>
 <summary>정답 보기</summary>
-<p><strong>폴드.</strong> EV = 0.15 × 24 − 0.85 × 6 = 3.6 − 5.1 = <strong>−1.5BB</strong>.</p>
+<p><strong>폴드.</strong> EV = 0.15 × 24 − 0.85 × 6 = 3.6 − 5.1 = <strong>−1.5BB</strong>.
+이길 때 몫(3.6BB)보다 질 때 몫(5.1BB)이 커졌어요.</p>
 </details>
-<p><strong>문제 2.</strong> Hero 가정 승률은 25% 그대로인데, 상대가 <strong>18BB(팟벳)</strong> 를 걸었다면 EV는?</p>
+<p><strong>문제 2.</strong> Hero 가정 승률은 25% 그대로인데, 상대가 <strong>18BB(팟벳)</strong>를 걸었다면 EV는?</p>
 <details>
 <summary>정답 보기</summary>
-<p><strong>폴드.</strong> 이기면 18 + 18 = 36BB, 지면 18BB.
-EV = 0.25 × 36 − 0.75 × 18 = 9 − 13.5 = <strong>−4.5BB</strong>.</p>
+<p><strong>폴드.</strong> 이기면 원래 팟 18BB + 상대 벳 18BB = <strong>36BB</strong>, 지면 <strong>18BB</strong>.
+EV = 0.25 × 36 − 0.75 × 18 = 9 − 13.5 = <strong>−4.5BB</strong>.
+돈의 배수가 36 ÷ 18 = 2로 줄었는데 횟수의 배수는 여전히 3이라, 질 때 몫이 이겼어요.</p>
 </details>
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>리버 콜의 EV = <strong>이길 확률 × (원래 팟 + 상대 벳) − 질 확률 × 이번 콜</strong></li>
+<li>이길 때 몫은 "큰 돈 × 드문 횟수", 질 때 몫은 "작은 돈 × 잦은 횟수". 둘의 <strong>차이</strong>가 이득이에요</li>
+<li><strong>돈의 배수(팟오즈) &gt; 횟수의 배수</strong>면 이길 때 몫이 커요. 이건 "승률 &gt; 필요 에퀴티"와 같은 말이에요</li>
+<li>EV를 정리하면 <strong>(승률 − 필요 에퀴티) × 콜한 뒤 팟</strong>. 기준선을 넘은 만큼 × 팟 크기가 이득이에요</li>
+<li>66을 이기는 핸드는 보드를 보고 <strong>페어부터 스트레이트까지</strong> 빠짐없이 세요</li>
+</ul>
+</section><section class="sec end"><h2>정리하며</h2>
+<p>오늘은 리버에서 1/3팟 벳을 맞은 66으로 EV를 직접 계산했어요.</p>
+<p>기준선 20%를 먼저 구하고, 가정 승률 25%로 콜 쪽이라는 걸 확인한 뒤, 이길 때 몫 6BB와 질 때 몫 4.5BB를 빼서 <strong>+1.5BB</strong>를 얻었죠. 돈은 4배 앞서고 횟수는 3배 뒤져서 두 몫이 가까워졌고, 그 작은 차이가 이득이었어요. 그리고 이 차이를 식으로 정리하면 기준선을 넘은 만큼 × 팟이라는 것도 봤어요.</p>
+<p>다음 글 B26에서는 반대로 <strong>손해인 콜을 계속할 때</strong> 무슨 일이 생기는지 봐요. "한 번만 더 보자" 하고 따라가는 콜의 작은 마이너스가 쌓이면 얼마가 되는지 다뤄요.</p>
 <hr />
-<p><small>AI 작성 · 숫자는 계산 검증 · 가정 승률 기준 · 리버 마지막 결정이라 콜 손익이 최종 결과</small></p>
+<p><small>AI 작성 · 숫자는 계산 검증 · 가정 승률 기준 · 리버 마지막 결정이라 콜 손익이 최종 결과</small></p></section>
 </article>
 <nav class="nav"><a class="prev" href="024_B24.html"><div class="l">← 이전 글</div><div class="t">EV(기대값) 처음 배우기: 이 내기, 여러 번 하면 남을까?</div></a><a class="next" href="026_B26.html"><div class="l">다음 글 →</div><div class="t">&quot;한 번만 더 보자&quot;의 비용: 작은 손해 콜이 쌓이면 얼마가 될까?</div></a></nav></main>
 </body>

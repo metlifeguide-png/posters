@@ -10,17 +10,35 @@
 <header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
 <main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">토너</span><span class="n">고급 13번째 글 (전체 122편 중 109번째)</span></div><h1>리스크 프리미엄: 버블에서 콜에 에퀴티가 얼마나 더 필요할까?</h1>
 <article>
-<p>안녕하세요. E11에서 버블의 올인 콜은 칩 기준보다 ICM 필요 에퀴티가 훨씬 높았죠(약 46.7% → 약 66.9%).
-오늘은 그 차이에 이름을 붙이고, 이 조건에서 <strong>무엇이 그 차이를 키우고 줄이는지</strong> 하나씩 바꿔 봐요.</p>
-<p>오늘 목표는 하나예요. <strong>리스크 프리미엄을 구하고, 짧은 스택과 "지면 탈락하는지"에 따라 어떻게 바뀌는지 알기.</strong></p>
+<p>안녕하세요. E11에서 버블의 올인 콜은 칩 기준 필요 에퀴티 약 46.7%가 ICM으로는 약 66.9%까지 올라갔죠. 같은 콜인데 20%포인트 넘게 더 이겨야 했어요.</p>
+<p>오늘은 그 차이 자체를 들여다봐요. 차이에 이름을 붙이고, 이 조건에서 <strong>무엇이 그 차이를 키우고 줄이는지</strong> 스택을 하나씩 바꿔 가며 확인할게요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li><strong>리스크 프리미엄</strong>이 무엇이고, 왜 "잃는 몫 ÷ 따는 몫" 하나로 거의 다 설명되는지</li>
+<li>짧은 스택이 있을 때 프리미엄이 <strong>커지는</strong> 이유</li>
+<li>지면 탈락하는 콜과 <strong>져도 살아남는 콜</strong>의 프리미엄이 크게 다른 이유</li>
+</ul></div>
 <hr />
+<p class="concl"><strong>결론부터 말할게요. 같은 버블이라도 이 조건에서 리스크 프리미엄은 약 6.7%p에서 약 26.7%p까지 달라져요.</strong> 지면 탈락하는지, 테이블에 짧은 스택이 있는지가 그 크기를 정해요.</p>
 <h2>1단계. 리스크 프리미엄이란?</h2>
-<p><strong>리스크 프리미엄 = ICM 필요 에퀴티 − 칩 기준 필요 에퀴티</strong>예요. 상금 구조 때문에 같은 콜에 <strong>더 얹어야 하는 에퀴티</strong>죠.
-비유하면 <strong>위험 수당</strong>이에요. 지면 탈락하는 위험한 일에는 더 높은 보상(더 높은 승률)을 요구하는 거예요.</p>
+<h3>한 줄 정의</h3>
+<p><strong>리스크 프리미엄 = 상금 구조 때문에 같은 콜에 더 얹어야 하는 에퀴티</strong>예요.</p>
+<h3>비유: 위험 수당</h3>
+<p>위험한 일일수록 수당을 더 받아야 맡겠죠. 토너먼트도 같아요. <strong>지면 탈락하는 콜일수록</strong>, 칩 기준보다 더 높은 승률이 있어야 콜해요. 그 "더"가 리스크 프리미엄이에요.</p>
+<h3>공식</h3>
+<blockquote>
+<p><strong>리스크 프리미엄 = ICM 필요 에퀴티 − 칩 기준 필요 에퀴티</strong></p>
+</blockquote>
+<p>E11 장면이면 66.9% − 46.7%, 약 20.2%p예요.</p>
 <h2>2단계. 조건 고정</h2>
-<p>E11과 같은 버블이에요. 4명 남음, 상금 1등 <strong>50</strong> · 2등 <strong>30</strong> · 3등 <strong>20</strong> · 4등 <strong>0</strong>(단위 점), 앤티 없음, 전체 칩 <strong>65BB</strong>. Hero(BB) <strong>15BB</strong>, 상대(SB) 올인, Hero가 콜할지 정해요.</p>
+<p>E11과 같은 버블이에요.</p>
+<ul>
+<li>4명 남음, 상금 1등 <strong>50</strong> · 2등 <strong>30</strong> · 3등 <strong>20</strong> · 4등 <strong>0</strong>(예시 단위)</li>
+<li>앤티 없음, 전체 칩 <strong>65BB</strong></li>
+<li>Hero(BB) <strong>15BB</strong>, 상대(SB)가 올인하고 Hero가 콜할지 정해요</li>
+</ul>
+<p>ICM 필요 에퀴티는 E11에서 본 <strong>(폴드 − 짐) ÷ (이김 − 짐)</strong>으로 구해요.</p>
 <h2>3단계. 짧은 스택이 바뀌면 (상대 15BB 고정)</h2>
-<p>상대·Hero 스택은 그대로 두고, CO와 BTN 사이에서만 칩을 옮겨요(BTN도 함께 바뀌는 이 조건에서의 비교예요). 세 경우 모두 지면 Hero가 탈락해서(짐 = 0) <strong>ICM 필요 에퀴티 = 폴드 ÷ 이김</strong>이에요.</p>
+<p>상대·Hero 스택은 그대로 두고, <strong>CO와 BTN 사이에서만</strong> 칩을 옮겨 볼게요. 세 경우 모두 지면 Hero가 탈락해서(짐 = 0) ICM 필요 에퀴티 = 폴드 ÷ 이김이에요.</p>
 <div class="tbl"><table>
 <thead>
 <tr>
@@ -59,46 +77,195 @@
 </tr>
 </tbody>
 </table></div>
-<p>칩 기준은 셋 다 14 ÷ 30 = <strong>약 46.7%</strong>예요. 이 조건에서는 CO가 짧을수록 Hero가 <strong>폴드하고 기다릴 때</strong> 입상 확률이 높아서(폴드 기대 상금이 커서) 프리미엄이 커져요.</p>
+<p>칩 기준은 셋 다 14 ÷ 30 = <strong>약 46.7%</strong>예요. 바뀐 건 Hero 핸드도, 상대도 아니고 <strong>CO의 스택</strong>뿐이에요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>CO가 짧을수록 <strong>폴드 값</strong>이 커져요(22.98 → 25.55 → 28.58). Hero가 폴드하고 기다리면, CO가 먼저 떨어져 Hero가 입상할 가능성이 커지니까요. 폴드가 비싸질수록 콜로 그걸 걸기가 어려워지고, 프리미엄이 커져요. (이 비교는 BTN 스택도 함께 바뀐 조건이에요.)</p>
 <h2>4단계. 지면 탈락하지 않으면 (상대 8BB)</h2>
-<p>이번엔 상대가 <strong>8BB</strong>예요(BTN 37BB, CO 5BB로 전체 65BB). Hero가 상대를 덮어요.</p>
-<ul>
-<li>콜: Hero가 8 − 1 = <strong>7BB</strong>를 더 내고, 팟 8 + 8 = <strong>16BB</strong> → 칩 기준 7 ÷ 16 = <strong>43.75%</strong></li>
-<li>폴드: Hero 15 − 1 = 14BB, 상대 8 + 1 = 9BB / 이김: Hero 15 + 8 = 23BB → <strong>약 35.59</strong> / 짐: Hero 15 − 8 = 7BB 남음 (상대 8 + 8 = 16BB) → <strong>약 17.99</strong> / 폴드 <strong>약 26.88</strong></li>
-</ul>
+<p>이번엔 상대가 <strong>8BB</strong>예요. BTN <strong>37BB</strong>, CO <strong>5BB</strong>로 전체 65BB를 맞췄어요. Hero 15BB가 상대를 <strong>덮어요</strong>.</p>
+<h3>칩 기준</h3>
+<p>Hero가 8 − 1 = <strong>7BB</strong>를 더 내고, 콜하면 팟은 8 + 8 = <strong>16BB</strong>예요.</p>
+<blockquote>
+<p>칩 기준 필요 에퀴티 = 7 ÷ 16 = <strong>43.75%</strong></p>
+</blockquote>
+<h3>세 경우</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>경우</th>
+<th>Hero</th>
+<th>상대</th>
+<th>Hero 기대 상금</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>폴드</td>
+<td>15 − 1 = 14</td>
+<td>8 + 1 = 9</td>
+<td>약 26.88</td>
+</tr>
+<tr>
+<td>콜해서 이김</td>
+<td>15 + 8 = 23</td>
+<td>0 (탈락)</td>
+<td>약 35.59</td>
+</tr>
+<tr>
+<td>콜해서 짐</td>
+<td>15 − 8 = 7</td>
+<td>8 + 8 = 16</td>
+<td>약 17.99</td>
+</tr>
+</tbody>
+</table></div>
 <blockquote>
 <p>ICM 필요 에퀴티 = (26.87531 − 17.99405) ÷ (35.58608 − 17.99405) = 8.88126 ÷ 17.59203 = <strong>약 50.5%</strong> → 프리미엄 <strong>약 6.7%p</strong></p>
 </blockquote>
-<p>이기면 <strong>약 8.71</strong> 늘고 지면 <strong>약 8.88</strong> 줄어요. 져도 살아남으니 두 쪽이 거의 비슷해져서 프리미엄이 작아요. (BTN 스택도 함께 바뀐 이 조건에서의 비교예요.)</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<ul>
+<li>상대 15BB(지면 탈락): 이기면 <strong>약 12.64</strong> 늘고, 지면 <strong>약 25.55</strong> 줄어요. 잃는 몫이 따는 몫의 두 배 넘게 커요</li>
+<li>상대 8BB(져도 생존): 이기면 <strong>약 8.71</strong> 늘고, 지면 <strong>약 8.88</strong> 줄어요. 거의 같아요</li>
+</ul>
+<p>져도 7BB로 살아남으니, 지는 쪽의 손해가 확 줄었어요. 그래서 프리미엄이 20.2%p에서 6.7%p로 작아졌어요.</p>
+<p>여기서 한 가지 눈여겨볼 게 있어요. 이 장면은 CO 5BB에 상대 8BB까지 <strong>짧은 스택이 둘</strong>인데, 프리미엄은 가장 작아요. 이 조건에서는 짧은 스택이 늘어난 효과보다 <strong>지면 탈락하지 않는 효과가 훨씬 컸다</strong>는 뜻이에요.</p>
+<section class="sec why"><h2>왜 그럴까: 프리미엄은 "잃는 몫 ÷ 따는 몫"에서 나와요</h2>
+<h3>필요 에퀴티를 비율 하나로 다시 쓰기</h3>
+<p>필요 에퀴티는 결국 <strong>잃는 몫이 전체에서 차지하는 비율</strong>이에요.</p>
+<blockquote>
+<p>필요 에퀴티 = 잃는 몫 ÷ (따는 몫 + 잃는 몫)</p>
+</blockquote>
+<p>칩 기준이면 폴드(14BB)에서 이기면 16BB 늘고 지면 14BB 줄어서 14 ÷ (16 + 14) = 14 ÷ 30, E11의 칩 기준 식 그대로예요. 이 식의 위아래를 따는 몫으로 나누고, 잃는 몫 ÷ 따는 몫을 r이라고 하면 <strong>필요 에퀴티 = r ÷ (1 + r)</strong>이 돼요. r이 1이면(잃는 몫 = 따는 몫) 정확히 절반이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>장면</th>
+<th>잃는 몫 ÷ 따는 몫</th>
+<th>필요 에퀴티</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>칩 기준(상대 15BB)</td>
+<td>14 ÷ 16 = 0.875</td>
+<td>약 46.7%</td>
+</tr>
+<tr>
+<td>ICM, CO 13BB</td>
+<td>약 1.6</td>
+<td>약 61.5%</td>
+</tr>
+<tr>
+<td>ICM, CO 5BB</td>
+<td>약 2.02</td>
+<td>약 66.9%</td>
+</tr>
+<tr>
+<td>ICM, CO 1BB</td>
+<td>약 2.75</td>
+<td>약 73.3%</td>
+</tr>
+<tr>
+<td>ICM, 상대 8BB</td>
+<td>약 1.02</td>
+<td>약 50.5%</td>
+</tr>
+</tbody>
+</table></div>
+<p>칩 기준에서는 잃는 칩(14BB)이 따는 칩(16BB)보다 작아서 r이 1보다 작고, 필요 에퀴티가 절반 아래예요. ICM에서는 r이 1을 넘어가요. 잃는 상금이 따는 상금보다 커지는 순간 <strong>50%를 넘게 이겨야</strong> 본전이 되는 거예요.</p>
+<h3>무엇이 r을 키우나</h3>
+<p>r을 키우는 건 두 가지예요.</p>
+<ul>
+<li><strong>잃는 몫이 커질 때</strong>: 지면 탈락하는 콜(바닥 0까지 떨어짐), 폴드하고 기다리는 값이 큰 테이블(짧은 스택이 있음)</li>
+<li><strong>따는 몫이 작아질 때</strong>: 이겨도 상금이 크게 안 오르는 구조(E10의 천장)</li>
+</ul>
+<p>E10에서 "따는 칩보다 잃는 칩이 더 비싸다"고 했죠. 리스크 프리미엄은 그 비싼 정도를 <strong>필요 에퀴티로 바꿔 놓은 값</strong>이에요.</p>
+<h3>같은 핸드로 보면</h3>
+<p>E11의 A♦T♣를 다시 불러올게요. 상대가 E11과 같은 범위로 민다고 <strong>가정</strong>하면 A♦T♣의 에퀴티는 약 56.5%예요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>장면</th>
+<th>ICM 필요</th>
+<th>A♦T♣ 약 56.5%면</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CO 1BB</td>
+<td>약 73.3%</td>
+<td>폴드</td>
+</tr>
+<tr>
+<td>CO 5BB</td>
+<td>약 66.9%</td>
+<td>폴드</td>
+</tr>
+<tr>
+<td>CO 13BB</td>
+<td>약 61.5%</td>
+<td>폴드</td>
+</tr>
+<tr>
+<td>상대 8BB</td>
+<td>약 50.5%</td>
+<td>콜</td>
+</tr>
+</tbody>
+</table></div>
+<p>핸드는 그대로인데, 프리미엄의 크기에 따라 판정이 바뀌어요. (상대 8BB 줄은 8BB 상대도 같은 범위로 민다고 본 비교예요.)</p>
+</section><section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. "프리미엄은 버블이면 늘 비슷하다"</strong>
+같은 버블, 같은 Hero 15BB, 같은 상대 15BB인데 CO 스택만 1BB·5BB·13BB로 바꾸니 프리미엄이 26.7%p·20.2%p·14.9%p로 달랐어요. 그러니 버블이라는 이름보다 <strong>테이블의 스택 분포</strong>를 먼저 봐야 해요.</p></div><div class="mis-card"><p><strong>실수 2. "짧은 스택이 많을수록 무조건 더 조여야 한다"</strong>
+상대 8BB 장면은 짧은 스택이 둘인데 프리미엄이 가장 작았어요(약 6.7%p). Hero가 상대를 덮어서 져도 살아남았기 때문이에요. 짧은 스택이 있는지와 <strong>내가 지면 탈락하는지</strong>를 함께 봐야 해요.</p></div><div class="mis-card"><p><strong>실수 3. 프리미엄만 보고 칩 기준을 잊기</strong>
+상대 8BB 장면의 칩 기준은 46.7%가 아니라 7 ÷ 16 = 43.75%였어요. 콜 금액과 팟이 바뀌면 칩 기준도 바뀌어요. 프리미엄은 <strong>그 장면의 칩 기준 위에</strong> 얹는 값이라, 둘 다 새로 구해야 해요.</p></div></section>
 <hr />
 <h2>"그럼 상대를 덮으면 프리미엄이 없나요?"</h2>
-<p>좋은 질문이에요. 이 조건에서 8BB 상대에도 약 6.7%p가 남아요. 지면 줄어드는 몫(약 8.88)이 이기면 느는 몫(약 8.71)보다 조금 커서예요. 덮는 쪽이 압박을 거는 이야기는 E14에서 다뤄요.</p>
+<p>줄어들 뿐 사라지지는 않아요. 이 조건에서 8BB 상대에도 약 6.7%p가 남았죠.</p>
+<p>이기면 상대가 탈락해 <strong>버블이 터지고</strong>, Hero는 3등 상금 20을 확보해요. 그런데 23BB로 늘어도 1·2등 상금까지 크게 끌어올리지는 못해서 따는 몫이 생각보다 작아요. 반대로 지면 Hero는 7BB, 4명 중 가장 짧은 스택이 돼서 4등(0) 위험이 커져요. 그래서 잃는 몫이 따는 몫보다 조금 커요. 덮는 쪽이 이 구조로 상대를 압박하는 이야기는 E14에서 다뤄요.</p>
 <h2>숫자가 뒤집히는 지점</h2>
-<p>기준은 <strong>Hero 에퀴티가 (칩 기준 + 리스크 프리미엄)을 넘는지</strong>예요. 같은 핸드라도 짧은 스택과 상대 스택에 따라 넘기도, 못 넘기도 해요.</p>
+<ul>
+<li>상대 스택이 <strong>Hero 스택 이상</strong>이 되어 지면 탈락하는 순간, 잃는 몫이 바닥까지 떨어져 프리미엄이 크게 뛰어요</li>
+<li>테이블에 <strong>나보다 먼저 떨어질 짧은 스택</strong>이 생기거나 사라질 때도 폴드 값이 움직여 프리미엄이 바뀌어요</li>
+</ul>
 <section class="sec tip"><h2>선생님의 한마디</h2>
+<p>버블에서 올인을 받으면 이 순서로 봐요.</p>
 <ol>
-<li>리스크 프리미엄 = <strong>ICM − 칩 기준</strong> 필요 에퀴티</li>
-<li>이 조건에서는 <strong>지면 탈락하는 콜</strong>일수록 프리미엄이 커요</li>
-<li>짧은 스택이 있으면 <strong>폴드하고 기다리는 값</strong>이 올라가요</li>
+<li>덮는지 비교할 때는 <strong>블라인드까지 포함한 지금 스택</strong>으로 보기(BB에 낸 1BB도 내 칩)</li>
+<li>상금 구조가 <strong>평평한지</strong>(입상 상금끼리 차이가 작고 꼴찌만 0인지) 보기 — 평평할수록 탈락을 거는 콜이 비싸져요</li>
+<li>칩 기준 필요 에퀴티를 먼저 구하고, 그 위에 <strong>프리미엄을 얹어</strong> 기준선을 그리기</li>
 </ol></section>
 <hr />
 <h2>연습 문제</h2>
 <blockquote>
-<p>뚝섬 <strong>AOF 차트</strong>에서 그외 게임들 → 4명 → 자리별 스택·상금 입력 → 마감 후(ICM)로 맞추면 콜 필요 승률이 칩 기준과 나란히 나와요. 화면은 블라인드 압박이 들어가 숫자가 달라서, <strong>ICM 쪽이 더 높게 나오는지만</strong> 보세요.</p>
+<p>홀덤학습 <strong>AOF 차트(새틀 프리플랍 차트) → 그외 게임들</strong>에서 테이블 인원 4명 → 포지션 BB → 앞에서 액션한 자리 SB → 자리별 스택·상금 입력 → <strong>마감 후(ICM)</strong>로 맞추면 콜 필요 승률이 칩 기준과 나란히 나와요. 화면은 블라인드 압박이 들어가 숫자가 달라서, <strong>ICM 쪽이 더 높게 나오는지만</strong> 보세요.</p>
 </blockquote>
-<p><strong>문제 1.</strong> 3단계 CO 5BB 장면에서 상금만 <strong>40 · 35 · 25 · 0</strong>으로 바뀌었어요(1~3등 차이가 작음). 폴드 <strong>약 26.41</strong>, 이김 <strong>약 36.26</strong>, 짐 <strong>0</strong>이에요. 리스크 프리미엄은?</p>
+<p><strong>문제 1.</strong> 3단계 CO 5BB 장면에서 상금만 <strong>40 · 35 · 25 · 0</strong>으로 바뀌었어요(1~3등 차이가 작음). 폴드 <strong>약 26.41</strong>, 이김 <strong>약 36.26</strong>, 짐 <strong>0</strong>이에요. 리스크 프리미엄은 얼마일까요? 상금이 평평해졌는데 프리미엄이 왜 이렇게 나왔는지도 설명해 보세요.</p>
 <details>
 <summary>정답 보기</summary>
-<p>ICM 필요 에퀴티 = 26.4104 ÷ 36.26374 = <strong>약 72.8%</strong>. 칩 기준 약 46.7%와의 차이, 프리미엄은 <strong>약 26.2%p</strong>예요. 입상하면 상금 차이가 작아서, 4등(0)만 피하는 게 더 중요해졌어요.</p>
+<p>ICM 필요 에퀴티 = 26.4104 ÷ 36.26374 = <strong>약 72.8%</strong>. 칩 기준 14 ÷ 30 = 약 46.7%와의 차이, 프리미엄은 <strong>약 26.2%p</strong>예요(원래 상금일 때 약 20.2%p보다 커요).
+이유: 입상하면 1~3등 상금 차이가 작아져서, <strong>이겨도 크게 안 오르고</strong>(이김 약 38.19 → 약 36.26) <strong>폴드하고 살아남는 값은 올랐어요</strong>(폴드 약 25.55 → 약 26.41). 잃는 몫 ÷ 따는 몫이 커진 거예요. 4등(0)만 피하면 되는 구조라 탈락을 거는 콜이 더 비싸졌어요.</p>
 </details>
-<p><strong>문제 2.</strong> 상대가 <strong>10BB</strong>, BTN <strong>35BB</strong>, CO <strong>5BB</strong>예요(전체 65BB). 폴드 <strong>약 26.37</strong>, 이김 <strong>약 36.35</strong>, 짐 <strong>약 14.43</strong>이에요. 칩 기준 필요 에퀴티부터 구해서 리스크 프리미엄은?</p>
+<p><strong>문제 2.</strong> 상대가 <strong>10BB</strong>예요. 상대에게서 빠진 5BB는 BTN에 더해 BTN <strong>35BB</strong>, CO <strong>5BB</strong>(전체 65BB). 기대 상금은 폴드 <strong>약 26.37</strong>, 이김 <strong>약 36.35</strong>, 짐 <strong>약 14.43</strong>이에요. 칩 기준 필요 에퀴티부터 구해서 리스크 프리미엄을 구해 보세요.</p>
 <details>
 <summary>정답 보기</summary>
-<p>칩 기준: Hero가 10 − 1 = <strong>9BB</strong>를 더 내고 팟 <strong>20BB</strong> → 9 ÷ 20 = <strong>45%</strong>.
-ICM = (26.36623 − 14.42735) ÷ (36.34615 − 14.42735) = <strong>약 54.5%</strong>. 프리미엄 <strong>약 9.5%p</strong>. Hero가 덮어서 져도 살아남으니 작아요.</p>
+<p>칩 기준: Hero가 10 − 1 = <strong>9BB</strong>를 더 내고 팟 10 + 10 = <strong>20BB</strong> → 9 ÷ 20 = <strong>45%</strong>.
+짐이면 Hero는 15 − 10 = 5BB로 살아남아요. ICM = (26.36623 − 14.42735) ÷ (36.34615 − 14.42735) = <strong>약 54.5%</strong>. 프리미엄 <strong>약 9.5%p</strong>.
+져도 살아남지만 5BB만 남아서, 상대 8BB 장면(약 6.7%p)보다는 조금 커요.</p>
 </details>
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li><strong>리스크 프리미엄</strong> = ICM 필요 에퀴티 − 칩 기준 필요 에퀴티. 지면 잃는 위험에 붙는 "위험 수당"이에요</li>
+<li>필요 에퀴티는 <strong>잃는 몫 ÷ 따는 몫</strong>(r)이 정해요. r이 1을 넘으면 절반 넘게 이겨야 본전</li>
+<li>이 조건에서 <strong>지면 탈락하는 콜</strong>, <strong>나보다 짧은 스택이 있는 테이블</strong>일수록 프리미엄이 커요</li>
+<li>상대를 덮어 <strong>져도 살아남으면</strong> 프리미엄이 크게 줄지만, 0이 되지는 않아요</li>
+</ul>
+</section><section class="sec end"><h2>정리하며</h2>
+<p>오늘은 E11의 버블에서 스택을 하나씩 바꿔 리스크 프리미엄을 쟀어요.</p>
+<p>CO가 1BB·5BB·13BB일 때 프리미엄은 26.7%p·20.2%p·14.9%p로, 짧은 스택이 짧을수록 폴드 값이 커져 프리미엄도 커졌어요. 상대가 8BB로 줄어 Hero가 덮자 잃는 몫과 따는 몫이 거의 같아져 프리미엄이 6.7%p까지 내려갔죠.</p>
+<p>오늘 하나만 가져가면 돼요. 버블에서 콜을 고민할 때는 <strong>"지면 탈락하나, 나보다 짧은 사람이 있나"</strong> 두 가지로 프리미엄의 크기를 먼저 가늠하세요.</p>
+<p>다음 글 E13에서는 같은 4명·같은 상금 구조의 <strong>파이널 테이블</strong>에서, 콜하는 쪽만이 아니라 <strong>올인하는 쪽</strong>도 함께 봐요. 스택 분포에 따라 같은 핸드의 푸시와 콜이 어떻게 바뀌는지 다뤄요.</p>
 <hr />
-<p><small>AI 작성 · 숫자는 계산 검증 (ICM: 칩 비율로 등수를 차례로 뽑는 방식) · 스택·상금은 이 예시로 고정(전체 65BB) · 블라인드 압박·앤티는 넣지 않음 · 이번 한 번의 결정 기준</small></p>
+<p><small>AI 작성 · 숫자는 계산 검증 (ICM: 칩 비율로 등수를 차례로 뽑는 방식) · 스택·상금은 이 예시로 고정(전체 65BB) · 블라인드 압박·앤티는 넣지 않음 · 이번 한 번의 결정 기준</small></p></section>
 </article>
 <nav class="nav"><a class="prev" href="108_E11.html"><div class="l">← 이전 글</div><div class="t">버블 한 판: 칩 기준으로는 콜인데 ICM으로는 폴드일까?</div></a><a class="next" href="110_E13.html"><div class="l">다음 글 →</div><div class="t">파이널 테이블: 같은 핸드인데 왜 스택 분포에 따라 푸시·콜이 바뀔까?</div></a></nav></main>
 </body>

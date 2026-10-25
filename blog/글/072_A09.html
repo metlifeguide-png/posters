@@ -10,9 +10,13 @@
 <header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
 <main class="wrap"><div class="meta"><span class="badge a">상급</span><span class="chip">스팟</span><span class="n">상급 9번째 글 (전체 122편 중 72번째)</span></div><h1>플랍 작은 c-bet, 맞은 게 없어도 이득일까? 상대 폴드율을 콤보로 세기</h1>
 <article>
-<p>안녕하세요. A08에서 c-bet은 <strong>상대가 알파보다 자주 접으면 이득</strong>이라고 배웠죠.
-그런데 "상대가 몇 % 접을까?"는 감으로 정하기 쉬워요. 오늘은 상대 레인지를 <strong>가정</strong>하고, 보드 위에서 <strong>계속할 핸드와 접을 핸드를 콤보로 세어</strong> 폴드율을 구해 볼게요.</p>
-<p>오늘 목표는 하나예요. <strong>가정 레인지로 상대 폴드율을 세고, 알파와 비교해서 c-bet을 정하기.</strong></p>
+<p>안녕하세요. A08에서 c-bet은 <strong>상대가 알파보다 자주 접으면 이득</strong>이라고 배웠죠. 그리고 "BB가 이 보드에서 접을 수밖에 없는 핸드가 4분의 1을 넘나?"를 물으라고 했어요.</p>
+<p>오늘은 그 질문에 <strong>숫자로</strong> 답해요. BB 레인지를 가정하고, 보드 위에서 계속할 핸드와 접을 핸드를 <strong>묶음별로 하나하나</strong> 세어 폴드율을 구해 볼게요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>가정 레인지를 보드에 올려 <strong>짝 맞은 카드별로</strong> 계속 콤보를 세는 순서</li>
+<li>보드와 우리 카드가 지우는 조합까지 챙기는 <strong>콤보 세기 요령</strong></li>
+<li>이 스팟에서 c-bet이 뒤집히는 <strong>접는 콤보 기준선</strong></li>
+</ul></div>
 <hr />
 <h2>오늘의 핸드</h2>
 <p><strong>Hero (BTN · 100BB)</strong></p>
@@ -24,9 +28,10 @@
 </blockquote>
 <h3>플랍 · 팟 5.5BB</h3>
 <p><img src="../카드/Ks.svg" width="48"> <img src="../카드/7d.svg" width="48"> <img src="../카드/2c.svg" width="48"></p>
-<p>상대 체크 → <strong>Hero는 2BB c-bet을 할까?</strong> (팟 5.5BB의 약 3분의 1보다 조금 큰 벳)</p>
+<p>상대 체크 → <strong>Hero는 2BB c-bet을 할까?</strong> (팟의 36.4%)</p>
 <blockquote>
-<p>Hero는 페어도 드로우도 없어요. 콜을 받으면 이후에 포기한다고 가정할게요.</p>
+<p>Hero는 페어가 없고, 5-6-7 백도어 스트레이트뿐이에요. 오늘도 A08처럼 콜 뒤·체크 뒤 기회는 0으로 봐요.</p>
+<p>오늘 가정: c-bet이 <strong>콜을 받으면 이후에 포기</strong>한다. BB는 <strong>콜 아니면 폴드</strong>(체크레이즈 없음).</p>
 </blockquote>
 <hr />
 <p class="concl"><strong>결론부터 말할게요. 오늘 가정한 상대라면 c-bet이 이득입니다.</strong></p>
@@ -35,42 +40,111 @@
 </blockquote>
 <h2>1단계. 몇 % 접어야 본전인가 (알파)</h2>
 <blockquote>
-<p>알파 = 2(벳) ÷ (5.5(팟) + 2(벳)) = 2 ÷ 7.5 = <strong>약 26.67%</strong></p>
+<p>알파 = 2(벳) ÷ (5.5(팟) + 2(벳)) = 2 ÷ 7.5 = <strong>26.7%</strong></p>
 </blockquote>
-<p>2BB는 5.5BB 팟의 3분의 1보다 조금 커서, A08 표의 1/3팟보다 알파가 조금 높아요. 상대가 4번 중 1번 조금 넘게만 접어도 본전이에요.</p>
-<h2>2단계. 상대 레인지를 콤보로 세기 (가정 레인지 기준)</h2>
-<p>버튼 오픈에 BB가 콜하는 핸드를 이렇게 <strong>가정</strong>할게요(연습용).</p>
+<p>A08에서는 팟을 6BB로 어림해 4번 중 1번이었죠. 실제 팟 5.5BB로 하면 같은 2BB가 팟의 3분의 1보다 조금 커서, 알파도 <strong>26.7%</strong>로 조금 올라가요.</p>
+<h2>2단계. BB 레인지를 콤보로 세기 (가정 레인지 기준)</h2>
+<h3>1) BB가 들고 있을 핸드</h3>
+<p>버튼 오픈에 BB가 콜하는 핸드를 이렇게 <strong>가정</strong>할게요(연습용, 솔버 레인지 아님).</p>
 <blockquote>
 <p>22-99, A2s-A9s, K2s-KQs, Q6s+, J7s+, T7s+, 97s+, 86s+, 75s+, 64s+, 54s, A2o-ATo, K9o-KJo, Q9o+, J9o+, T9o, 98o</p>
 </blockquote>
-<p>보드 K♠ 7♦ 2♣와 Hero의 6♥·5♥를 지우면 <strong>374콤보</strong>예요.
-그리고 BB가 c-bet에 <strong>"페어 이상이거나, 다음 한 장에 스트레이트·플러시가 되는 카드가 4장 이상인 드로우면 계속, 나머지는 폴드"</strong> 하고, <strong>체크레이즈는 하지 않는다</strong>고 가정해요.</p>
+<p>TT 이상·AJ 이상·KQo·ATs는 이 연습 레인지에서 뺐어요(3벳하거나 다르게 쓴다고 본 핸드).</p>
+<h3>2) 보드와 Hero 카드 지우기</h3>
+<p>보드 K♠ 7♦ 2♣와 Hero 6♥·5♥는 BB가 들 수 없어요. 그걸 지우고 남은 조합은 <strong>374콤보</strong>예요.</p>
+<blockquote>
+<p>💡 빨리 세는 팁
+- <strong>K 오프수트</strong>(K9o 등): K는 3장 남았고, K마다 무늬가 다른 상대 카드 3장 → 3 × 3 = 9가지
+- <strong>K 수딧</strong>: 보통은 무늬 칸이 3개(K♠가 보드)라 3가지. 그런데 <strong>같은 무늬의 상대 카드가 보드나 Hero 손에 또 있으면 한 칸 더</strong> 빠져요. K2s(2♣가 보드)·K7s(7♦가 보드)·K6s·K5s(Hero의 6♥·5♥)는 2가지예요
+- <strong>포켓페어</strong>: 22·77·66·55는 한 장이 보드나 Hero 손에 있어 3가지, 나머지는 6가지(I32의 6 → 3 → 1)</p>
+</blockquote>
+<h3>3) 계속할 핸드의 기준</h3>
+<p>BB가 c-bet에 이렇게 대응한다고 <strong>가정</strong>해요.</p>
+<ul>
+<li><strong>계속</strong>: 페어 이상, 또는 다음 한 장에 스트레이트·플러시가 되는 카드가 4장 이상인 드로우</li>
+<li><strong>폴드</strong>: 나머지</li>
+</ul>
+<h3>4) 계속하는 묶음 세기</h3>
 <div class="tbl"><table>
 <thead>
 <tr>
 <th>묶음</th>
+<th>어떤 핸드</th>
 <th>콤보</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>페어 이상(K·7·2와 짝, 포켓페어)</td>
-<td>135</td>
+<td>K와 짝</td>
+<td>K2s~KQs, K9o~KJo</td>
+<td>56</td>
+</tr>
+<tr>
+<td>7과 짝</td>
+<td>A7, Q7s, J7s, T7s, 97s, 87s, 76s, 75s</td>
+<td>31</td>
+</tr>
+<tr>
+<td>2와 짝</td>
+<td>A2s, A2o</td>
+<td>12</td>
+</tr>
+<tr>
+<td>포켓페어</td>
+<td>22~99</td>
+<td>36</td>
 </tr>
 <tr>
 <td>드로우</td>
+<td>—</td>
 <td>0</td>
 </tr>
 <tr>
-<td><strong>폴드하는 핸드</strong></td>
+<td><strong>계속 합계</strong></td>
+<td></td>
+<td><strong>135</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>드로우가 0인 게 눈에 띄죠. 무늬가 다 달라 플러시 드로우가 없고, K·7·2가 서로 멀어서 이 레인지에는 한 장으로 완성되는 스트레이트 드로우도 없어요.</p>
+<h3>5) 접는 묶음 세기</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>묶음</th>
+<th>어떤 핸드</th>
+<th>콤보</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A 하이</td>
+<td>A3~A6·A8·A9(수딧·오프), ATo</td>
+<td>100</td>
+</tr>
+<tr>
+<td>Q·J·T 하이</td>
+<td>Q6s, Q8s~QJs, Q9o~QJo, J8s~JTs, J9o·JTo, T8s·T9s, T9o</td>
+<td>111</td>
+</tr>
+<tr>
+<td>낮은 연결</td>
+<td>98s, 98o, 86s, 65s, 64s, 54s</td>
+<td>28</td>
+</tr>
+<tr>
+<td><strong>폴드 합계</strong></td>
+<td></td>
 <td><strong>239</strong></td>
 </tr>
 </tbody>
 </table></div>
-<p>이 보드는 세 장이 서로 멀고 무늬도 모두 달라서, 이 레인지에는 한 장으로 완성되는 드로우가 없어요(계산 결과).</p>
+<p>135 + 239 = 374, 빠진 조합이 없어요.</p>
 <blockquote>
-<p>상대 폴드율 = 239 ÷ 374 = <strong>약 63.9%</strong></p>
+<p>BB 폴드율 = 239 ÷ 374 = <strong>63.9%</strong></p>
 </blockquote>
+<!-- 그림: BB 레인지 374콤보 — K짝 56·7짝 31·2짝 12·포켓 36 vs A하이 100·QJT하이 111·낮은연결 28 -->
+
 <h2>3단계. 비교</h2>
 <div class="tbl"><table>
 <thead>
@@ -82,50 +156,77 @@
 <tbody>
 <tr>
 <td>알파(필요 폴드율)</td>
-<td>약 26.67%</td>
+<td>26.7%</td>
 </tr>
 <tr>
-<td>상대 폴드율(가정)</td>
-<td>약 63.9%</td>
+<td>BB 폴드율(가정)</td>
+<td>63.9%</td>
 </tr>
 </tbody>
 </table></div>
 <p>폴드율이 알파보다 훨씬 높아서 <strong>c-bet이 이득</strong>이에요.</p>
+<p>같은 걸 BB 쪽에서 말하면, BB가 지키는 비율은 <strong>36.1%</strong>로 MDF <strong>73.3%</strong>의 절반쯤이에요. MDF = 1 − 알파라서 이건 위 비교를 뒤집어 말한 <strong>같은 이야기</strong>예요. 하나만 봐도 돼요.</p>
+<hr />
+<section class="sec why"><h2>왜 그럴까: 폴드율을 정하는 건 "큰 묶음 두 개"예요</h2>
+<h3>계속 쪽은 K 짝이 절반 가까이</h3>
+<p>계속하는 135콤보 중 <strong>K와 짝 56콤보</strong>가 가장 커요. 이 연습 레인지는 KQo를 뺐고 K 오프수트를 K9o~KJo만 넣어서, K 짝이 이 정도에 머물렀어요. BB 레인지에 K가 든 핸드가 적을수록 이 보드에서 지킬 핸드가 줄어요.</p>
+<h3>접는 쪽은 A 하이와 Q·J·T 하이</h3>
+<p>접는 239콤보 중 <strong>A 하이 100, Q·J·T 하이 111</strong>, 둘이 거의 다예요. BB가 프리플랍에 콜한 A x·브로드웨이 핸드가 이 보드에서 페어를 못 만든 거예요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>폴드율 63.9%는 "BB가 겁이 많아서"가 아니라, <strong>BB 레인지의 큰 묶음(A x·브로드웨이)이 이 보드를 비켜 갔기 때문</strong>이에요. 그래서 상대가 A 하이로도 버틴다면 가장 큰 묶음 하나가 계속 쪽으로 옮겨 가면서 숫자가 크게 바뀌어요(아래 질문 절).</p></section>
+<hr />
+<section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. 수딧 콤보를 무조건 3(또는 4)으로 세기</strong>
+K 수딧을 다 3으로 세면 K2s·K7s·K6s·K5s를 하나씩 더 세게 돼요. 이 네 가지에서만 네 조합이 부풀어요. 수딧은 <strong>같은 무늬 카드가 보드나 우리 손에 있는지</strong> 한 번 더 봐요.</p></div><div class="mis-card"><p><strong>실수 2. 합계가 레인지 전체와 맞는지 확인 안 하기</strong>
+계속 135와 폴드 239를 따로 세고 나서 더해 374가 되는지 보지 않으면, 묶음 하나를 통째로 빠뜨려도 몰라요. 오늘이라면 J9o+에 든 JTo를 빠뜨리기 쉬워요. <strong>계속 + 폴드 = 전체</strong>를 꼭 맞춰요.</p></div><div class="mis-card"><p><strong>실수 3. 알파 비교와 MDF 비교를 서로 다른 근거로 쓰기</strong>
+"폴드율이 알파를 넘었고, 게다가 MDF도 못 지켰으니 두 배로 확실"처럼 생각하는 실수예요. MDF = 1 − 알파라서 둘은 <strong>같은 부등식</strong>이에요. 근거는 하나예요.</p></div></section>
 <hr />
 <h2>"BB가 A 하이로도 콜하면요?"</h2>
-<p>좋은 질문이에요. 그러면 폴드하는 핸드가 줄어서 폴드율이 내려가요. 오늘 숫자는 <strong>"페어나 드로우만 계속"</strong> 이라는 가정의 결과예요. 상대가 A 하이로도 자주 버티는 사람이라면 그 핸드를 계속하는 쪽으로 옮겨 다시 세면 돼요. 그래서 이 계산의 핵심은 숫자 하나보다 <strong>"계속할 핸드를 어떻게 정했나"</strong> 예요.</p>
+<p>좋은 질문이에요. 그러면 접는 묶음에서 <strong>A 하이 100콤보</strong>가 계속 쪽으로 옮겨 가요. 이미 짝이 맞은 A2·A7은 원래 계속 쪽이니, 옮겨 가는 건 A3~A6·A8~AT예요.</p>
+<p>그러면 접는 건 Q·J·T 하이와 낮은 연결만 남아 폴드율이 크게 내려가요. 이 계산의 핵심은 숫자 하나보다 <strong>"계속할 핸드를 어떻게 정했나"</strong>예요. 기준이 바뀌면 같은 방법으로 묶음을 옮겨 다시 세면 돼요.</p>
 <h2>숫자가 뒤집히는 지점</h2>
-<p>기준은 두 가지예요.</p>
-<ul>
-<li><strong>벳 크기</strong>: 커질수록 알파가 올라가요</li>
-<li><strong>보드</strong>: 상대 레인지가 많이 맞는 보드일수록 폴드율이 내려가요</li>
-</ul>
-<p>폴드율이 알파 아래로 내려가면 맞은 게 없는 c-bet은 손해예요. 문제 1·2에서 직접 확인해 보세요.</p>
+<p>이 스팟의 기준선은 접는 콤보 수예요. 알파가 26.7%이니, 374콤보 중 접는 콤보가 374 × 2 ÷ 7.5 = 99.7 아래로 내려가면 맞은 게 없는 2BB c-bet은 손해예요. 오늘은 239콤보라 여유가 커요.</p>
 <section class="sec tip"><h2>선생님의 한마디</h2>
+<p>테이블에서 몇 초 안에 어림할 때는 이 순서로 봐요.</p>
 <ol>
-<li>폴드율은 감이 아니라 <strong>가정 레인지의 콤보</strong>로 세기</li>
-<li><strong>알파 vs 폴드율</strong> — 폴드율이 크면 맞은 게 없어도 c-bet</li>
-<li>같은 c-bet도 <strong>보드가 상대 레인지에 얼마나 맞는지</strong>에 따라 달라요</li>
+<li><strong>보드가 마른가</strong>: 무늬가 다 다르고 카드끼리 멀면 드로우가 거의 없어요. 젖은 보드면 드로우 묶음부터 따로 떠올리기</li>
+<li><strong>마른 보드라면</strong> 보드 높은 카드와 짝인 핸드 + 포켓페어만 먼저 세기. 오늘이면 K x와 포켓페어</li>
+<li>그게 레인지의 4분의 3에 한참 못 미치면 작은 c-bet은 이득 쪽, 가까우면 직접 세어 확인</li>
 </ol></section>
 <hr />
 <h2>연습 문제</h2>
 <blockquote>
-<p>학습툴에는 알파를 직접 넣는 칸이 없어요. 홀덤학습 <strong>팟 오즈</strong> 퀴즈 <strong>Lv.5(블러프 본전)</strong>로 같은 계산을 연습해 보세요.</p>
+<p>학습툴에는 알파를 직접 넣는 칸이 없어요. 홀덤학습 <strong>팟 오즈</strong> 퀴즈 <strong>Lv.5(블러프 본전)</strong>로 같은 계산을 연습해 보세요. 레인지 콤보 세기는 직접 해요.</p>
 </blockquote>
-<p><strong>문제 1.</strong> 같은 보드·같은 가정에서 c-bet을 <strong>3.5BB</strong>로 키우면? (상대가 계속하는 핸드는 같다고 볼 때)</p>
+<p><strong>문제 1.</strong> 같은 보드·같은 가정에서 BB 폴드율이 63.9%로 그대로라면, Hero는 맞은 게 없는 핸드로 c-bet을 <strong>최대 얼마까지</strong> 키워도 본전 이상일까요?</p>
 <details>
 <summary>정답 보기</summary>
-<p>알파 = 3.5 ÷ (5.5 + 3.5) = <strong>약 38.89%</strong> &lt; 폴드율 약 63.9% → <strong>여전히 이득</strong>.
-다만 알파가 올라서 폴드율과의 <strong>여유가 줄었어요.</strong> 접는 핸드가 같다면 <strong>작은 벳으로 같은 폴드를 사는 게</strong> 여유가 커요.</p>
+<p>알파가 폴드율 63.9%와 같아지는 크기가 최대예요. 벳 ÷ (5.5 + 벳) = 239/374가 되려면, 벳 = 5.5 × 239 ÷ 135 = <strong>9.74BB</strong>. 확인: 알파 = 9.74 ÷ (5.5 + 9.74) = <strong>63.9%</strong>.
+팟보다 큰 오버벳까지 본전 이상이에요. 다만 실제로는 크기를 키우면 BB가 덜 접을 수 있으니, 폴드율이 그대로라는 가정 안에서만 맞는 상한이에요.</p>
 </details>
-<p><strong>문제 2.</strong> 이번엔 플랍 <strong>T♥ 9♥ 7♣</strong>, Hero는 A♣2♦(맞은 게 없음). 같은 BB 레인지·같은 가정, c-bet 2BB라면?</p>
+<p><strong>문제 2.</strong> 이번엔 플랍 <strong>T♥ 9♥ 7♣</strong>. 6♥5♥를 이 보드에 두면 6-7-9-T 스트레이트 드로우에 하트 플러시 드로우까지 생기니, 맞은 게 없는 핸드로 <strong>A♣2♦</strong>를 들었다고 할게요. 같은 BB 레인지·같은 계속 기준, c-bet 2BB라면? 어느 묶음이 늘어나는지부터 생각해 보세요.</p>
 <details>
 <summary>정답 보기</summary>
-<p>레인지 <strong>338콤보</strong> 중 페어 이상 <strong>190</strong>, 드로우 <strong>93</strong> → 폴드 <strong>55콤보</strong>, 폴드율 <strong>약 16.27%</strong>.
-알파 약 26.67%보다 낮아서 <strong>손해</strong>예요. 상대 레인지가 많이 맞는 보드에서는 맞은 게 없는 c-bet을 줄여요.</p>
+<p>늘어나는 묶음: T·9·7과 짝이 맞는 핸드(T9·T7s·97s·A9·A7 등)와 포켓페어, Q8s 같은 스트레이트 드로우(8이 든 핸드 중 J8·86s는 이미 스트레이트), 하트 두 장 수딧의 플러시 드로우.
+계산하면 레인지 <strong>338콤보</strong> 중 페어 이상 <strong>190</strong>, 드로우 <strong>93</strong> → 폴드 <strong>55콤보</strong>, 폴드율 = 55 ÷ 338 = <strong>16.3%</strong>.
+알파 26.7%보다 낮아서 <strong>손해</strong>예요. BB가 콜한 중간 카드·수딧 커넥터가 이 보드에 페어와 드로우로 잔뜩 맞아요.</p>
 </details>
 <hr />
-<p><small>AI 작성 · 숫자는 계산 검증 (콤보는 실제 카드로 하나씩 셈) · 가정 레인지 기준 (솔버 결과 아님) · 콜 받으면 포기한다고 가정 · 이번 한 번의 결정 기준</small></p>
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>폴드율은 <strong>가정 레인지 → 보드·우리 카드 지우기 → 계속 기준 → 묶음별로 세기</strong> 순서로 구해요</li>
+<li>수딧은 <strong>같은 무늬 카드가 보드나 우리 손에 있으면</strong> 한 칸 더 빠져요</li>
+<li><strong>계속 + 폴드 = 전체</strong>로 빠진 묶음이 없는지 확인해요</li>
+<li>폴드율은 레인지의 <strong>큰 묶음이 보드에 맞았나</strong>가 정해요. 오늘은 A 하이·Q·J·T 하이가 통째로 비켜 갔어요</li>
+<li>알파 비교와 MDF 비교는 <strong>같은 말</strong>이에요</li>
+</ul>
+</section><section class="sec end"><h2>정리하며</h2>
+<p>오늘은 K♠ 7♦ 2♣에서 6♥5♥로 2BB c-bet을 할지, BB 레인지를 직접 세어 따졌어요.</p>
+<p>계속하는 쪽은 K 짝 56·7 짝 31·2 짝 12·포켓페어 36으로 135콤보, 접는 쪽은 A 하이 100·Q·J·T 하이 111·낮은 연결 28로 239콤보였죠. 폴드율 <strong>63.9%</strong>가 알파 <strong>26.7%</strong>를 훌쩍 넘어서 c-bet이 이득이었고, 접는 콤보가 99.7 아래로 내려가야 뒤집힌다는 기준선도 얻었어요.</p>
+<p>실전에서는 마른 보드라면 <strong>"보드 높은 카드와 짝인 핸드 + 포켓페어가 레인지에서 얼마나 되나"</strong>부터, 젖은 보드라면 드로우 묶음까지 더해서 어림해 보세요.</p>
+<p>다음 글 A10에서는 c-bet을 떠나 <strong>SPR</strong>(남은 스택 대 팟 비율)을 다뤄요. 플랍에서 "이 핸드로 올인까지 갈까"를 미리 정하는 숫자예요.</p>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 (콤보는 실제 카드로 하나씩 셈) · 가정 레인지 기준 (솔버 결과 아님) · 콜 받으면 포기한다고 가정 · 이번 한 번의 결정 기준</small></p></section>
 </article>
 <nav class="nav"><a class="prev" href="071_A08.html"><div class="l">← 이전 글</div><div class="t">c-bet은 상대가 몇 % 접어야 이득일까? 알파로 보는 컨티뉴에이션 벳</div></a><a class="next" href="073_A10.html"><div class="l">다음 글 →</div><div class="t">SPR: 플랍에서 &quot;이 핸드로 올인까지 갈까&quot;를 미리 정하는 숫자</div></a></nav></main>
 </body>

@@ -10,87 +10,132 @@
 <header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
 <main class="wrap"><div class="meta"><span class="badge a">상급</span><span class="chip">개념</span><span class="n">상급 8번째 글 (전체 122편 중 71번째)</span></div><h1>c-bet은 상대가 몇 % 접어야 이득일까? 알파로 보는 컨티뉴에이션 벳</h1>
 <article>
-<p>안녕하세요. A01에서 <strong>알파 = 블러프가 본전이 되려면 상대가 폴드해야 하는 비율</strong>을 배웠죠.
-오늘은 그 알파를 프리플랍에 레이즈한 사람이 플랍에서 하는 벳, <strong>c-bet</strong>에 써 봐요.</p>
-<p>오늘 목표는 하나예요. <strong>c-bet 크기를 보면 "몇 % 접어야 본전인지" 말하고, 한 핸드로 확인하기.</strong></p>
+<p>안녕하세요. A01에서 <strong>알파</strong>(블러프가 본전이 되려면 상대가 폴드해야 하는 최소 비율)를 리버 블러프로 배웠죠.</p>
+<p>오늘은 그 알파를 플랍으로 가져와요. 프리플랍에 레이즈한 사람이 플랍에서 이어서 거는 벳, <strong>c-bet</strong>이에요. 맞은 게 없는 핸드로 c-bet을 걸 때 상대가 몇 번 접어 줘야 하는지, 그리고 리버 블러프와 <strong>무엇이 달라지는지</strong>를 볼게요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>c-bet의 본전 폴드율이 리버 블러프와 같은 공식이라는 것, 그리고 그 숫자가 <strong>어떤 단순화</strong> 위에 서 있는지</li>
+<li>c-bet에만 있는 함정: <strong>프리플랍에 낸 돈을 되찾으려는</strong> 생각과 <strong>체크레이즈</strong></li>
+<li>BB가 이 보드에서 <strong>무엇을 들고 있고 무엇을 접을지</strong> 핸드 이름으로 떠올리는 법</li>
+</ul></div>
+<hr />
+<h2>오늘의 장면</h2>
+<p>Hero는 BTN에서 <strong>2.5BB 오픈</strong>, BB가 콜했어요. 둘만 플랍을 봐요(헤즈업).</p>
+<p>플랍은 Q♠ 9♦ 2♣. 무늬가 다 다르고, 카드끼리도 꽤 떨어져 있어요. Hero는 5♥4♥. 페어도 없고, 턴·리버 두 장이 다 맞아야 하는 백도어 드로우뿐이에요.</p>
+<p>실제 플랍 팟은 SB 0.5BB까지 <strong>5.5BB</strong>지만, 오늘은 계산을 쉽게 <strong>6BB</strong>로 어림할게요(정확한 숫자로 세는 건 다음 글 A09에서 해요). BB가 체크했고, Hero는 <strong>2BB(1/3팟) c-bet</strong>을 생각해요.</p>
+<blockquote>
+<p>오늘 가정: c-bet이 <strong>콜을 받으면 이후에 포기</strong>하고, <strong>체크해도 이 팟은 못 가져온다</strong>고 본다. BB는 <strong>콜 아니면 폴드</strong>.</p>
+</blockquote>
 <hr />
 <h2>1단계. c-bet이란?</h2>
-<p><strong>c-bet(컨티뉴에이션 벳) = 프리플랍에 레이즈한 사람이 플랍에서도 이어서 하는 벳</strong>이에요.
-플랍에서 맞은 게 없어도, 프리플랍에 강하게 나온 흐름을 이어서 상대를 접게 만들 수 있어요.</p>
-<p>오늘은 <strong>맞은 게 없는 핸드로 하는 c-bet</strong>만 볼게요. 콜을 받으면 이후에 포기하고 벳만큼 잃는다고 가정해요. 상대는 콜 아니면 폴드만 해요.</p>
-<p>비유하면 <strong>처음 부른 가격을 밀고 가는 흥정</strong>이에요. 상대가 물러서면(폴드) 팟을 가져오고, 버티면(콜) 건 만큼 잃어요.</p>
-<h2>2단계. c-bet 크기별 알파 (팟 6BB 기준)</h2>
+<p><strong>c-bet(컨티뉴에이션 벳) = 프리플랍에 레이즈한 사람이 플랍에서도 이어서 하는 벳</strong>이에요.</p>
+<p>Hero는 프리플랍에 먼저 올렸으니, 상대 눈에는 "강한 핸드로 시작한 사람"이에요. 플랍에 맞은 게 없어도 그 이야기를 이어 가면 상대를 접게 만들 수 있어요.</p>
+<p>비유하면 <strong>판돈을 올려놓고 "받을 테면 받아 봐"</strong> 하는 거예요. 상대가 물러서면 테이블의 돈(팟)을 가져오고, 상대가 받으면 이번엔 물러서면서 <strong>올려놓은 판돈만</strong> 잃어요.</p>
+<h2>2단계. 4번 c-bet해 보면</h2>
+<h3>본전 지점 직접 세기</h3>
+<p>알파 공식은 A01과 같아요.</p>
 <blockquote>
-<p><strong>알파 = 벳 ÷ (팟 + 벳)</strong> (A01)</p>
+<p>알파 = 2(c-bet) ÷ (6(팟) + 2(c-bet)) = 2 ÷ 8 = <strong>25%</strong></p>
 </blockquote>
-<div class="tbl"><table>
-<thead>
-<tr>
-<th>c-bet 크기</th>
-<th>벳</th>
-<th>알파</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>1/3팟</td>
-<td>2BB</td>
-<td>25%</td>
-</tr>
-<tr>
-<td>하프팟</td>
-<td>3BB</td>
-<td>33.3%</td>
-</tr>
-<tr>
-<td>2/3팟</td>
-<td>4BB</td>
-<td>40%</td>
-</tr>
-<tr>
-<td>팟벳</td>
-<td>6BB</td>
-<td>50%</td>
-</tr>
-</tbody>
-</table></div>
-<p><strong>작은 c-bet일수록 덜 접어도 본전</strong>이에요. 1/3팟이면 4번 중 1번만 접어도 돼요.</p>
-<h2>3단계. 한 핸드로 확인</h2>
-<p>Hero가 버튼에서 2.5BB 오픈, BB가 콜했어요. 플랍에서 Hero는 <strong>페어도 드로우도 없는 핸드</strong>예요. 계산을 쉽게 하려고 플랍 팟을 <strong>6BB</strong>로 두고, Hero가 <strong>2BB(1/3팟) c-bet</strong>을 한다고 할게요. BB는 체크레이즈 없이 콜 아니면 폴드만 해요.</p>
-<p>이 상대가 <strong>40%</strong> 접는다면:</p>
+<p>이게 맞는지 4번 c-bet해서 BB가 <strong>1번만</strong> 접었다고 해 볼게요.</p>
+<ul>
+<li>폴드 1번: 팟 <strong>6BB</strong>를 가져와요</li>
+<li>콜 3번: 한 번에 2BB씩 <strong>6BB</strong>를 잃어요</li>
+</ul>
+<p>얻은 돈과 잃은 돈이 같아요. <strong>4번 중 1번 폴드면 본전</strong>, 그래서 알파 25%예요.</p>
+<p>크기별로는 A01과 같은 비율이에요. 1/4팟이면 1.5 ÷ (6 + 1.5) = <strong>20%</strong>, 1/3팟 25%, 하프팟 33.3%, 2/3팟 40%, 팟벳 50%.</p>
+<h3>BB가 절반 접으면</h3>
 <blockquote>
-<p>EV = 0.4 × 6 − 0.6 × 2 = 2.4 − 1.2 = <strong>+1.2BB</strong></p>
+<p>EV = 0.5 × 6 − 0.5 × 2 = 3 − 1 = <strong>+2BB</strong></p>
 </blockquote>
-<p>40% &gt; 알파 25%라 이득이에요.</p>
+<p>2번 c-bet하면 1번 폴드로 <strong>6BB</strong>, 1번 콜로 <strong>2BB</strong>를 잃어 <strong>+4BB</strong>예요.</p>
+<h3>이 25%가 서 있는 단순화</h3>
+<p>조심할 게 있어요. 오늘 25%는 <strong>콜 뒤의 기회도 0, 체크했을 때의 기회도 0</strong>으로 본 숫자예요.</p>
+<p>실제로 5♥4♥는 c-bet이 콜을 받아도 턴에 3·6이나 하트가 오면 다시 기회가 생기고, 체크해도 턴·리버를 공짜로 보며 백도어를 맞힐 수 있어요. 그러니 25%는 "<strong>c-bet 대 아무것도 안 함</strong>"을 비교한 본전선이에요. 콜 뒤 기회가 크면 덜 접어도 되고(세미블러프, A22에서 배워요), 체크 뒤 기회가 크면 c-bet의 상대적 이득이 줄어요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>알파는 c-bet 판단의 <strong>출발점</strong>이에요. 맞은 게 거의 없는 핸드일수록 두 기회가 다 작아서, 이 숫자에 가까워져요.</p>
+<hr />
+<h2>3단계. BB는 이 보드에서 무엇을 들고 있을까</h2>
+<p>같은 벳을 BB 쪽에서 보면 MDF는 전체에서 알파를 뺀 <strong>75%</strong>예요(A02·A03에서 다뤄요). BB가 4번 중 3번은 지켜야 Hero의 아무 핸드 c-bet을 막을 수 있죠.</p>
+<p>그럼 BB가 Q♠ 9♦ 2♣에서 실제로 무엇을 들고 있을지 이름으로 떠올려 볼게요.</p>
+<ul>
+<li><strong>계속할 핸드</strong>: Q가 든 핸드(QJ·QT 등), 9가 든 핸드(A9·T9 등), 2가 든 핸드, 포켓페어, J♥T♥처럼 K나 8을 기다리는 스트레이트 드로우</li>
+<li><strong>접을 수 있는 핸드</strong>: K♣4♦·A♦6♣·8♣6♦·7♣6♣처럼 페어도 드로우도 없는 핸드</li>
+</ul>
+<p>BB 레인지에서 둘째 묶음이 4분의 1보다 많으면, Hero의 c-bet은 알파를 넘기 시작해요.</p>
+<p><strong>오늘 장면의 판정</strong>: BB 콜 레인지에 K♣4♦·A♦6♣처럼 이 보드를 못 맞힌 핸드가 4번 중 1번 넘게 들어 있고 BB가 그런 핸드를 접는다고 본다면 5♥4♥의 1/3팟 c-bet은 <strong>이득 쪽</strong>이에요. 반대로 BB가 그런 핸드로도 버티는 상대라면 체크가 나아요. 이 "4분의 1"을 실제 콤보로 세어 확인하는 법은 다음 글 A09에서 다뤄요.</p>
+<!-- 그림: Q♠9♦2♣에서 BB 계속 핸드 vs 접는 핸드 예시 -->
+
+<hr />
 <h2>4단계. 상대가 둘 이상이면?</h2>
-<p>플랍을 셋 이상이 봤다면, c-bet이 성공하려면 <strong>모두가</strong> 접어야 해요. 한 명일 때보다 성공이 훨씬 어려워진다는 것만 기억해 두세요. 여러 명이 남은 팟(멀티웨이)은 정확한 숫자를 만들 근거가 없어서, 이 블로그는 원칙으로만 다뤄요(프로 P04에서 다뤄요).</p>
+<p>플랍을 셋 이상이 봤다면, c-bet이 성공하려면 <strong>모두가</strong> 접어야 해요. 한 명이라도 콜하면 실패죠.</p>
+<p>같은 알파 25%라도 "모두 접을 확률"이 그 선을 넘기는 훨씬 어려워요. 여러 명이 남은 팟(멀티웨이)은 상대들이 서로 어떻게 반응할지 근거 있는 숫자를 만들기 어려워서, 이 글은 <strong>헤즈업 기준</strong>으로만 계산해요.</p>
+<hr />
+<section class="sec why"><h2>왜 그럴까: c-bet의 기준은 "지금 팟"뿐이라서</h2>
+<h3>프리플랍 2.5BB는 이미 팟의 돈</h3>
+<p>팟 6BB 안에는 Hero가 프리플랍에 낸 2.5BB도 들어 있어요. 그래서 "내 돈 되찾으려면 c-bet"이라는 생각이 들기 쉬워요.</p>
+<p>그런데 알파 계산에서 그 2.5BB는 <strong>얻을 돈(팟)</strong> 쪽에만 들어가고, Hero가 지금 <strong>더 걸 돈</strong>은 c-bet 2BB뿐이에요. 이미 낸 돈은 누가 냈든 지금은 팟의 돈이에요(B07에서 본 이야기). c-bet은 "2BB를 걸고 6BB를 노리는 새 내기"일 뿐이에요.</p>
+<h3>체크레이즈는 콜보다 나쁜 결과</h3>
+<p>오늘은 BB가 콜 아니면 폴드라고 했지만, 실제로 BB는 <strong>체크레이즈</strong>를 할 수 있어요. 오늘 가정(콜 받으면 포기)에서는 체크레이즈를 맞아도 접으면서 2BB를 잃으니, 손익은 콜을 맞은 것과 같아요.</p>
+<p>차이는 가정을 풀 때 생겨요. 실전에서 Hero는 콜을 받으면 턴 카드를 한 장 더 보고 백도어를 노릴 수 있는데, 체크레이즈를 맞으면 그 기회 없이 바로 접어야 해요. 그래서 콜 뒤 기회를 셈에 넣는 순간, <strong>체크레이즈가 잦은 보드일수록 c-bet의 실제 값이 떨어져요.</strong> 폴드율과 함께 <strong>"BB가 이 보드에서 레이즈할 핸드가 많은가"</strong>도 봐요.</p>
+<h3>그래서 c-bet은 보드를 보는 벳</h3>
+<p>오늘 3단계처럼, BB가 접을 수밖에 없는 핸드가 얼마나 되는지가 c-bet 손익을 정해요. 같은 5♥4♥라도 BB의 중간 카드와 잘 맞는 보드에서는 접는 핸드가 줄어요.</p></section>
+<hr />
+<section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. "맞은 게 없으니 c-bet도 하면 안 된다"</strong>
+c-bet의 손익은 Hero 핸드보다 BB의 폴드율이 정해요. 오늘 BB가 절반만 접어도 1/3팟 c-bet은 한 번에 2BB씩 남았어요. 맞은 게 없을 때는 <strong>"BB가 4번 중 1번 이상 접을 보드인가"</strong>를 먼저 물어요.</p></div><div class="mis-card"><p><strong>실수 2. 프리플랍에 낸 돈을 되찾으려고 c-bet하기</strong>
+"2.5BB나 넣었는데 그냥 포기하긴 아깝다"는 생각이에요. 그 2.5BB는 체크해도 c-bet해도 이미 팟에 있어요. 결정에 들어가는 건 <strong>지금 걸 2BB와 BB의 폴드율</strong>뿐이에요.</p></div><div class="mis-card"><p><strong>실수 3. 멀티웨이에서 헤즈업 기준을 그대로 쓰기</strong>
+"1/3팟이면 25%만 접으면 되니까"를 셋이서 본 플랍에도 그대로 쓰는 실수예요. 그 25%는 <strong>모두가 접을 확률</strong>이어야 해요. 상대가 늘면 그 조건이 훨씬 까다로워져요.</p></div></section>
 <hr />
 <h2>"그럼 c-bet은 상대 폴드율만 보고 해요?"</h2>
-<p>좋은 질문이에요. 오늘은 콜을 받으면 진다고 가정했지만, 실제로는 콜을 받아도 <strong>턴·리버에 이길 기회</strong>가 있는 핸드가 많아요. 그런 핸드는 알파보다 덜 접어도 이득일 수 있어요. 이건 세미블러프라는 이름으로 A22에서 배워요. 벳 크기에 따라 상대 폴드율이 어떻게 바뀌는지는 A20에서 다뤄요.</p>
+<p>좋은 질문이에요. 맞은 게 없는 핸드라면 폴드율이 우선이에요. 하지만 2단계에서 봤듯, 콜 뒤 기회와 체크 뒤 기회가 있는 핸드라면 비교가 달라져요.</p>
+<p>특히 약한 페어처럼 <strong>체크하면 쇼다운에서 이길 수 있는 핸드</strong>는 c-bet으로 BB의 더 약한 핸드를 접게 만드는 게 오히려 손해일 수도 있어요. 그런 핸드는 c-bet과 체크를 따로 비교해요.</p>
+<hr />
 <section class="sec tip"><h2>선생님의 한마디</h2>
+<p>테이블에서 맞은 게 없는 플랍을 받으면 이 순서로 봐요.</p>
 <ol>
-<li>c-bet의 손익분기 폴드율 = <strong>알파 = 벳 ÷ (팟 + 벳)</strong></li>
-<li>작은 c-bet은 <strong>덜 접어도</strong> 본전</li>
-<li>상대가 둘 이상이면 <strong>모두 접어야</strong> 성공 — 한 명 기준으로 착각하지 않기</li>
+<li><strong>누가 오픈하고 누가 콜했나</strong> — BB 콜 레인지를 떠올리기</li>
+<li><strong>보드의 높은 카드가 BB 레인지에 얼마나 맞나</strong> — 접을 핸드 이름을 두세 개 떠올리기</li>
+<li>그다음에 <strong>크기</strong>를 정하고, 그 크기의 알파와 비교</li>
 </ol></section>
 <hr />
 <h2>연습 문제</h2>
 <blockquote>
 <p>학습툴에는 알파를 직접 넣는 칸이 없어요. 홀덤학습 <strong>팟 오즈</strong> 퀴즈 <strong>Lv.5(블러프 본전)</strong>로 같은 계산을 연습해 보세요.</p>
 </blockquote>
-<p><strong>문제 1.</strong> 헤즈업, 팟 10BB에 7.5BB c-bet. 상대가 50% 접는다면 이득일까요?</p>
+<p><strong>문제 1.</strong> 헤즈업, 플랍 팟 8BB. Hero는 맞은 게 없는 핸드로 <strong>2BB(1/4팟)</strong> c-bet을 생각해요. BB는 이 보드에서 <strong>4번 중 1번</strong>만 접는 편이에요. 1/3팟이었다면 딱 본전이었을 폴드율인데, 1/4팟이면?</p>
 <details>
 <summary>정답 보기</summary>
-<p>알파 = 7.5 ÷ (10 + 7.5) = <strong>약 42.86%</strong> &lt; 50% → <strong>이득</strong>.
-EV = 0.5 × 10 − 0.5 × 7.5 = 5 − 3.75 = <strong>+1.25BB</strong>.</p>
+<p>알파 = 2 ÷ (8 + 2) = <strong>20%</strong> &lt; 25% → <strong>이득</strong>.
+EV = 0.25 × 8 − 0.75 × 2 = 2 − 1.5 = <strong>+0.5BB</strong>. 4번 하면 1번 폴드로 <strong>8BB</strong>, 3번 콜로 <strong>6BB</strong>를 잃어 <strong>+2BB</strong>예요.
+같은 폴드율이어도 크기를 줄이면 본전선이 내려가서 남는 c-bet이 돼요.</p>
 </details>
-<p><strong>문제 2.</strong> 3단계와 같은 팟 6BB, 2BB c-bet인데 이번 상대는 <strong>25%</strong> 만 접어요. 이득일까요?</p>
+<p><strong>문제 2.</strong> 헤즈업 플랍 팟 6BB. 이번 보드는 BB 레인지가 잘 맞는 보드라, BB 레인지의 <strong>5분의 3</strong>은 페어나 드로우라서 어떤 c-bet에도 접지 않아요. 나머지 5분의 2는 다 접는다고 해도, Hero가 맞은 게 없는 핸드로 <strong>1/4팟·1/3팟·하프팟·2/3팟·팟벳</strong> 중 어떤 크기까지 생각해 볼 수 있을까요?</p>
 <details>
 <summary>정답 보기</summary>
-<p>알파 = 2 ÷ (6 + 2) = <strong>25%</strong>로 폴드율과 같아요. EV = 0.25 × 6 − 0.75 × 2 = 1.5 − 1.5 = <strong>0BB</strong>, 딱 <strong>본전</strong>이에요. 이보다 덜 접는 상대에게는 맞은 게 없는 c-bet이 손해예요.</p>
+<p>BB 폴드율은 아무리 높아도 5분의 2, 즉 <strong>40%</strong>예요(못 맞힌 핸드가 전부 접어 줄 때).</p>
+<ul>
+<li>팟벳: 알파 <strong>50%</strong> &gt; 40% → 최선이어도 손해</li>
+<li>2/3팟: 알파 <strong>40%</strong> = 최대 폴드율 → 잘해야 본전</li>
+<li>하프팟 <strong>33.3%</strong>, 1/3팟 <strong>25%</strong>, 1/4팟 <strong>20%</strong> → 이득이 날 여지가 있어요</li>
+</ul>
+<p>그래서 <strong>하프팟 이하</strong>만 생각해 볼 수 있어요. 실제로는 못 맞힌 핸드도 다 접지는 않을 수 있으니, 여유가 큰 작은 쪽이 더 안전해요.</p>
 </details>
 <hr />
-<p><small>AI 작성 · 숫자는 계산 검증 · 맞은 게 없는 c-bet은 콜을 받으면 진다고 가정</small></p>
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>c-bet의 본전 폴드율 = <strong>알파 = 벳 ÷ (팟 + 벳)</strong>. 리버 블러프와 같은 공식이에요</li>
+<li>이 숫자는 <strong>콜 뒤 기회와 체크 뒤 기회를 0으로 본</strong> c-bet 대 아무것도 안 함의 본전선이에요</li>
+<li>프리플랍에 낸 돈은 <strong>이미 팟의 돈</strong>이라, c-bet 결정에는 지금 걸 돈과 폴드율만 들어가요</li>
+<li>BB의 <strong>체크레이즈</strong>는 c-bet이 실제로 감당하는 위험을 키워요</li>
+<li>c-bet 손익은 <strong>BB 레인지가 보드를 얼마나 맞혔나</strong>가 정해요. 상대가 둘 이상이면 모두 접어야 성공이에요</li>
+</ul>
+</section><section class="sec end"><h2>정리하며</h2>
+<p>오늘은 Q♠ 9♦ 2♣에서 5♥4♥로 1/3팟 c-bet을 고민했어요.</p>
+<p>c-bet 4번 중 1번만 접어도 본전이라는 걸 세어 알파 <strong>25%</strong>를 확인했고, 그 숫자가 콜 뒤·체크 뒤 기회를 0으로 본 단순화라는 것도 짚었죠. 프리플랍에 낸 돈은 결정에 들어가지 않고, BB가 이 보드에서 무엇을 접을지가 손익을 정한다는 것도 봤어요.</p>
+<p>실전에서 맞은 게 없는 플랍이 나오면 <strong>"BB가 이 보드에서 접을 수밖에 없는 핸드가 4분의 1을 넘나?"</strong>를 먼저 물으세요.</p>
+<p>다음 글 A09에서는 다른 드라이 보드 한 판에서, BB가 들고 있을 핸드를 <strong>콤보로 하나하나</strong> 세어 실제 폴드율을 구해 봐요.</p>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 맞은 게 없는 c-bet은 콜을 받으면 이후 포기하고 체크해도 팟을 못 가져온다고 가정(헤즈업, 체크레이즈 없음)</small></p></section>
 </article>
 <nav class="nav"><a class="prev" href="070_A07.html"><div class="l">← 이전 글</div><div class="t">MDF의 함정: MDF만큼 지켰는데 왜 손해일까?</div></a><a class="next" href="072_A09.html"><div class="l">다음 글 →</div><div class="t">플랍 작은 c-bet, 맞은 게 없어도 이득일까? 상대 폴드율을 콤보로 세기</div></a></nav></main>
 </body>

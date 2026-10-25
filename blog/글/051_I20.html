@@ -10,28 +10,96 @@
 <header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
 <main class="wrap"><div class="meta"><span class="badge i">중급</span><span class="chip">스팟</span><span class="n">중급 20번째 글 (전체 122편 중 51번째)</span></div><h1>BB에서 8BB 올인을 받았다: K4o로 콜할까?</h1>
 <article>
-<p>안녕하세요. I16에서 올인 콜은 <strong>에퀴티 vs 필요 에퀴티</strong>로 결론이 난다고 배웠죠. I19에서는 SB 쪽에서 올인을 했고요.
-오늘은 자리를 바꿔 <strong>BB에서 올인을 받는 쪽</strong>이에요. 상대가 어떤 핸드로 올인하는지 <strong>가정에 따라 답이 바뀌는 것</strong>을 볼게요.</p>
-<p>오늘 목표는 하나예요. <strong>상대 올인 범위를 두 가지로 가정해 보고, 각각 필요 에퀴티와 비교하기.</strong></p>
+<p>안녕하세요. I19에서는 SB에 앉아 Q6o로 올인할지 따졌죠. 오늘은 그 올인을 <strong>받는 BB 쪽</strong>에 앉아요.</p>
+<p>상대 올인을 받고 <strong>콜이냐 폴드냐</strong>만 정하면 되는 단순한 결정인데, 답이 <strong>상대가 어떤 핸드들로 올인하느냐</strong>에 따라 정반대로 갈려요. 왜 그런지 끝까지 따라가 볼게요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>BB에서 올인을 받을 때 <strong>필요 에퀴티</strong>를 세는 법(이미 낸 1BB는 빼고)</li>
+<li>상대 올인 범위의 에퀴티를 <strong>묶음별 콤보 가중 평균</strong>으로 구하는 법</li>
+<li>범위가 넓어질 때 <strong>새로 들어오는 핸드의 에퀴티가 지금 평균보다 높아야</strong> 평균이 오른다는 것, 그리고 경계 핸드를 다루는 법</li>
+</ul></div>
 <hr />
 <h2>오늘의 핸드</h2>
-<p><strong>Hero (BB · 8BB)</strong> · 상대 (SB · 8BB) · 둘만 남음 · 블라인드 SB 0.5BB / BB 1BB · 앤티 없음</p>
+<p>둘만 남은 테이블, 블라인드 SB 0.5BB · BB 1BB, 앤티 없음.</p>
+<p><strong>Hero (BB · 8BB)</strong> · 상대 (SB · 8BB)</p>
 <p><img src="../카드/Ks.svg" width="48"> <img src="../카드/4d.svg" width="48"></p>
 <p>K♠4♦처럼 무늬가 다른 K와 4를 <strong>K4o</strong>라고 써요(o = 무늬 다름, s = 같은 무늬).</p>
 <h3>프리플랍 · 팟 9BB</h3>
-<p>상대(SB)가 <strong>8BB 올인</strong> → 지금 팟은 상대 8BB + Hero의 BB 1BB = 9BB → <strong>Hero는 콜할까?</strong></p>
+<p>상대(SB)가 <strong>8BB 올인</strong>. 지금 팟은 상대 8BB + Hero의 BB 1BB = <strong>9BB</strong>예요. <strong>Hero는 콜할까?</strong></p>
 <hr />
-<p class="concl"><strong>결론부터 말할게요. 상대가 뚝섬 AOF 차트 엔진의 이론값만큼 넓게 올인한다고 보면 콜이 약 +0.31BB 이득이고, 좁게 올인하는 상대라면 콜이 약 −1.55BB라 폴드가 이득입니다.</strong></p>
+<p class="concl"><strong>결론부터 말할게요. 상대가 뚝섬 AOF 차트 엔진의 이론값만큼 넓게 올인한다고 보면 콜이 이득(약 +0.2BB)이고, 좁게 올인하는 상대라면 폴드가 이득입니다(콜하면 약 −1.55BB).</strong> 같은 K♠4♦인데 상대에 따라 답이 갈리는 <strong>경계 핸드</strong>예요.</p>
 <h2>1단계. 필요 에퀴티와 세 금액</h2>
-<p><strong>필요 에퀴티 = 콜이 본전이 되려면 이겨야 하는 비율</strong>이에요(B06). 비유하면 <strong>낸 돈만큼은 돌려받아야 하는 몫</strong>이에요. Hero는 이미 1BB를 냈고, 콜하려면 <strong>7BB</strong>를 더 내요.</p>
+<h3>필요 에퀴티</h3>
+<p>Hero는 BB로 이미 1BB를 냈어요. 콜하려면 <strong>7BB만 더</strong> 내면 돼요. I19에서 상대 BB 쪽에서 본 식을 이번엔 Hero가 그대로 써요.</p>
 <blockquote>
-<p>필요 에퀴티 = 7(Hero 콜) ÷ (9(지금 팟) + 7(Hero 콜)) = 7 ÷ 16 = <strong>43.75%</strong></p>
+<p>필요 에퀴티 = 7(Hero가 더 낼 돈) ÷ (9(지금 팟) + 7(Hero 콜)) = 7 ÷ 16 = <strong>43.75%</strong></p>
 </blockquote>
-<p>폴드하면 Hero 스택은 <strong>7BB</strong>. 콜해서 이기면 <strong>16BB</strong>로 <strong>+9BB</strong>, 지면 <strong>0</strong>으로 <strong>−7BB</strong>예요.</p>
-<h2>2단계. 상대 올인 범위를 두 가지로 가정하기</h2>
-<p>범위 표기: <strong>22+</strong> = 22부터 AA까지 모든 페어, <strong>A2s+</strong> = A2s부터 AKs까지(같은 무늬), <strong>A5o+</strong> = A5o부터 AKo까지, <strong>KTo+</strong> = KTo·KJo·KQo예요.</p>
-<p><strong>① 엔진 이론값</strong>: 뚝섬 AOF 차트 엔진(칩 기준, 두 사람이 서로 최선으로 대응한다고 보는 근사)에서 SB는 전체 핸드의 <strong>약 62.7%</strong>로 올인해요. Hero 카드를 빼면 <strong>761콤보</strong>예요.</p>
-<p><strong>② 좁은 가정</strong>: 상대가 <strong>22+, A2s+, A5o+, K9s+, KTo+, QTs+, QJo, JTs</strong>로만 올인한다고 해 볼게요(가정 레인지).</p>
+<p>이미 낸 1BB는 접어도 돌아오지 않으니 계산에는 <strong>앞으로 낼 7BB만</strong> 넣어요(I16에서 배웠죠). 이 43.75%가 콜이 본전이 되는 선이에요.</p>
+<p>왜 7 ÷ 16일까요? 이 콜을 16번 한다고 해 볼게요. 7번 이기면 매번 9BB를 벌어 7 × 9 = 63, 9번 지면 매번 7BB를 잃어 9 × 7 = 63이에요. 딱 본전이죠. <strong>16번 중 7번</strong>, 그게 43.75%예요.</p>
+<h3>세 금액</h3>
+<p>폴드하면 Hero 스택은 <strong>7BB</strong>예요. 이걸 기준으로</p>
+<ul>
+<li>콜해서 이기면 <strong>16BB</strong> → 16 − 7 = <strong>+9BB</strong></li>
+<li>콜해서 지면 <strong>0</strong> → <strong>−7BB</strong></li>
+</ul>
+<p>이게 무슨 뜻이냐면, Hero는 <strong>7BB를 걸어 9BB를 노리는</strong> 싸움이라 반을 못 이겨도 된다는 거예요. 10번 중 4번 남짓만 이기면 본전 근처예요.</p>
+<h2>2단계. 가정 ① 엔진 이론값 — 넓은 범위</h2>
+<h3>상대는 얼마나 넓게 올인할까</h3>
+<p>뚝섬 <strong>AOF 차트 엔진</strong>(칩 기준, 두 사람이 서로 최선으로 대응한다고 보는 근사)에서 SB는 이 스택으로 전체 핸드의 <strong>약 62.7%</strong>를 올인해요. I19에서 Hero가 올인하던 그 범위를, 오늘은 받는 쪽이 된 거예요. Hero 카드를 빼고 세면 <strong>761콤보</strong>예요.</p>
+<h3>그 범위를 상대로 K♠4♦는</h3>
+<p>엔진 기준 K4o의 이 범위 상대 에퀴티는 <strong>약 45.03%</strong>예요. 필요 에퀴티 43.75%를 넘어요 → <strong>콜</strong>.</p>
+<blockquote>
+<p>콜 손익 = 0.4503(이길 몫) × 9(이기면 버는 돈) − 0.5497(질 몫) × 7(지면 잃는 돈) = 4.05 − 3.85 = <strong>약 +0.2BB</strong></p>
+</blockquote>
+<p>엔진도 BB의 K4o를 콜 쪽으로 봐요. 엔진이 정한 K4o 콜 빈도는 <strong>약 99.7%</strong>, 거의 늘 콜이에요. 다만 필요 에퀴티를 넘는 폭이 작아서, 상대 범위가 조금만 좁아져도 흔들릴 수 있는 콜이에요.</p>
+<h3>왜 이렇게 높게 나올까</h3>
+<p>이제 범위 안의 핸드를 몇 개 뽑아 K♠4♦와 붙여 볼게요. 숫자는 <strong>몬테카를로</strong>(보드를 무작위로 수천 번 깔아 보고 이긴 비율을 세는 어림)로 쟀고, Hero가 든 K♠·4♦는 상대가 못 가진다는 <strong>카드 제거</strong>를 넣었어요. 그래서 엔진 값과 소수점 아래가 조금 달라요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>상대 핸드</th>
+<th>K♠4♦ 에퀴티</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q7o</td>
+<td>약 60.3%</td>
+</tr>
+<tr>
+<td>98o</td>
+<td>약 54.82%</td>
+</tr>
+<tr>
+<td>K2o</td>
+<td>약 54.11%</td>
+</tr>
+<tr>
+<td>A7o</td>
+<td>약 36.6%</td>
+</tr>
+<tr>
+<td>K8o</td>
+<td>약 34.46%</td>
+</tr>
+<tr>
+<td>KQo</td>
+<td>약 26.4%</td>
+</tr>
+</tbody>
+</table></div>
+<p>K♠4♦는 <strong>K 없는 하이 핸드</strong>(Q·J·T 하이, 98o·76o 같은 9 이하 하이)와 <strong>4보다 낮은 키커의 K-x</strong>(K3o·K2o)에는 앞서요. 반대로 A가 든 핸드, 키커가 4보다 높은 K-x, 페어에는 밀려요. ①에는 앞서는 쪽 핸드가 많이 섞여 있어서 평균이 필요 에퀴티 위로 올라가요.</p>
+<h2>3단계. 가정 ② 좁은 범위</h2>
+<h3>범위 정하기</h3>
+<p>이번엔 상대가 강한 핸드로만 올인한다고 <strong>가정</strong>해 볼게요(가정 레인지).</p>
+<p><strong>22+, A2s+, A5o+, K9s+, KTo+, QTs+, QJo, JTs</strong></p>
+<p>표기를 풀면 이래요.</p>
+<ul>
+<li><strong>22+</strong> = 22부터 AA까지 모든 포켓페어</li>
+<li><strong>A2s+</strong> = A2s부터 AKs까지 같은 무늬 A-x, <strong>A5o+</strong> = A5o부터 AKo까지 다른 무늬 A-x</li>
+<li><strong>K9s+</strong> = K9s·KTs·KJs·KQs, <strong>KTo+</strong> = KTo·KJo·KQo</li>
+<li><strong>QTs+</strong> = QTs·QJs, 그리고 QJo·JTs는 그 핸드 하나씩</li>
+</ul>
+<h3>묶음별로 보면</h3>
 <div class="tbl"><table>
 <thead>
 <tr>
@@ -44,22 +112,22 @@
 <tr>
 <td>페어 22+</td>
 <td>72</td>
-<td>약 29.8%</td>
+<td>약 29.84%</td>
 </tr>
 <tr>
 <td>A 핸드</td>
 <td>151</td>
-<td>약 34.6%</td>
+<td>약 34.57%</td>
 </tr>
 <tr>
 <td>K 핸드 (K9s+, KTo+)</td>
 <td>39</td>
-<td>약 27.5%</td>
+<td>약 27.51%</td>
 </tr>
 <tr>
 <td>QTs+, QJo, JTs</td>
 <td>24</td>
-<td>약 54.6%</td>
+<td>약 54.56%</td>
 </tr>
 <tr>
 <td><strong>합계</strong></td>
@@ -69,70 +137,145 @@
 </tbody>
 </table></div>
 <blockquote>
-<p>💡 빨리 세는 팁: Hero가 K♠·4♦를 들고 있어서 KK와 44는 6에서 <strong>3콤보</strong>, AKo처럼 K가 든 오프수트는 12에서 <strong>9콤보</strong>로 줄어요</p>
+<p>💡 빨리 세는 팁: Hero가 K♠·4♦를 들고 있어서, KK는 6에서 <strong>3콤보</strong>, AKo처럼 K가 든 다른 무늬 핸드는 12에서 <strong>9콤보</strong>로 줄어요</p>
 </blockquote>
-<h2>3단계. 비교와 EV</h2>
-<p>두 범위 모두 같은 방식(블로그 계산기 프리플랍 몬테카를로, 카드 제거 포함)으로 K♠4♦ 에퀴티를 구했어요.</p>
+<h3>합계는 콤보 가중 평균</h3>
+<p>합계 칸은 네 묶음을 <strong>콤보 수만큼 무게를 줘서</strong> 평균 낸 값이에요.</p>
+<blockquote>
+<p>(72 × 0.29844 + 151 × 0.34567 + 39 × 0.27505 + 24 × 0.54562) ÷ 286 → <strong>약 34.1%</strong></p>
+</blockquote>
+<p>이게 무슨 뜻이냐면, 콤보가 151개로 가장 큰 A 핸드 묶음이 무게의 절반 넘게 차지해서 <strong>평균이 그 묶음 값(약 34.57%) 근처로 정해진다</strong>는 거예요. 거기에 페어·K 묶음이 평균을 조금 더 깎고, K♠4♦가 앞서는 Q·J 묶음은 24콤보뿐이라 끌어올리는 힘이 약해요. 43.75%보다 낮은 묶음이 72 + 151 + 39 = 262개 조합이나 되니, 평균은 필요 에퀴티에 한참 못 미쳐요 → <strong>폴드</strong>.</p>
+<blockquote>
+<p>콜 손익 = 0.34093(이길 몫) × 9(이기면 버는 돈) − 0.65907(질 몫) × 7(지면 잃는 돈) = 3.06837 − 4.61349 = <strong>약 −1.55BB</strong></p>
+</blockquote>
+<h2>4단계. 두 가정을 나란히</h2>
 <div class="tbl"><table>
 <thead>
 <tr>
 <th>가정</th>
+<th>콤보</th>
 <th>K♠4♦ 에퀴티</th>
 <th>필요 에퀴티</th>
 <th>판정</th>
+<th>콜 손익</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>① 엔진 이론값 (761콤보)</td>
-<td>약 45.7%</td>
+<td>① 엔진 이론값</td>
+<td>761</td>
+<td>약 45.03%(엔진) · 약 45.71%(몬테카를로)</td>
 <td>43.75%</td>
 <td>콜</td>
+<td>약 +0.2BB</td>
 </tr>
 <tr>
-<td>② 좁게 (286콤보)</td>
+<td>② 좁은 범위</td>
+<td>286</td>
 <td>약 34.1%</td>
 <td>43.75%</td>
 <td>폴드</td>
+<td>약 −1.55BB</td>
 </tr>
 </tbody>
 </table></div>
-<p>올인 콜이라 뒤에 베팅이 없어서 이번 결정의 손익이 바로 나와요.</p>
-<blockquote>
-<p>① 0.45711(에퀴티) × 9(이기면) − 0.54289(지는 몫) × 7(지면) = 4.11396 − 3.80025 = <strong>약 +0.31BB</strong>
-② 0.34093(에퀴티) × 9(이기면) − 0.65907(지는 몫) × 7(지면) = 3.06837 − 4.61349 = <strong>약 −1.55BB</strong></p>
-</blockquote>
-<p>②에서는 Q·J 묶음에만 앞서요. ①에는 K♠4♦가 앞서는 약한 핸드가 많이 들어 있어서 에퀴티가 더 높아요.</p>
+<p>① 줄의 두 숫자는 계산 방식이 달라요. 엔진은 카드 제거를 넣지 않고, 몬테카를로는 넣어요. 차이는 작고 <strong>둘 다 43.75% 위</strong>라 판정은 같아요. 다만 필요 에퀴티에 아주 가까운 핸드라면 방식 차이로 답이 갈릴 수 있으니, 그때는 숫자 하나로 단정하지 않는 게 좋아요.</p>
+<p>이게 무슨 뜻이냐면, ②는 ①에서 <strong>약한 핸드를 걷어낸 범위</strong>라는 거예요. 걷어낸 핸드에는 K 없는 하이 핸드처럼 K♠4♦가 앞서던 핸드가 많아서, 그게 빠지자 에퀴티가 크게 떨어졌어요.</p>
+<!-- 그림: ①·② 범위 13×13 격자 겹쳐 보기, ①에만 있는 칸을 다른 색으로 -->
+
 <hr />
-<h2>"상대가 얼마나 넓게 올인하는지 어떻게 알아요?"</h2>
-<p>좋은 질문이에요. 정확히는 알 수 없어요. 그래서 가정을 <strong>두 개 이상</strong> 놓고 답이 바뀌는지 봐요. 이렇게 <strong>가정에 따라 콜/폴드가 뒤집히는 핸드를 경계 핸드</strong>라고 해요. 쇼다운에서 본 상대 핸드가 있다면 그쪽 가정에 무게를 둬요.</p>
+<section class="sec why"><h2>왜 그럴까: 범위를 넓히면 약한 핸드만 들어오는 게 아니다</h2>
+<p>콜하는 쪽은 상대 범위 전체의 평균과 싸워요. 콜에는 상대가 접어 주는 길이 없으니까요. 그런데 범위가 넓어질 때 <strong>무엇이 들어오는지</strong>를 보면 이야기가 하나 더 있어요.</p>
+<p>①에만 있고 ②에는 없는 핸드는 761 − 286 = 475개 조합이에요. 여기에는 Q7o·98o처럼 K♠4♦가 크게 앞서는 K 없는 하이 핸드가 들어 있어요. 그런데 <strong>K5o~K9o처럼 키커가 4보다 높은 K-x도 같이 들어와요.</strong> 이 핸드들은 K♠4♦를 눌러요. 2단계 표의 K8o를 상대로 약 34.46%였죠.</p>
+<p>여기서 조심할 게 있어요. 평균이 오르느냐는 새로 들어온 핸드를 우리가 <strong>이기느냐(50%를 넘느냐)가 아니라, 그 에퀴티가 지금 평균보다 높으냐</strong>로 정해져요. K8o 약 34.46%는 우리가 밀리는 핸드인데도 ② 평균 약 34.1%보다는 조금 높아요. 그래서 K8o가 들어와도 평균은 깎이지 않아요. 다만 <strong>콜 선 43.75%보다 한참 낮아서</strong>, 넓어진 평균이 콜 선을 크게 넘지 못하게 붙잡아요.</p>
+<p>그래서 오늘 ①이 ②보다 크게 오른 건, 새로 들어온 475개 조합 안에 <strong>지금 평균보다 훨씬 높은 핸드</strong>(K 없는 하이 핸드)가 많이 섞였기 때문이에요. 키커가 낮은 K4o는 함께 들어온 높은 키커 K-x에 눌리는 몫이 있어서, 겨우 선을 넘는 정도에 그쳤어요.</p>
+</section><section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. "K가 있으니 넓은 상대에겐 다 콜"</strong>
+①에서 K♠4♦가 콜이라고, 넓은 상대에게 K-x면 다 콜해도 되는 건 아니에요. K가 든 핸드끼리 붙으면 <strong>나머지 한 장</strong>이 승부를 정해요. 2단계 표에서 KQo를 상대로는 약 26.4%, K8o를 상대로도 약 34.46%였죠. K 하나보다 <strong>우리 키커가 상대 범위의 K-x 중 어디쯤인지</strong>를 봐야 해요.</p></div><div class="mis-card"><p><strong>실수 2. 가정 하나만 놓고 결론 내기</strong>
+"올인은 원래 강한 핸드로 하지"라고 ②만 떠올리면 늘 접고, "짧은 스택은 아무거나 올인하지"라고 ①만 떠올리면 늘 콜해요. 오늘 K♠4♦는 두 가정에서 답이 정반대였어요. 가정을 <strong>두 개 이상</strong> 놓아 봐야 이 핸드가 경계 핸드인지 알 수 있어요.</p></div><div class="mis-card"><p><strong>실수 3. 묶음 에퀴티를 콤보 무게 없이 평균 내기</strong>
+3단계 네 묶음을 그냥 더해 넷으로 나누면 (0.29844 + 0.34567 + 0.27505 + 0.54562) ÷ 4로, 0.37에 가까운 값이 나와 실제 약 34.1%보다 높게 보여요. 콤보가 24개뿐인 Q·J 묶음이 151개짜리 A 묶음과 <strong>같은 무게</strong>를 받았기 때문이에요. 상대가 실제로 들고 있을 가능성은 콤보 수에 비례하니, 평균은 늘 <strong>콤보 수만큼 무게를 줘서</strong> 내요.</p></div></section>
+<hr />
+<h2>"엔진 값과 화면 차트가 다르면 뭘 믿어요?"</h2>
+<p>좋은 질문이에요. 오늘 본문 숫자는 엔진의 <strong>이론값</strong>이에요. 뚝섬 AOF 차트 화면은 실전 보정이 들어가서 BB 콜 칸이 이론값보다 좁게 나올 수 있고, 그러면 오늘의 K4o가 폴드 칸으로 보일 수도 있어요.</p>
+<p>둘은 서로 다른 질문에 답하는 거예요. 이론값은 "상대가 이론대로 넓게 올인한다면", 화면 보정은 그보다 조심스러운 쪽이에요. 상대 정보가 없을 때는 이론값을 출발점으로 두고, 상대가 좁게 올인하는 사람이라는 단서가 생기면 ② 쪽으로 옮겨 가면 돼요.</p>
 <h2>숫자가 뒤집히는 지점</h2>
-<p>기준은 <strong>가정한 상대 범위 상대로 Hero 에퀴티가 43.75%를 넘는지</strong>예요. 가정이 바뀌면 이 에퀴티부터 다시 구해요.</p>
+<p>기준은 <strong>가정한 상대 범위를 상대로 한 Hero 에퀴티(묶음별 콤보 가중 평균)가 43.75%를 넘는지</strong>예요. ①에서 범위를 걷어낼 때 K♠4♦가 크게 앞서는 K 없는 하이 핸드가 먼저 빠질수록, 45.03%는 43.75% 쪽으로 내려와요.</p>
 <section class="sec tip"><h2>선생님의 한마디</h2>
+<p>BB에서 짧은 올인을 받으면 이 순서로 봐요.</p>
 <ol>
-<li>필요 에퀴티부터: BB는 이미 낸 1BB를 빼고 <strong>더 낼 돈</strong>으로 계산</li>
-<li>상대 올인 범위는 <strong>두 가지 이상 가정</strong>해 보기</li>
-<li>가정에 따라 답이 바뀌면 <strong>경계 핸드</strong> — 상대 정보로 정하기</li>
+<li>우리 핸드가 상대 범위의 <strong>아래쪽(K 없는 하이 등)을 이기는 핸드인지, 위쪽 A-x·K-x에 눌리는 핸드인지</strong> 먼저 떠올려요</li>
+<li>같은 상대의 SB 올인을 <strong>몇 판 세어 두고</strong>, ①처럼 넓은 쪽인지 ②처럼 좁은 쪽인지 가늠해요</li>
+<li>쇼다운에서 약한 하이 핸드로 올인한 걸 본 적이 있으면 ① 쪽에 무게를 둬요</li>
 </ol></section>
 <hr />
 <h2>연습 문제</h2>
 <blockquote>
-<p>뚝섬 <strong>AOF 차트</strong>에서 <strong>그외 게임들 → 2명 → 포지션 BB → 앞에서 액션한 자리 SB → 스택 8BB</strong>로 넣으면 BB 콜 차트가 나와요. 화면은 실전 보정으로 콜 칸이 오늘 ①보다 좁아서, K♠4♦·Q♥8♣는 폴드 칸으로 보여요(화면 개선 예정). 필요 에퀴티는 홀덤학습 <strong>에퀴티 계산기</strong> [콜 수익] 칸으로 확인해요.</p>
+<p>뚝섬 <strong>AOF 차트</strong>(새틀 프리플랍 차트)에서 <strong>그외 게임들 → 테이블 인원 2명 → 포지션 BB → 앞에서 액션한 자리 SB → 스택 8BB</strong>로 넣으면 BB 콜 차트가 나와요. 화면은 실전 보정으로 BB 콜 칸이 엔진 이론값보다 좁게 나올 수 있어요. 필요 에퀴티는 홀덤학습 <strong>에퀴티 계산기</strong> [콜 수익] 칸으로 확인해요.</p>
 </blockquote>
-<p><strong>문제 1.</strong> 같은 K♠4♦, 같은 ② 좁은 범위인데 두 사람 스택이 <strong>6BB</strong>예요. 에퀴티는 그대로 <strong>약 34.1%</strong>예요. 필요 에퀴티와 EV를 구해 보세요.</p>
+<p><strong>문제 1.</strong> 같은 K♠4♦, 같은 ② 좁은 범위인데 두 사람 스택이 <strong>6BB</strong>예요. 스택만 짧아졌죠. 에퀴티는 범위가 같으니 그대로 <strong>약 34.1%</strong>예요. 필요 에퀴티와 콜 손익을 구해 보세요.</p>
 <details>
 <summary>정답 보기</summary>
-<p>지금 팟 6 + 1 = <strong>7BB</strong>, Hero 콜 <strong>5BB</strong>. 필요 에퀴티 = 5 ÷ (7 + 5) = 5 ÷ 12 = <strong>약 41.7%</strong>.
-폴드하면 스택 5BB, 이기면 12BB(<strong>+7BB</strong>), 지면 0(<strong>−5BB</strong>).
-0.34093 × 7 − 0.65907 × 5 = 2.38651 − 3.29535 = <strong>약 −0.91BB</strong> → <strong>폴드</strong>. 스택이 짧아져 필요 에퀴티가 내려가도 모자라요.</p>
+<p>지금 팟은 상대 6BB + Hero BB 1BB = <strong>7BB</strong>, Hero가 더 낼 돈은 <strong>5BB</strong>예요.</p>
+<blockquote>
+<p>필요 에퀴티 = 5 ÷ (7 + 5) = 5 ÷ 12 = <strong>약 41.7%</strong></p>
+</blockquote>
+<p>폴드하면 스택 5BB, 이기면 12BB(<strong>+7BB</strong>), 지면 0(<strong>−5BB</strong>).</p>
+<blockquote>
+<p>콜 손익 = 0.34093(이길 몫) × 7(이기면 버는 돈) − 0.65907(질 몫) × 5(지면 잃는 돈) = 2.38651 − 3.29535 = <strong>약 −0.91BB</strong> → <strong>폴드</strong></p>
+</blockquote>
+<p>스택이 짧아지자 필요 에퀴티가 43.75%에서 약 41.7%로 내려왔지만, 약 34.1%에는 한참 멀어요. 범위가 좁은 상대라면 <strong>스택이 조금 짧아지는 것만으로는</strong> 답이 안 바뀌어요.</p>
 </details>
-<p><strong>문제 2.</strong> 처음 장면(8BB, ① 엔진 이론값 범위)에서 Hero 핸드만 Q♥8♣로 바뀌었어요. 그 범위 상대 에퀴티는 <strong>약 46.4%</strong>예요. 콜?</p>
+<p><strong>문제 2.</strong> 처음 장면(두 사람 8BB)에서 Hero 핸드만 <strong>Q♥8♣</strong>로 바뀌었어요. ② 좁은 범위를 같은 네 묶음으로 나눠 계산기로 재면 이래요(Hero 카드가 바뀌어 콤보 수도 달라졌어요).</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>② 묶음</th>
+<th>콤보</th>
+<th>Q♥8♣ 에퀴티</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>페어 22+</td>
+<td>72</td>
+<td>약 34.1%</td>
+</tr>
+<tr>
+<td>A 핸드</td>
+<td>148</td>
+<td>약 36.38%</td>
+</tr>
+<tr>
+<td>K 핸드</td>
+<td>48</td>
+<td>약 31.67%</td>
+</tr>
+<tr>
+<td>QTs+, QJo, JTs</td>
+<td>19</td>
+<td>약 32.28%</td>
+</tr>
+</tbody>
+</table></div>
+<p>(가) 이 표로 ② 범위 전체 에퀴티를 가중 평균으로 구하고 판정해 보세요. (나) Q♥8♣가 K♠4♦처럼 경계 핸드인지 판단하려면 무엇을 더 알아야 할까요? (다) K♠4♦ 때와 비교해 K 핸드·Q·J 묶음의 콤보 수와 에퀴티가 왜 달라졌는지도 말해 보세요.</p>
 <details>
 <summary>정답 보기</summary>
-<p>약 46.4% &gt; 43.75% → <strong>콜</strong>. 0.46415 × 9 − 0.53585 × 7 = 4.17735 − 3.75095 = <strong>약 +0.43BB</strong>.</p>
+<p>(가) (72 × 0.34098 + 148 × 0.3638 + 48 × 0.31667 + 19 × 0.32277) ÷ 287 → <strong>약 34.75%</strong>. 43.75%에 한참 못 미쳐 <strong>폴드</strong>.</p>
+<p>(나) 넓은 쪽 가정, 곧 ① 엔진 범위를 상대로 한 에퀴티를 알아야 해요. 엔진 기준 <strong>약 46.29%</strong> &gt; 43.75% → <strong>콜</strong>. 콜 손익 = 0.46293(이길 몫) × 9(이기면 버는 돈) − 0.53707(질 몫) × 7(지면 잃는 돈) = 4.16637 − 3.75949 = <strong>약 +0.41BB</strong>. 두 가정에서 답이 갈리니 Q♥8♣도 <strong>경계 핸드</strong>예요.</p>
+<p>(다) Hero가 K를 안 들었으니 상대 K-x가 덜 줄어 K 핸드가 39에서 <strong>48콤보</strong>로 늘었고, 반대로 Q를 들었으니 Q·J 묶음이 24에서 <strong>19콤보</strong>로 줄었어요. 그리고 K♠4♦가 크게 앞서던 Q·J 묶음(QJ·QT)이 Q♥8♣에게는 <strong>같은 Q에 키커가 높은 핸드</strong>라 오히려 밀리는 묶음이 됐어요. 같은 범위라도 우리 카드가 바뀌면 묶음의 크기와 처지가 함께 바뀌어요.</p>
 </details>
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>BB의 필요 에퀴티는 <strong>앞으로 더 낼 돈 ÷ 콜한 뒤 팟</strong>: 8BB 올인에 7 ÷ 16 = 43.75%</li>
+<li>상대 범위 상대 에퀴티는 <strong>묶음별 에퀴티의 콤보 가중 평균</strong>이에요. 콤보가 큰 묶음이 평균을 끌고 가요</li>
+<li>같은 K♠4♦도 엔진 이론값 범위에는 콜, 좁은 범위에는 폴드: 가정에 따라 답이 갈리는 핸드가 <strong>경계 핸드</strong>예요</li>
+<li>범위가 넓어질 때는 앞서는 핸드와 함께 <strong>우리를 누르는 핸드도 들어와요.</strong> 평균이 오르는지는 새로 들어온 핸드의 에퀴티가 <strong>지금 평균보다 높은지</strong>로 정해져요</li>
+</ul>
+</section><section class="sec end"><h2>정리하며</h2>
+<p>오늘은 BB에서 8BB 올인을 받은 K♠4♦로 필요 에퀴티 43.75%를 세고, 엔진 이론값 범위(약 45.03%)에는 콜, 좁은 가정 범위(약 34.1%)에는 폴드라는 걸 확인했어요. 답을 가른 건 상대 범위에 K♠4♦가 크게 앞서는 약한 핸드가 얼마나 섞였느냐였죠.</p>
+<p>다음 글 I21에서는 프리플랍 올인에서 벗어나 <strong>깊은 스택에서 작은 페어로 콜하는 계산</strong>을 봐요. 오늘처럼 지금 에퀴티로 끝나는 콜이 아니라, 플랍에 셋이 될 때 받아낼 돈까지 따지는 셋 마이닝이에요.</p>
 <hr />
-<p><small>AI 작성 · 숫자는 계산 검증 · ① 상대 올인 범위는 뚝섬 AOF 차트 엔진의 올인/폴드 이론값(헤즈업 · 앤티 없음 · 칩 기준 · 엔진은 카드 제거 없음, 화면의 실전 보정은 넣지 않음) · ② 좁은 범위는 가정 레인지 기준 (솔버 결과 아님) · 에퀴티는 블로그 계산기 몬테카를로(카드 제거 포함) · 올인 콜이라 이번 결정의 최종 결과</small></p>
+<p><small>AI 작성 · 숫자는 계산 검증 · ① 상대 올인 범위와 K4o·K7o·Q8o 엔진 에퀴티·콜 빈도는 뚝섬 AOF 차트 엔진의 올인/폴드 이론값(헤즈업 · 앤티 없음 · 칩 기준 · 카드 제거 없음 · 화면의 실전 보정은 넣지 않음) · 핸드별 표와 ② 좁은 범위 에퀴티는 블로그 계산기 몬테카를로(카드 제거 포함) · ② 좁은 범위는 가정 레인지 기준 (솔버 결과 아님) · 올인 콜이라 이번 결정의 최종 결과</small></p></section>
 </article>
 <nav class="nav"><a class="prev" href="050_I19.html"><div class="l">← 이전 글</div><div class="t">SB 8BB, BB와 둘만 남았을 때: Q6o로 올인해도 될까?</div></a><a class="next" href="052_I21.html"><div class="l">다음 글 →</div><div class="t">셋 마이닝: 작은 페어로 콜하려면 상대 스택이 얼마나 깊어야 할까?</div></a></nav></main>
 </body>

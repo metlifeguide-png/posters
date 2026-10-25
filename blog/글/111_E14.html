@@ -10,34 +10,134 @@
 <header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
 <main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">토너</span><span class="n">고급 15번째 글 (전체 122편 중 111번째)</span></div><h1>버블에서 빅스택의 올인은 왜 받기 어려울까?</h1>
 <article>
-<p>안녕하세요. E12에서 지면 탈락하는 콜일수록 리스크 프리미엄이 커진다고 했죠.
-오늘은 같은 대결을 <strong>양쪽에서</strong> 봐요. 빅스택이 중간 스택에게 올인할 때와, 중간 스택이 빅스택에게 올인할 때 받는 쪽 부담이 얼마나 다른지 <strong>버블 팩터</strong>로 재요.</p>
-<p>오늘 목표는 하나예요. <strong>버블 팩터를 구하고, 이 조건에서 덮이는 쪽과 덮는 쪽의 콜 부담 차이를 알기.</strong></p>
+<p>안녕하세요. E12에서 지면 탈락하는 콜일수록 리스크 프리미엄이 커진다고 했죠.</p>
+<p>오늘은 같은 크기의 칩 대결을 <strong>양쪽에서</strong> 봐요. 빅스택이 중간 스택에게 올인할 때와, 중간 스택이 빅스택에게 올인할 때, <strong>받는 쪽의 부담이 얼마나 다른지</strong> 하나의 숫자로 재요. 그 숫자가 <strong>버블 팩터</strong>예요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li><strong>버블 팩터</strong>가 무엇이고, 왜 "상금 비율 ÷ 칩 비율"로 재는지</li>
+<li>같은 칩 대결인데 <strong>덮이는 쪽</strong>(지면 탈락)과 <strong>덮는 쪽</strong>(져도 생존)의 콜 부담이 크게 다른 이유</li>
+<li>버블 팩터를 <strong>필요 승률</strong>로 바꿔 실전에서 쓰는 법</li>
+</ul></div>
 <hr />
 <h2>1단계. 버블 팩터란?</h2>
-<p><strong>버블 팩터 = (지면 잃는 상금 ÷ 이기면 얻는 상금) ÷ (지면 잃는 칩 ÷ 이기면 얻는 칩)</strong>이에요. 모두 <strong>폴드할 때와 비교한 값</strong>이에요. 1이면 칩 기준과 같고, 1보다 클수록 칩 기준보다 콜이 부담스러워요.
-비유하면 <strong>환율</strong>이에요. 같은 칩 내기가 상금으로 바꾸면 지는 쪽이 더 비싸게 계산돼요.</p>
-<h2>2단계. 조건 고정</h2>
-<p>4명 남음, 상금 1등 <strong>50</strong> · 2등 <strong>30</strong> · 3등 <strong>20</strong> · 4등 <strong>0</strong>(단위 점), 블라인드 SB 0.5BB · BB 1BB, 앤티 없음, 전체 칩 <strong>65BB</strong>. BTN <strong>15BB</strong>, CO <strong>5BB</strong>는 폴드하고, SB와 BB(Hero)만 대결해요.</p>
-<h2>3단계. Hero(BB 15BB)가 빅스택 SB 30BB의 올인을 받으면</h2>
-<p>SB가 Hero를 <strong>덮어서</strong>(Hero보다 칩이 많아서), 지면 Hero가 탈락해요.</p>
+<h3>한 줄 정의</h3>
+<p><strong>버블 팩터 = 같은 대결을 상금으로 쟀을 때, 칩으로 잴 때보다 지는 쪽이 몇 배 무거운지</strong>를 나타낸 숫자예요.</p>
+<h3>비유: 환율</h3>
+<p>칩으로 잰 손익을 상금으로 바꾸는 <strong>환율</strong>이라고 생각해 보세요. 칩으로는 지는 쪽과 이기는 쪽이 비슷한 내기도, 상금으로 바꾸면 지는 쪽이 훨씬 비싸게 계산될 수 있어요. 그 "비싸지는 정도"가 버블 팩터예요.</p>
+<h3>공식</h3>
+<blockquote>
+<p><strong>버블 팩터 = (지면 잃는 상금 ÷ 이기면 얻는 상금) ÷ (지면 잃는 칩 ÷ 이기면 얻는 칩)</strong></p>
+</blockquote>
+<p>모두 <strong>폴드할 때와 비교한</strong> 값이에요. 앞의 괄호가 <strong>상금 비율</strong>, 뒤의 괄호가 <strong>칩 비율</strong>이에요.</p>
 <ul>
-<li>폴드: Hero 15 − 1 = 14BB → <strong>약 25.67</strong> / 이김: Hero 15 + 15 = 30BB → <strong>약 36.04</strong> / 짐: 0</li>
-<li>칩으로는 지면 <strong>14BB</strong> 잃고 이기면 <strong>16BB</strong>(상대 15 + 내 블라인드 1) 얻어요. 칩 비율 14 ÷ 16 = <strong>0.875</strong></li>
-<li>상금 비율 = 25.67095 ÷ (36.04029 − 25.67095) = 25.67095 ÷ 10.36934 = <strong>약 2.48</strong></li>
+<li>버블 팩터가 <strong>1</strong>이면: 상금으로 재도 칩과 같은 비율 → 칩 기준대로 콜해도 돼요</li>
+<li><strong>1보다 클수록</strong>: 지는 쪽이 상금으로 더 무거워 → 칩 기준보다 더 이겨야 콜이에요</li>
+</ul>
+<h2>2단계. 조건 고정</h2>
+<ul>
+<li>4명 남음, 상금 1등 <strong>50</strong> · 2등 <strong>30</strong> · 3등 <strong>20</strong> · 4등 <strong>0</strong>(예시 단위)</li>
+<li>블라인드 SB 0.5BB · BB 1BB, 앤티 없음, 전체 칩 <strong>65BB</strong></li>
+<li>스택은 <strong>30BB·15BB·15BB·5BB</strong> 네 명. CO·BTN은 폴드하고, SB와 BB(Hero)만 대결해요</li>
+</ul>
+<p>같은 대결을 두 방향으로 놓을게요. 3단계는 Hero가 15BB, 4단계는 Hero가 30BB예요. SB의 올인 범위는 두 경우 모두 E11과 같은 넓은 범위(22+, A2s+, A2o+, K2s+, K7o+, Q8s+, QTo+, J8s+, JTo, T8s+, 98s)라고 <strong>가정</strong>할게요.</p>
+<p class="concl"><strong>결론부터 말할게요. 이 조건에서 같은 15BB 대결인데, 덮이는 쪽은 약 71.2%, 덮는 쪽은 약 53.2%를 이겨야 콜이에요.</strong> 그래서 A♦T♣·JJ는 덮는 쪽이면 콜, 덮이는 쪽이면 폴드예요.</p>
+<h2>3단계. Hero(BB 15BB)가 빅스택 SB 30BB의 올인을 받으면</h2>
+<p>BTN 15BB, CO 5BB예요. SB가 Hero를 <strong>덮어서</strong>(Hero보다 칩이 많아서), 지면 Hero가 탈락해요.</p>
+<h3>세 경우</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>경우</th>
+<th>Hero</th>
+<th>SB</th>
+<th>Hero 기대 상금</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>폴드</td>
+<td>15 − 1 = 14</td>
+<td>30 + 1 = 31</td>
+<td>약 25.67</td>
+</tr>
+<tr>
+<td>콜해서 이김</td>
+<td>15 + 15 = 30</td>
+<td>15</td>
+<td>약 36.04</td>
+</tr>
+<tr>
+<td>콜해서 짐</td>
+<td>0 (탈락)</td>
+<td>45</td>
+<td>0</td>
+</tr>
+</tbody>
+</table></div>
+<h3>칩 비율</h3>
+<p>폴드(14BB)와 비교하면, 지면 14 − 0 = 14BB를 잃고 이기면 30 − 14 = 16BB를 얻어요.</p>
+<blockquote>
+<p>칩 비율 = 14 ÷ 16 = <strong>0.875</strong></p>
+</blockquote>
+<h3>상금 비율</h3>
+<ul>
+<li>지면 잃는 상금 = 폴드 − 짐 = 25.67095 − 0 = 25.67095</li>
+<li>이기면 얻는 상금 = 이김 − 폴드 = 36.04029 − 25.67095 = 10.36934</li>
 </ul>
 <blockquote>
-<p>버블 팩터 = 2.47566 ÷ 0.875 = <strong>약 2.83</strong> → ICM 필요 승률 = 25.67095 ÷ 36.04029 = <strong>약 71.2%</strong> (칩 기준 14 ÷ 30 = 약 46.7%)</p>
+<p>상금 비율 = 25.67095 ÷ 10.36934 = <strong>약 2.48</strong></p>
+</blockquote>
+<h3>버블 팩터</h3>
+<blockquote>
+<p>버블 팩터 = 2.47566 ÷ 0.875 = <strong>약 2.83</strong></p>
+</blockquote>
+<p>필요 승률로 바꾸면 E11의 식 (폴드 − 짐) ÷ (이김 − 짐)이에요.</p>
+<blockquote>
+<p>ICM 필요 승률 = 25.67095 ÷ 36.04029 = <strong>약 71.2%</strong> (칩 기준 14 ÷ 30 = 약 46.7%)</p>
 </blockquote>
 <h2>4단계. Hero(BB 30BB)가 중간 스택 SB 15BB의 올인을 받으면</h2>
-<p>이번엔 Hero가 덮어서, 져도 30 − 15 = 15BB가 남아요.</p>
+<p>이번엔 BTN 15BB, CO 5BB, SB 15BB, Hero 30BB예요. Hero가 <strong>덮어서</strong>, 져도 30 − 15 = 15BB가 남아요.</p>
+<h3>세 경우</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>경우</th>
+<th>Hero</th>
+<th>SB</th>
+<th>Hero 기대 상금</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>폴드</td>
+<td>30 − 1 = 29</td>
+<td>15 + 1 = 16</td>
+<td>약 35.5</td>
+</tr>
+<tr>
+<td>콜해서 이김</td>
+<td>30 + 15 = 45</td>
+<td>0 (탈락)</td>
+<td>약 43.42</td>
+</tr>
+<tr>
+<td>콜해서 짐</td>
+<td>30 − 15 = 15</td>
+<td>30</td>
+<td>약 26.5</td>
+</tr>
+</tbody>
+</table></div>
+<p>이기면 SB가 탈락해 남은 셋이 모두 상금권이 돼요. 버블이 터지면서 Hero는 3등 이상이 확정되고 칩 리더가 되니, 이김 기대 상금이 약 43.42까지 올라가요. 져도 15BB가 남아 살아 있고요.</p>
+<p>칩 비율은 3단계와 같은 <strong>0.875</strong>예요(지면 29 − 15 = 14 잃고, 이기면 45 − 29 = 16 얻음).</p>
 <ul>
-<li>폴드: 30 − 1 = 29BB → <strong>약 35.5</strong> / 이김: 30 + 15 = 45BB → <strong>약 43.42</strong> / 짐: 15BB → <strong>약 26.5</strong></li>
-<li>칩 비율은 같은 <strong>0.875</strong>, 상금 비율 = (35.50091 − 26.49634) ÷ (43.42308 − 35.50091) = 9.00457 ÷ 7.92217 = <strong>약 1.14</strong></li>
+<li>지면 잃는 상금 = 35.50091 − 26.49634 = 9.00457</li>
+<li>이기면 얻는 상금 = 43.42308 − 35.50091 = 7.92217</li>
 </ul>
 <blockquote>
-<p>버블 팩터 = 1.13663 ÷ 0.875 = <strong>약 1.3</strong> → ICM 필요 승률 = (35.50091 − 26.49634) ÷ (43.42308 − 26.49634) = <strong>약 53.2%</strong> (칩 기준 약 46.7%)</p>
+<p>상금 비율 = 9.00457 ÷ 7.92217 = <strong>약 1.14</strong> → 버블 팩터 = 1.13663 ÷ 0.875 = <strong>약 1.3</strong></p>
+<p>ICM 필요 승률 = (35.50091 − 26.49634) ÷ (43.42308 − 26.49634) = <strong>약 53.2%</strong> (칩 기준 약 46.7%)</p>
 </blockquote>
+<h3>나란히 놓기</h3>
 <div class="tbl"><table>
 <thead>
 <tr>
@@ -62,35 +162,115 @@
 </tr>
 </tbody>
 </table></div>
-<p>이 조건에서 빅스택이 올인하면 중간 스택은 71.2%를 넘는 핸드가 아니면 콜하기 어려워요. 이게 빅스택이 압박할 수 있는 원리예요(올인하는 쪽의 이득은 E13 방식으로 따로 계산해요). 반대로 빅스택은 중간 스택의 올인을 비교적 넓게 받을 수 있어요.</p>
+<!-- 그림: 두 방향의 칩 비율·상금 비율·버블 팩터 막대 -->
+
+<h3>버블 팩터를 필요 승률로 바꾸기</h3>
+<p>상금 비율을 R이라고 하면, 필요 승률은 <strong>R ÷ (1 + R)</strong>이에요. 잃는 몫 ÷ (따는 몫 + 잃는 몫)의 위아래를 따는 몫으로 나눈 거예요. 그리고 R = 버블 팩터 × 칩 비율이에요.</p>
+<blockquote>
+<p>3단계: R = 2.82932 × 0.875 = 2.47566 → 2.47566 ÷ 3.47566 = <strong>약 71.2%</strong></p>
+<p>칩 기준: 버블 팩터가 1이면 R = 0.875 → 0.875 ÷ 1.875 = <strong>약 46.7%</strong></p>
+</blockquote>
+<p>버블 팩터 1이 곧 칩 기준인 이유가 이거예요. 버블 팩터가 커질수록 R이 커지고, 필요 승률이 올라가요.</p>
+<h3>같은 핸드로 보면</h3>
+<p>같은 SB 올인 범위를 상대로 한 Hero 핸드의 에퀴티를 두 기준선에 대 볼게요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Hero 핸드</th>
+<th>에퀴티</th>
+<th>덮는 쪽(53.2%)</th>
+<th>덮이는 쪽(71.2%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q♣Q♠</td>
+<td>약 71.6%</td>
+<td>콜</td>
+<td>콜(겨우)</td>
+</tr>
+<tr>
+<td>J♣J♠</td>
+<td>약 68.6%</td>
+<td>콜</td>
+<td>폴드</td>
+</tr>
+<tr>
+<td>A♦T♣</td>
+<td>약 56.5%</td>
+<td>콜</td>
+<td>폴드</td>
+</tr>
+</tbody>
+</table></div>
+<p>덮이는 쪽에서는 JJ도 접어야 하고, QQ가 겨우 선을 넘어요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>칩으로는 <strong>완전히 같은 대결</strong>이에요. 걸린 칩도 15BB, 칩 비율도 0.875로 같아요. 그런데 상금으로 재면, 덮이는 쪽은 71.2%를 넘는 핸드가 아니면 콜하기 어렵고, 덮는 쪽은 53.2%면 돼요. 이 조건에서 <strong>빅스택의 올인을 중간 스택이 받기 어려운</strong> 이유가 이거예요.</p>
+<section class="sec why"><h2>왜 그럴까: 덮이는 쪽은 "바닥"까지 떨어져요</h2>
+<h3>잃는 몫이 다르게 생겼어요</h3>
+<p>두 방향의 차이는 <strong>질 때</strong>에서 나와요.</p>
+<ul>
+<li>덮이는 쪽(3단계): 지면 칩이 <strong>0</strong>, 기대 상금도 <strong>0</strong>이에요. 폴드로 지키던 약 25.67을 <strong>통째로</strong> 잃어요</li>
+<li>덮는 쪽(4단계): 지면 15BB가 남아 기대 상금이 <strong>약 26.5</strong>예요. 폴드(약 35.5)에서 <strong>약 9</strong>만 잃어요</li>
+</ul>
+<p>이기는 쪽은 약 10.37과 약 7.92로 차이가 작고, 지는 쪽은 약 25.67과 약 9로 세 배 가까이 차이 나요. 그러니 상금 비율을 가른 건 거의 <strong>지는 쪽의 크기</strong>예요.</p>
+<h3>칩은 같은데 상금이 다른 이유</h3>
+<p>칩 15BB는 누가 잃든 15BB예요. 하지만 상금으로는, 마지막 15BB를 잃는 것(탈락)과 30BB 중 15BB를 잃는 것(생존)은 전혀 다른 일이에요. E10에서 본 것처럼 <strong>칩이 적을수록 칩 하나가 비싸고</strong>, 마지막 칩은 가장 비싸요. 덮이는 쪽은 그 가장 비싼 칩까지 걸어야 해요.</p>
+<h3>받는 쪽이 조이면, 거는 쪽은 폴드를 더 받아요</h3>
+<p>받는 쪽이 71.2%를 요구하면, 위 표처럼 JJ도 접어요. 올인하는 빅스택은 그만큼 <strong>폴드를 자주 받는다</strong>는 뜻이에요. 이게 이 조건에서 빅스택의 올인이 무서운 이유예요.</p>
+</section><section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. "같은 15BB 대결이니 부담도 같다"</strong>
+칩으로는 3단계와 4단계가 똑같이 14 잃고 16 따는 대결이었어요. 그런데 버블 팩터는 약 2.83과 약 1.3, 필요 승률은 약 71.2%와 약 53.2%로 크게 갈렸어요. 콜하기 전에 <strong>누가 누구를 덮는지</strong>부터 봐야 해요.</p></div><div class="mis-card"><p><strong>실수 2. "빅스택이면 ICM 부담이 없다"</strong>
+4단계의 빅스택도 버블 팩터가 약 1.3이라 칩 기준(46.7%)보다 꽤 더 필요했어요(약 53.2%). 덮는 쪽도 지면 15BB로 줄어 순위 경쟁에서 밀리니까요. 부담이 <strong>작을</strong> 뿐 <strong>없지는</strong> 않아요.</p></div><div class="mis-card"><p><strong>실수 3. 버블 팩터를 칩 비율 없이 상금 비율로만 보기</strong>
+3단계 상금 비율 약 2.48만 보고 "칩 기준보다 2.48배 무거워졌다"고 하면 틀려요. 칩으로도 원래 14 대 16, 0.875의 비율이 있었거든요. 칩 비율로 <strong>나눠서</strong> 칩 때문에 원래 있던 몫을 걷어 내야 <strong>상금 때문에 더 무거워진 정도</strong>가 나와요.</p></div></section>
 <hr />
-<h2>"중간 스택은 누구에게 부담이 작을까요?"</h2>
-<p>좋은 질문이에요. 누가 누구를 덮는지에 따라 달라요. <strong>자기보다 짧은 스택</strong>의 올인을 받을 때는 어떨지 문제 1에서 직접 계산해 보세요.</p>
+<h2>"그럼 빅스택은 올인할 때 손해 볼 일이 없나요?"</h2>
+<p>좋은 질문이에요. 그렇지 않아요. 오늘 계산한 건 <strong>받는 쪽의 부담</strong>뿐이에요. 올인한 빅스택도 콜당해 지면 30BB에서 15BB로 줄어 순위 경쟁에서 밀려요. 올인하는 쪽의 손익은 I18 방식대로 "접을 때 몫 + 콜 받을 때 몫"으로 따로 계산해야 하고, 오늘 숫자만으로 "마음껏 밀어도 된다"고 할 수는 없어요.</p>
 <h2>숫자가 뒤집히는 지점</h2>
-<p>기준은 <strong>버블 팩터가 1보다 얼마나 큰지</strong>예요. 누가 누구를 덮는지, 그리고 대결로 버블이 터지는지가 이 값을 바꿔요.</p>
+<ul>
+<li>Hero 에퀴티가 <strong>53.2%와 71.2% 사이</strong>에 있는 핸드(오늘은 JJ·A♦T♣)는, 누가 누구를 덮느냐에 따라 콜과 폴드가 뒤집혀요</li>
+<li>그 기준선을 움직이는 건 <strong>지면 내가 탈락하는지</strong>예요</li>
+</ul>
 <section class="sec tip"><h2>선생님의 한마디</h2>
+<p>버블에서 올인을 받으면 콜하기 전에 이 순서로 봐요.</p>
 <ol>
-<li>버블 팩터 = <strong>상금 비율 ÷ 칩 비율</strong>(폴드 대비)</li>
-<li>이 조건에서 <strong>덮이는 쪽</strong>의 콜이 가장 어려워요</li>
+<li>올인을 맞으면 상대 스택과 내 스택(낸 블라인드 포함)을 비교해 <strong>덮이는지</strong> 보기</li>
+<li>덮인다면 칩 기준에 <strong>크게</strong>(오늘은 약 24.6%p) 얹어서, 오늘 표처럼 JJ도 접을 수 있다고 생각하기</li>
+<li>덮는다면 칩 기준에 <strong>조금만</strong>(오늘은 약 6.5%p) 얹어 넓게 받기</li>
 </ol></section>
 <hr />
-<h2>연습 문제 (같은 버블)</h2>
-<blockquote>
-<p>뚝섬 <strong>AOF 차트</strong>(새틀 프리플랍 차트)에서 그외 게임들 → 앤티 없음 → 4명 → 포지션 BB → 앞에서 액션한 자리 SB → 자리별 스택·상금 → 마감 후(ICM)로 맞추면 콜 필요 승률이 칩 기준과 나란히 나와요. 화면은 블라인드 압박이 들어가 숫자가 달라서, <strong>ICM 쪽이 더 높게 나오는지만</strong> 보세요.</p>
-</blockquote>
-<p><strong>문제 1.</strong> Hero는 BB <strong>15BB</strong>, SB <strong>5BB</strong>가 올인했어요(BTN 30BB, CO 15BB). 폴드 <strong>약 25.15</strong>, 이김 <strong>약 32.79</strong>, 짐(Hero 15 − 5 = 10BB) <strong>약 19.4</strong>예요. 버블 팩터는?</p>
+<h2>연습 문제 (같은 버블, 상금 50·30·20·0)</h2>
+<p><strong>문제 1.</strong> Hero는 BB <strong>15BB</strong>, SB <strong>5BB</strong>가 올인했어요(BTN 30BB, CO 15BB). 폴드 <strong>약 25.15</strong>, 이김 <strong>약 32.79</strong>, 짐(Hero 15 − 5 = 10BB) <strong>약 19.4</strong>예요. 칩 비율부터 구해서 버블 팩터를 구해 보세요.</p>
 <details>
 <summary>정답 보기</summary>
-<p>상금 비율 = (25.15362 − 19.4016) ÷ (32.79121 − 25.15362) = 5.75202 ÷ 7.63759 = <strong>약 0.75</strong>. 칩은 지면 <strong>4BB</strong> 잃고 이기면 <strong>6BB</strong> 얻어서 칩 비율 4 ÷ 6 = <strong>약 0.67</strong>.
-버블 팩터 = 0.75312 ÷ 0.66667 = <strong>약 1.13</strong>. 1보다 크지만 3단계(약 2.83)보다 훨씬 작아요. ICM 필요 승률 <strong>약 43%</strong>(칩 기준 40%).</p>
+<p>칩: 폴드하면 14BB, 지면 10BB라 <strong>4BB</strong> 잃고, 이기면 20BB라 <strong>6BB</strong> 얻어요. 칩 비율 4 ÷ 6 = <strong>약 0.67</strong>.
+상금 비율 = (25.15362 − 19.4016) ÷ (32.79121 − 25.15362) = 5.75202 ÷ 7.63759 = <strong>약 0.75</strong>.
+버블 팩터 = 0.75312 ÷ 0.66667 = <strong>약 1.13</strong>. 1보다 크지만 3단계(약 2.83)보다 훨씬 작아요. ICM 필요 승률 <strong>약 43%</strong>(칩 기준 4 ÷ 10 = 40%).
+같은 15BB인데, 이번엔 Hero가 덮는 쪽이라 져도 살아남아요.</p>
 </details>
 <p><strong>문제 2.</strong> 이번엔 Hero가 빅스택 BB <strong>30BB</strong>, SB <strong>5BB</strong>가 올인했어요(BTN 15BB, CO 15BB). 폴드 <strong>약 35.34</strong>, 이김 <strong>약 39.38</strong>, 짐 <strong>약 32.43</strong>이에요. 버블 팩터는?</p>
 <details>
 <summary>정답 보기</summary>
-<p>상금 비율 = (35.34289 − 32.43257) ÷ (39.38462 − 35.34289) = 2.91032 ÷ 4.04173 = <strong>약 0.72</strong>, 칩 비율 4 ÷ 6 = <strong>약 0.67</strong>. 버블 팩터 = 0.72007 ÷ 0.66667 = <strong>약 1.08</strong>. 빅스택이 짧은 스택을 받으면 칩 기준과 거의 같아요(ICM 필요 승률 <strong>약 41.9%</strong>).</p>
+<p>칩 비율은 문제 1과 같은 4 ÷ 6 = <strong>약 0.67</strong>.
+상금 비율 = (35.34289 − 32.43257) ÷ (39.38462 − 35.34289) = 2.91032 ÷ 4.04173 = <strong>약 0.72</strong>. 버블 팩터 = 0.72007 ÷ 0.66667 = <strong>약 1.08</strong>.
+빅스택이 짧은 스택을 받으면 칩 기준과 거의 같아요(ICM 필요 승률 <strong>약 41.9%</strong>).</p>
 </details>
+<blockquote>
+<p>홀덤학습 <strong>AOF 차트(새틀 프리플랍 차트) → 그외 게임들</strong>에서 테이블 인원 4명 → 앤티 없음 → 블라인드 0.5/1 → 자리별 스택·상금 → <strong>마감 후(ICM)</strong> → 포지션 BB → 앞에서 액션한 자리 SB로 맞추면 콜 필요 승률이 칩 기준과 나란히 나와요. 화면은 블라인드 압박이 들어가 숫자가 다르니, 차이가 큰 <strong>3단계 장면(약 71.2% 대 약 46.7%)</strong>으로 ICM 쪽이 더 높게 나오는지 확인해 보세요.</p>
+</blockquote>
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li><strong>버블 팩터 = 상금 비율 ÷ 칩 비율</strong>(폴드 대비). 1이면 칩 기준 그대로, 클수록 콜이 무거워요</li>
+<li>같은 칩 대결이라도 <strong>덮이는 쪽</strong>은 지면 바닥(0)까지 떨어져 버블 팩터가 크게 뛰어요</li>
+<li>덮는 쪽도 버블 팩터가 1보다 커서(약 1.3), 칩 기준보다는 조금 더 이겨야 해요</li>
+<li>필요 승률 = <strong>R ÷ (1 + R)</strong>, R = 버블 팩터 × 칩 비율. 버블 팩터 1이면 칩 기준 그대로예요</li>
+</ul>
+</section><section class="sec end"><h2>정리하며</h2>
+<p>오늘은 30BB와 15BB의 같은 대결을 두 방향으로 놓고 버블 팩터를 쟀어요.</p>
+<p>15BB가 30BB의 올인을 받으면 지면 탈락이라 버블 팩터 약 2.83, 필요 승률 약 71.2%였어요. 30BB가 15BB의 올인을 받으면 져도 15BB가 남아 버블 팩터 약 1.3, 필요 승률 약 53.2%였죠. 칩으로는 같은 14 대 16의 대결이었는데, 지는 쪽의 상금 크기가 결과를 갈랐어요.</p>
+<p>다음 글 E15에서는 ICM을 잠시 내려놓고 <strong>앤티</strong>를 봐요. 칩 기준 푸시/폴드에서 앤티가 있으면 왜 더 넓게 올인하는지 다뤄요.</p>
 <hr />
-<p><small>AI 작성 · 숫자는 계산 검증 (ICM: 칩 비율로 등수를 차례로 뽑는 방식) · 스택·상금은 이 예시로 고정(전체 65BB) · 블라인드 압박·앤티는 넣지 않음 · 이번 한 번의 결정 기준</small></p>
+<p><small>AI 작성 · 숫자는 계산 검증 (ICM: 칩 비율로 등수를 차례로 뽑는 방식) · 스택·상금은 이 예시로 고정(전체 65BB) · 블라인드 압박·앤티는 넣지 않음 · 이번 한 번의 결정 기준</small></p></section>
 </article>
 <nav class="nav"><a class="prev" href="110_E13.html"><div class="l">← 이전 글</div><div class="t">파이널 테이블: 같은 핸드인데 왜 스택 분포에 따라 푸시·콜이 바뀔까?</div></a><a class="next" href="112_E15.html"><div class="l">다음 글 →</div><div class="t">푸시/폴드 심화: 앤티가 있으면 왜 더 넓게 올인할까?</div></a></nav></main>
 </body>
