@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SB 8BB, BB와 둘만 남았을 때: Q6o로 올인해도 될까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge i">중급</span><span class="chip">토너</span><span class="n">중급 19번째 글 (전체 122편 중 50번째)</span></div><h1>SB 8BB, BB와 둘만 남았을 때: Q6o로 올인해도 될까?</h1>
+<article>
+<p>안녕하세요. I17에서 짧은 스택은 올인 아니면 폴드로 생각한다고 했고, I18에서 올인이 이기는 두 길(접을 때 몫·콜 받을 때 몫)을 나눠 봤죠.
+오늘은 그걸 실제 한 판에 적용해요. 상대 스택이 Hero보다 클 때 무엇을 기준으로 볼지도 같이 볼게요.</p>
+<p>오늘 목표는 하나예요. <strong>유효 스택을 정하고, 상대 콜 범위 상대로 Hero 핸드의 올인 이득을 계산하기.</strong></p>
+<hr />
+<h2>오늘의 핸드</h2>
+<p><strong>Hero (SB · 8BB)</strong> · 상대 (BB · 20BB) · 둘만 남음 · 블라인드 SB 0.5BB / BB 1BB · 앤티 없음</p>
+<p><img src="../카드/Qd.svg" width="48"> <img src="../카드/6c.svg" width="48"></p>
+<p>Q♦6♣처럼 무늬가 다른 Q와 6을 <strong>Q6o</strong>라고 써요(o = 무늬 다름).</p>
+<h3>프리플랍 · 팟 1.5BB</h3>
+<p>Hero 차례예요. <strong>올인할까, 폴드할까?</strong></p>
+<hr />
+<p class="concl"><strong>결론부터 말할게요. 오늘 장면에서는 Q♦6♣ 올인이 폴드보다 약 +0.07BB 이득입니다.</strong> 아주 작은 차이라 경계에 있는 핸드예요.</p>
+<h2>1단계. 유효 스택 정하기</h2>
+<p><strong>유효 스택 = 두 사람 중 작은 스택</strong>이에요. 상대가 20BB를 가져도 Hero가 걸 수 있는 건 8BB까지고, 상대도 Hero에게서 8BB까지만 딸 수 있어요.
+비유하면 <strong>내기는 지갑이 얇은 쪽 금액까지만</strong> 걸 수 있는 것과 같아요.
+그래서 세 금액은 I18과 같아요. Hero가 폴드하면 스택 <strong>7.5BB</strong>가 기준이에요.</p>
+<ul>
+<li>상대가 접으면 스택 9BB → <strong>+1.5BB</strong></li>
+<li>콜 받고 이기면 상대에게서 8BB만 받아 스택 <strong>16BB</strong> → <strong>+8.5BB</strong></li>
+<li>콜 받고 지면 스택 0 → <strong>−7.5BB</strong></li>
+</ul>
+<h2>2단계. 상대는 얼마나 넓게 콜할까?</h2>
+<p>뚝섬 <strong>AOF 차트 엔진</strong>은 칩 기준인 이 조건에서 두 사람이 서로 최선으로 대응한다고 보고 범위를 정해요. 여기서 <strong>범위 % = 전체 1,326가지 핸드 조합 중 그 행동을 하는 비율</strong>이에요. 엔진 기준 Hero(SB)는 <strong>약 62.7%</strong>로 올인해요.
+상대 BB는 이미 1BB를 냈고 콜하려면 7BB를 더 내요.</p>
+<blockquote>
+<p>상대의 필요 에퀴티 = 7(더 낼 돈) ÷ (2(SB·BB가 1BB씩 맞춘 팟) + 7(Hero가 더 건 돈) + 7(상대 콜)) = 7 ÷ 16 = <strong>43.75%</strong></p>
+</blockquote>
+<p>그래서 상대는 Hero 올인 범위 상대로 43.75% 넘는 핸드로 콜하고, 그게 전체의 <strong>약 44.5%</strong>예요.</p>
+<h2>3단계. Q♦6♣로 두 몫 나누기</h2>
+<p>상대 콜 범위 상대로 Q♦6♣의 에퀴티(비기면 반으로 친 몫)는 <strong>약 36.2%</strong>, 지는 몫은 <strong>약 63.8%</strong>예요. 식에는 반올림 오차를 줄이려고 계산기 값을 소수 다섯 자리로 써요.</p>
+<p><strong>① 접을 때 몫</strong></p>
+<blockquote>
+<p>0.55524(상대가 접는 비율) × 1.5(접으면 버는 돈) = <strong>약 +0.83BB</strong></p>
+</blockquote>
+<p><strong>② 콜 받을 때 몫</strong></p>
+<blockquote>
+<p>콜 받은 판 평균 = 0.36224 × 8.5 − 0.63776 × 7.5 = 3.07904 − 4.7832 = <strong>약 −1.7BB</strong>
+0.44476(콜 받는 비율) × (−1.70413) = <strong>약 −0.76BB</strong></p>
+</blockquote>
+<p><strong>③ 합</strong></p>
+<blockquote>
+<p>0.83286 − 0.75793 = <strong>약 +0.07BB</strong> → 올인</p>
+</blockquote>
+<hr />
+<h2>"+0.07BB면 거의 0인데, 꼭 올인해야 해요?"</h2>
+<p>좋은 질문이에요. 거의 같아요. 이 숫자는 상대가 엔진만큼 콜한다는 <strong>가정</strong> 위에 있어서, 실제 상대가 다르게 콜하면 경계 핸드는 결론이 쉽게 뒤집혀요.</p>
+<h2>숫자가 뒤집히는 지점</h2>
+<p>기준은 <strong>접을 때 몫 + 콜 받을 때 몫이 0보다 큰지</strong>예요. 핸드가 바뀌면 콜 받을 때 에퀴티가, 유효 스택이 바뀌면 세 금액과 상대 콜 범위가 함께 바뀌어요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>먼저 <strong>유효 스택</strong>(작은 쪽)을 정하고 세 금액을 거기서 계산</li>
+<li>상대 <strong>필요 에퀴티</strong>가 상대 콜 범위의 넓이를 정해요</li>
+<li>경계 핸드는 <strong>상대가 얼마나 콜하는지</strong>가 결론을 바꿔요</li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>뚝섬 <strong>AOF 차트</strong>에서 <strong>그외 게임들 → 테이블 인원 2명 → 포지션 SB → 내 스택·상대 스택</strong>을 넣어 그 핸드가 SB 올인 칸인지 확인해 보세요. 화면은 실전 보정으로 조금 좁게 나와요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 같은 장면(유효 스택 8BB)에서 Hero 핸드만 Q♣3♦로 바뀌었어요. 상대 콜 범위 상대 에퀴티는 <strong>약 34.2%</strong>예요. 올인? 폴드?</p>
+<details>
+<summary>정답 보기</summary>
+<p>① 접을 때 몫은 그대로 <strong>약 +0.83BB</strong>
+② 콜 받은 판 평균 = 0.34182 × 8.5 − 0.65818 × 7.5 = 2.90547 − 4.93635 = <strong>약 −2.03BB</strong>, 0.44476 × (−2.0309) = <strong>약 −0.9BB</strong>
+③ 합 = 0.83286 − 0.90326 = <strong>약 −0.07BB</strong> → <strong>폴드</strong></p>
+</details>
+<p><strong>문제 2.</strong> 이번엔 Q♣3♦ 그대로, 상대 BB 스택이 <strong>5BB</strong>뿐이에요(Hero 8BB). 엔진 기준 상대는 <strong>약 38.2%</strong> 접고, 콜 범위 상대 Q♣3♦ 에퀴티는 <strong>약 39.5%</strong>예요. 세 금액부터 구해서 올인? 폴드?</p>
+<details>
+<summary>정답 보기</summary>
+<p>유효 스택 <strong>5BB</strong>. 접으면 스택 9BB로 <strong>+1.5BB</strong>, 이기면 13BB로 13 − 7.5 = <strong>+5.5BB</strong>, 지면 3BB로 7.5 − 3 = <strong>4.5BB</strong> 손해.
+① 0.38197 × 1.5 = <strong>약 +0.57BB</strong>
+② 콜 받은 판 평균 = 0.39452 × 5.5 − 0.60548 × 4.5 = 2.16986 − 2.72466 = <strong>약 −0.55BB</strong>, 0.61803 × (−0.5548) = <strong>약 −0.34BB</strong>
+③ 0.57296 − 0.34288 = <strong>약 +0.23BB</strong> → <strong>올인</strong>. 같은 Q♣3♦라도 유효 스택이 짧아지면 올인으로 바뀌어요.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 뚝섬 AOF 차트 엔진의 올인/폴드 이론값 (헤즈업 SB 대 BB · 앤티 없음 · 칩 기준 · 카드 제거 없음 · 화면의 실전 보정은 넣지 않음) · 올인 결정이라 이번 결정의 최종 결과</small></p>
+</article>
+<nav class="nav"><a class="prev" href="049_I18.html"><div class="l">← 이전 글</div><div class="t">폴드 에퀴티: 올인은 왜 두 가지 길로 이길까?</div></a><a class="next" href="051_I20.html"><div class="l">다음 글 →</div><div class="t">BB에서 8BB 올인을 받았다: K4o로 콜할까?</div></a></nav></main>
+</body>
+</html>

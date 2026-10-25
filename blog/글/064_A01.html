@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>알파: 블러프는 상대가 몇 % 폴드해야 이득일까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge a">상급</span><span class="chip">개념</span><span class="n">상급 1번째 글 (전체 122편 중 64번째)</span></div><h1>알파: 블러프는 상대가 몇 % 폴드해야 이득일까?</h1>
+<article>
+<p>안녕하세요. 상급 첫 글이에요. 지금까지는 <strong>콜하는 쪽</strong>에서 "몇 % 이겨야 본전인가"(필요 에퀴티)를 계산했죠.
+오늘은 자리를 바꿔 <strong>벳하는 쪽</strong>에서 봐요. 아무것도 없는 핸드로 벳했을 때, 상대가 <strong>몇 % 폴드해야</strong> 이득일까요?</p>
+<p>오늘 목표는 하나예요. <strong>벳 크기를 보면 "블러프가 성공해야 하는 비율"이 바로 떠오르게 하기.</strong></p>
+<hr />
+<h2>1단계. 블러프와 알파</h2>
+<p><strong>블러프 = 콜을 받으면 지는 핸드로 상대를 폴드시키려는 벳</strong>이에요.
+블러프의 손익은 두 가지뿐이에요.</p>
+<ul>
+<li>상대가 <strong>폴드</strong>하면 → 지금 팟을 가져와요</li>
+<li>상대가 <strong>콜</strong>하면 → 우리가 건 벳을 잃어요</li>
+</ul>
+<p>오늘은 <strong>콜 받으면 항상 지고, 상대는 콜 아니면 폴드만 한다</strong>(레이즈는 없다)고 가정해요. 예를 들어 리버에서 플러시 드로우가 안 맞아 <strong>쇼다운하면 지는 핸드</strong>로 벳하는 장면이에요.</p>
+<p><strong>알파 = 블러프가 본전이 되려면 상대가 폴드해야 하는 비율</strong>이에요.</p>
+<p>비유하면 <strong>문 두드리기</strong>예요. 문이 열리면(폴드) 상을 받고, 안 열리면(콜) 두드린 값만 잃어요. 상이 클수록, 두드리는 값이 쌀수록 덜 열려도 괜찮죠.</p>
+<h2>2단계. 공식</h2>
+<blockquote>
+<p><strong>알파 = 벳 ÷ (팟 + 벳)</strong> (팟은 <strong>우리가 벳하기 전</strong> 팟)</p>
+</blockquote>
+<p>팟 10BB에 5BB 블러프라면:</p>
+<ul>
+<li>걸고 잃을 수 있는 돈: 5BB(벳)</li>
+<li>폴드 받으면 얻는 돈: 10BB(팟)</li>
+<li>알파 = 5 ÷ (10 + 5) = <strong>33.3%</strong></li>
+</ul>
+<p>말로 풀면 <strong>알파 = 잃을 돈 ÷ (잃을 돈 + 얻을 돈)</strong> 이에요. 그래서 분모에 벳이 들어가요. <strong>3번 중 1번만 폴드해도 본전</strong>이죠.</p>
+<h2>3단계. 벳 크기별 알파 (팟 12BB 기준)</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>벳 크기</th>
+<th>벳</th>
+<th>알파</th>
+<th>콜하는 쪽 필요 에퀴티</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/3팟</td>
+<td>4BB</td>
+<td>25%</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>하프팟</td>
+<td>6BB</td>
+<td>33.3%</td>
+<td>25%</td>
+</tr>
+<tr>
+<td>2/3팟</td>
+<td>8BB</td>
+<td>40%</td>
+<td>28.6%</td>
+</tr>
+<tr>
+<td>팟벳</td>
+<td>12BB</td>
+<td>50%</td>
+<td>33.3%</td>
+</tr>
+<tr>
+<td>2배 오버벳</td>
+<td>24BB</td>
+<td>66.7%</td>
+<td>40%</td>
+</tr>
+</tbody>
+</table></div>
+<p>오른쪽 칸은 B15의 표예요. <strong>알파와 필요 에퀴티는 다른 숫자</strong>라는 걸 꼭 보세요.</p>
+<ul>
+<li>알파 = 잃을 돈(벳) ÷ (잃을 돈 + 얻을 돈(팟)) → 분모가 <strong>팟 + 벳</strong></li>
+<li>필요 에퀴티 = 낼 돈(콜) ÷ 콜한 뒤 전체 팟 → 분모가 <strong>팟 + 벳 × 2</strong></li>
+</ul>
+<h2>4단계. 실제로 이득인지 EV로 확인</h2>
+<p><strong>EV = 같은 블러프를 여러 번 했을 때 한 번 평균 손익</strong>이에요(B24에서 배웠죠).
+팟 12BB에 하프팟 6BB 블러프. 알파는 <strong>33.3%</strong>예요.</p>
+<p><strong>상대가 40% 폴드한다면:</strong></p>
+<blockquote>
+<p>EV = 0.4 × 12 − 0.6 × 6 = 4.8 − 3.6 = <strong>+1.2BB</strong></p>
+</blockquote>
+<p>알파보다 많이 폴드하니 <strong>이득</strong>이에요. 5번 블러프하면 2번 폴드 받아 24BB를 얻고, 3번 콜 받아 18BB를 잃어 <strong>6BB</strong> 남아요. 한 번 평균 1.2BB죠.</p>
+<p><strong>상대가 25%만 폴드한다면:</strong></p>
+<blockquote>
+<p>EV = 0.25 × 12 − 0.75 × 6 = 3 − 4.5 = <strong>−1.5BB</strong></p>
+</blockquote>
+<p>알파보다 적게 폴드하니 <strong>손해</strong>예요.</p>
+<p>정리하면 <strong>상대 폴드율 &gt; 알파 → 블러프 이득, 상대 폴드율 &lt; 알파 → 손해</strong>.</p>
+<hr />
+<h2>"그럼 상대가 몇 % 폴드하는지는 어떻게 알아요?"</h2>
+<p>좋은 질문이에요. 정확히는 알 수 없어요. 그래서 알파는 <strong>질문을 바꿔 주는 도구</strong>예요. "블러프해도 될까?" 대신 <strong>"이 상대가 이 벳에 3번 중 1번 이상 접을까?"</strong> 를 묻게 되죠. 상대가 얼마나 지켜야 하는지(MDF)는 A02에서 배워요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>알파 = <strong>벳 ÷ (팟 + 벳)</strong></li>
+<li>먼저 외울 두 개: <strong>하프팟 33.3%, 팟벳 50%</strong></li>
+<li>블러프 전에 <strong>"상대가 알파보다 자주 접을까?"</strong> 를 묻기</li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>학습툴에는 알파를 직접 넣는 칸이 없어요. 홀덤학습 <strong>팟 오즈</strong> 퀴즈 <strong>Lv.5(블러프 본전)</strong>로 같은 계산을 연습해 보세요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 팟 20BB에 15BB 블러프. 상대가 몇 % 폴드해야 본전일까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p>알파 = 15 ÷ (20 + 15) = 15 ÷ 35 = <strong>42.9%</strong>.</p>
+</details>
+<p><strong>문제 2.</strong> 리버 팟 20BB. 상대는 이 상황에서 약 30% 폴드하는 사람이라고 봐요. 블러프를 <strong>5BB</strong>로 할까요, <strong>10BB</strong>로 할까요?</p>
+<details>
+<summary>정답 보기</summary>
+<ul>
+<li>5BB: 알파 = 5 ÷ (20 + 5) = <strong>20%</strong> &lt; 30% → 이득. EV = 0.3 × 20 − 0.7 × 5 = 6 − 3.5 = <strong>+2.5BB</strong></li>
+<li>10BB: 알파 = 10 ÷ (20 + 10) = <strong>약 33.33%</strong> &gt; 30% → 손해. EV = 0.3 × 20 − 0.7 × 10 = 6 − 7 = <strong>−1BB</strong></li>
+</ul>
+<p>같은 상대라도 <strong>벳이 작을수록 덜 접어도</strong> 블러프가 이득이에요(상대가 벳 크기와 상관없이 30% 접는다고 볼 때).</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 블러프는 콜을 받으면 항상 진다고 가정</small></p>
+</article>
+<nav class="nav"><a class="prev" href="063_I30.html"><div class="l">← 이전 글</div><div class="t">중급 마무리 시험: 상급으로 올라갈 준비가 됐을까?</div></a><a class="next" href="065_A02.html"><div class="l">다음 글 →</div><div class="t">MDF: 상대 블러프를 막으려면 우리는 얼마나 지켜야 할까?</div></a></nav></main>
+</body>
+</html>

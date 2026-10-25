@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>벳 크기가 바뀌면 필요한 폴드율도 바뀐다: 큰 벳이 늘 더 좋을까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge a">상급</span><span class="chip">개념</span><span class="n">상급 20번째 글 (전체 122편 중 83번째)</span></div><h1>벳 크기가 바뀌면 필요한 폴드율도 바뀐다: 큰 벳이 늘 더 좋을까?</h1>
+<article>
+<p>안녕하세요. A01에서 알파, A08에서 c-bet 크기별 알파를 봤죠. 그런데 상대에 따라 <strong>벳이 커지면 더 많이 접고, 작으면 덜 접기도</strong> 해요.
+그러면 "많이 접게 만드는 큰 벳"이 늘 좋을까요? 오늘은 <strong>필요 폴드율과 실제 폴드율을 같이 움직여서</strong> 비교해요.</p>
+<p>오늘 목표는 하나예요. <strong>벳 크기마다 "알파"와 "상대 폴드율(가정)"을 같이 놓고 EV로 고르기.</strong></p>
+<hr />
+<h2>1단계. 크기에 따라 알파가 오르는 모양 (팟 10BB)</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>벳</th>
+<th>팟 대비</th>
+<th>알파</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2.5BB</td>
+<td>1/4</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>5BB</td>
+<td>1/2</td>
+<td>약 33.33%</td>
+</tr>
+<tr>
+<td>7.5BB</td>
+<td>3/4</td>
+<td>약 42.86%</td>
+</tr>
+<tr>
+<td>10BB</td>
+<td>팟벳</td>
+<td>50%</td>
+</tr>
+<tr>
+<td>15BB</td>
+<td>1.5배</td>
+<td>60%</td>
+</tr>
+<tr>
+<td>20BB</td>
+<td>2배</td>
+<td>약 66.67%</td>
+</tr>
+</tbody>
+</table></div>
+<p>표 위쪽 네 줄은 벳이 2.5BB씩 늘었는데, 알파가 오르는 폭은 줄마다 <strong>점점 작아져요.</strong> 벳이 두 배가 될 때도 알파는 두 배가 되지 않아요(하프팟 → 팟벳은 33.33% → 50%, 팟벳 → 2배는 50% → 66.67%). 분모에도 벳이 들어 있어서예요.</p>
+<p>비유하면 <strong>높이 올라갈수록 한 칸이 낮아지는 계단</strong>이에요. 벳을 같은 만큼 올려도, 위로 갈수록 알파는 조금씩만 올라가요.</p>
+<h2>2단계. 같은 상대, 세 가지 크기 (가정한 폴드율)</h2>
+<p>맞은 게 없는 핸드로 팟 10BB에 블러프해요. 이 상대가 크기에 따라 이만큼 접는다고 <strong>가정</strong>할게요(연습용 숫자예요).</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>벳</th>
+<th>알파</th>
+<th>상대 폴드율(가정)</th>
+<th>EV</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2.5BB</td>
+<td>20%</td>
+<td>35%</td>
+<td>약 1.88BB</td>
+</tr>
+<tr>
+<td>10BB</td>
+<td>50%</td>
+<td>55%</td>
+<td>1BB</td>
+</tr>
+<tr>
+<td>20BB</td>
+<td>약 66.67%</td>
+<td>70%</td>
+<td>1BB</td>
+</tr>
+</tbody>
+</table></div>
+<p>작은 벳의 EV를 풀어 보면:</p>
+<blockquote>
+<p>EV = 0.35 × 10 − 0.65 × 2.5 = 3.5 − 1.625 = <strong>약 1.88BB</strong></p>
+</blockquote>
+<p>팟벳은 0.55 × 10 − 0.45 × 10 = 5.5 − 4.5 = <strong>1BB</strong>, 2배는 0.7 × 10 − 0.3 × 20 = 7 − 6 = <strong>1BB</strong>.</p>
+<p>큰 벳일수록 상대는 더 많이 접지만, <strong>알파도 같이 올라서</strong> 팟벳·2배 모두 1BB로 작은 벳(약 1.88BB)보다 적게 남아요. 이 상대에게는 작은 벳이 가장 이득이에요.</p>
+<h2>3단계. 크기를 고르는 질문</h2>
+<ol>
+<li>이 크기의 <strong>알파</strong>는 얼마인가</li>
+<li>이 상대는 이 크기에 <strong>몇 % 접을까</strong>(쇼다운에서 본 핸드, 그 상대의 성향으로 가정)</li>
+<li><strong>폴드율 − 알파</strong>가 크고, 그 차이에 걸린 돈이 큰 크기를 고르기</li>
+</ol>
+<p>오늘 가정은 순수 블러프(콜 받으면 진다)예요. 콜을 받아도 에퀴티가 있는 핸드는 계산이 달라져요(A22에서 배워요).</p>
+<hr />
+<h2>"상대 폴드율은 어디서 알아요?"</h2>
+<p>좋은 질문이에요. 정확한 숫자는 알 수 없어요. 그래서 이 블로그는 상대 폴드율을 <strong>"가정"이라고 밝히고</strong> 계산해요. 실전에서는 크기별로 상대가 어떻게 반응했는지 쇼다운으로 확인한 것을 쌓아 두는 게 출발점이에요. 가정 레인지로 폴드율을 콤보로 세는 법은 A09에서 다뤄요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>큰 쪽으로 갈수록 <strong>알파는 천천히</strong> 올라요</li>
+<li>크기는 <strong>폴드율과 알파를 같이</strong> 보고 골라요</li>
+<li>상대 폴드율은 늘 <strong>가정</strong> — 밝히고 계산하기</li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>학습툴에는 알파를 직접 넣는 칸이 없어요. 홀덤학습 <strong>팟 오즈</strong> 퀴즈 <strong>Lv.5(블러프 본전)</strong>로 같은 계산을 연습해 보세요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 팟 8BB. 이 상대는 어떤 크기에도 <strong>40%</strong> 접는다고 봐요. 블러프가 딱 본전이 되는 벳 크기는?</p>
+<details>
+<summary>정답 보기</summary>
+<p>알파 = 벳 ÷ (8 + 벳) = 40%가 되는 벳은 <strong>약 5.33BB</strong>(팟의 3분의 2): 5.33 ÷ (8 + 5.33) = 40%.
+이보다 작게 걸면 이득, 크게 걸면 손해예요.</p>
+</details>
+<p><strong>문제 2.</strong> 팟 12BB. 이 상대는 <strong>4BB 벳에 30%</strong>, <strong>9BB 벳에 50%</strong> 접는다고 가정해요. 어느 쪽이 이득일까요?</p>
+<details>
+<summary>정답 보기</summary>
+<ul>
+<li>4BB: 알파 <strong>25%</strong>, EV = 0.3 × 12 − 0.7 × 4 = 3.6 − 2.8 = <strong>+0.8BB</strong></li>
+<li>9BB: 알파 <strong>약 42.86%</strong>, EV = 0.5 × 12 − 0.5 × 9 = 6 − 4.5 = <strong>+1.5BB</strong></li>
+</ul>
+<p>이번 상대는 크기를 키울 때 폴드가 <strong>알파보다 더 빨리</strong> 늘어서, 큰 벳이 나아요. 2단계와 반대죠. 답은 <strong>상대 폴드율이 크기에 따라 얼마나 변하나</strong>에 달려 있어요.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 상대 폴드율은 연습용 가정(실제 빈도 아님) · 순수 블러프로 단순화</small></p>
+</article>
+<nav class="nav"><a class="prev" href="082_A19.html"><div class="l">← 이전 글</div><div class="t">100BB 4벳 올인에 AK, 콜해도 될까?</div></a><a class="next" href="084_A21.html"><div class="l">다음 글 →</div><div class="t">턴 더블배럴: 6♥5♥ 드로우로 한 번 더 걸까, 체크할까?</div></a></nav></main>
+</body>
+</html>

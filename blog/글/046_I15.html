@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>도미네이트: KJ가 AK를 만나면 왜 그렇게 불리할까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge i">중급</span><span class="chip">개념</span><span class="n">중급 15번째 글 (전체 122편 중 46번째)</span></div><h1>도미네이트: KJ가 AK를 만나면 왜 그렇게 불리할까?</h1>
+<article>
+<p>안녕하세요. "K 페어를 맞췄는데 졌다" — 상대가 K와 <strong>더 높은 카드</strong>를 들고 있었던 거죠.
+이렇게 <strong>한 장을 같이 쓰고, 나머지 한 장이 더 낮은</strong> 상황을 <strong>도미네이트</strong>(눌렸다)라고 해요. 오늘은 그게 숫자로 얼마나 불리한지 봐요.</p>
+<p>오늘 목표는 하나예요. <strong>같은 카드를 공유하는 핸드끼리 붙으면 왜 에퀴티가 크게 벌어지는지 이해하기.</strong></p>
+<hr />
+<h2>1단계. 도미네이트란?</h2>
+<p><strong>도미네이트 = 두 핸드가 한 장(예: K)을 같이 갖고 있고, 다른 한 장에서 한쪽이 더 높은 상황</strong>이에요. 예를 들어 KJ vs AK에서 K는 같고, J &lt; A예요.</p>
+<p>비유하면 <strong>같은 무기를 들고 싸우는데 상대의 보조 무기가 더 센 것</strong>이에요. 우리가 K를 맞추면 상대도 K를 맞춰서, 결국 남은 카드(키커: 같은 페어끼리 붙을 때 승부를 가르는 나머지 카드) 싸움에서 져요.</p>
+<h2>2단계. 숫자로 보기 (프리플랍, 몬테카를로)</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Hero</th>
+<th>상대</th>
+<th>Hero 에퀴티</th>
+<th>관계</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>K♠J♦</td>
+<td>A♥K♣</td>
+<td>약 26.27%</td>
+<td>K 공유, Hero 키커가 낮음</td>
+</tr>
+<tr>
+<td>K♠J♦</td>
+<td>K♥Q♣</td>
+<td>약 26.51%</td>
+<td>K 공유, Hero 키커가 낮음</td>
+</tr>
+<tr>
+<td>K♠J♦</td>
+<td>A♥Q♣</td>
+<td>약 37.62%</td>
+<td>공유 카드 없음</td>
+</tr>
+<tr>
+<td>K♠J♦</td>
+<td>9♥9♣</td>
+<td>약 44.08%</td>
+<td>페어 vs 높은 카드 두 장</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>공유 카드가 있는 두 줄(약 26%)</strong> 이 공유 없는 AQ 상대(약 37.62%)보다 훨씬 나빠요. 같은 "더 높은 카드에 진다"여도, 카드를 공유하면 <strong>이길 길이 줄어들어서</strong>예요.</p>
+<h2>3단계. 왜 이길 길이 줄어들까?</h2>
+<p>KJ vs AQ라면 우리는 <strong>K나 J 어느 쪽을 맞춰도</strong> 상대 A·Q를 이길 수 있어요(상대가 못 맞췄을 때).
+KJ vs AK라면 우리가 <strong>K를 맞추면 상대도 K를 맞춰요.</strong> 그러면 키커 싸움(J vs A)에서 져요. 우리가 이기려면 주로 <strong>J를 맞춰야</strong> 해요. 길이 하나 사라진 거예요.</p>
+<h2>4단계. 실전에서 쓰는 법</h2>
+<ul>
+<li>상대가 <strong>강하게 레이즈하는 레인지</strong>에 AK·AQ·KQ처럼 높은 카드가 많이 들어 있다고 본다면, 이때 KJ·QJ·AT 같은 핸드는 <strong>자주 도미네이트</strong>돼요</li>
+<li>그래서 상대가 강하게 나올수록 이런 핸드는 <strong>"좋아 보여도 조심"</strong> 해야 해요</li>
+<li>반대로 AA·AK처럼 <strong>도미네이트하는 쪽</strong>의 핸드는 상대 레인지에 <strong>눌리는 핸드(KJ·AT 같은)가 많을수록</strong> 유리해져요</li>
+</ul>
+<hr />
+<h2>"그럼 AT 같은 핸드는 언제나 나쁜 거예요?"</h2>
+<p>좋은 질문이에요. 아니에요. 상대가 <strong>넓은 레인지</strong>(약한 A, 상관없는 카드가 많은)라면 AT는 좋은 핸드예요. 문제는 상대가 <strong>AK·AQ처럼 좁고 강한 레인지</strong>일 때예요. 결국 "내 핸드가 좋은가"가 아니라 <strong>"이 상대의 레인지에 비해 좋은가"</strong> 로 생각해야 해요(핸드 대 레인지는 I06에서 배워요).</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>도미네이트 = <strong>한 장 공유 + 나머지 한 장이 더 낮음</strong></li>
+<li>공유 카드를 맞춰도 <strong>키커 싸움에서 져서</strong> 이길 길이 줄어요</li>
+<li>상대가 강하게 나올수록 <strong>KJ·QJ·AT 같은 핸드는 조심</strong></li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>홀덤학습 <strong>에퀴티 계산기</strong>에 두 핸드를 넣어 확인해 보세요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> A♥T♦ vs A♠K♣. Hero(AT) 에퀴티는 대략 얼마일까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>약 27.04%</strong>(몬테카를로). A를 공유하고 키커가 T &lt; K라서, KJ vs AK처럼 크게 불리해요.</p>
+</details>
+<p><strong>문제 2.</strong> (도미네이트와 비교해 보기) Q♥9♥ vs Q♠9♣ — 숫자가 똑같다면?</p>
+<details>
+<summary>정답 보기</summary>
+<p>Hero(같은 무늬) <strong>약 52.49%</strong>, 상대 <strong>약 47.51%</strong>. 대부분 비겨서 팟을 나누고, Hero가 <strong>같은 무늬라 가끔 플러시로 이기는</strong> 만큼만 조금 앞서요.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 (프리플랍 몬테카를로 20,000번)</small></p>
+</article>
+<nav class="nav"><a class="prev" href="045_I14.html"><div class="l">← 이전 글</div><div class="t">수딧 커넥터: 에퀴티는 비슷해도 왜 플레이 가치가 다를까?</div></a><a class="next" href="047_I16.html"><div class="l">다음 글 →</div><div class="t">20BB 올인에 AQ, 레인지로 계산하면 콜일까?</div></a></nav></main>
+</body>
+</html>

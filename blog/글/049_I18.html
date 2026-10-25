@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>폴드 에퀴티: 올인은 왜 두 가지 길로 이길까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge i">중급</span><span class="chip">개념</span><span class="n">중급 18번째 글 (전체 122편 중 49번째)</span></div><h1>폴드 에퀴티: 올인은 왜 두 가지 길로 이길까?</h1>
+<article>
+<p>안녕하세요. I17에서 짧은 스택은 먼저 올인해서 마지막 결정을 상대에게 넘긴다고 했죠. 그리고 콜 받은 판만 보면 손해인 핸드도 올인이 이득일 수 있었어요.
+오늘은 그 이유를 숫자로 나눠 볼게요.</p>
+<p>오늘 목표는 하나예요. <strong>올인의 이득을 "상대가 접을 때 몫"과 "콜 받을 때 몫"으로 나눠 계산하기.</strong></p>
+<hr />
+<h2>1단계. 폴드 에퀴티란?</h2>
+<p><strong>폴드 에퀴티 = 상대가 접어서 생기는 이득</strong>이에요. 카드를 끝까지 깔지 않고 이기는 길이죠. 오늘은 이걸 BB로 세서 <strong>접을 때 몫</strong>이라고 부를게요.
+비유하면 <strong>가위바위보에서 상대가 기권하는 것</strong>이에요. 무엇을 냈든 이겨요.
+올인은 상대가 <strong>접으면</strong> 블라인드를 가져오고, <strong>콜하면</strong> 카드를 끝까지 깔아 에퀴티만큼 가져와요.</p>
+<h2>2단계. 장면과 세 가지 금액</h2>
+<p>I17과 같은 장면이에요. 둘만 남았고 Hero는 SB, 블라인드 SB 0.5BB·BB 1BB, 앤티 없음, 두 사람 모두 <strong>8BB</strong>.
+Hero가 폴드하면 SB 0.5BB를 잃고 스택이 <strong>7.5BB</strong> 남아요. 이 7.5BB를 기준으로 올인 결과를 세요.</p>
+<ul>
+<li>상대가 접으면: 스택 8 + 1 = <strong>9BB</strong> → 폴드보다 <strong>+1.5BB</strong></li>
+<li>콜 받고 이기면: 스택 <strong>16BB</strong> → 16 − 7.5 = <strong>+8.5BB</strong></li>
+<li>콜 받고 지면: 스택 <strong>0BB</strong> → <strong>−7.5BB</strong></li>
+</ul>
+<h2>3단계. 접는 길만으로 본전이 되려면?</h2>
+<p><strong>본전 폴드율 = 콜 받으면 늘 진다고 칠 때, 상대가 접어야 하는 최소 비율</strong>이에요. 비유하면 <strong>작은 돈을 벌려고 큰 돈을 거는 내기</strong>예요. 한 번 지면 잃는 돈이 크니 거의 매번 이겨야 본전이죠.</p>
+<blockquote>
+<p>본전 폴드율 = 7.5(지면 잃는 돈) ÷ (1.5(접으면 버는 돈) + 7.5) = <strong>약 83.3%</strong></p>
+</blockquote>
+<p>여섯 번 중 다섯 번은 접어야 해요. 그런데 뚝섬 <strong>AOF 차트 엔진</strong>(칩 기준, 상대도 최선으로 콜한다고 보는 근사)으로는 8BB에서 상대가 접는 비율이 <strong>약 55.5%</strong>예요. 콜하는 핸드들(<strong>콜 범위</strong>)은 전체의 약 44.5%예요. 그러니 <strong>콜 받는 판에서 잃는 돈이 작아야</strong> 올인이 이득이 돼요.</p>
+<h2>4단계. 한 핸드로 나눠 보기: Q♠5♠</h2>
+<p><img src="../카드/Qs.svg" width="48"> <img src="../카드/5s.svg" width="48"></p>
+<p>엔진 기준 상대 콜 범위를 상대로 Q♠5♠의 에퀴티(비기면 반으로 친 몫)는 <strong>약 39.1%</strong>, 지는 몫은 <strong>약 60.9%</strong>예요. 식에는 반올림 오차를 줄이려고 계산기 값을 소수 다섯 자리로 써요.</p>
+<p><strong>① 접을 때 몫</strong></p>
+<blockquote>
+<p>0.55524(접는 비율) × 1.5(접으면 버는 돈) = <strong>약 +0.83BB</strong></p>
+</blockquote>
+<p><strong>② 콜 받을 때 몫</strong></p>
+<blockquote>
+<p>콜 받은 판 평균 = 0.39056(에퀴티) × 8.5(이기면) − 0.60944(지는 몫) × 7.5(지면) = 3.31976 − 4.5708 = <strong>약 −1.25BB</strong>
+0.44476(콜 받는 비율) × (−1.25101) = <strong>약 −0.56BB</strong></p>
+</blockquote>
+<p><strong>③ 합치기</strong></p>
+<blockquote>
+<p>0.83286 − 0.5564 = <strong>약 +0.28BB</strong> → 올인</p>
+</blockquote>
+<p>콜 받을 때 손해가 <strong>접을 때 몫보다 작아서</strong> 올인이 나아요.</p>
+<hr />
+<h2>"그럼 아무 핸드나 올인하면 되나요?"</h2>
+<p>좋은 질문이에요. 아니에요. 엔진 계산에서는 접을 때 몫이 핸드마다 같아요(엔진이 우리 카드 때문에 상대 핸드가 줄어드는 효과를 세지 않기 때문이에요. 이런 카드 제거는 I07에서 다뤄요). 차이는 콜 받을 때 몫에서 나요. 같은 8BB에서 J♣4♦는 콜 받을 때 몫이 <strong>약 −0.99BB</strong>라 접을 때 몫으로 다 못 덮어요.</p>
+<h2>숫자가 뒤집히는 지점</h2>
+<p>기준은 <strong>콜 받을 때 몫의 손해가 접을 때 몫보다 큰지</strong>예요. 핸드가 약해지면 에퀴티가 내려가 콜 받을 때 손해가 커져요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>금액 세 개(접으면·이기면·지면)는 <strong>폴드했을 때 스택</strong>을 기준으로</li>
+<li>접는 길만으로 본전이 안 되면, <strong>콜 받을 때 손해가 얼마나 작은지</strong> 보기</li>
+<li>같은 장면이면 접을 때 몫은 같고, <strong>핸드 차이는 콜 받을 때</strong>에서 나요</li>
+</ol></section>
+<hr />
+<h2>연습 문제 (같은 자리, 두 사람 스택만 6BB로)</h2>
+<blockquote>
+<p>두 몫은 직접 나눠 보고, 뚝섬 <strong>AOF 차트</strong>에서 <strong>그외 게임들 → 테이블 인원 2명 → 포지션 SB → 내 스택·상대 스택 6BB</strong>로 넣어 그 핸드가 올인 칸인지 확인해 보세요. 화면은 실전 보정으로 조금 좁게 나와요.</p>
+</blockquote>
+<p>6BB에서 엔진 기준 상대는 <strong>약 45.7%</strong> 접어요. 세 금액은 직접 구해 보세요.</p>
+<p><strong>문제 1.</strong> Q♠5♠의 콜 범위 상대 에퀴티는 <strong>약 42.1%</strong>예요. 올인? 폴드?</p>
+<details>
+<summary>정답 보기</summary>
+<p>세 금액: 폴드하면 스택 5.5BB. 접으면 7BB로 7 − 5.5 = <strong>+1.5BB</strong>, 이기면 12BB로 12 − 5.5 = <strong>+6.5BB</strong>, 지면 0으로 <strong>−5.5BB</strong>.
+① 0.45722 × 1.5 = <strong>약 +0.69BB</strong>
+② 콜 받은 판 평균 = 0.42072 × 6.5 − 0.57928 × 5.5 = 2.73468 − 3.18604 = <strong>약 −0.45BB</strong>, 0.54278 × (−0.45142) = <strong>약 −0.25BB</strong>
+③ 0.68583 − 0.24502 = <strong>약 +0.44BB</strong> → <strong>올인</strong></p>
+</details>
+<p><strong>문제 2.</strong> T♣6♦의 콜 범위 상대 에퀴티는 <strong>약 34.8%</strong>예요. 올인? 폴드?</p>
+<details>
+<summary>정답 보기</summary>
+<p>① 접을 때 몫은 똑같이 <strong>약 +0.69BB</strong>
+② 콜 받은 판 평균 = 0.34836 × 6.5 − 0.65164 × 5.5 = 2.26434 − 3.58402 = <strong>약 −1.32BB</strong>, 0.54278 × (−1.31965) = <strong>약 −0.72BB</strong>
+③ 0.68583 − 0.71628 = <strong>약 −0.03BB</strong> → 아주 근소하게 <strong>폴드</strong></p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 뚝섬 AOF 차트 엔진의 올인/폴드 이론값 (헤즈업 SB 대 BB · 앤티 없음 · 칩 기준 · 카드 제거 없음 · 화면의 실전 보정은 넣지 않음) · 올인 결정이라 이번 결정의 최종 결과</small></p>
+</article>
+<nav class="nav"><a class="prev" href="048_I17.html"><div class="l">← 이전 글</div><div class="t">푸시/폴드 기초: 짧은 스택은 왜 올인 아니면 폴드로 생각할까?</div></a><a class="next" href="050_I19.html"><div class="l">다음 글 →</div><div class="t">SB 8BB, BB와 둘만 남았을 때: Q6o로 올인해도 될까?</div></a></nav></main>
+</body>
+</html>

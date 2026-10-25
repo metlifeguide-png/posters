@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>턴 더블배럴: 6♥5♥ 드로우로 한 번 더 걸까, 체크할까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge a">상급</span><span class="chip">스팟</span><span class="n">상급 21번째 글 (전체 122편 중 84번째)</span></div><h1>턴 더블배럴: 6♥5♥ 드로우로 한 번 더 걸까, 체크할까?</h1>
+<article>
+<p>안녕하세요. A09에서 플랍 c-bet이 본전이 되는 폴드율을 구했고, I18에서 올인이 "접게 해서 한 번, 끝까지 가서 한 번" 이긴다고 배웠죠.
+오늘은 둘을 합쳐 <strong>턴에서 한 번 더 거는 것(더블배럴)</strong>을 판단해요.</p>
+<p>오늘 목표는 하나예요. <strong>콜 받을 때 에퀴티까지 넣은 본전 폴드율을 구하고, 체크와 비교하기.</strong></p>
+<hr />
+<h2>오늘의 핸드</h2>
+<p><strong>Hero (BTN · 100BB)</strong> · 상대 (BB)</p>
+<p><img src="../카드/6h.svg" width="48"> <img src="../카드/5h.svg" width="48"></p>
+<h3>프리플랍</h3>
+<p>Hero(BTN) <strong>2.5BB 오픈</strong> → SB 폴드 → 상대(BB) 콜</p>
+<h3>플랍 · 팟 5.5BB</h3>
+<p><img src="../카드/Ks.svg" width="48"> <img src="../카드/7d.svg" width="48"> <img src="../카드/2c.svg" width="48"></p>
+<p>상대 체크 → Hero <strong>2BB c-bet</strong> → 상대 콜. 팟 5.5 + 2 + 2 = <strong>9.5BB</strong></p>
+<h3>턴 · 팟 9.5BB</h3>
+<p><img src="../카드/Ks.svg" width="48"> <img src="../카드/7d.svg" width="48"> <img src="../카드/2c.svg" width="48"> <img src="../카드/4h.svg" width="48"></p>
+<p>4♥가 와서 Hero는 <strong>양방 스트레이트 드로우</strong>(3 또는 8이 오면 스트레이트)가 됐어요. 상대 체크 → <strong>Hero는 6.5BB를 걸까?</strong></p>
+<hr />
+<p class="concl"><strong>결론부터 말할게요. 오늘 가정한 상대라면 6.5BB 배럴이 체크보다 낫습니다.</strong> 상대 폴드율(약 55.4%)이 <strong>체크 기준 본전 폴드율</strong>(약 36%)보다 높아요.</p>
+<blockquote>
+<p>남은 베팅이 있어 실제 결과는 달라질 수 있어요. 그래서 오늘은 금액(EV) 대신 <strong>상대 폴드율 vs 체크 기준 본전 폴드율</strong>로만 판정해요. 아래 BB 금액은 계산용이에요(최종 손익 아님).</p>
+</blockquote>
+<h2>1단계. 순수 블러프라면 (알파)</h2>
+<p><strong>알파 = 콜 받으면 늘 진다고 칠 때, 상대가 접어야 하는 최소 비율</strong>이에요(A01).</p>
+<blockquote>
+<p>알파 = 6.5(벳) ÷ (9.5(지금 팟) + 6.5) = <strong>약 40.6%</strong></p>
+</blockquote>
+<h2>2단계. 상대 턴 레인지 (가정 레인지 기준)</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>상대 대응</th>
+<th>핸드</th>
+<th>콤보</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>콜</td>
+<td>K2s-KQs, K9o-KJo, A7s, A7o, A4s, A2s, A4o, A2o, 97s, 87s, 76s, 75s, 54s, 53s, 64s, 99, 88, 77, 44, 22</td>
+<td>131</td>
+</tr>
+<tr>
+<td>폴드</td>
+<td>33, 55, 66, A3s, A5s, A6s, A8s, A9s, A3o, A5o, A6o, A8o-ATo, QTs, JTs, T9s, 98s, 86s, Q9o, J9o, T9o, 98o</td>
+<td>163</td>
+</tr>
+</tbody>
+</table></div>
+<p>콜은 주로 페어 이상과 양방 드로우, 폴드는 작은 페어·하이 카드·거트샷이에요. 프리플랍 3벳 핸드(AK·KQo 등)는 빼고, 상대는 레이즈 없이 콜·폴드만 한다고 가정해요.</p>
+<blockquote>
+<p>💡 빨리 세는 팁: Hero의 6♥·5♥ 때문에 55·66은 콤보가 <strong>절반</strong></p>
+</blockquote>
+<p>상대 폴드율 = 163 ÷ 294 = <strong>약 55.4%</strong></p>
+<h2>3단계. 콜 받을 때 에퀴티 넣기 (포기 기준: 벳 안 하고 팟을 내줄 때와 비교)</h2>
+<p>콜 받으면 팟은 9.5 + 6.5 + 6.5 = <strong>22.5BB</strong>. 콜 레인지 상대 Hero 에퀴티는 <strong>약 22.1%</strong>(리버 한 장을 전부 셈)예요. 콜 받으면 리버는 체크로 간다고 단순화할게요.</p>
+<ul>
+<li>콜 받을 때 팟 몫 = 0.22137 × 22.5 = <strong>약 4.98BB</strong> → 낸 6.5BB보다 <strong>약 1.52BB</strong> 모자라요</li>
+</ul>
+<p>상대가 접으면 팟 9.5BB를 얻고, 콜하면 1.52BB를 잃어요. 두 몫이 같아지는 폴드율이 본전이에요.</p>
+<blockquote>
+<p>포기 기준 본전 폴드율 = 1.51908(콜 받을 때 잃는 돈) ÷ (9.5(지금 팟) + 1.51908) = <strong>약 13.8%</strong></p>
+</blockquote>
+<h2>4단계. 체크와 비교하기 (체크 기준 본전 폴드율)</h2>
+<p>그런데 Hero가 <strong>체크해도</strong> 리버를 공짜로 봐요. 체크하면 리버까지 체크로 간다고 볼 때, 상대 전체 레인지 상대 에퀴티 <strong>약 25.7%</strong>만큼 팟을 가져가요(9.5BB 중 <strong>약 2.45BB</strong>). 블러프는 0BB가 아니라 이 체크 몫과 비교해야 해요.</p>
+<blockquote>
+<p>체크 기준 본전 폴드율 = (2.4455(체크 몫) + 1.51908(콜 받을 때 잃는 돈)) ÷ (9.5 + 1.51908) = <strong>약 36%</strong></p>
+</blockquote>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>기준</th>
+<th>폴드율</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>알파(콜 받으면 늘 짐)</td>
+<td>약 40.6%</td>
+</tr>
+<tr>
+<td>포기 기준 본전 폴드율</td>
+<td>약 13.8%</td>
+</tr>
+<tr>
+<td>체크 기준 본전 폴드율</td>
+<td>약 36%</td>
+</tr>
+<tr>
+<td>오늘 상대 폴드율</td>
+<td>약 55.4%</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2>"체크해도 리버를 보는데, 왜 굳이 걸어요?"</h2>
+<p>좋은 질문이에요. 체크하면 맞을 때만 이겨요. 걸면 <strong>맞지 않아도 상대가 접는 판</strong>이 생겨요. 접는 판의 몫이 콜 받을 때 손해와 체크 몫을 메울 만큼 커야 걸 이유가 있어요.</p>
+<h2>숫자가 뒤집히는 지점</h2>
+<p>기준은 <strong>상대 폴드율이 체크 기준 본전 폴드율보다 높은지</strong>예요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>드로우 배럴은 <strong>알파 → 콜 받을 때 에퀴티 → 체크와 비교</strong> 순서로</li>
+<li>비교 기준은 <strong>체크했을 때 몫</strong></li>
+<li>리버 베팅을 뺀 단순화라, 경계에 가까우면 <strong>상대 성향</strong>으로 정하기</li>
+</ol></section>
+<hr />
+<h2>연습 문제 (같은 보드, 같은 Hero 핸드)</h2>
+<blockquote>
+<p>학습툴 에퀴티 계산기에는 <strong>레인지 입력이 없어서</strong>, 내 카드·보드와 상대 핸드 하나를 넣는 <strong>핸드 대 핸드</strong>로만 확인할 수 있어요. 알파는 홀덤학습 <strong>팟 오즈</strong> 퀴즈 <strong>Lv.5(블러프 본전)</strong>로 연습하고, 본전 폴드율은 위 공식으로 직접 계산해요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 이 상대는 작은 페어·A 하이·Q·J 하이까지 거의 다 콜해서, 접는 건 <strong>81콤보</strong>(294콤보 중)뿐이에요. 콜 레인지 상대 에퀴티는 <strong>약 24.9%</strong>예요. 배럴? 체크?</p>
+<details>
+<summary>정답 보기</summary>
+<p>상대 폴드율 = 81 ÷ 294 = <strong>약 27.6%</strong>. 콜 받을 때 팟 몫 = 0.24872 × 22.5 = <strong>약 5.6BB</strong>, 잃는 돈 <strong>약 0.9BB</strong>.
+체크 기준 본전 폴드율 = (2.4455 + 0.90381) ÷ (9.5 + 0.90381) = <strong>약 32.2%</strong> &gt; 27.6% → <strong>체크</strong>가 나아요. 포기 기준 본전 폴드율은 <strong>약 8.7%</strong>라 그것만 보면 배럴이 이득처럼 보이지만, 체크와 비교하면 아니에요.</p>
+</details>
+<p><strong>문제 2.</strong> 처음 상대 그대로, 벳만 <strong>9.5BB(팟벳)</strong>로 키워요. 벳이 커져도 상대가 <strong>같은 핸드로 접는다고 가정</strong>할게요. 배럴? 체크?</p>
+<details>
+<summary>정답 보기</summary>
+<p>콜 받으면 팟 28.5BB, 팟 몫 = 0.22137 × 28.5 = <strong>약 6.31BB</strong>, 잃는 돈 <strong>약 3.19BB</strong>.
+체크 기준 본전 폴드율 = (2.4455 + 3.19084) ÷ (9.5 + 3.19084) = <strong>약 44.4%</strong> &lt; 55.4% → <strong>배럴</strong>. 벳이 커지면 기준 폴드율이 올라가고, 실제로는 상대 폴드율도 다시 세야 해요.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 (콤보는 하나씩 셈, 리버 한 장은 전부 셈) · 가정 레인지 기준 (솔버 결과 아님) · 콜 받으면·체크하면 리버까지 체크로 단순화 · 이번 한 번의 결정 기준</small></p>
+</article>
+<nav class="nav"><a class="prev" href="083_A20.html"><div class="l">← 이전 글</div><div class="t">벳 크기가 바뀌면 필요한 폴드율도 바뀐다: 큰 벳이 늘 더 좋을까?</div></a><a class="next" href="085_A22.html"><div class="l">다음 글 →</div><div class="t">세미블러프의 EV: 드로우로 올인하면 왜 두 번 이길까?</div></a></nav></main>
+</body>
+</html>

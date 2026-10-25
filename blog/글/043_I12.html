@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>헤즈업 SB 오픈 레인지 읽기: 왜 모든 핸드로 칠까? (헤즈업 기준) · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge i">중급</span><span class="chip">개념</span><span class="n">중급 12번째 글 (전체 122편 중 43번째)</span></div><h1>헤즈업 SB 오픈 레인지 읽기: 왜 모든 핸드로 칠까? (헤즈업 기준)</h1>
+<article>
+<p>안녕하세요. I10에서 레인지를 %와 콤보로 세는 법을 배웠죠. 오늘은 그걸로 <strong>헤즈업(둘만 하는 게임) SB의 첫 행동 표</strong>를 읽어 볼게요.
+오늘 숫자는 <strong>헤즈업 조건에서만</strong> 써요.</p>
+<p>오늘 목표는 하나예요. <strong>행동 빈도 표를 읽고, 핸드마다 왜 그 행동이 나오는지 EV로 설명하기.</strong></p>
+<hr />
+<h2>1단계. 오늘의 조건</h2>
+<ul>
+<li>둘만 남은 게임. <strong>SB가 버튼</strong>이라 프리플랍은 먼저, 플랍부터는 나중에 행동해요</li>
+<li>블라인드 SB <strong>0.5BB</strong>, BB <strong>1BB</strong>, BB가 <strong>앤티 1BB</strong>를 함께 내는 <strong>빅앤티</strong>. 시작 팟은 <strong>2.5BB</strong></li>
+<li>레이즈 크기: 100BB면 <strong>2.5BB</strong>, 25BB면 <strong>2BB</strong></li>
+</ul>
+<p>숫자는 뚝섬 <strong>헤즈업 프리플랍 근사 모델</strong>에서 가져왔어요. 프리플랍은 두 사람이 서로 최선으로 대응하도록 풀고, <strong>플랍 이후는 "포지션 있는 쪽이 에퀴티를 조금 더 가져간다"는 계수로 단순화</strong>한 모델이에요. 실제 솔버 결과가 아니라 근사예요.</p>
+<h2>2단계. SB가 접지 않는 이유</h2>
+<p>SB는 이미 0.5BB를 냈어요. 콜(BB 금액까지 맞추는 것, 헤즈업 프리플랍에선 <strong>림프</strong>라고 해요)하려면 0.5BB만 더 내면 돼요.</p>
+<blockquote>
+<p>필요 에퀴티 = 0.5(더 낼 돈) ÷ (2.5(지금 팟) + 0.5(내 콜)) = 0.5 ÷ 3 = <strong>약 16.7%</strong></p>
+</blockquote>
+<p>비유하면 <strong>입장료가 아주 싼 놀이기구</strong>예요. 빅앤티 때문에 팟이 커져서 입장료가 상대적으로 싸져요.
+단, 림프로 끝나는 게 아니에요. BB가 레이즈할 수 있고, 플랍 이후에 에퀴티를 다 가져가지 못할 수도 있어요. 그래서 실제 손익은 이 16.7%가 아니라 아래 표의 <strong>EV</strong>로 판단해요.</p>
+<h2>3단계. 100BB 표 읽기</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>행동</th>
+<th>전체 빈도</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>폴드</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>림프</td>
+<td>약 33.0%</td>
+</tr>
+<tr>
+<td>레이즈(2.5BB)</td>
+<td>약 67.0%</td>
+</tr>
+</tbody>
+</table></div>
+<p>이 모델에서는 100BB SB가 <strong>한 핸드도 접지 않아요.</strong> 행동은 림프와 레이즈로 나뉘어요.</p>
+<h2>4단계. 핸드 세 개로 따라가기</h2>
+<p>EV는 <strong>핸드를 시작하기 전 스택 대비</strong> 평균 손익이에요. 그래서 폴드는 낸 SB만큼 <strong>−0.5BB</strong>예요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>핸드</th>
+<th>폴드</th>
+<th>림프</th>
+<th>레이즈</th>
+<th>모델의 선택</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>K♣9♦</td>
+<td>−0.5BB</td>
+<td>+0.89BB</td>
+<td>+1.21BB</td>
+<td>레이즈 100%</td>
+</tr>
+<tr>
+<td>7♠2♦</td>
+<td>−0.5BB</td>
+<td>−0.45BB</td>
+<td>−0.68BB</td>
+<td>림프 100%</td>
+</tr>
+<tr>
+<td>5♠5♥</td>
+<td>−0.5BB</td>
+<td>+1.71BB</td>
+<td>+1.71BB</td>
+<td>림프 52% · 레이즈 48%</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>K♣9♦</strong>: 레이즈가 가장 커요. 강한 핸드는 팟을 키워요</li>
+<li><strong>7♠2♦</strong>: 셋 다 손해지만 <strong>림프가 가장 덜 잃어요</strong>(−0.45BB &gt; −0.5BB). 접는 것보다 싸게 플랍을 보는 게 나아요</li>
+<li><strong>5♠5♥</strong>: 림프와 레이즈의 EV가 (반올림해서) 거의 같아요. 이럴 때 모델은 두 행동을 <strong>섞어요</strong>(같은 핸드로 두 행동을 나눠서 함). 이 핸드만 보면 어느 쪽을 해도 손해가 없고, 나누는 비율은 SB 레인지 전체가 BB에게 읽히지 않도록 모델이 정한 값이에요</li>
+</ul>
+<hr />
+<h2>"7♠2♦도 친다니, 6명 테이블에서도 그래요?"</h2>
+<p>좋은 질문이에요. 그대로 옮기면 안 돼요. 6명 테이블에서 모두 접어 SB와 BB만 남아도, 그때 SB는 <strong>플랍부터 먼저 행동</strong>해요(포지션 없음). 헤즈업 SB는 버튼이라 플랍부터 나중에 행동하죠. 그래서 오늘 표는 <strong>헤즈업·빅앤티 조건에서만</strong> 써요.</p>
+<h2>숫자가 뒤집히는 지점</h2>
+<p>기준은 <strong>폴드 −0.5BB보다 나은 행동이 있는지</strong>, 그리고 <strong>림프와 레이즈 중 어느 EV가 큰지</strong>예요. 스택 깊이가 바뀌면 이 EV들이 함께 바뀌어요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>표는 <strong>행동마다 빈도</strong>, 핸드마다 <strong>EV</strong>로 읽기</li>
+<li>폴드는 −0.5BB — 이보다 나은 행동이 있으면 접지 않아요</li>
+<li>우리가 쓰는 숫자는 <strong>헤즈업 조건에서만</strong> — 섞는 비율은 모델이 정한 값으로 참고</li>
+</ol></section>
+<hr />
+<h2>연습 문제 (같은 조건, 스택만 25BB로)</h2>
+<blockquote>
+<p>뚝섬 <strong>헤즈업 공부</strong> 화면에서 같은 조건의 표를 볼 수 있어요. 아래 문제는 주어진 EV로 직접 골라 보세요.</p>
+</blockquote>
+<p>25BB에서는 전체 빈도가 림프 <strong>약 38.7%</strong>, 레이즈(2BB) <strong>약 58.4%</strong>, 올인 <strong>약 2.8%</strong>, 폴드 <strong>0%</strong>예요.</p>
+<p><strong>문제 1.</strong> J♠3♦의 EV는 폴드 −0.5BB, 림프 <strong>−0.11BB</strong>, 레이즈 <strong>−0.17BB</strong>, 올인 <strong>−0.12BB</strong>예요. 어떤 행동을 할까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>림프</strong>(모델 기준 100%). 넷 다 손해지만 림프가 가장 덜 잃어요. 올인(−0.12BB)과 아주 가깝지만 모델은 섞지 않았어요. 섞기는 두 행동이 정확히 본전일 때 생기고, 표의 EV는 반올림 값이라 "가깝다"만으로는 섞는다고 볼 수 없어요.</p>
+</details>
+<p><strong>문제 2.</strong> Q♥7♥의 EV는 폴드 −0.5BB, 림프 <strong>+0.76BB</strong>, 레이즈 <strong>+0.93BB</strong>, 올인 <strong>+0.73BB</strong>예요. 어떤 행동을 할까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>레이즈</strong>(모델 기준 100%). 림프·올인도 이득이지만 레이즈가 가장 커요. 25BB에서는 올인이라는 선택지가 생기지만, Q♥7♥는 2BB 레이즈가 더 나아요.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 헤즈업·빅앤티 근사 모델 기준(뚝섬 hu_preflop, 플랍 이후는 에퀴티 실현 계수로 단순화 · 솔버 결과 아님 · 6맥스 아님) · EV는 핸드 시작 대비</small></p>
+</article>
+<nav class="nav"><a class="prev" href="042_I11.html"><div class="l">← 이전 글</div><div class="t">포지션별로 오픈 레인지가 넓어지는 이유: 뒤에 몇 명이 남았는지가 왜 중요할까?</div></a><a class="next" href="044_I13.html"><div class="l">다음 글 →</div><div class="t">버튼 오픈에 BB 디펜스: K7로 콜해도 될 만큼 팟오즈가 좋을까?</div></a></nav></main>
+</body>
+</html>

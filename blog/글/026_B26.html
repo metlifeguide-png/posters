@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>&quot;한 번만 더 보자&quot;의 비용: 작은 손해 콜이 쌓이면 얼마가 될까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge b">초급</span><span class="chip">교정</span><span class="n">초급 26번째 글 (전체 122편 중 26번째)</span></div><h1>&quot;한 번만 더 보자&quot;의 비용: 작은 손해 콜이 쌓이면 얼마가 될까?</h1>
+<article>
+<p>안녕하세요. 오늘은 계산보다 <strong>습관</strong> 이야기예요. 그래도 숫자로 확인해 볼게요.
+"이번만 한 번 보자"며 콜하는 버릇, 한 번은 작아 보여도 쌓이면 얼마나 커지는지요.</p>
+<p>오늘 목표는 하나예요. <strong>손해 콜 한 번의 EV에 횟수를 곱해서 "습관의 가격" 보기.</strong></p>
+<hr />
+<h2>1단계. 왜 "한 번만 더"가 생길까?</h2>
+<p>이런 생각, 해 본 적 있으시죠.</p>
+<ul>
+<li>"여기까지 왔는데 아깝잖아"</li>
+<li>"저번에 이거 콜해서 이겼었는데"</li>
+</ul>
+<p>문제는 이 생각들이 <strong>이번 판의 승률과 상관이 없다</strong>는 거예요. 이미 낸 칩은 팟에 들어가서 우리 것이 아니고, 저번에 이긴 판은 이번 판의 승률을 바꾸지 않아요.
+("혹시 블러프면?"은 다른 이야기예요. 상대가 블러프할 가능성은 <strong>우리 승률 안에 이미 넣어서</strong> 따지는 거예요.)</p>
+<h2>2단계. 한 번의 손해는 작아 보여요</h2>
+<p>팟 10BB에 상대가 10BB(팟만큼 거는 <strong>팟벳</strong>). 우리 승률은 25%라고 해 볼게요.</p>
+<blockquote>
+<p>필요 에퀴티 = 10 ÷ (10 + 10 + 10) = <strong>33.3%</strong></p>
+</blockquote>
+<p>25%로는 모자라죠. 그래도 "한 번만" 콜하면?</p>
+<blockquote>
+<p>콜 평균 손익 = 0.25 × 20(이기면 버는 돈: 원래 팟 + 상대 벳) − 0.75 × 10(지면 잃는 우리 콜) = 5 − 7.5 = <strong>−2.5BB</strong></p>
+</blockquote>
+<p>한 번에 2.5BB. 별것 아닌 것 같죠.</p>
+<h2>3단계. 쌓이면 이렇게 돼요</h2>
+<p>이런 상황이 한 달에 20번 온다고 해 볼게요(아래 누적은 <strong>평균</strong>으로 본 숫자예요).</p>
+<blockquote>
+<p>20번 누적 = −2.5 × 20 = <strong>−50BB</strong></p>
+</blockquote>
+<p>평균으로 이만큼 줄어요. <strong>한 번은 작아도, 습관이면 크다</strong>는 게 이 뜻이에요.</p>
+<p>다른 예시도 하나 볼게요. 팟 20BB에 상대가 10BB(팟의 절반을 거는 <strong>하프팟</strong>), 우리 승률 20%.</p>
+<blockquote>
+<p>필요 에퀴티 = 10 ÷ (20 + 10 + 10) = <strong>25%</strong>
+콜 평균 손익 = 0.2 × 30 − 0.8 × 10 = 6 − 8 = <strong>−2BB</strong>
+20번 누적 = −2 × 20 = <strong>−40BB</strong></p>
+</blockquote>
+<p>하프팟처럼 작아 보이는 벳도, 승률이 모자라면 똑같이 쌓여요.</p>
+<h2>4단계. 습관을 끊는 법</h2>
+<p>콜하기 전에 <strong>딱 두 가지만</strong> 스스로 물어보세요.</p>
+<ol>
+<li>필요 에퀴티는 얼마? (벳 크기별 표는 B15에서 다뤄요)</li>
+<li>이 상대에게 우리 승률이 <strong>정말</strong> 그보다 높은가?</li>
+</ol>
+<p>두 번째 질문에 "음… 아마도?"라는 답이 나오면, 계산이 아니라 "아깝다"는 마음이 대답하고 있을 가능성이 커요.</p>
+<hr />
+<h2>"그래도 콜했다가 이기면 기분 좋잖아요?"</h2>
+<p>좋은 질문이에요. 맞아요, 이기면 기분 좋죠. 2단계 예시도 4번 중 1번은 이겨요.
+하지만 포커는 <strong>한 판이 아니라 수백 판의 평균</strong>으로 결과가 나와요(B24에서 배운 EV). 기분 좋은 1번 뒤에 기억 안 나는 3번이 있어요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>이미 낸 칩은 <strong>우리 것이 아니에요.</strong> "아깝다"는 계산에 넣지 않기</li>
+<li>손해 콜 한 번은 작아도 <strong>횟수를 곱하면 커요</strong></li>
+<li>콜 전에 두 질문: <strong>필요 에퀴티는? 우리 승률이 정말 더 높나?</strong></li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>홀덤학습 <strong>에퀴티 계산기</strong>에서 내 카드를 고른 뒤 <strong>[콜 수익]</strong> 칸에 <strong>지금 팟(상대 벳 포함)</strong>과 <strong>콜 금액</strong>을 넣으면 필요 에퀴티가 나와요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 팟 12BB에 상대가 6BB 벳, 우리 승률 20%. 이 콜을 10번 하면 누적 손익은?</p>
+<details>
+<summary>정답 보기</summary>
+<p>필요 에퀴티 = 6 ÷ (12 + 6 + 6) = <strong>25%</strong> → 20%로는 모자라요.
+콜 평균 손익 = 0.2 × 18 − 0.8 × 6 = 3.6 − 4.8 = <strong>−1.2BB</strong>
+10번 누적 = −1.2 × 10 = <strong>−12BB</strong>.</p>
+</details>
+<p><strong>문제 2.</strong> 팟 12BB에 상대가 4BB 벳, 우리 승률 25%. 이건 손해 콜일까요? 10번 하면?</p>
+<details>
+<summary>정답 보기</summary>
+<p>필요 에퀴티 = 4 ÷ (12 + 4 + 4) = <strong>20%</strong> → 25%가 더 커서 <strong>이득 콜</strong>이에요.
+콜 평균 손익 = 0.25 × 16 − 0.75 × 4 = 4 − 3 = <strong>+1BB</strong>, 10번이면 <strong>+10BB</strong>.
+"한 번 더 보는" 콜이 늘 나쁜 건 아니에요. <strong>숫자가 맞으면 콜</strong>이에요.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 승률은 예시로 정한 값</small></p>
+</article>
+<nav class="nav"><a class="prev" href="025_B25.html"><div class="l">← 이전 글</div><div class="t">EV로 보는 리버 콜: 이길 때 얻는 것과 질 때 잃는 것, 어느 쪽이 클까?</div></a><a class="next" href="027_B27.html"><div class="l">다음 글 →</div><div class="t">테이블 매너: 슬로우롤, 앵글슛, 차례 지키기는 왜 중요할까?</div></a></nav></main>
+</body>
+</html>

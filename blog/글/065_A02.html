@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MDF: 상대 블러프를 막으려면 우리는 얼마나 지켜야 할까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge a">상급</span><span class="chip">개념</span><span class="n">상급 2번째 글 (전체 122편 중 65번째)</span></div><h1>MDF: 상대 블러프를 막으려면 우리는 얼마나 지켜야 할까?</h1>
+<article>
+<p>안녕하세요. A01에서 <strong>알파 = 블러프가 본전이 되려면 상대가 폴드해야 하는 비율</strong>을 배웠죠.
+오늘은 다시 <strong>벳을 맞는 쪽</strong>으로 돌아와요. 상대가 아무 두 장으로나 블러프해서 이득을 보지 못하게 하려면, 우리는 <strong>레인지의 몇 %를 지켜야</strong> 할까요?</p>
+<p>오늘 목표는 하나예요. <strong>벳 크기를 보면 "최소 몇 %는 지켜야 하는지"(MDF) 바로 말하기.</strong></p>
+<hr />
+<h2>1단계. MDF란?</h2>
+<p><strong>MDF(최소 방어 빈도) = 상대 블러프가 이득을 못 보게 하려면 우리 레인지 중 콜(또는 레이즈)로 지켜야 하는 최소 비율</strong>이에요.
+여기서 <strong>레인지 = 이 상황에서 우리가 들고 있을 수 있는 핸드 전체</strong>예요. 핸드 한 개가 아니라 <strong>전체 중 몇 %</strong> 를 묻는 숫자예요.</p>
+<p>비유하면 <strong>경비원</strong>이에요. 문을 너무 자주 비우면(폴드) 도둑(블러프)이 아무 때나 들어와요. 최소한 이만큼은 지키고 있어야 도둑질이 손해가 되죠.</p>
+<h2>2단계. 공식</h2>
+<p>A01에서 상대 블러프는 우리가 <strong>알파보다 자주</strong> 폴드하면 이득이었죠. 그러니 우리 폴드는 알파까지만 허용돼요.</p>
+<blockquote>
+<p><strong>MDF = 1 − 알파 = 팟 ÷ (팟 + 벳)</strong> (팟은 <strong>상대가 벳하기 전</strong> 팟)</p>
+</blockquote>
+<p>팟 12BB에 상대 6BB(하프팟)라면:</p>
+<ul>
+<li>알파 = 6 ÷ (12 + 6) = 33.3%</li>
+<li>MDF = 12 ÷ (12 + 6) = <strong>66.7%</strong></li>
+</ul>
+<p><strong>우리 레인지의 3분의 2는 지켜야</strong> 상대가 아무 핸드로나 블러프해서 이득을 못 봐요.</p>
+<h2>3단계. 벳 크기별 MDF (팟 12BB 기준)</h2>
+<p>A01 표의 알파를 1에서 빼면 MDF예요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>벳 크기</th>
+<th>벳</th>
+<th>우리 MDF</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/3팟</td>
+<td>4BB</td>
+<td>75%</td>
+</tr>
+<tr>
+<td>하프팟</td>
+<td>6BB</td>
+<td>66.7%</td>
+</tr>
+<tr>
+<td>2/3팟</td>
+<td>8BB</td>
+<td>60%</td>
+</tr>
+<tr>
+<td>팟벳</td>
+<td>12BB</td>
+<td>50%</td>
+</tr>
+<tr>
+<td>2배 오버벳</td>
+<td>24BB</td>
+<td>33.3%</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>벳이 작을수록 더 많이 지켜야</strong> 해요. 작은 벳은 상대에게 싼 블러프라서, 우리가 많이 접으면 금방 이득을 보거든요(A06에서 실제 핸드로 다뤄요).</p>
+<h2>4단계. 너무 많이 접으면 무슨 일이 생기나</h2>
+<p><strong>EV = 같은 블러프를 여러 번 했을 때 한 번 평균 손익</strong>이에요(B24에서 배웠죠). 여기서도 <strong>상대 블러프는 콜 받으면 항상 지고, 우리는 콜 아니면 폴드</strong>라고 가정해요.</p>
+<p>팟 12BB에 상대 하프팟 6BB. MDF는 66.7%인데 <strong>우리가 절반만 지키고 50% 폴드</strong>한다면, 상대가 아무 두 장으로 블러프할 때:</p>
+<blockquote>
+<p>상대 블러프 EV = 0.5 × 12 − 0.5 × 6 = 6 − 3 = <strong>+3BB</strong></p>
+</blockquote>
+<p>상대는 핸드와 상관없이 벳만 하면 돈을 벌어요.</p>
+<p><strong>우리가 딱 MDF만큼 지키면</strong>(폴드 33.3%):</p>
+<blockquote>
+<p>상대 블러프 EV = (1/3) × 12 − (2/3) × 6 = 4 − 4 = <strong>0BB</strong></p>
+</blockquote>
+<p>이제 상대의 아무 두 장 블러프는 본전이 돼요. 이게 MDF가 말하는 "최소"예요.</p>
+<hr />
+<h2>"그럼 MDF만큼은 무조건 콜해야 해요?"</h2>
+<p>좋은 질문이에요. 아니에요. MDF는 <strong>상대가 블러프를 충분히 섞는다고 볼 때의 기준선</strong>이에요. 실제 상대가 블러프를 거의 안 한다면, 그 기준보다 덜 지켜도 돼요. 이건 A07에서 다뤄요. 그리고 핸드 한 개의 콜/폴드는 여전히 <strong>그 핸드의 에퀴티 vs 필요 에퀴티</strong>로 정해요(A04에서 배워요).</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>MDF = <strong>팟 ÷ (팟 + 벳)</strong> = 1 − 알파</li>
+<li>먼저 외울 두 개: <strong>하프팟 66.7%, 팟벳 50%</strong></li>
+<li>MDF는 <strong>레인지 전체</strong> 기준선. 핸드 하나의 판단은 따로</li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>학습툴에는 MDF를 직접 넣는 칸이 없어요. 홀덤학습 <strong>팟 오즈</strong> 퀴즈 <strong>Lv.5(블러프 본전)</strong> 해설 끝의 "상대의 최소 방어율"이 MDF예요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 팟 30BB에 상대가 10BB 벳. 우리 MDF는?</p>
+<details>
+<summary>정답 보기</summary>
+<p>MDF = 30 ÷ (30 + 10) = 30 ÷ 40 = <strong>75%</strong>. 1/3팟이라 4분의 3은 지켜야 해요.</p>
+</details>
+<p><strong>문제 2.</strong> 리버 팟 16BB에 상대가 8BB 벳. 그런데 이 상대는 지금까지 리버 벳 뒤에 <strong>늘 강한 핸드만</strong> 보여 줬어요. 우리는 MDF만큼 지켜야 할까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p>MDF = 16 ÷ (16 + 8) = <strong>약 66.67%</strong>지만, MDF는 <strong>상대가 블러프를 충분히 섞는다고 볼 때</strong>의 기준선이에요. 블러프를 거의 안 하는 상대라면 블러프만 이기는 핸드로 콜해도 이길 길이 없어요. 그래서 <strong>MDF보다 덜 지키는</strong> 쪽이 맞아요.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 블러프는 콜을 받으면 항상 진다고 가정</small></p>
+</article>
+<nav class="nav"><a class="prev" href="064_A01.html"><div class="l">← 이전 글</div><div class="t">알파: 블러프는 상대가 몇 % 폴드해야 이득일까?</div></a><a class="next" href="066_A03.html"><div class="l">다음 글 →</div><div class="t">알파와 MDF는 동전의 양면: 같은 벳을 두 자리에서 보면?</div></a></nav></main>
+</body>
+</html>

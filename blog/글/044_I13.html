@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>버튼 오픈에 BB 디펜스: K7로 콜해도 될 만큼 팟오즈가 좋을까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge i">중급</span><span class="chip">스팟</span><span class="n">중급 13번째 글 (전체 122편 중 44번째)</span></div><h1>버튼 오픈에 BB 디펜스: K7로 콜해도 될 만큼 팟오즈가 좋을까?</h1>
+<article>
+<p>안녕하세요. B19에서 BB는 이미 1BB를 내 둬서 콜이 싸다고 배웠죠. 거기선 승률을 가정으로 받았어요.
+오늘은 <strong>상대 오픈 레인지를 가정하고 실제 에퀴티를 계산</strong>해서, 같은 질문에 다시 답해 볼게요.</p>
+<p>오늘 목표는 하나예요. <strong>BB 디펜스의 "콜 하한"(콜해도 되는 가장 약한 핸드)을 레인지 에퀴티로 확인하기.</strong></p>
+<hr />
+<h2>오늘의 핸드</h2>
+<p><strong>Hero (BB 자리 · 스택 100BB)</strong></p>
+<p><img src="../카드/Kd.svg" width="48"> <img src="../카드/7c.svg" width="48"></p>
+<h3>프리플랍</h3>
+<p>SB 0.5BB, Hero(BB) 1BB → 상대(BTN) <strong>2.5BB 오픈</strong> → SB 폴드 → <strong>Hero는 콜? 폴드?</strong></p>
+<blockquote>
+<p>지금 팟은 0.5 + 1 + 2.5 = 4BB, Hero가 더 낼 돈은 <strong>1.5BB</strong>예요.</p>
+</blockquote>
+<hr />
+<p class="concl"><strong>결론부터 말할게요. 오늘 가정한 상대라면 이번 프리플랍 결정만 보면 콜이 이득입니다.</strong></p>
+<blockquote>
+<p>남은 베팅이 있어 실제 결과는 달라질 수 있어요. 그래서 오늘은 금액(EV) 대신 <strong>에퀴티 vs 필요 에퀴티</strong>로만 판정해요.
+다만 BB는 플랍부터 먼저 행동해야 해서, 이 숫자를 다 가져가기는 어려워요. 아래에서 따로 볼게요.</p>
+</blockquote>
+<h2>1단계. 필요 에퀴티</h2>
+<p><strong>필요 에퀴티 = 콜해서 본전이 되려면 가져와야 하는 몫</strong>, 비유하면 <strong>합격선</strong>(B06).</p>
+<blockquote>
+<p>필요 에퀴티 = 1.5(Hero 콜) ÷ (4(지금 팟) + 1.5(Hero 콜)) = 1.5 ÷ 5.5 = <strong>약 27.27%</strong></p>
+</blockquote>
+<h2>2단계. 상대 오픈 레인지 (가정 레인지 기준)</h2>
+<p>버튼에서 오픈하는 상대를 이렇게 <strong>가정</strong>할게요(연습용, 정답 레인지가 아니에요).</p>
+<blockquote>
+<p>22+, A2s+, K9s+, QTs+, JTs, T9s, 98s, ATo+, KJo+, QJo</p>
+</blockquote>
+<p>Hero가 K♦·7♣을 들고 있어서 <strong>K가 들어간 핸드(KK·AK·KQ·KJ·K9s~)와 7이 들어간 핸드(77·A7s)</strong> 가 줄어요. 그러면 상대 레인지는 <strong>225콤보</strong>예요. 네 묶음으로 나누면 이래요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>묶음</th>
+<th>핸드</th>
+<th>콤보</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>강한 K·AA</td>
+<td>AA, KK, AK, KQ, KJ, K9s+</td>
+<td>51</td>
+</tr>
+<tr>
+<td>작은·중간 페어</td>
+<td>22~QQ</td>
+<td>63</td>
+</tr>
+<tr>
+<td>다른 A</td>
+<td>A2s~AQs, ATo~AQo</td>
+<td>79</td>
+</tr>
+<tr>
+<td>수딧 커넥터·QJo</td>
+<td>QTs, QJs, JTs, T9s, 98s, QJo</td>
+<td>32</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><strong>빨리 세는 팁</strong>: 페어 6, 수딧 4, 오프수트 12. Hero가 그 숫자 카드를 한 장 들고 있으면 페어 3, 수딧 3, 오프수트 9로 줄어요. 예: AKo는 K 한 장이 빠져 3 × 3 = 9.</p>
+</blockquote>
+<h2>3단계. Hero 에퀴티 (몬테카를로)</h2>
+<p>이 레인지 상대로 K♦7♣의 에퀴티는 <strong>약 35.35%</strong> 예요(콤보마다 무작위로 수천 번 깔아 본 결과, I05에서 배운 방법). 묶음별로 보면:</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>묶음</th>
+<th>Hero 에퀴티</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>강한 K·AA</td>
+<td>약 22.55%</td>
+</tr>
+<tr>
+<td>작은·중간 페어</td>
+<td>약 36.41%</td>
+</tr>
+<tr>
+<td>다른 A</td>
+<td>약 35.26%</td>
+</tr>
+<tr>
+<td>수딧 커넥터·QJo</td>
+<td>약 53.87%</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>강한 K·AA</strong>에는 크게 밀려요. AA·KK는 이미 Hero보다 큰 페어이고, AK·KQ·KJ·K9s~는 K가 겹쳐서 K를 맞춰도 키커에서 지거든요</li>
+<li><strong>페어·다른 A</strong>에는 조금 밀리지만 많이 지지는 않아요</li>
+<li><strong>수딧 커넥터·QJo</strong>에는 K 하이라서 앞서요</li>
+</ul>
+<p>크게 밀리는 묶음이 51콤보뿐이고, 나머지와는 비슷하게 싸우니 평균이 이 정도가 나와요.</p>
+<h2>4단계. 비교 — 이번 결정 기준</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th></th>
+<th>숫자</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>필요 에퀴티</td>
+<td>약 27.27%</td>
+</tr>
+<tr>
+<td>Hero 에퀴티</td>
+<td>약 35.35%</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2>"35%면 넉넉한 거 아니에요?"</h2>
+<p>좋은 질문이에요. 숫자로는 여유가 있어 보여요. 하지만 이 35.35%는 <strong>"플랍부터 리버까지 아무 베팅 없이 쇼다운한다"</strong> 는 가정의 숫자예요.
+실제로는 상대가 플랍·턴에 벳하고, Hero는 BB라 <strong>매번 먼저 행동</strong>해야 해요. 그래서 계산된 에퀴티를 다 가져가지 못하는 경우가 많아요. 이걸 다루는 법(에퀴티 실현)은 I31에서 배워요.
+그래도 +0.44BB는 "콜했다가 아무것도 못 하고 1.5BB를 버리는" 최악이 아니라 <strong>플랍을 볼 권리를 싸게 사는 값</strong>이에요. 플랍에서 맞았는지에 따라 다시 판단하면 돼요.</p>
+<h2>숫자가 뒤집히는 지점</h2>
+<p>기준은 두 가지예요.</p>
+<ul>
+<li><strong>상대 오픈 크기</strong>: 오픈이 커지면 Hero가 더 낼 돈이 늘어서 필요 에퀴티가 올라가요</li>
+<li><strong>상대 오픈 레인지</strong>: 레인지가 좁고 강해지면 Hero 에퀴티가 내려가요</li>
+</ul>
+<p>둘 중 하나라도 Hero 에퀴티와 필요 에퀴티의 순서를 바꾸면 폴드예요. 문제 1·2에서 직접 확인해 보세요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>BB는 <strong>이미 낸 1BB를 빼고</strong> "더 낼 돈"으로 필요 에퀴티 계산</li>
+<li>콜 하한은 <strong>상대 레인지 상대 에퀴티</strong>로 확인</li>
+<li>BB는 플랍부터 먼저 행동 → 계산된 에퀴티를 <strong>다 못 가져갈 수 있어요</strong></li>
+</ol></section>
+<hr />
+<h2>연습 문제 (같은 자리, 같은 Hero 핸드)</h2>
+<blockquote>
+<p>학습툴 에퀴티 계산기의 <strong>레인지 입력은 확인 중</strong>이에요. 지금은 정답의 숫자(블로그 계산기로 구한 값)를 따라가 보고, 학습툴에는 <strong>핸드 대 핸드</strong>(내 핸드와 상대 핸드 하나)만 넣어 확인해 보세요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 레인지는 같고, 상대가 <strong>5BB</strong>로 크게 오픈했다면?</p>
+<details>
+<summary>정답 보기</summary>
+<p>지금 팟 0.5 + 1 + 5 = 6.5BB, Hero가 더 낼 돈 4BB → 필요 에퀴티 = 4 ÷ (6.5 + 4) = <strong>약 38.1%</strong> &gt; 약 35.35% → <strong>폴드</strong>.</p>
+</details>
+<p><strong>문제 2.</strong> 오픈은 2.5BB인데, 상대가 <strong>TT+, AQs+, AKo</strong>로만 오픈하는 사람이라면?</p>
+<details>
+<summary>정답 보기</summary>
+<p>레인지 <strong>43콤보</strong>, Hero 에퀴티 <strong>약 23.45%</strong> &lt; 약 27.27% → <strong>폴드</strong>.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 (프리플랍 몬테카를로, 콤보마다 5,000번) · 가정 레인지 기준 (솔버 결과 아님) · 이번 한 번의 결정 기준(플랍 이후 베팅은 계산에 넣지 않음)</small></p>
+</article>
+<nav class="nav"><a class="prev" href="043_I12.html"><div class="l">← 이전 글</div><div class="t">헤즈업 SB 오픈 레인지 읽기: 왜 모든 핸드로 칠까? (헤즈업 기준)</div></a><a class="next" href="045_I14.html"><div class="l">다음 글 →</div><div class="t">수딧 커넥터: 에퀴티는 비슷해도 왜 플레이 가치가 다를까?</div></a></nav></main>
+</body>
+</html>

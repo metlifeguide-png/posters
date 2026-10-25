@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>카드 제거: 보드에 A가 있으면 AK는 몇 콤보로 줄어들까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge i">중급</span><span class="chip">개념</span><span class="n">중급 7번째 글 (전체 122편 중 38번째)</span></div><h1>카드 제거: 보드에 A가 있으면 AK는 몇 콤보로 줄어들까?</h1>
+<article>
+<p>안녕하세요. B05에서 AK는 16콤보, AA는 6콤보라고 배웠죠. 그런데 그건 <strong>아무 카드도 안 보일 때</strong> 이야기예요.
+보드나 내 손에 카드가 보이면, 상대가 그 카드를 가질 수는 없어요. 그래서 콤보가 줄어요. 오늘은 그걸 세는 법이에요.</p>
+<p>오늘 목표는 하나예요. <strong>보이는 카드를 빼고, 상대 핸드의 콤보를 다시 세기.</strong></p>
+<hr />
+<h2>1단계. 왜 줄어들까?</h2>
+<p>카드는 덱에 <strong>한 장씩만</strong> 있어요. A♥가 보드에 깔려 있으면, 상대는 A♥를 들 수 없죠. 그래서 A♥가 들어간 조합은 모두 지워져요.
+이걸 <strong>카드 제거</strong>라고 해요. 내가 들고 있는 카드도 똑같이 지워요.</p>
+<p>비유하면 <strong>자리가 정해진 극장표</strong>예요. 내가 이미 A열 3번 표를 들고 있으면, 다른 사람은 그 자리에 앉을 수 없죠.</p>
+<h2>2단계. 다른 두 숫자(AK) — 곱셈으로</h2>
+<p>AK = A의 장수 × K의 장수. 아무것도 안 보이면 4 × 4 = <strong>16콤보</strong>.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>보이는 카드</th>
+<th>남은 A</th>
+<th>남은 K</th>
+<th>AK 콤보</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>없음</td>
+<td>4</td>
+<td>4</td>
+<td>16콤보</td>
+</tr>
+<tr>
+<td>보드에 A♥</td>
+<td>3</td>
+<td>4</td>
+<td>12콤보</td>
+</tr>
+<tr>
+<td>보드에 A♥, 우리 손에 K♣</td>
+<td>3</td>
+<td>3</td>
+<td>9콤보</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>보드 A 하나: 3 × 4 = 12, 거기에 우리 K 하나: 3 × 3 = 9</p>
+</blockquote>
+<p>이 12콤보를 나눠 보면, 같은 무늬 AKs는 하트 AK가 사라져서 4콤보 → <strong>3콤보</strong>, 다른 무늬 AKo는 12 − 3 = <strong>9콤보</strong>예요.</p>
+<h2>3단계. 포켓페어(AA) — 남은 장수에서 두 장 고르기</h2>
+<p>페어는 같은 숫자 중 <strong>두 장을 고르는</strong> 거라 줄어드는 폭이 커요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>보이는 A</th>
+<th>남은 A</th>
+<th>AA 콤보</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0장</td>
+<td>4</td>
+<td>6콤보</td>
+</tr>
+<tr>
+<td>1장</td>
+<td>3</td>
+<td>3콤보</td>
+</tr>
+<tr>
+<td>2장</td>
+<td>2</td>
+<td>1콤보</td>
+</tr>
+</tbody>
+</table></div>
+<p>공식으로는 <strong>남은 장수 × (남은 장수 − 1) ÷ 2</strong> 예요. 4 × 3 ÷ 2 = 6, 3 × 2 ÷ 2 = 3, 2 × 1 ÷ 2 = 1. 예를 들어 A가 3장(A♠ A♦ A♣) 남으면 A♠A♦, A♠A♣, A♦A♣ 세 가지죠. 더 빨리 세는 법은 I32에서 다뤄요.</p>
+<h2>4단계. 실전에서 쓰는 곳</h2>
+<p>보드에 A가 있으면 "상대가 A를 들었을까?"를 생각하죠. 이때 <strong>AK는 12콤보로 여전히 많지만, AA는 3콤보로 확 줄어요.</strong> 그래서 같은 "A 들어간 핸드"라도 AK 쪽이 훨씬 자주 나와요.
+우리 손에 있는 카드도 상대 콤보를 줄여 줘요. 이걸 <strong>블로커</strong>라고 하는데, 고급 E01에서 본격적으로 배워요.</p>
+<hr />
+<h2>"보드 카드랑 내 카드 말고, 상대가 폴드한 카드는요?"</h2>
+<p>좋은 질문이에요. 다른 사람이 폴드한 카드는 <strong>우리가 볼 수 없으니</strong> 빼지 않아요. 우리가 <strong>확실히 아는 카드</strong>(우리 손 + 보드)만 빼는 게 원칙이에요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>보이는 카드(<strong>우리 손 + 보드</strong>)는 상대가 가질 수 없어요</li>
+<li>다른 두 숫자는 <strong>남은 장수끼리 곱하기</strong></li>
+<li>페어는 <strong>4장→6, 3장→3, 2장→1</strong></li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>학습툴 [콤보 분류 보기]는 준비 중이에요. 지금은 남은 장수를 직접 적어 보세요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 보드에 K♠, 우리 손에 Q♦. 상대의 KQ는 몇 콤보?</p>
+<details>
+<summary>정답 보기</summary>
+<p>남은 K 3장 × 남은 Q 3장 = <strong>9콤보</strong>.</p>
+</details>
+<p><strong>문제 2.</strong> 보드에 J♥, 우리 손에 J♣. 상대의 JJ는 몇 콤보?</p>
+<details>
+<summary>정답 보기</summary>
+<p>남은 J는 2장(J♠·J♦) → <strong>1콤보</strong>.</p>
+</details>
+<p><strong>문제 3.</strong> 보드에 Q♥, 우리 손에 A♠. 상대의 "AQ 또는 KQ"는 모두 몇 콤보?</p>
+<details>
+<summary>정답 보기</summary>
+<p>AQ = 남은 A 3장 × 남은 Q 3장 = 9, KQ = K 4장 × Q 3장 = 12 → 9 + 12 = <strong>21콤보</strong>.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 (콤보는 실제 카드로 하나씩 셈)</small></p>
+</article>
+<nav class="nav"><a class="prev" href="037_I06.html"><div class="l">← 이전 글</div><div class="t">핸드 대 레인지 에퀴티: 상대는 핸드 한 개가 아니라 &quot;여러 핸드 중 하나&quot;다</div></a><a class="next" href="039_I08.html"><div class="l">다음 글 →</div><div class="t">턴에 거트샷, 상대가 팟벳하면 왜 폴드가 맞을까?</div></a></nav></main>
+</body>
+</html>

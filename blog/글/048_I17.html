@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>푸시/폴드 기초: 짧은 스택은 왜 올인 아니면 폴드로 생각할까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge i">중급</span><span class="chip">토너</span><span class="n">중급 17번째 글 (전체 122편 중 48번째)</span></div><h1>푸시/폴드 기초: 짧은 스택은 왜 올인 아니면 폴드로 생각할까?</h1>
+<article>
+<p>안녕하세요. 토너먼트 후반엔 스택이 짧아지죠. 스택이 짧을 때 작게 레이즈하면 무슨 일이 생기는지 숫자로 볼게요.</p>
+<p>오늘 목표는 하나예요. <strong>짧은 스택에서 작은 오픈이 왜 올인과 같아지는지 알기.</strong></p>
+<hr />
+<h2>1단계. 오늘의 장면과 용어</h2>
+<p>둘만 남은 테이블이에요. Hero는 <strong>SB</strong>(스몰 블라인드 자리), 상대는 <strong>BB</strong>(빅 블라인드 자리). 블라인드는 SB 0.5BB, BB 1BB(여기서 BB는 칩 단위), 앤티는 없어요. 두 사람 모두 <strong>8BB</strong>.</p>
+<p><strong>Hero (SB · 8BB)</strong></p>
+<p><img src="../카드/Kd.svg" width="48"> <img src="../카드/7c.svg" width="48"></p>
+<ul>
+<li><strong>푸시</strong> = 가진 칩을 전부 거는 올인</li>
+<li><strong>오픈</strong> = 앞에서 아무도 안 걸었을 때 처음 하는 레이즈</li>
+<li><strong>칩 기준</strong> = 토너먼트 상금은 빼고 칩 수만 세는 계산(상금을 넣는 ICM은 E10에서 배워요)</li>
+</ul>
+<h2>2단계. 작게 오픈하면 어떻게 될까?</h2>
+<p>Hero가 <strong>2BB</strong>로 오픈했는데 상대가 8BB 올인으로 받았다고 해 볼게요. Hero에게 남은 칩은 8 − 2 = <strong>6BB</strong>예요. 필요 에퀴티는 B06에서 배웠죠.</p>
+<blockquote>
+<p>필요 에퀴티 = 6(더 낼 돈) ÷ (4(Hero 2BB + 상대가 맞춘 2BB) + 6(상대가 더 건 돈) + 6(내 콜)) = 6 ÷ 16 = <strong>37.5%</strong></p>
+</blockquote>
+<p>접으면 낸 2BB를 그냥 잃고, 콜하려면 37.5%만 넘으면 돼요. 결국 오픈은 <strong>반쯤 열린 문</strong>이에요. 한 발을 들였으니 상대가 올인하면 37.5%를 넘는 핸드는 끝까지 들어가야 하죠. 그럼 처음부터 문을 활짝 열고(올인) 들어가는 것과 크게 다르지 않아요.</p>
+<p>차이는 <strong>누가 마지막 결정을 하느냐</strong>예요. Hero가 먼저 8BB 올인하면 상대가 콜할지 정해야 해요.</p>
+<blockquote>
+<p>상대의 필요 에퀴티 = 7(더 낼 돈) ÷ (2(상대 BB 1BB + Hero가 맞춘 1BB) + 7(Hero가 더 건 돈) + 7(상대 콜)) = 7 ÷ 16 = <strong>43.75%</strong></p>
+</blockquote>
+<p>상대는 43.75%를 못 넘는 핸드면 접어야 하고, 그만큼 Hero는 카드를 깔지 않고 이겨요(<strong>폴드 에퀴티</strong>, I18에서 배워요). 반대로 Hero가 작게 오픈하면 상대가 올인으로 받아서 그 결정을 Hero에게 넘길 수 있어요.</p>
+<h2>3단계. 엔진으로 보는 올인 범위</h2>
+<p>뚝섬 <strong>AOF 차트 엔진</strong>(칩 기준, 두 사람이 서로 최선으로 대응한다고 보는 근사)으로 스택만 바꿔 계산했어요. <strong>범위 % = 전체 핸드 조합 중 그 행동을 하는 비율</strong>이에요. 오늘은 2단계 논리대로 <strong>올인과 폴드 두 가지만</strong> 비교했어요(오픈은 계산에 넣지 않음).</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>두 사람 스택</th>
+<th>SB 올인</th>
+<th>BB 콜</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6BB</td>
+<td>약 68.8%</td>
+<td>약 54.3%</td>
+</tr>
+<tr>
+<td>8BB</td>
+<td>약 62.7%</td>
+<td>약 44.5%</td>
+</tr>
+<tr>
+<td>10BB</td>
+<td>약 58.3%</td>
+<td>약 37.5%</td>
+</tr>
+<tr>
+<td>15BB</td>
+<td>약 46.4%</td>
+<td>약 27.7%</td>
+</tr>
+</tbody>
+</table></div>
+<p>6BB와 8BB를 비교해 볼게요. SB가 폴드하면 스택은 0.5BB를 잃은 5.5BB·7.5BB예요. 이 스택과 비교하면 상대를 접게 할 때는 둘 다 <strong>+1.5BB</strong>인데, 콜 받고 이기면 <strong>+6.5BB → +8.5BB</strong>, 지면 <strong>−5.5BB → −7.5BB</strong>로 커져요. 접게 해서 얻는 돈은 그대로인데 콜 받을 때 걸린 돈이 커지니, 이 조건에서는 짧은 쪽이 더 넓게 올인해요.</p>
+<h2>4단계. K♦7♣로 따라가기</h2>
+<p>엔진 기준 K♦7♣의 <strong>올인 − 폴드</strong>(EV는 B24에서 배웠죠)와 콜 받은 판만의 평균을 스택별로 보면 이래요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>두 사람 스택</th>
+<th>올인 − 폴드</th>
+<th>콜 받은 판 평균</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>6BB</td>
+<td>약 +0.77BB</td>
+<td>약 +0.15BB</td>
+</tr>
+<tr>
+<td>8BB</td>
+<td>약 +0.6BB</td>
+<td>약 −0.53BB</td>
+</tr>
+</tbody>
+</table></div>
+<p>8BB에서는 콜 받으면 손해인데도 올인이 이득이에요. 이득이 상대가 접는 판에서 나오기 때문이에요. 두 몫을 나누는 법은 I18에서 다뤄요.</p>
+<hr />
+<h2>"그럼 15BB보다 길면요?"</h2>
+<p>좋은 질문이에요. 스택이 길수록 2단계의 필요 에퀴티가 올라가서, 오픈 후 상대 올인에 접는 선택이 생겨요. 그때부터는 오픈 레이즈도 함께 생각해야 하는데, 오늘 계산은 올인/폴드만 비교해서 그 답은 주지 않아요. 표에서 보듯 스택이 길어질수록 올인 범위가 좁아지는 데까지가 오늘 내용이에요.</p>
+<h2>숫자가 뒤집히는 지점</h2>
+<p>기준은 <strong>오픈한 뒤 상대 올인에 필요한 에퀴티를 Hero 핸드가 넘는지</strong>예요. 스택이 짧을수록 이 값이 낮아져 더 많은 핸드가 넘게 되고, 오픈은 올인과 같아져요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>짧은 스택에서 작게 오픈하면, 상대 올인에 <strong>낮은 필요 에퀴티로 콜해야</strong> 해요</li>
+<li>먼저 올인하면 <strong>마지막 결정을 상대에게</strong> 넘기고 접을 기회를 줘요</li>
+<li>스택이 길어지면 <strong>오픈</strong>이 다시 선택지가 돼요</li>
+</ol></section>
+<hr />
+<h2>연습 문제 (같은 자리, 스택만 바꿈)</h2>
+<blockquote>
+<p>뚝섬 <strong>AOF 차트</strong>(새틀 프리플랍 차트)에서 <strong>그외 게임들 → 테이블 인원 2명 → 포지션 SB → 내 스택·상대 스택 8BB</strong>로 넣어 SB 올인 칸을 확인해 보세요. 화면은 실전 보정(올인 범위를 조금 좁힘)이 들어가 오늘 숫자보다 좁게 나올 수 있어요. 9인·빅앤티 기준인 홀덤학습 <strong>푸시/폴드 트레이너</strong>로도 연습할 수 있어요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 두 사람 스택 <strong>6BB</strong>. Hero가 2BB 오픈 후 상대 올인을 받으면 필요 에퀴티는?</p>
+<details>
+<summary>정답 보기</summary>
+<p>남은 칩 6 − 2 = <strong>4BB</strong>. 필요 에퀴티 = 4 ÷ (4 + 4 + 4) = 4 ÷ 12 = <strong>약 33.3%</strong>. 8BB 때(37.5%)보다 더 낮아서, 오픈이 올인과 더 가까워요.</p>
+</details>
+<p><strong>문제 2.</strong> 두 사람 스택 <strong>10BB</strong>. Hero가 2BB 오픈 후 상대 올인을 받으면 필요 에퀴티는? 6BB·8BB와 비교하면?</p>
+<details>
+<summary>정답 보기</summary>
+<p>남은 칩 10 − 2 = <strong>8BB</strong>. 필요 에퀴티 = 8 ÷ (4 + 8 + 8) = 8 ÷ 20 = <strong>40%</strong>. 6BB(약 33.3%)·8BB(37.5%)보다 높아서, 상대 올인에 접을 수 있는 핸드가 늘어요. 스택이 길어질수록 오픈이 올인과 덜 같아지는 거예요.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 뚝섬 AOF 차트 엔진의 올인/폴드 이론값 (헤즈업 SB 대 BB · 앤티 없음 · 칩 기준 · 카드 제거 없음 · 화면의 실전 보정은 넣지 않음) · 올인 결정이라 이번 결정의 최종 결과</small></p>
+</article>
+<nav class="nav"><a class="prev" href="047_I16.html"><div class="l">← 이전 글</div><div class="t">20BB 올인에 AQ, 레인지로 계산하면 콜일까?</div></a><a class="next" href="049_I18.html"><div class="l">다음 글 →</div><div class="t">폴드 에퀴티: 올인은 왜 두 가지 길로 이길까?</div></a></nav></main>
+</body>
+</html>

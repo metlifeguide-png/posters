@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>핸드 대 레인지 에퀴티: 상대는 핸드 한 개가 아니라 &quot;여러 핸드 중 하나&quot;다 · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge i">중급</span><span class="chip">개념</span><span class="n">중급 6번째 글 (전체 122편 중 37번째)</span></div><h1>핸드 대 레인지 에퀴티: 상대는 핸드 한 개가 아니라 &quot;여러 핸드 중 하나&quot;다</h1>
+<article>
+<p>안녕하세요. I05에서 두 핸드를 붙여 에퀴티를 봤죠. 그런데 실전에서는 상대 카드를 모르죠.
+그래서 상대가 가질 수 있는 핸드를 <strong>묶음(레인지)</strong> 으로 놓고 에퀴티를 계산해요. 오늘은 그 방법을 배워요.</p>
+<p>오늘 목표는 하나예요. <strong>상대 레인지 안의 핸드별 에퀴티를 콤보 수로 묶어 하나의 숫자로 만들기.</strong></p>
+<hr />
+<h2>1단계. 레인지란?</h2>
+<p><strong>레인지 = 상대가 지금 이 행동을 할 때 가질 수 있는 핸드의 목록</strong>이에요. "상대는 AA일 수도, AQ일 수도, 88일 수도"를 한 번에 적은 거죠.
+레인지 속 핸드마다 <strong>콤보 수</strong>(그 핸드가 될 수 있는 실제 카드 두 장 조합의 개수, 예: AA는 무늬 조합 6가지)가 다르니, 콤보가 많은 핸드일수록 더 자주 나와요.</p>
+<p>비유하면 <strong>복불복 상자</strong>예요. 상자 안에 쪽지가 여러 장 있고, 같은 쪽지가 여러 장 들어 있으면 그게 뽑힐 가능성이 크죠.</p>
+<h2>2단계. 예시 — 탑페어 vs 레인지 (가정 레인지 기준)</h2>
+<p><strong>Hero</strong> <img src="../카드/Ah.svg" width="40"> <img src="../카드/Qd.svg" width="40"> · <strong>보드</strong> <img src="../카드/Qs.svg" width="40"> <img src="../카드/8c.svg" width="40"> <img src="../카드/4h.svg" width="40"></p>
+<p>Hero는 Q 탑페어, 키커 A. 상대 레인지를 이렇게 가정할게요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>상대 핸드</th>
+<th>콤보</th>
+<th>그 핸드 상대 Hero 에퀴티</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AA</td>
+<td>3콤보</td>
+<td>약 8.59%</td>
+</tr>
+<tr>
+<td>KK</td>
+<td>6콤보</td>
+<td>약 20.2%</td>
+</tr>
+<tr>
+<td>AQ</td>
+<td>6콤보</td>
+<td>약 49.62%</td>
+</tr>
+<tr>
+<td>KQ</td>
+<td>8콤보</td>
+<td>약 86.25%</td>
+</tr>
+<tr>
+<td>QJs</td>
+<td>2콤보</td>
+<td>약 81.67%</td>
+</tr>
+<tr>
+<td>88</td>
+<td>3콤보</td>
+<td>약 1.62%</td>
+</tr>
+<tr>
+<td>44</td>
+<td>3콤보</td>
+<td>약 1.92%</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>AA: Hero가 A♥를 들고 있어서 남은 A 3장 → <strong>3콤보</strong></li>
+<li>KK: K는 하나도 안 보여서 <strong>6콤보</strong></li>
+<li>AQ: A 3장 × Q 2장(Q♠ 보드, Q♦ Hero) = <strong>6콤보</strong>. 같은 탑페어·같은 키커라 대부분 <strong>비겨서</strong> 약 반</li>
+<li>KQ: K 4장 × Q 2장 = <strong>8콤보</strong>. Hero보다 키커가 낮아서 Hero가 크게 앞서요</li>
+<li>QJs: 같은 무늬 Q·J 중 남은 Q(♥·♣)와 같은 무늬 J → <strong>2콤보</strong></li>
+<li>88·44: 보드에 한 장씩 있어서 <strong>3콤보씩</strong>. 이미 <strong>셋</strong>이라 Hero가 크게 뒤져요</li>
+</ul>
+<h2>3단계. 하나의 숫자로 — 콤보 가중 평균</h2>
+<p>핸드별 에퀴티에 <strong>콤보 수를 곱해서 더한 뒤, 전체 콤보 수로 나누면</strong> 돼요.</p>
+<blockquote>
+<p>(3 × 8.59 + 6 × 20.2 + 6 × 49.62 + 8 × 86.25 + 2 × 81.67 + 3 × 1.62 + 3 × 1.92) ÷ 31 = 약 42.21, 즉 <strong>약 42.21%</strong></p>
+</blockquote>
+<p>상대 레인지 <strong>31콤보</strong> 전체를 상대로 한 Hero 에퀴티예요.
+콤보가 많은 KQ(8콤보)와 KK·AQ(6콤보씩)가 결과를 크게 좌우하죠.</p>
+<h2>4단계. 레인지가 바뀌면 에퀴티도 바뀌어요</h2>
+<p>같은 보드, 같은 Hero인데 상대가 <strong>셋(88·44)과 오버페어(보드의 어떤 카드보다 높은 포켓페어, 여기선 AA·KK)로만</strong> 벳하는 사람이라면?
+레인지: AA, KK, 88, 44 → <strong>15콤보</strong>, Hero 에퀴티는 <strong>약 10.51%</strong> 로 뚝 떨어져요.</p>
+<p><strong>같은 핸드라도 상대 레인지를 어떻게 보느냐에 따라 콜/폴드가 바뀌어요.</strong> 하프팟 벳이면 필요 에퀴티 25%(B06에서 배운 공식)인데, 첫 레인지라면 넘고, 둘째 레인지라면 한참 모자라죠.</p>
+<hr />
+<h2>"상대 레인지는 어떻게 정해요?"</h2>
+<p>좋은 질문이에요. 이 블로그에서는 스팟마다 <strong>"가정 레인지"</strong> 를 밝히고 계산해요. 실제로는 상대의 자리·프리플랍 행동·베팅 크기를 보고 좁혀 가는데, 그 방법은 I27(레인지로 생각하기)에서 배워요.
+중요한 건 <strong>한 핸드가 아니라 목록으로 생각하는 습관</strong>이에요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>상대는 <strong>한 핸드가 아니라 레인지</strong></li>
+<li>핸드별 에퀴티를 <strong>콤보 수로 무게를 줘서</strong> 평균 내기</li>
+<li>레인지를 바꾸면 <strong>같은 핸드의 결론도 바뀐다</strong></li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>학습툴 에퀴티 계산기의 <strong>레인지 입력은 확인 중</strong>이에요. 지금은 정답의 숫자(블로그 계산기로 구한 값)를 따라가 보고, 학습툴에는 <strong>핸드 대 핸드</strong>(내 핸드와 상대 핸드 하나)만 넣어 확인해 보세요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> Hero K♦K♣, 보드 A♥ 9♠ 3♦. 상대 레인지 AK, AQ, AJ, QQ, JJ(가정)라면 Hero 에퀴티는?</p>
+<details>
+<summary>정답 보기</summary>
+<p>상대 레인지 <strong>42콤보</strong>, Hero 에퀴티 <strong>약 31.77%</strong>.
+A가 들어간 핸드에는 크게 져요: AK(6콤보) 상대로 약 4.24%, AQ·AJ(12콤보씩) 상대로 각각 약 8.72%. AK가 더 낮은 건, Hero가 기다리는 K 한 장을 상대 AK가 쥐고 있어서예요. 반대로 QQ·JJ에는 크게 이겨요(약 91.62%). A가 들어간 콤보가 훨씬 많아서 전체로는 뒤져요.</p>
+</details>
+<p><strong>문제 2.</strong> 본문 4단계의 좁은 레인지(AA·KK·88·44, 15콤보)에 KQ(8콤보)를 더하면 Hero 에퀴티는?</p>
+<details>
+<summary>정답 보기</summary>
+<p>레인지 <strong>23콤보</strong>, Hero 에퀴티 <strong>약 36.85%</strong>. Hero가 크게 이기는 KQ가 들어오자 약 10.51%에서 크게 올라요. 레인지에 <strong>어떤 핸드를 넣느냐</strong>가 숫자를 크게 바꿔요.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 (보드 3장 이후 전부 세기) · 가정 레인지 기준 (솔버 결과 아님)</small></p>
+</article>
+<nav class="nav"><a class="prev" href="036_I03.html"><div class="l">← 이전 글</div><div class="t">플랍에서 플러시 드로우, 하프팟 벳에 콜해도 될까?</div></a><a class="next" href="038_I07.html"><div class="l">다음 글 →</div><div class="t">카드 제거: 보드에 A가 있으면 AK는 몇 콤보로 줄어들까?</div></a></nav></main>
+</body>
+</html>

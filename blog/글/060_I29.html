@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>런아웃 확률: 턴에 맞을 확률, 리버에 맞을 확률, 둘 다 맞아야 할 확률은 어떻게 다를까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge i">중급</span><span class="chip">개념</span><span class="n">중급 29번째 글 (전체 122편 중 60번째)</span></div><h1>런아웃 확률: 턴에 맞을 확률, 리버에 맞을 확률, 둘 다 맞아야 할 확률은 어떻게 다를까?</h1>
+<article>
+<p>안녕하세요. I02에서 2·4 법칙을 배웠죠. 오늘은 그 뒤에 있는 <strong>정확한 확률 계산</strong>을 단계별로 열어 볼게요.
+특히 "<strong>한 장이라도</strong> 맞으면 되는 경우"와 "<strong>두 장 다</strong> 맞아야 하는 경우"가 얼마나 다른지가 핵심이에요.</p>
+<p>오늘 목표는 하나예요. <strong>턴·리버 확률을 상황별로 나눠 계산하기.</strong></p>
+<hr />
+<h2>1단계. 남은 카드 수부터</h2>
+<p><strong>런아웃 = 턴과 리버에 나올 카드들</strong>이에요. 확률은 늘 <strong>아웃츠 ÷ 남은 카드</strong>로 시작해요.</p>
+<ul>
+<li>플랍에서 우리가 아는 카드: 우리 2장 + 보드 3장 → 남은 카드 <strong>47장</strong></li>
+<li>턴에서: 우리 2장 + 보드 4장 → 남은 카드 <strong>46장</strong></li>
+</ul>
+<p>비유하면 <strong>주머니에서 공 뽑기</strong>예요. 주머니에 공이 47개, 그중 원하는 색이 몇 개냐가 확률이죠. 한 번 뽑으면 공이 하나 줄어요.</p>
+<h2>2단계. 한 장만 볼 때 — 플러시 드로우(아웃츠 9장)</h2>
+<blockquote>
+<p>플랍에서 턴 한 장에 맞을 확률 = 9 ÷ 47 = <strong>약 19.15%</strong>
+턴에서 리버 한 장에 맞을 확률 = 9 ÷ 46 = <strong>약 19.57%</strong></p>
+</blockquote>
+<p>남은 카드가 한 장 줄어서 리버 쪽이 아주 조금 높아요.</p>
+<h2>3단계. 두 장 볼 때 — "한 장이라도 맞으면"</h2>
+<p>플랍에서 턴·리버를 다 본다면, <strong>둘 다 안 맞을 확률</strong>을 먼저 구하고 1에서 빼요. 그게 제일 쉬워요.</p>
+<blockquote>
+<p>둘 다 안 맞을 확률 = (38 ÷ 47) × (37 ÷ 46)</p>
+</blockquote>
+<p>턴에 안 맞을 카드는 47 − 9 = 38장, 턴이 안 맞은 뒤 리버에 안 맞을 카드는 46장 중 37장이에요. <strong>"둘 다 일어날 확률은 곱하기"</strong> 라서 둘을 곱해요(4단계에서 한 번 더 써요).</p>
+<blockquote>
+<p>한 장이라도 맞을 확률 = 1 − 그 값 = <strong>약 34.97%</strong></p>
+</blockquote>
+<p>2·4 법칙(9 × 4 = 36)이 조금 크게 나오는 건, 턴과 리버에 <strong>둘 다 맞는 경우를 두 번 세기</strong> 때문이에요.</p>
+<h2>4단계. 두 장 다 맞아야 할 때 — 뒷문(러너러너)</h2>
+<p>플랍에 <strong>같은 무늬가 우리 것 두 장 + 보드 한 장</strong>뿐이라면, 플러시가 되려면 턴과 리버가 <strong>둘 다</strong> 그 무늬여야 해요. 이걸 <strong>뒷문 드로우</strong>(러너러너)라고 해요.
+그 무늬는 13장 중 3장이 보이니 남은 건 <strong>10장</strong>.</p>
+<blockquote>
+<p>턴에 그 무늬 = 10 ÷ 47 = <strong>약 21.28%</strong>
+턴이 맞은 뒤 리버도 그 무늬 = 9 ÷ 46 = <strong>약 19.57%</strong>
+둘 다 = 0.2128 × 0.1957 = <strong>약 4.16%</strong></p>
+</blockquote>
+<p><strong>한 장이라도</strong>(약 34.97%)와 <strong>둘 다</strong>(약 4.16%)는 이렇게 크게 달라요. 뒷문 드로우는 "보너스"일 뿐, 그것만 믿고 콜하면 안 돼요.</p>
+<hr />
+<h2>"에퀴티 계산기에 나오는 숫자랑 왜 조금 달라요?"</h2>
+<p>좋은 질문이에요. 오늘 확률은 <strong>"그 카드가 나올 확률"</strong> 이에요. 에퀴티 계산기는 상대 카드까지 넣어서 <strong>실제로 이기는 경우</strong>를 세요. 상대가 우리 아웃츠를 쥐고 있거나, 맞아도 지는 카드(더러운 아웃츠, I04에서 배워요)가 있으면 숫자가 달라져요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>확률은 <strong>아웃츠 ÷ 남은 카드</strong>(플랍 47장, 턴 46장)</li>
+<li>"한 장이라도"는 <strong>1 − 둘 다 안 맞을 확률</strong></li>
+<li>"둘 다 맞아야"는 <strong>곱하기</strong> — 생각보다 훨씬 작아요</li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>홀덤학습 <strong>에퀴티 계산기</strong>로 실제 핸드를 넣어 비교해 보세요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 플랍에서 양방 스트레이트 드로우(아웃츠 8장). 턴 한 장에 맞을 확률과, 리버까지 한 장이라도 맞을 확률은?</p>
+<details>
+<summary>정답 보기</summary>
+<p>턴 한 장: 8 ÷ 47 = <strong>약 17.02%</strong>. 리버까지: 1 − (39 ÷ 47) × (38 ÷ 46) = <strong>약 31.45%</strong>.</p>
+</details>
+<p><strong>문제 2.</strong> 턴에 8장 중 하나가 나와야 하고, 그다음 리버에 4장 중 하나가 또 나와야 하는 뒷문 드로우라면? (숫자만 바꿔서 4단계 방법을 그대로 써 보는 문제예요)</p>
+<details>
+<summary>정답 보기</summary>
+<p>턴 8 ÷ 47 = <strong>약 17.02%</strong>, 리버 4 ÷ 46 = <strong>약 8.7%</strong>, 둘 다 = 0.1702 × 0.087 = <strong>약 1.48%</strong>. 거의 기대하기 어려운 확률이에요.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증</small></p>
+</article>
+<nav class="nav"><a class="prev" href="059_I28.html"><div class="l">← 이전 글</div><div class="t">플랍에서 탑페어 약한 키커, 상대가 팟벳하면 콜할까?</div></a><a class="next" href="061_I31.html"><div class="l">다음 글 →</div><div class="t">에퀴티 실현: 계산된 에퀴티를 왜 다 가져가지 못할까?</div></a></nav></main>
+</body>
+</html>

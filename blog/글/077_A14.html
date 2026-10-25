@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3벳 블러프는 상대가 몇 % 접어야 본전일까? 프리플랍 알파 · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge a">상급</span><span class="chip">개념</span><span class="n">상급 14번째 글 (전체 122편 중 77번째)</span></div><h1>3벳 블러프는 상대가 몇 % 접어야 본전일까? 프리플랍 알파</h1>
+<article>
+<p>안녕하세요. A13에서 3벳을 밸류와 블러프로 나눴고, A01에서 <strong>알파 = 잃을 돈 ÷ (잃을 돈 + 얻을 돈)</strong> 을 배웠죠.
+오늘은 두 개를 합쳐서, <strong>블러프 3벳이 본전이 되려면 상대가 몇 % 접어야 하는지</strong> 계산해요. 프리플랍에는 <strong>이미 낸 블라인드</strong>가 있어서 계산이 조금 달라요.</p>
+<p>오늘 목표는 하나예요. <strong>3벳 크기를 보면 "더 거는 돈"과 "지금 팟"으로 알파를 바로 계산하기.</strong></p>
+<hr />
+<h2>1단계. 프리플랍 알파는 "더 거는 돈"으로</h2>
+<p>버튼이 <strong>2.5BB 오픈</strong>, SB 폴드, 우리는 BB에서 <strong>10BB로 3벳</strong>한다고 해 볼게요.</p>
+<ul>
+<li><strong>지금 팟</strong>: SB 0.5 + BB 1 + 오픈 2.5 = 4BB. 상대가 접으면 이걸 다 가져와요</li>
+<li><strong>더 거는 돈</strong>: 우리는 BB로 1BB를 이미 냈으니, 10BB까지 올리려면 <strong>9BB</strong>를 더 내요</li>
+</ul>
+<p>이미 낸 1BB는 접어도 돌아오지 않는 돈이라, <strong>지금부터 더 거는 돈</strong>만 위험으로 봐요. 반대로 상대가 접으면 그 1BB도 팟과 함께 돌아오니, 얻는 돈(지금 팟 4BB)에는 들어가요. 이미 팟에 들어간 돈은 <strong>누구의 돈도 아닌 팟의 돈</strong>이라고 보면 쉬워요.</p>
+<blockquote>
+<p>알파 = 9(더 거는 돈) ÷ (4(지금 팟) + 9) = <strong>약 69.23%</strong></p>
+</blockquote>
+<p>오늘은 A01처럼 <strong>콜을 받으면 이후에 포기한다</strong>(순수 블러프)고 가정해요.</p>
+<p>비유하면 <strong>이미 낸 입장료</strong>예요. 공연이 별로여도 입장료는 못 돌려받으니, 더 머무를지는 <strong>지금부터 쓸 돈</strong>으로만 정하죠.</p>
+<h2>2단계. 3벳 크기별 알파 (BB에서, 버튼 2.5BB 오픈)</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>3벳 총액</th>
+<th>더 거는 돈</th>
+<th>알파</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8BB</td>
+<td>7BB</td>
+<td>약 63.64%</td>
+</tr>
+<tr>
+<td>10BB</td>
+<td>9BB</td>
+<td>약 69.23%</td>
+</tr>
+<tr>
+<td>12BB</td>
+<td>11BB</td>
+<td>약 73.33%</td>
+</tr>
+</tbody>
+</table></div>
+<p>A01에서 본 플랍·리버 블러프와 비교하면 알파가 훨씬 높아요. 3벳은 <strong>지금 팟에 비해 크게 거는 벳</strong>이라서, 순수 블러프로는 상대가 아주 많이 접어야 본전이에요.</p>
+<h2>3단계. EV로 확인 (10BB 3벳)</h2>
+<p>상대가 <strong>70%</strong> 접는다면:</p>
+<blockquote>
+<p>EV = 0.7 × 4 − 0.3 × 9 = 2.8 − 2.7 = <strong>+0.1BB</strong></p>
+</blockquote>
+<p>상대가 <strong>60%</strong> 접는다면:</p>
+<blockquote>
+<p>EV = 0.6 × 4 − 0.4 × 9 = 2.4 − 3.6 = <strong>−1.2BB</strong></p>
+</blockquote>
+<p>알파 근처라 폴드율이 조금만 달라도 손익이 뒤집혀요.</p>
+<h2>4단계. 그런데 왜 3벳 블러프를 할까?</h2>
+<p>순수 블러프로만 보면 3벳은 비싸요. 실제로는 <strong>콜을 받아도 끝난 게 아니에요.</strong> A13에서 본 A5s처럼 콜을 받아도 플러시·스트레이트로 이길 길이 있고, 플랍에서 상대가 접을 기회도 있어요. 그래서 실제 손익분기 폴드율은 오늘 알파보다 <strong>낮아요.</strong> 콜 받았을 때의 에퀴티까지 넣는 계산은 A15에서 다뤄요.</p>
+<hr />
+<h2>"3벳을 작게 하면 더 좋은 거 아니에요?"</h2>
+<p>좋은 질문이에요. 알파만 보면 작은 3벳이 덜 접어도 돼요. 하지만 작게 3벳하면 상대가 <strong>더 넓게 콜</strong>할 수 있어서, 폴드율 자체가 내려가요. 그리고 상대에게 싼 값에 플랍을 보여 주죠. 벳 크기와 상대 폴드율의 관계는 A20에서 다뤄요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>프리플랍 알파는 <strong>더 거는 돈 ÷ (지금 팟 + 더 거는 돈)</strong></li>
+<li>이미 낸 블라인드는 <strong>위험에 넣지 않기</strong></li>
+<li>순수 블러프 알파는 <strong>상한선</strong> — 콜 받아도 남는 기회가 있으면 더 낮아져요</li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>학습툴에는 알파를 직접 넣는 칸이 없어요. 홀덤학습 <strong>팟 오즈</strong> 퀴즈 <strong>Lv.5(블러프 본전)</strong>로 같은 계산을 연습해 보세요(퀴즈는 포스트플랍 벳 기준이라, 3벳은 "더 거는 돈"으로 바꿔 생각해요).</p>
+</blockquote>
+<p><strong>문제 1.</strong> 버튼 2.5BB 오픈에 이번엔 <strong>SB에서 11BB로 3벳</strong>. SB는 0.5BB를 이미 냈어요. 알파는?</p>
+<details>
+<summary>정답 보기</summary>
+<p>지금 팟 4BB, 더 거는 돈 11 − 0.5 = 10.5BB. 이번엔 버튼뿐 아니라 <strong>BB도 접어야</strong> 팟을 가져와요.
+알파 = 10.5 ÷ (4 + 10.5) = <strong>약 72.41%</strong>.</p>
+</details>
+<p><strong>문제 2.</strong> CO가 2.5BB 오픈, 우리는 <strong>버튼에서 8BB로 3벳</strong>. 버튼은 블라인드를 내지 않았어요. 알파는? 이번엔 누구누구가 접어야 할까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p>지금 팟 0.5 + 1 + 2.5 = 4BB, 더 거는 돈 8BB.
+알파 = 8 ÷ (4 + 8) = <strong>약 66.67%</strong>. 이 폴드율은 <strong>CO와 SB·BB가 모두</strong> 접을 확률이에요. 뒤에 남은 사람이 많을수록 다 같이 접기는 더 어려워요.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 순수 블러프(콜 받으면 포기)로 단순화한 알파</small></p>
+</article>
+<nav class="nav"><a class="prev" href="076_A13.html"><div class="l">← 이전 글</div><div class="t">3벳 기초: 밸류 3벳과 블러프 3벳은 무엇이 다를까?</div></a><a class="next" href="078_A15.html"><div class="l">다음 글 →</div><div class="t">버튼 오픈에 SB에서 A5s로 3벳, 상대가 몇 % 접으면 이득일까?</div></a></nav></main>
+</body>
+</html>

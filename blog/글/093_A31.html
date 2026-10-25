@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>오픈했는데 3벳을 맞았다: KJs로 콜, 폴드, 4벳 중 무엇이 나을까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge a">상급</span><span class="chip">스팟</span><span class="n">상급 30번째 글 (전체 122편 중 93번째)</span></div><h1>오픈했는데 3벳을 맞았다: KJs로 콜, 폴드, 4벳 중 무엇이 나을까?</h1>
+<article>
+<p>안녕하세요. A13에서 3벳을 하는 쪽을 봤죠. 오늘은 반대로 <strong>3벳을 맞는 오픈한 쪽</strong>이에요.
+버튼에서 K♠J♠로 오픈했는데 SB가 3벳했어요. 콜, 폴드, 4벳을 숫자로 비교해 볼게요. <strong>4벳</strong>은 3벳에 다시 하는 레이즈, <strong>5벳</strong>은 그 4벳에 또 하는 레이즈예요(오늘은 5벳이면 올인).</p>
+<p>오늘 목표는 하나예요. <strong>3벳 앞에서 콜의 필요 에퀴티와 4벳의 본전 폴드율을 나눠 계산하기.</strong></p>
+<hr />
+<h2>오늘의 핸드</h2>
+<p><strong>Hero (BTN · 100BB)</strong></p>
+<p><img src="../카드/Ks.svg" width="48"> <img src="../카드/Js.svg" width="48"></p>
+<h3>프리플랍</h3>
+<p>Hero(BTN) <strong>2.5BB 오픈</strong> → 상대(SB) <strong>11BB 3벳</strong> → BB 폴드 → <strong>Hero는?</strong></p>
+<blockquote>
+<p>지금 팟 11 + 2.5 + 1 = 14.5BB. 콜하려면 <strong>8.5BB</strong>를 더 내요.</p>
+</blockquote>
+<hr />
+<p class="concl"><strong>결론부터 말할게요. 오늘 가정한 상대라면 콜 &gt; 폴드 &gt; 4벳 순서예요.</strong> 콜은 에퀴티가 필요 에퀴티를 넘어 폴드보다 낫고, 4벳은 상대 폴드율(37.5%)이 본전 폴드율(약 52.08%)에 못 미쳐 폴드보다 나빠요.</p>
+<blockquote>
+<p>남은 베팅이 있어 실제 결과는 달라질 수 있어요. 그래서 오늘은 금액(EV) 대신 콜은 <strong>에퀴티 vs 필요 에퀴티</strong>, 4벳은 <strong>상대 폴드율 vs 본전 폴드율</strong>로만 판정해요.</p>
+</blockquote>
+<h2>1단계. 콜하면 필요한 에퀴티</h2>
+<blockquote>
+<p>필요 에퀴티 = 8.5 ÷ (14.5 + 8.5) = 8.5 ÷ 23 = <strong>약 36.96%</strong></p>
+</blockquote>
+<h2>2단계. 상대 3벳 레인지와 K♠J♠의 에퀴티 (가정 레인지 기준)</h2>
+<p>SB의 3벳 레인지를 <strong>TT+, AQs+, AKo, A5s-A2s, 76s, 65s</strong>로 <strong>가정</strong>할게요. Hero의 K♠·J♠를 지우면 <strong>64콤보</strong>예요.</p>
+<blockquote>
+<p>💡 빨리 세는 팁: Hero가 K와 J를 한 장씩 들고 있어서, KK·JJ는 6에서 3으로, AK는 16에서 12로 줄어요</p>
+</blockquote>
+<p>이 레인지 상대 K♠J♠의 에퀴티는 <strong>약 37.54%</strong>(프리플랍 몬테카를로). <strong>아슬아슬하게</strong> 필요 에퀴티를 넘어요.</p>
+<h2>3단계. 4벳하면 — 상대는 셋으로 갈려요</h2>
+<p>4벳이 이득인지 보려면 <strong>본전 폴드율</strong>을 구해요. 상대가 몇 % 접어야 4벳이 폴드와 같아지는지의 비율이에요(A15에서 배웠죠). 비유하면 <strong>복권</strong>이에요. 꽝(상대가 안 접음)일 때 잃는 돈이 클수록 더 자주 당첨(상대 폴드)돼야 본전이에요.</p>
+<p>Hero가 <strong>25BB로 4벳</strong>하면, 상대가 이렇게 대응한다고 가정할게요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>상대 대응</th>
+<th>핸드</th>
+<th>콤보</th>
+<th>비율</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5벳(올인)</td>
+<td>QQ+, AK</td>
+<td>27</td>
+<td>약 42.19%</td>
+</tr>
+<tr>
+<td>콜</td>
+<td>JJ, TT, AQs</td>
+<td>13</td>
+<td>약 20.31%</td>
+</tr>
+<tr>
+<td>폴드</td>
+<td>A5s-A2s, 76s, 65s</td>
+<td>24</td>
+<td>37.5%</td>
+</tr>
+</tbody>
+</table></div>
+<p>5벳 올인을 맞으면 Hero는 접는다고 볼게요. 더 거는 돈은 25 − 2.5 = <strong>22.5BB</strong>예요. 이미 낸 오픈 2.5BB는 어느 선택을 해도 돌아오지 않으니 빼고 세요.</p>
+<p>상대가 안 접는 판은 두 갈래예요.</p>
+<ul>
+<li><strong>5벳</strong>(27콤보): Hero가 접으니 22.5BB를 <strong>다 잃어요</strong></li>
+<li><strong>콜</strong>(13콤보): 팟이 51BB가 되고 리버까지 체크로 간다고 단순화해요. 콜 레인지 상대 <strong>K♠J♠의 에퀴티는 약 40.68%</strong>라, 낸 돈의 일부를 <strong>돌려받아요</strong></li>
+</ul>
+<p>본전 폴드율은 <strong>안 접을 때 잃는 돈 ÷ (지금 팟 + 안 접을 때 잃는 돈)</strong>이에요. 두 갈래 모두 22.5BB를 다 잃는다면 22.5 ÷ (14.5 + 22.5) = <strong>약 60.81%</strong>(A01의 알파와 같은 계산)가 돼요. 콜 갈래에서 돌려받는 몫만큼 잃는 돈이 줄어서, 계산기로 구한 본전 폴드율은 <strong>약 52.08%</strong>로 내려가요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th></th>
+<th>폴드율</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>안 접으면 다 잃는다고 칠 때</td>
+<td>약 60.81%</td>
+</tr>
+<tr>
+<td>본전 폴드율(콜 받을 때 에퀴티 반영)</td>
+<td>약 52.08%</td>
+</tr>
+<tr>
+<td>오늘 상대 폴드율</td>
+<td>37.5%</td>
+</tr>
+</tbody>
+</table></div>
+<p>콜 갈래가 본전 폴드율을 조금 내려 주지만, <strong>Hero가 5벳을 맞고 접는 판</strong>(약 42.19%)이 많아서 37.5%로는 모자라요.</p>
+<h2>4단계. 세 선택 비교</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>선택</th>
+<th>결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>폴드</td>
+<td>0BB(오픈한 2.5BB는 돌아오지 않음)</td>
+</tr>
+<tr>
+<td>콜</td>
+<td>필요 에퀴티 약 36.96% &lt; 에퀴티 약 37.54%</td>
+</tr>
+<tr>
+<td>4벳</td>
+<td>상대 폴드율 37.5% &lt; 본전 폴드율 약 52.08%</td>
+</tr>
+</tbody>
+</table></div>
+<hr />
+<h2>"37.54%면 거의 본전인데, 그냥 접어도 되지 않아요?"</h2>
+<p>좋은 질문이에요. 숫자로는 아슬아슬하게 콜이에요. Hero가 <strong>포지션</strong>을 가져서 계산된 에퀴티를 더 잘 가져갈 수 있다는 점이 콜 쪽을 받쳐 줘요. 같은 핸드로 포지션 없이 콜해야 한다면, 실현이 줄어서 접는 쪽이 나을 수 있어요.</p>
+<h2>숫자가 뒤집히는 지점</h2>
+<p>기준은 <strong>상대 3벳 레인지에 어떤 핸드가 들어 있느냐</strong>예요. K♠J♠가 앞서는 핸드가 늘면 에퀴티가 올라가고, K♠J♠를 누르는 핸드(AK·KQs·큰 페어)가 늘면 내려가요. 에퀴티가 약 36.96% 아래로 내려가면 폴드예요. 4벳은 <strong>5벳으로 맞서는 핸드가 줄고 접는 핸드가 늘 때</strong> 좋아져요. 어느 쪽으로 바뀌는지는 문제 1·2에서 직접 확인해 보세요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>3벳 앞에서는 <strong>콜·폴드·4벳</strong>을 따로 계산</li>
+<li>4벳은 <strong>본전 폴드율</strong>과 비교 — 5벳이 많으면 본전 폴드율을 넘기 어려워요</li>
+<li>콜 판정은 레인지의 넓이보다 <strong>어떤 핸드가 섞였는지</strong>로 바뀌어요</li>
+</ol></section>
+<hr />
+<h2>연습 문제 (같은 자리, 같은 Hero 핸드)</h2>
+<blockquote>
+<p>학습툴 에퀴티 계산기의 <strong>레인지 입력은 확인 중</strong>이에요. 지금은 정답의 숫자(블로그 계산기로 구한 값)를 따라가 보고, 학습툴에는 <strong>핸드 대 핸드</strong>(내 핸드와 상대 핸드 하나)만 넣어 확인해 보세요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 이 SB는 <strong>QQ+, AK</strong>로만 3벳해요. 콜?</p>
+<details>
+<summary>정답 보기</summary>
+<p>레인지 <strong>27콤보</strong>, K♠J♠ 에퀴티 <strong>약 25.58%</strong> &lt; 약 36.96% → <strong>폴드</strong>. 블러프가 없는 3벳에는 KJs도 접어요.</p>
+</details>
+<p><strong>문제 2.</strong> 이 SB는 오늘 레인지에 <strong>KQs, QJs, JTs, K9s, Q9s, J9s, T8s, 97s, 86s</strong>까지 넓게 3벳해요. 콜?</p>
+<details>
+<summary>정답 보기</summary>
+<p>레인지 <strong>95콤보</strong>, K♠J♠ 에퀴티 <strong>약 45.75%</strong> &gt; 약 36.96% → <strong>콜</strong>이 편해요. Q9s·J9s·T8s·97s·86s처럼 K♠J♠가 앞서는 핸드가 많이 늘었기 때문이에요. KQs처럼 K♠J♠를 누르는 핸드도 섞였지만, 앞서는 핸드가 훨씬 많아요.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 (콤보는 하나씩 셈, 에퀴티는 프리플랍 몬테카를로) · 가정 레인지 기준 (솔버 결과 아님) · 콜은 이번 한 번의 결정 기준 · 4벳 콜 받으면 리버까지 체크로 단순화</small></p>
+</article>
+<nav class="nav"><a class="prev" href="092_A29.html"><div class="l">← 이전 글</div><div class="t">다운스윙과 분산: 잘 치는데 왜 한 달 내내 질 수 있을까?</div></a><a class="next" href="094_A32.html"><div class="l">다음 글 →</div><div class="t">BB에서 플랍 1/3 c-bet을 맞았다: MDF만큼 지켜야 할까?</div></a></nav></main>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>임플라이드 오즈: 지금은 손해인 콜이 이득이 되려면 얼마를 더 받아야 할까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge i">중급</span><span class="chip">개념</span><span class="n">중급 9번째 글 (전체 122편 중 40번째)</span></div><h1>임플라이드 오즈: 지금은 손해인 콜이 이득이 되려면 얼마를 더 받아야 할까?</h1>
+<article>
+<p>안녕하세요. I08에서 거트샷은 "맞으면 크게 이긴다"는 생각만으로는 콜할 수 없다고 했죠. 그 "맞았을 때 더 받아낼 돈"을 정확히 따지는 날이에요.
+오늘은 그 "더 받아낼 돈"을 <strong>숫자로</strong> 구해요. 이걸 <strong>임플라이드 오즈</strong>라고 해요.</p>
+<p>오늘 목표는 하나예요. <strong>드로우 콜이 본전이 되려면, 맞았을 때 상대에게서 얼마를 더 받아야 하는지 계산하기.</strong></p>
+<hr />
+<h2>1단계. 임플라이드 오즈가 뭔가요?</h2>
+<p>지금 팟만 보고 계산하는 게 보통 팟오즈(B06)예요. <strong>임플라이드 오즈 = 드로우가 맞았을 때 다음 스트리트에서 상대에게 더 받아낼 돈까지 넣어서 보는 팟오즈</strong>예요.</p>
+<p>비유하면 <strong>적자 나는 첫 장사</strong>예요. 오늘 가게 문을 여는 건 손해지만, 단골이 생겨서 다음에 더 벌 수 있다면 문을 열 만하죠. 다만 "다음에 정말 벌 수 있느냐"가 핵심이에요.</p>
+<h2>2단계. 공식 — 거꾸로 풀기</h2>
+<p>먼저 가정을 분명히 할게요. <strong>맞으면 우리가 이기고, 못 맞으면 리버에 포기한다</strong>고 볼게요. 그리고 리버 한 장만 남은 턴 상황이에요.</p>
+<p>본전이 되려면 "맞을 때 버는 돈"과 "못 맞을 때 잃는 돈"의 평균이 같아야 해요.</p>
+<ol>
+<li>못 맞을 때 잃는 돈의 평균 = <strong>질 확률 × 우리 콜</strong></li>
+<li>맞을 때 버는 돈의 평균 = <strong>맞을 확률 × 맞을 때 버는 총액</strong></li>
+<li>둘이 같아야 하니까 → <strong>맞을 때 벌어야 하는 총액 = 질 확률 × 우리 콜 ÷ 맞을 확률</strong></li>
+<li>이 총액에서 이미 팟에 있는 돈(<strong>원래 팟 + 상대 벳</strong>)을 빼면 → <strong>리버에 더 받아내야 하는 돈</strong></li>
+</ol>
+<h2>3단계. 예시 ① — 턴에 플러시 드로우, 하프팟 벳</h2>
+<p>팟 10BB에 상대가 5BB 벳. 리버 한 장에 플러시가 맞을 확률은 9 ÷ 46 = <strong>약 19.57%</strong>(아웃츠 9장, 남은 카드 46장 — I01에서 배웠죠). 필요 에퀴티는 <strong>25%</strong>.</p>
+<ul>
+<li>그냥 콜하면: 0.1957 × 15 − 0.8043 × 5 = <strong>약 −1.09BB</strong> (손해)</li>
+<li>맞을 때 벌어야 하는 총액: 공식의 "질 확률 ÷ 맞을 확률"은 장수로 바꾸면 "안 맞는 37장 ÷ 맞는 9장"이에요. 그래서 37 × 5 ÷ 9 = <strong>약 20.56BB</strong></li>
+<li>지금 팟 <strong>15BB</strong>를 빼면 → <strong>약 5.56BB</strong>를 리버에 더 받아내야 본전</li>
+</ul>
+<p>리버에 플러시가 맞았을 때 상대가 <strong>약 5.56BB 이상</strong> 더 내줄 거라고 기대할 수 있으면 콜이 이득이에요.</p>
+<h2>4단계. 예시 ② — 같은 벳, 거트샷이라면</h2>
+<p>아웃츠 4장, 맞을 확률 <strong>약 8.7%</strong>.</p>
+<ul>
+<li>맞을 때 벌어야 하는 총액: 안 맞는 42장 ÷ 맞는 4장 → 42 × 5 ÷ 4 = <strong>52.5BB</strong></li>
+<li>지금 팟 15BB를 빼면 → 52.5 − 15 = <strong>37.5BB</strong>를 더 받아야 해요</li>
+</ul>
+<p>하프팟 벳 하나에 따라가면서, 맞았을 때 <strong>팟의 몇 배</strong>를 더 받아야 하는 거예요. 스택이 아주 깊고 상대가 잘 따라오는 사람이 아니라면 어렵죠. 그래서 하프팟 이상 벳 앞에서 거트샷은 임플라이드 오즈로도 콜하기 어려워요(I08).</p>
+<h2>5단계. 상대 벳이 크면?</h2>
+<p>플러시 드로우라도 상대가 <strong>팟벳(10BB)</strong> 이면 필요 에퀴티 <strong>33.3%</strong>. 맞을 때 벌어야 하는 총액은 37 × 10 ÷ 9 = <strong>약 41.11BB</strong>, 이번엔 지금 팟이 10 + 10 = <strong>20BB</strong>라서 41.11 − 20 = <strong>약 21.11BB</strong>를 더 받아야 해요. <strong>벳이 클수록 임플라이드 오즈로 메우기 어려워요.</strong></p>
+<hr />
+<h2>"그럼 맞으면 상대가 얼마를 더 낼지 어떻게 알아요?"</h2>
+<p>좋은 질문이에요. 정확히는 몰라요. 그래서 이런 걸 같이 봐요.</p>
+<ul>
+<li><strong>남은 스택</strong>: 상대에게 칩이 적으면 더 받을 돈도 적어요</li>
+<li><strong>드로우가 티 나는지</strong>: 같은 무늬 세 장이 깔리면 상대가 플러시를 의심해서 덜 낼 수 있어요</li>
+<li><strong>상대가 잘 따라오는 사람인지</strong></li>
+</ul>
+<p>계산의 쓸모는 <strong>"얼마를 더 받아야 하는지"를 알게 해 주는 것</strong>이에요. 그 숫자가 비현실적으로 크면 폴드예요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>임플라이드 오즈 = <strong>맞았을 때 더 받아낼 돈까지 넣은 팟오즈</strong></li>
+<li>더 받아야 할 돈 = <strong>질 확률 × 우리 콜 ÷ 맞을 확률 − 지금 팟</strong></li>
+<li>아웃츠가 적거나 벳이 크면 <strong>필요한 돈이 비현실적으로 커져요</strong></li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>홀덤학습 <strong>에퀴티 계산기</strong>에서 내 카드를 고른 뒤 <strong>[콜 수익]</strong> 칸에 <strong>지금 팟(상대 벳 포함)</strong>과 <strong>콜 금액</strong>을 넣으면 필요 에퀴티가 나와요. 임플라이드 오즈는 손으로 이어서 계산해 보세요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 턴, 팟 20BB에 상대 5BB 벳. 양방 드로우(아웃츠 8장)라면 더 받아낼 돈이 필요할까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p>맞을 확률 8 ÷ 46 = <strong>약 17.39%</strong>, 필요 에퀴티 <strong>약 16.67%</strong> → 이미 넘어요.
+그냥 콜해도 약 <strong>+0.22BB</strong>. 계산하면 더 받아야 할 돈이 <strong>약 −1.25BB</strong>, 즉 <strong>필요 없어요.</strong> 아웃츠가 충분한 드로우라면, 이렇게 작은 벳에는 그냥 콜해도 돼요.</p>
+</details>
+<p><strong>문제 2.</strong> 턴, 팟 12BB에 상대 12BB(팟벳). 거트샷(4장)이라면?</p>
+<details>
+<summary>정답 보기</summary>
+<p>맞을 확률 <strong>약 8.7%</strong>, 맞을 때 벌어야 하는 총액 <strong>126BB</strong>, 지금 팟 24BB를 빼면 <strong>102BB</strong>를 더 받아야 해요. 거의 불가능하니 <strong>폴드</strong>.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · "더 받아낼 돈"은 본전 기준 계산(상대가 실제로 낼지는 따로 판단)</small></p>
+</article>
+<nav class="nav"><a class="prev" href="039_I08.html"><div class="l">← 이전 글</div><div class="t">턴에 거트샷, 상대가 팟벳하면 왜 폴드가 맞을까?</div></a><a class="next" href="041_I10.html"><div class="l">다음 글 →</div><div class="t">레인지를 %와 콤보로 세기: &quot;전체의 5%&quot;는 실제로 몇 가지 핸드일까?</div></a></nav></main>
+</body>
+</html>

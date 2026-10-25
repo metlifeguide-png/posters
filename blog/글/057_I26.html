@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>턴에 양방 드로우, 상대가 올인하면 몇 번 맞아야 콜일까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge i">중급</span><span class="chip">스팟</span><span class="n">중급 26번째 글 (전체 122편 중 57번째)</span></div><h1>턴에 양방 드로우, 상대가 올인하면 몇 번 맞아야 콜일까?</h1>
+<article>
+<p>안녕하세요. 오늘은 턴에 <strong>양방 스트레이트 드로우</strong>(양쪽 끝 어느 쪽이 나와도 스트레이트가 되는 드로우, I01)를 들고 있는데, 상대가 <strong>남은 칩 전부를 올인</strong>한 장면이에요.
+올인이라 리버에 더 받아낼 돈이 없어요. 그래서 <strong>지금 팟오즈만으로</strong> 결론이 나요.</p>
+<p>오늘 목표는 하나예요. <strong>한 장 남은 드로우로 큰 올인을 맞았을 때, 콜 기준을 바로 계산하기.</strong></p>
+<hr />
+<h2>오늘의 핸드</h2>
+<p><strong>Hero (BB 자리 · 스택 30BB)</strong></p>
+<p><img src="../카드/9d.svg" width="48"> <img src="../카드/8d.svg" width="48"></p>
+<h3>프리플랍</h3>
+<p>상대(BTN) <strong>2.5BB 오픈</strong> → SB 폴드 → Hero <strong>콜</strong></p>
+<blockquote>
+<p>팟 5.5BB</p>
+</blockquote>
+<h3>플랍 · 팟 5.5BB</h3>
+<p><img src="../카드/Tc.svg" width="48"> <img src="../카드/7s.svg" width="48"> <img src="../카드/2h.svg" width="48"></p>
+<p>Hero 체크 → 상대 <strong>2.75BB 벳</strong> → Hero <strong>콜</strong></p>
+<blockquote>
+<p>Hero는 하이카드지만 T-9-8-7, <strong>6이나 J</strong>가 나오면 스트레이트예요.</p>
+</blockquote>
+<h3>턴 · 팟 11BB</h3>
+<p><img src="../카드/Tc.svg" width="48"> <img src="../카드/7s.svg" width="48"> <img src="../카드/2h.svg" width="48"> <img src="../카드/3c.svg" width="48"></p>
+<p>Hero 체크 → 상대 <strong>24.75BB 올인</strong> → <strong>Hero는 콜? 폴드?</strong></p>
+<blockquote>
+<p>Hero 남은 칩도 딱 24.75BB예요. 콜하면 Hero도 올인이고, 리버 한 장으로 끝나요.</p>
+</blockquote>
+<hr />
+<p class="concl"><strong>결론부터 말할게요. 오늘 가정한 상대라면 폴드가 이득입니다.</strong> 콜하면 한 번에 평균 <strong>약 14.15BB</strong> 손해예요.</p>
+<h2>1단계. 필요 에퀴티</h2>
+<p><strong>필요 에퀴티 = 콜해서 본전이 되려면 가져와야 하는 몫</strong>(B06). 상대는 팟의 두 배가 넘게 걸었어요.</p>
+<blockquote>
+<p>필요 에퀴티 = 24.75(Hero 콜) ÷ (11(원래 팟) + 24.75(상대 벳) + 24.75(Hero 콜)) = 24.75 ÷ 60.5 = <strong>약 40.9%</strong></p>
+</blockquote>
+<h2>2단계. 아웃츠 — 리버 한 장</h2>
+<p>Hero가 아는 카드(Hero 2장 + 보드 4장)를 빼면 <strong>46장</strong> 중에서, 6이 4장, J가 4장 → <strong>8장</strong>.</p>
+<blockquote>
+<p>리버에 맞을 확률 = 8 ÷ 46 = <strong>약 17.39%</strong> (아웃츠 × 2로 어림하면 16, 즉 <strong>16%</strong>. 이 어림법은 I02에서 배웠죠)</p>
+</blockquote>
+<h2>3단계. 상대 레인지 (가정 레인지 기준)</h2>
+<p>상대가 턴에 올인하는 핸드를 <strong>T 탑페어(AT·KT·QT·JT·같은 무늬 T9), 셋(TT·77), 99, JJ 이상 포켓페어</strong>로 가정할게요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>핸드</th>
+<th>콤보</th>
+<th>왜 이 숫자?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AT</td>
+<td>12</td>
+<td>T 3장(T♣는 보드) × A 4장</td>
+</tr>
+<tr>
+<td>KT</td>
+<td>12</td>
+<td></td>
+</tr>
+<tr>
+<td>QT</td>
+<td>12</td>
+<td></td>
+</tr>
+<tr>
+<td>JT</td>
+<td>12</td>
+<td></td>
+</tr>
+<tr>
+<td>T9s</td>
+<td>2</td>
+<td>T♣는 보드, 9♦는 Hero 손 → ♠·♥만</td>
+</tr>
+<tr>
+<td>TT</td>
+<td>3</td>
+<td></td>
+</tr>
+<tr>
+<td>77</td>
+<td>3</td>
+<td></td>
+</tr>
+<tr>
+<td>99</td>
+<td>3</td>
+<td>9♦가 Hero 손에 있어서</td>
+</tr>
+<tr>
+<td>JJ</td>
+<td>6</td>
+<td></td>
+</tr>
+<tr>
+<td>QQ</td>
+<td>6</td>
+<td></td>
+</tr>
+<tr>
+<td>KK</td>
+<td>6</td>
+<td></td>
+</tr>
+<tr>
+<td>AA</td>
+<td>6</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>합계</strong></td>
+<td><strong>83</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>💡 빨리 세는 팁: 보드에 있는 숫자의 페어는 3콤보(TT·77), Hero가 한 장 든 숫자의 페어도 3콤보(99), 아무것도 안 보이면 6콤보(JJ 이상)</p>
+</blockquote>
+<p>상대가 JJ·JT를 들고 있으면 Hero가 기다리는 <strong>J가 그만큼 줄어서</strong>, 에퀴티가 아웃츠 확률보다 조금 더 낮아질 수 있어요.</p>
+<p>모두 지금 Hero보다 앞서 있어요. 이 레인지 상대 Hero 에퀴티는 <strong>약 17.52%</strong> — 아웃츠 확률과 거의 같아요. Hero는 사실상 <strong>6이나 J가 나와야만</strong> 이겨요.</p>
+<h2>4단계. 비교와 EV</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th></th>
+<th>숫자</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>필요 에퀴티</td>
+<td>약 40.9%</td>
+</tr>
+<tr>
+<td>Hero 에퀴티</td>
+<td>약 17.52%</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>콜 손익 = 0.1752 × 35.75(이기면 버는 돈: 원래 팟 + 상대 벳) − 0.8248 × 24.75(Hero 콜) = <strong>약 −14.15BB</strong> → <strong>폴드</strong></p>
+</blockquote>
+<p>필요한 것의 절반에도 못 미쳐요. 올인이라 <strong>더 받아낼 돈(임플라이드 오즈)도 없어요.</strong></p>
+<hr />
+<h2>"양방 드로우면 꽤 좋은 드로우 아니에요?"</h2>
+<p>좋은 질문이에요. 플랍에서 <strong>리버까지 두 장을 다 본다면</strong> 양방은 맞을 확률이 지금의 두 배 가까이 돼서 꽤 좋아요(I01). 하지만 턴에서는 <strong>한 장만</strong> 남아서 확률이 절반쯤으로 줄어요. 그리고 상대 벳이 크면 필요 에퀴티는 크게 올라가요. <strong>드로우의 가치는 남은 장수와 상대 벳 크기에 따라 달라져요.</strong></p>
+<h2>숫자가 뒤집히는 지점</h2>
+<p>기준은 <strong>필요 에퀴티가 Hero 에퀴티(약 17.52%)보다 낮아지는 벳 크기</strong>예요. 상대 벳이 작아질수록 필요 에퀴티가 내려가요. 어디쯤에서 뒤집히는지 문제 1·2에서 직접 계산해 보세요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>턴 드로우는 <strong>한 장 기준(× 2)</strong> 으로</li>
+<li>상대가 <strong>올인</strong>이면 더 받아낼 돈이 없으니 <strong>지금 팟오즈만</strong> 보기</li>
+<li>큰 벳일수록 드로우로는 <strong>필요 에퀴티를 채우기 어려워요</strong>(맞을 확률은 그대로인데 기준이 올라가니까요)</li>
+</ol></section>
+<hr />
+<h2>연습 문제 (같은 보드, 같은 Hero 핸드)</h2>
+<blockquote>
+<p>홀덤학습 <strong>에퀴티 계산기</strong>에서 내 카드를 고른 뒤 <strong>[콜 수익]</strong> 칸에 <strong>지금 팟(상대 벳 포함)</strong>과 <strong>콜 금액</strong>을 넣으면 필요 에퀴티가 나와요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 상대가 턴에 <strong>2.75BB</strong>만 걸었다면?</p>
+<details>
+<summary>정답 보기</summary>
+<p>필요 에퀴티 = 2.75 ÷ (11 + 2.75 + 2.75) = <strong>약 16.67%</strong> &lt; 17.52% → <strong>콜</strong>(리버에 또 베팅이 있을 수 있으니 이번 결정 기준).
+콜 손익 = 0.1752 × 13.75 − 0.8248 × 2.75 = 2.41 − 2.27 = <strong>약 +0.14BB</strong>.</p>
+</details>
+<p><strong>문제 2.</strong> 상대가 <strong>5BB</strong>를 걸었다면?</p>
+<details>
+<summary>정답 보기</summary>
+<p>필요 에퀴티 = 5 ÷ (11 + 5 + 5) = <strong>약 23.81%</strong> &gt; 17.52% → <strong>폴드</strong>.
+콜 손익 = 0.1752 × 16 − 0.8248 × 5 = 2.8 − 4.12 = <strong>약 −1.32BB</strong>.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 가정 레인지 기준 (솔버 결과 아님) · 올인 콜이라 본문 콜 손익이 최종 결과</small></p>
+</article>
+<nav class="nav"><a class="prev" href="056_I25.html"><div class="l">← 이전 글</div><div class="t">토너먼트 구조 읽기: 블라인드 레벨·앤티·리엔트리·레이트 레지는 무엇을 바꿀까?</div></a><a class="next" href="058_I27.html"><div class="l">다음 글 →</div><div class="t">레인지로 생각하기: &quot;상대는 뭘 들고 있을까&quot;를 목록으로 만드는 법</div></a></nav></main>
+</body>
+</html>

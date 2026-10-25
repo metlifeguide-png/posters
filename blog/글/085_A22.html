@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>세미블러프의 EV: 드로우로 올인하면 왜 두 번 이길까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge a">상급</span><span class="chip">개념</span><span class="n">상급 22번째 글 (전체 122편 중 85번째)</span></div><h1>세미블러프의 EV: 드로우로 올인하면 왜 두 번 이길까?</h1>
+<article>
+<p>안녕하세요. A21에서 드로우로 턴에 한 번 더 걸 때, 콜 받아도 에퀴티가 남아 본전 폴드율이 내려가는 걸 봤죠.
+오늘은 그 생각에 이름을 붙여요. <strong>세미블러프 = 지금은 진 핸드지만, 맞으면 이기는 드로우로 거는 것</strong>이에요. 이번엔 <strong>올인</strong>이라 뒤에 베팅이 없어서 EV로 끝까지 계산할 수 있어요.</p>
+<p class="concl"><strong>결론부터 말할게요. 오늘 장면에서 A♥J♥ 올인은 체크보다 낫습니다.</strong></p>
+<p>오늘 목표는 하나예요. <strong>세미블러프 EV를 "접을 때 몫 + 콜 받을 때 몫"으로 나누고, 체크와 비교하기.</strong></p>
+<hr />
+<h2>1단계. 오늘의 장면</h2>
+<p>토너먼트, 유효 스택 <strong>20BB</strong>. BTN이 <strong>2.5BB 오픈</strong>, Hero(BB) 콜. 플랍 팟 <strong>5.5BB</strong>, Hero 남은 스택 20 − 2.5 = <strong>17.5BB</strong>.</p>
+<p><strong>Hero (BB)</strong></p>
+<p><img src="../카드/Ah.svg" width="48"> <img src="../카드/Jh.svg" width="48"></p>
+<p><strong>플랍</strong> <img src="../카드/Th.svg" width="48"> <img src="../카드/7h.svg" width="48"> <img src="../카드/2c.svg" width="48"></p>
+<p>Hero는 <strong>넛 플러시 드로우</strong>(하트가 오면 A 하이 플러시)에 오버카드 두 장이에요. Hero가 먼저 <strong>17.5BB 올인</strong>한다고 해 볼게요. 오늘은 계산을 끝까지 보이려고 먼저 올인하는 장면으로 단순화해요(체크 후 레이즈 올인도 있지만 계산에 넣지 않아요).</p>
+<p>비유하면 세미블러프는 <strong>보험 든 도전</strong>이에요. 상대가 물러나면 바로 이기고, 맞서 와도 맞으면 이기는 길이 남아 있죠.</p>
+<h2>2단계. 상대 레인지 (가정 레인지 기준)</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>상대 대응</th>
+<th>핸드</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>콜</td>
+<td>TT+, 77, 22, AT, KT, QT, JT, T9s, 하트 두 장 플러시 드로우 전부</td>
+</tr>
+<tr>
+<td>폴드</td>
+<td>33-66, 88, 99, A2s-A9s, KQ, KJ, QJ, 98s, 87s, 76s, 65s, A2o-A9o (하트 두 장 콤보는 콜 쪽)</td>
+</tr>
+</tbody>
+</table></div>
+<p>3배 팟 올인이라 상대는 <strong>T 페어 이상과 플러시 드로우</strong>로만 콜한다고 가정해요. Hero가 A♥를 쥐고 있어서 상대에게는 <strong>넛 플러시 드로우가 없어요</strong>(블로커). 콜 <strong>100콤보</strong>, 폴드 <strong>177콤보</strong>, 상대 폴드율 = 177 ÷ 277 = <strong>약 63.9%</strong>.</p>
+<h2>3단계. EV를 두 몫으로 나누기</h2>
+<p><strong>① 순수 블러프였다면</strong>: 알파(콜 받으면 늘 진다고 칠 때 필요한 폴드율, A01) = 17.5 ÷ (5.5 + 17.5) = <strong>약 76.1%</strong>. 63.9%로는 모자라요.</p>
+<p><strong>② 콜 받을 때 에퀴티</strong>: 콜 레인지 상대 Hero 에퀴티는 <strong>약 55.7%</strong>(턴·리버 두 장을 전부 셈). 상대의 더 낮은 플러시 드로우를 Hero가 누르기 때문이에요. 콜 받으면 팟 5.5 + 17.5 + 17.5 = <strong>40.5BB</strong>.</p>
+<blockquote>
+<p>콜 받을 때 손익 = 0.55681 × 40.5 − 17.5 = 22.55081 − 17.5 = <strong>약 +5.05BB</strong></p>
+<p>올인 EV = 0.63899(접는 비율) × 5.5(지금 팟) + 0.36101(콜 비율) × 5.05093 = 3.51444 + 1.82344 = <strong>약 +5.34BB</strong></p>
+</blockquote>
+<h2>4단계. 체크와 비교하기</h2>
+<p>체크해도 Hero는 카드를 더 봐요. 끝까지 체크로 간다고 단순화하면, 상대 전체 레인지 상대 에퀴티 <strong>약 69.1%</strong>만큼 지금 팟 5.5BB를 가져가요. <strong>약 3.8BB</strong>예요.
+→ 올인(약 +5.34BB) &gt; 체크(약 3.8BB) → <strong>올인</strong>. 두 숫자 모두 "지금 팟 5.5BB를 내주는 것(0BB)"을 기준으로 센 몫이에요. 그래서 상대가 접으면 +5.5BB예요.</p>
+<hr />
+<h2>"콜 받아도 이득이면, 그건 블러프가 아니지 않아요?"</h2>
+<p>좋은 질문이에요. 지금 Hero는 쇼다운하면 지는 핸드(A 하이)지만, 남은 두 장까지 보면 콜 레인지를 상대로 절반 넘게 이겨요. 세미블러프는 "지금은 블러프, 카드가 오면 밸류"인 벳이에요. 드로우가 약할수록 콜 받을 때 몫이 줄어서 <strong>접는 몫에 더 기대게</strong> 돼요.</p>
+<h2>숫자가 뒤집히는 지점</h2>
+<p>기준은 <strong>올인 EV가 체크 몫보다 큰지</strong>예요. 오늘 A♥J♥는 콜 받을 때 손익(약 +5.05BB)만으로도 체크 몫보다 커서, 상대가 덜 접어도 올인이 나아요. 드로우가 약하면 <strong>체크와 같아지는 폴드율</strong>을 넘는지 봐야 해요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>세미블러프 EV = <strong>접을 때 몫 + 콜 받을 때 몫</strong></li>
+<li>비교 기준은 0이 아니라 <strong>체크했을 때 몫</strong></li>
+<li>드로우가 약할수록 <strong>폴드율에 더 기대요</strong></li>
+</ol></section>
+<hr />
+<h2>연습 문제 (같은 장면, Hero 핸드만 바꿈)</h2>
+<blockquote>
+<p>알파는 홀덤학습 <strong>팟 오즈</strong> 퀴즈 <strong>Lv.5(블러프 본전)</strong>로 연습할 수 있어요. 학습툴 에퀴티 계산기에는 레인지 입력이 없어요. 내 카드·보드와 상대 핸드 하나(예: T♠9♠)를 넣는 <strong>핸드 대 핸드</strong>로 콜 받을 때 에퀴티 감을 확인해 보세요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> Hero가 9♥8♥(플러시 드로우 + 양방 스트레이트 드로우)예요. 상대 폴드율 <strong>약 63.5%</strong>, 콜 레인지 상대 에퀴티 <strong>약 52.6%</strong>, 체크 몫 <strong>약 3.39BB</strong>예요. 올인? 체크?</p>
+<details>
+<summary>정답 보기</summary>
+<p>콜 받을 때 손익 = 0.5261 × 40.5 − 17.5 = 21.30705 − 17.5 = <strong>약 +3.81BB</strong>
+올인 EV = 0.63518 × 5.5 + 0.36482 × 3.80706 = 3.49349 + 1.3889 = <strong>약 +4.88BB</strong> &gt; 체크 약 3.39BB → <strong>올인</strong>.</p>
+</details>
+<p><strong>문제 2.</strong> Hero가 Q♣J♣(오버카드 두 장 + 백도어 드로우, 지금 드로우는 없음)예요. 상대 폴드율 <strong>약 62.1%</strong>, 콜 레인지 상대 에퀴티 <strong>약 26.3%</strong>, 체크 몫 <strong>약 1.6BB</strong>예요. 올인? 체크?</p>
+<details>
+<summary>정답 보기</summary>
+<p>콜 받을 때 손익 = 0.26272 × 40.5 − 17.5 = 10.64016 − 17.5 = <strong>약 −6.86BB</strong>
+올인 EV = 0.62136 × 5.5 + 0.37864 × (−6.85997) = 3.41748 − 2.59746 = <strong>약 +0.82BB</strong> &lt; 체크 약 1.6BB → <strong>체크</strong>. 체크 몫은 끝까지 체크한다고 단순화한 값이라, 실제로는 조금 달라질 수 있어요. 체크와 같아지는 폴드율은 <strong>약 68.4%</strong>라, 상대가 그보다 많이 접어야 올인이 나아요.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 (콤보는 하나씩 셈, 턴·리버는 전부 셈) · 가정 레인지 기준 (솔버 결과 아님) · 올인은 최종 결과, 체크 몫은 끝까지 체크로 단순화</small></p>
+</article>
+<nav class="nav"><a class="prev" href="084_A21.html"><div class="l">← 이전 글</div><div class="t">턴 더블배럴: 6♥5♥ 드로우로 한 번 더 걸까, 체크할까?</div></a><a class="next" href="086_A23.html"><div class="l">다음 글 →</div><div class="t">플랍 체크레이즈를 맞은 오버페어 KK, 드로우가 많은 보드에서 콜할까?</div></a></nav></main>
+</body>
+</html>

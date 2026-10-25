@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>셋 마이닝: 작은 페어로 콜하려면 상대 스택이 얼마나 깊어야 할까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge i">중급</span><span class="chip">개념</span><span class="n">중급 21번째 글 (전체 122편 중 52번째)</span></div><h1>셋 마이닝: 작은 페어로 콜하려면 상대 스택이 얼마나 깊어야 할까?</h1>
+<article>
+<p>안녕하세요. 55 같은 작은 포켓페어는 플랍에서 <strong>셋</strong>(포켓페어가 보드의 같은 숫자를 만나 세 장이 된 것)이 되면 아주 강해져요.
+그래서 "셋이 될 때를 노리고 콜한다"는 걸 <strong>셋 마이닝</strong>이라고 해요. 오늘은 이게 언제 이득인지 계산해요.</p>
+<p>오늘 목표는 하나예요. <strong>셋이 될 확률로, 맞았을 때 얼마를 벌어야 본전인지 구하기.</strong></p>
+<hr />
+<h2>1단계. 플랍에 셋 이상이 될 확률</h2>
+<p>우리 손에 5가 두 장 있으면, 덱에 남은 5는 <strong>2장</strong>이에요. 플랍 세 장 중에 이 2장 중 하나라도 나오면 셋 이상이 돼요.
+실제로 모든 플랍 조합을 세면:</p>
+<blockquote>
+<p>플랍에 셋 이상이 될 확률 = <strong>약 11.76%</strong>, 안 될 확률 = <strong>약 88.24%</strong></p>
+</blockquote>
+<p>대략 <strong>8번에 1번</strong>이에요. 정확히는 안 될 때가 될 때보다 88.245 ÷ 11.755 = <strong>약 7.51배</strong> 많아요.</p>
+<p>비유하면 <strong>자주 꽝이 나오는 대신 당첨금이 큰 뽑기</strong>예요. 꽝 7.5번을 버틸 만큼 당첨금이 커야 하죠.</p>
+<h2>2단계. 본전이 되려면 셋일 때 얼마를 벌어야 할까?</h2>
+<p>가정은 이래요: <strong>셋이 되면 이기고, 안 되면 플랍에서 바로 포기한다.</strong>
+그러면 본전 조건은 I09의 임플라이드 오즈와 같은 모양이에요.</p>
+<blockquote>
+<p>셋일 때 벌어야 하는 총액 = 안 될 확률 × 콜 금액 ÷ 될 확률</p>
+</blockquote>
+<p>상대 2.5BB 오픈에 2.5BB로 콜한다면:</p>
+<blockquote>
+<p>0.88245 × 2.5 ÷ 0.11755 = <strong>약 18.77BB</strong></p>
+</blockquote>
+<p>셋이 됐을 때 팟에 있던 돈까지 합쳐 <strong>약 18.77BB</strong> 이상 벌어야 본전이에요.</p>
+<h2>3단계. 스택이 깊어야 하는 이유</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>상황</th>
+<th>콜</th>
+<th>셋일 때 필요한 이익</th>
+<th>상대 유효 스택</th>
+<th>스택 ÷ 콜</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>오픈에 콜, 100BB</td>
+<td>2.5BB</td>
+<td>약 18.77BB</td>
+<td>100BB</td>
+<td>40배</td>
+</tr>
+<tr>
+<td>3벳에 콜, 100BB (이번에 더 내는 돈 9BB로 단순화)</td>
+<td>9BB</td>
+<td>약 67.56BB</td>
+<td>100BB</td>
+<td>약 11.11배</td>
+</tr>
+<tr>
+<td>오픈에 콜, 15BB</td>
+<td>2.5BB</td>
+<td>약 18.77BB</td>
+<td>15BB</td>
+<td>6배</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>100BB에서 오픈에 콜</strong>: 필요한 이익이 스택에 비해 작아서 셋 마이닝이 해 볼 만해요</li>
+<li><strong>3벳에 콜</strong>: 콜이 커져서 필요한 이익도 커져요. 상대에게 스택의 3분의 2 가까이를 받아내야 해요</li>
+<li><strong>상대 스택이 15BB</strong>: 셋이 돼도 받을 수 있는 돈이 15BB가 최대라서 <strong>약 18.77BB를 못 채워요.</strong> 계산상 손해예요</li>
+</ul>
+<p>그래서 셋 마이닝은 <strong>"콜 금액에 비해 상대 스택이 깊을 때"</strong> 만 맞아요. 필요한 이익이 언제나 <strong>콜의 약 7.51배</strong>이니, "스택 ÷ 콜"이 7.51보다 넉넉히 커야 해요(셋이 져도 되는 여유까지 생각하면 더 커야 해요).</p>
+<h2>4단계. 계산이 실제보다 좋게 나오는 이유</h2>
+<p>오늘 계산은 두 가지를 낙관적으로 봤어요.</p>
+<ul>
+<li>셋이 돼도 <strong>질 수 있어요</strong>(더 높은 셋, 플러시·스트레이트 등)</li>
+<li>셋이 돼도 상대가 <strong>늘 큰 돈을 내주지는 않아요</strong></li>
+</ul>
+<p>그래서 실전에서는 필요한 이익을 <strong>계산보다 넉넉하게</strong> 잡아야 해요.</p>
+<hr />
+<h2>"셋이 아니어도 플랍에서 이길 때가 있잖아요?"</h2>
+<p>좋은 질문이에요. 맞아요. 상대가 아무것도 못 맞추면 작은 페어로도 이길 수 있어요. 오늘은 계산을 단순하게 하려고 "셋이 아니면 포기"로 봤어요. 그런 경우까지 넣는 건 핸드 대 레인지 에퀴티(I06에서 배워요)로 따져요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>플랍에 셋 이상 될 확률 <strong>약 11.76%</strong>(약 8번에 1번)</li>
+<li>본전 조건: <strong>셋일 때 버는 돈 ≥ 안 될 확률 × 콜 ÷ 될 확률</strong></li>
+<li><strong>상대 스택이 깊고 콜이 작을 때만</strong> 셋 마이닝</li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>홀덤학습 <strong>에퀴티 계산기</strong>에서 내 카드를 고른 뒤 <strong>[콜 수익]</strong> 칸에 <strong>지금 팟(상대 벳 포함)</strong>과 <strong>콜 금액</strong>을 넣으면 필요 에퀴티가 나와요. 셋 마이닝 본전 금액은 손으로 계산해 보세요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 44로 3BB 콜, 상대 유효 스택 60BB. 셋일 때 필요한 이익은? 스택으로 채울 수 있을까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p>0.88245 × 3 ÷ 0.11755 = <strong>약 22.52BB</strong>. 상대 스택 <strong>60BB</strong>(콜의 <strong>20배</strong>)라 채울 여유가 있어요 → 셋 마이닝 <strong>해 볼 만</strong>.</p>
+</details>
+<p><strong>문제 2.</strong> 77로 큰 3벳에 콜(이번에 더 내는 돈 12BB), 상대 유효 스택 40BB라면?</p>
+<details>
+<summary>정답 보기</summary>
+<p>0.88245 × 12 ÷ 0.11755 = <strong>약 90.08BB</strong>. 상대 스택이 <strong>40BB</strong>뿐이라 셋이 돼도 다 못 받아요 → 셋 마이닝으로는 <strong>손해</strong>.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 (플랍 조합 전부 세기) · "셋이면 이기고, 아니면 포기"라는 단순화 가정</small></p>
+</article>
+<nav class="nav"><a class="prev" href="051_I20.html"><div class="l">← 이전 글</div><div class="t">BB에서 8BB 올인을 받았다: K4o로 콜할까?</div></a><a class="next" href="053_I22.html"><div class="l">다음 글 →</div><div class="t">플랍에서 오버페어, 상대가 체크레이즈 올인하면 콜일까?</div></a></nav></main>
+</body>
+</html>

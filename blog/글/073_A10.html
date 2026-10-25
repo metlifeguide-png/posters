@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SPR: 플랍에서 &quot;이 핸드로 올인까지 갈까&quot;를 미리 정하는 숫자 · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge a">상급</span><span class="chip">개념</span><span class="n">상급 10번째 글 (전체 122편 중 73번째)</span></div><h1>SPR: 플랍에서 &quot;이 핸드로 올인까지 갈까&quot;를 미리 정하는 숫자</h1>
+<article>
+<p>안녕하세요. 지금까지는 벳 하나하나를 따로 계산했죠. 그런데 턴·리버로 갈수록 벳이 커져서, <strong>어느 순간 남은 스택이 다 들어가는</strong> 판이 생겨요.
+오늘은 플랍에서 그걸 미리 내다보는 숫자, <strong>SPR</strong>을 배워요.</p>
+<p>오늘 목표는 하나예요. <strong>플랍에서 SPR을 계산하고, "올인까지 몇 번의 벳이면 되는지"로 계획 세우기.</strong></p>
+<hr />
+<h2>1단계. SPR이란?</h2>
+<p><strong>SPR(스택 대 팟 비율) = 유효 스택 ÷ 플랍 팟</strong>이에요.
+<strong>유효 스택 = 두 사람 중 작은 스택</strong>이죠. 실제로 걸 수 있는 건 작은 쪽까지니까요(I21에서 봤죠).</p>
+<p>비유하면 <strong>남은 연료 ÷ 지금 속도</strong>예요. 연료가 적으면 몇 번 밟지 않아 바닥나고, 많으면 오래 달릴 수 있죠.</p>
+<h2>2단계. 보통의 100BB 팟</h2>
+<p>100BB에서 버튼이 2.5BB 오픈, BB가 콜. 플랍 팟 5.5BB, 남은 유효 스택 97.5BB.</p>
+<blockquote>
+<p>SPR = 97.5 ÷ 5.5 = <strong>약 17.7</strong></p>
+</blockquote>
+<p>팟벳을 하고 콜을 받으면 팟이 3배가 돼요. 그래서 팟벳을 n번 하면 한 사람이 넣는 돈은 플랍 팟의 몇 배인지 이렇게 쌓여요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>팟벳 횟수</th>
+<th>1번</th>
+<th>2번</th>
+<th>3번</th>
+<th>4번</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>한 사람이 넣는 돈(플랍 팟의 몇 배)</td>
+<td>1</td>
+<td>1 + 3 = 4</td>
+<td>4 + 9 = 13</td>
+<td>13 + 27 = 40</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>SPR이 이 숫자 이하면 그 횟수 안에 올인</strong>이에요. SPR 약 17.7은 13보다 크고 40보다 작으니, 매 스트리트 팟벳을 해도 올인까지 <strong>4번</strong>이 필요해요. 플랍·턴·리버는 세 번뿐이니, 팟벳을 세 번 다 해도 스택이 남아요.
+하프팟씩이면 <strong>6번</strong>이 필요하죠. 그래서 SPR이 높으면 <strong>원페어로 스택을 다 걸 일은 잘 생기지 않아요.</strong></p>
+<h2>3단계. SPR이 낮은 팟</h2>
+<p>이번엔 유효 스택이 11BB만 남은 채 플랍 팟이 5.5BB예요.</p>
+<blockquote>
+<p>SPR = 11 ÷ 5.5 = <strong>2</strong></p>
+</blockquote>
+<p>플랍 팟벳 5.5BB에 콜이 나오면 팟 16.5BB, 남은 스택 5.5BB. 턴에 이 5.5BB를 다 걸면 끝이에요. <strong>팟벳 2번이면 올인</strong>이죠.
+그리고 턴의 마지막 올인에 콜하는 쪽 필요 에퀴티는:</p>
+<blockquote>
+<p>5.5 ÷ (16.5 + 5.5 + 5.5) = <strong>20%</strong></p>
+</blockquote>
+<p>이미 팟이 커서 마지막 콜은 아주 싸요. 그래서 SPR이 낮으면 <strong>플랍에서 이미 "이 핸드로 끝까지 간다/안 간다"</strong> 를 정하는 게 맞아요. 플랍에 돈을 넣고 턴에 접으면 넣은 돈만 잃거든요.</p>
+<h2>4단계. SPR로 세우는 계획</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th></th>
+<th>SPR이 낮을 때</th>
+<th>SPR이 높을 때</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>올인까지</td>
+<td>벳 한두 번</td>
+<td>세 스트리트로도 부족할 수 있음</td>
+</tr>
+<tr>
+<td>원페어</td>
+<td>끝까지 갈 계획을 세우기 쉬움</td>
+<td>팟을 키우기 전에 다시 생각</td>
+</tr>
+<tr>
+<td>플랍 결정</td>
+<td>"다 걸 핸드인가?"를 먼저</td>
+<td>"팟을 얼마나 키울까?"를 먼저</td>
+</tr>
+</tbody>
+</table></div>
+<p>정확히 SPR 몇부터 낮다·높다로 볼지는 상황과 상대에 따라 달라요. 오늘은 <strong>"팟벳 몇 번이면 올인인가"</strong> 를 세는 습관부터 잡아요. SPR이 낮을 때와 높을 때의 실제 핸드는 A11·A12에서 다뤄요.</p>
+<hr />
+<h2>"SPR은 언제 계산해요?"</h2>
+<p>좋은 질문이에요. <strong>플랍이 깔린 직후</strong>에 계산해요. 프리플랍에 이미 팟 크기와 남은 스택이 정해졌으니까요. 3벳 팟처럼 프리플랍에 돈이 많이 들어가면 SPR이 낮아져요(A16에서 배워요).</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>SPR = <strong>유효 스택 ÷ 플랍 팟</strong></li>
+<li>플랍에서 <strong>"팟벳 몇 번이면 올인인가"</strong> 세기</li>
+<li>SPR이 낮으면 <strong>플랍에서 끝까지 갈지</strong> 정하기</li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>홀덤학습 <strong>에퀴티 계산기</strong>에서 내 카드를 고른 뒤 <strong>[콜 수익]</strong> 칸에 <strong>지금 팟(상대 벳 포함)</strong>과 <strong>콜 금액</strong>을 넣으면 필요 에퀴티가 나와요. 마지막 올인에 콜할 때를 넣어 보세요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 유효 스택 55BB, 플랍 팟 5.5BB. SPR은? 매 스트리트 팟벳이면 언제 올인이 될까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p>SPR = 55 ÷ 5.5 = <strong>10</strong>. 팟벳으로는 <strong>3번</strong>이 필요해서, 플랍·턴·리버에 모두 팟벳하면 <strong>리버에서</strong> 올인이 돼요. 하프팟씩이면 <strong>5번</strong>이 필요해 세 스트리트로는 부족해요.</p>
+</details>
+<p><strong>문제 2.</strong> 3벳 팟, 유효 스택 91BB, 플랍 팟 21BB. SPR은? 팟벳 몇 번이면 올인일까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p>SPR = 91 ÷ 21 = <strong>약 4.33</strong>. 플랍 팟벳 21BB에 콜이면 팟 63BB, 턴 팟벳 63BB에 콜이면 남은 스택이 거의 없어요. 그래서 <strong>3번째 벳(리버)</strong> 은 남은 칩만 밀어 넣는 거예요. 팟벳 <strong>3번</strong>이면 올인, 사실상 <strong>턴에서</strong> 대부분이 들어가요.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 매 스트리트 같은 비율로 벳·콜한다고 단순화</small></p>
+</article>
+<nav class="nav"><a class="prev" href="072_A09.html"><div class="l">← 이전 글</div><div class="t">플랍 작은 c-bet, 맞은 게 없어도 이득일까? 상대 폴드율을 콤보로 세기</div></a><a class="next" href="074_A11.html"><div class="l">다음 글 →</div><div class="t">SPR 2 아래에서 탑페어, 플랍 올인을 받으면 콜해도 될까?</div></a></nav></main>
+</body>
+</html>

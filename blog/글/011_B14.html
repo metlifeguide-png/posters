@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>필요 에퀴티와 &quot;이길 확률&quot;, 둘 중 어느 쪽이 크면 콜일까? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge b">초급</span><span class="chip">개념</span><span class="n">초급 11번째 글 (전체 122편 중 11번째)</span></div><h1>필요 에퀴티와 &quot;이길 확률&quot;, 둘 중 어느 쪽이 크면 콜일까?</h1>
+<article>
+<p>안녕하세요. B06에서 <strong>필요 에퀴티</strong>(콜해서 본전이 되는 승률)를 구했죠.</p>
+<p>그런데 기준선만 알아서는 콜할지 못 정해요. 그 옆에 <strong>"우리가 실제로 이길 확률"</strong>을 놓아야 비로소 답이 나와요. 오늘은 두 숫자를 나란히 놓는 법과, 그 비교가 <strong>왜</strong> 돈 계산과 똑같은 답을 주는지까지 따라가 볼게요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li><strong>필요 에퀴티(기준선)</strong>와 <strong>우리 승률(실제)</strong>, 두 숫자가 각각 어디서 나오는지</li>
+<li>"우리 승률이 크면 콜"이라는 규칙이 <strong>왜</strong> 맞는지, 10번 콜해 보며 돈으로 확인하기</li>
+<li>같은 승률이어도 <strong>벳 크기에 따라</strong> 결론이 뒤집히는 이유</li>
+</ul></div>
+<hr />
+<h2>1단계. 두 숫자를 구분하기</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>이름</th>
+<th>뜻</th>
+<th>어디서 나오나</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>필요 에퀴티</strong></td>
+<td>본전이 되려면 이 정도는 이겨야 한다</td>
+<td>팟과 벳 크기 → 공식(B06)</td>
+</tr>
+<tr>
+<td><strong>우리 승률</strong></td>
+<td>이 상대에게 실제로 이길 확률</td>
+<td>상대가 뭘 들고 있을지 생각해서 어림</td>
+</tr>
+</tbody>
+</table></div>
+<h3>이름이 다른 이유</h3>
+<p><strong>에퀴티 = 이 팟에서 이길 확률</strong>이에요. 그러니까 "우리 승률"은 곧 <strong>우리 에퀴티</strong>예요. 앞에 "필요"가 붙으면 "이만큼은 있어야 한다"는 기준선, 안 붙으면 "실제로 가진 것"이에요.</p>
+<h3>비유: 합격선과 내 점수</h3>
+<p><strong>시험 합격선과 내 점수</strong>를 떠올려 보세요. 합격선(필요 에퀴티)은 시험이 정하고, 내 점수(우리 승률)는 이번 판의 카드와 상대가 정해요.</p>
+<p>내 점수가 합격선보다 높으면 합격(콜), 낮으면 불합격(폴드)이에요. 중요한 건 합격선을 정하는 쪽과 점수를 정하는 쪽이 <strong>서로 다르다</strong>는 거예요.</p>
+<h3>우리 승률은 어디서 나올까</h3>
+<p>합격선은 공식으로 바로 나오지만, 점수(우리 승률)는 <strong>상대가 무엇을 들었나</strong>를 떠올려야 나와요. 예를 들어 리버에 상대가 벳했다면, 그 벳은 우리를 이기는 <strong>센 핸드</strong>이거나, 못 맞춘 핸드로 우리를 접게 하려는 <strong>블러프</strong>일 수 있어요.</p>
+<p>그러면 우리 승률은 "상대 벳 중 우리가 이기는 몫", 곧 그중 블러프의 몫이라고 볼 수 있어요. 이 어림을 실제 한 판에서 해 보는 건 B07에서 해 봐요. 오늘은 승률을 예시로 정해 두고, <strong>비교하는 법</strong>에 집중할게요.</p>
+<h2>2단계. 규칙 하나</h2>
+<blockquote>
+<p><strong>우리 승률 &gt; 필요 에퀴티 → 콜이 이득</strong>
+<strong>우리 승률 &lt; 필요 에퀴티 → 폴드가 이득</strong>
+<strong>둘이 같으면 → 본전</strong>(콜이든 폴드든 평균은 같아요)</p>
+</blockquote>
+<p>이 비교는 <strong>콜한 뒤 더 이상 베팅이 없을 때</strong>, 예를 들어 리버 콜에서 그대로 맞아요. 뒤에 베팅이 남은 경우까지 묶어 보는 법은 중급 I09에서 배워요.</p>
+<h2>3단계. 예시로 익히기</h2>
+<h3>예시 1 — 하프팟, 승률 30%</h3>
+<p>팟 10BB에 상대가 5BB 벳. 우리 승률은 <strong>30%</strong>(10번 중 3번)라고 해 볼게요.</p>
+<blockquote>
+<p>필요 에퀴티 = 5(우리 콜) ÷ (10(원래 팟) + 5(상대 벳) + 5(우리 콜)) = 5 ÷ 20 = <strong>25%</strong></p>
+</blockquote>
+<p>30% &gt; 25% → <strong>콜.</strong> 합격선보다 점수가 5점 높아요. 이 "5점"이 돈으로 얼마인지는 아래 '왜 그럴까'에서 바로 계산해 봐요.</p>
+<h3>예시 2 — 팟벳, 승률 그대로 30%</h3>
+<p>같은 팟 10BB인데 상대가 <strong>10BB(팟벳)</strong>를 걸었어요. 우리 승률은 그대로 30%.</p>
+<blockquote>
+<p>필요 에퀴티 = 10 ÷ (10 + 10 + 10) = <strong>33.3%</strong></p>
+</blockquote>
+<p>30% &lt; 33.3% → <strong>폴드.</strong> 점수는 그대로인데 <strong>합격선이 올라가서</strong> 결론이 바뀌었어요.</p>
+<h3>예시 3 — 작은 벳, 승률 25%</h3>
+<p>팟 12BB에 상대가 4BB 벳. 우리 승률은 <strong>25%</strong>(4번 중 1번).</p>
+<blockquote>
+<p>필요 에퀴티 = 4 ÷ (12 + 4 + 4) = <strong>20%</strong></p>
+</blockquote>
+<p>25% &gt; 20% → <strong>콜.</strong> 4번 중 1번밖에 못 이겨도, 벳이 작으면 합격선이 더 낮아요.</p>
+<!-- 그림: 필요 에퀴티 vs 승률 (예시 1·2·3) -->
+
+<p>이게 무슨 뜻이냐면, <strong>승률이 높다고 콜, 낮다고 폴드가 아니라는</strong> 거예요. 30%가 폴드가 되고 25%가 콜이 되기도 하죠. 언제나 <strong>둘을 나란히</strong> 놓아야 해요.</p>
+<h2>4단계. 정말 이득인지 돈으로 확인하기</h2>
+<p>"합격선보다 높으면 이득"이라는 게 정말인지, 예시 1을 10번 해 보며 확인할게요.</p>
+<h3>10번 콜해 보면</h3>
+<p>이기면 원래 팟 10BB와 상대 벳 5BB, 합쳐 <strong>15BB를 벌어요.</strong> "팟 20BB를 받는데 왜 15BB?" 하실 수 있는데, 받는 20BB 중 5BB는 방금 우리가 낸 콜이라 <strong>순수하게 번 돈은 15BB</strong>예요. 지면 우리 콜 <strong>5BB를 잃고요.</strong></p>
+<ul>
+<li><strong>3번 이김</strong>: 15BB × 3 → <strong>45BB</strong> 벌어요</li>
+<li><strong>7번 짐</strong>: 5BB × 7 → <strong>35BB</strong> 잃어요</li>
+<li>합계: 45 − 35 = <strong>10BB</strong> 남아요</li>
+</ul>
+<p>10번에 10BB, 한 번 평균 1BB씩 남는 거예요.</p>
+<h3>한 줄로 쓰면</h3>
+<blockquote>
+<p>콜 평균 손익 = 0.3 × 15 − 0.7 × 5 = 4.5 − 3.5 = <strong>+1BB</strong></p>
+</blockquote>
+<p>앞쪽은 "이길 확률 × 이길 때 버는 돈", 뒤쪽은 "질 확률 × 질 때 잃는 돈"이에요. 이렇게 평균 손익을 구하는 방법은 B24에서 <strong>EV(기대값)</strong>라는 이름으로 자세히 배워요.</p>
+<p>예시 2(팟벳, 30%)를 같은 식으로 보면 0.3 × 20 − 0.7 × 10 = 6 − 7 = <strong>−1BB</strong>, 콜할 때마다 손해예요. 예시 3(작은 벳, 25%)은 0.25 × 16 − 0.75 × 4 = 4 − 3 = <strong>+1BB</strong>로 이득이고요. 2단계의 규칙과 결론이 딱 맞아요.</p>
+<section class="sec why"><h2>왜 그럴까: 필요 에퀴티는 "손익이 딱 0이 되는 승률"이에요</h2>
+<h3>승률이 기준선과 똑같으면</h3>
+<p>B06에서 본 그 본전 장면을 떠올려 보세요. 팟 10BB에 상대 5BB 벳, 승률이 필요 에퀴티와 똑같은 <strong>25%</strong>라면요.</p>
+<blockquote>
+<p>콜 평균 손익 = 0.25 × 15 − 0.75 × 5 = 3.75 − 3.75 = <strong>0BB</strong></p>
+</blockquote>
+<p>이길 때 몫과 질 때 몫이 정확히 같아서 0이 돼요. 이게 필요 에퀴티의 진짜 뜻이에요. <strong>손익이 0이 되는 승률</strong>이요.</p>
+<h3>기준선에서 벗어난 만큼이 곧 손익이에요</h3>
+<p>그럼 승률이 기준선보다 높으면 왜 꼭 +일까요? 계산해 보면 평균 손익은 이렇게 한 줄로 정리돼요.</p>
+<blockquote>
+<p><strong>평균 손익 = (우리 승률 − 필요 에퀴티) × 콜한 뒤 팟</strong></p>
+</blockquote>
+<p>예시 1에 넣어 볼게요. 합격선보다 5점 높았던 그 장면이에요.</p>
+<blockquote>
+<p>(0.3 − 0.25) × 20 = 0.05 × 20 = <strong>1BB</strong></p>
+</blockquote>
+<p>4단계에서 10번 콜해서 구한 +1BB와 똑같죠. 예시 2(팟벳)는 (0.3 − (1/3)) × 30 = <strong>−1BB</strong>, 예시 3은 (0.25 − 0.2) × 20 = <strong>1BB</strong>예요.</p>
+<p>이게 무슨 뜻이냐면, 승률이 기준선보다 <strong>조금이라도 높으면 괄호 안이 +</strong>라 손익도 +, 낮으면 −라는 거예요. 그리고 <strong>차이가 클수록, 팟이 클수록</strong> 더 많이 벌거나 잃어요. 그래서 매번 돈 계산을 할 필요 없이 두 숫자 중 어느 쪽이 큰지만 보면 돼요.</p>
+<h3>두 숫자를 정하는 사람이 달라요</h3>
+<ul>
+<li><strong>필요 에퀴티</strong>: 상대가 <strong>얼마를 걸었나</strong>가 정해요</li>
+<li><strong>우리 승률</strong>: 상대가 <strong>무엇을 들었나</strong>가 정해요</li>
+</ul>
+<p>예시 1과 예시 2가 갈린 이유가 바로 이거예요. 상대 손은 똑같다고 봤으니 승률은 30% 그대로인데, 상대가 더 크게 걸어서 기준선만 올라갔죠. 그래서 괄호 안이 +에서 −로 바뀌었어요.</p>
+</section><section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. "승률 30%면 괜찮은 편이니 콜"</strong>
+승률만 보고 정하는 실수예요. 예시 1과 예시 2는 승률이 똑같이 30%인데, 하프팟이면 콜, 팟벳이면 폴드였어요. 대신 승률을 떠올리기 전에 <strong>"얼마를 걸었지? 그럼 기준선은?"</strong>부터 구해요.</p></div><div class="mis-card"><p><strong>실수 2. "4번 중 1번밖에 못 이기면 무조건 폴드"</strong>
+예시 3은 승률이 25%인데도 콜이 이득이었어요. 벳이 팟의 3분의 1이라 기준선이 20%로 낮았으니까요. 대신 낮은 승률이라도 <strong>기준선보다 높은지</strong>만 확인해요.</p></div><div class="mis-card"><p><strong>실수 3. 플랍·턴에서도 이 비교를 "최종 결과"로 믿기</strong>
+이 비교가 그대로 맞는 건 콜한 뒤 <strong>더 이상 베팅이 없을 때</strong>예요. 플랍이나 턴에서는 콜한 뒤에도 상대가 또 벳할 수 있어서, 이번 콜 하나의 계산과 실제 결과가 달라질 수 있어요. 대신 뒤에 베팅이 남았으면 "이번 콜의 기준선"까지만 보고, 뒤 베팅까지 묶어 따지는 법은 중급 I09에서 배워요.</p></div></section>
+<hr />
+<h2>"승률이 30%면 질 때가 더 많은데, 왜 콜이에요?"</h2>
+<p>좋은 질문이에요. 예시 1에서 우리는 10번 중 7번 져요. 그래도 <strong>이길 때 버는 돈(15BB)이 질 때 잃는 돈(5BB)의 3배</strong>라서 남아요.</p>
+<p>콜은 "이길 것 같냐"가 아니라 <strong>"버는 돈에 비해 충분히 자주 이기냐"</strong>로 정해요. 그 "충분히"의 기준선이 바로 필요 에퀴티예요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>상대가 벳하면 <strong>기준선(필요 에퀴티)부터</strong> 구하기</li>
+<li>그다음 <strong>"이 상대에게 몇 번 이길까"</strong>를 어림하기</li>
+<li>두 숫자를 <strong>나란히 적고</strong> 큰 쪽을 보기</li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>홀덤학습 <strong>에퀴티 계산기</strong>에서 내 카드를 고른 뒤 <strong>[콜 수익]</strong> 칸에 <strong>지금 팟(상대 벳 포함)</strong>과 <strong>콜 금액</strong>을 넣으면 필요 에퀴티가 나와요. 그 값을 승률과 비교해 보세요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 팟 12BB에 상대가 9BB 벳(팟의 4분의 3). 우리 승률 <strong>35%</strong>. 콜? 폴드?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>콜.</strong> 필요 에퀴티 = 9 ÷ (12 + 9 + 9) = 9 ÷ 30 = <strong>30%</strong>, 35%가 더 커요.
+콜 평균 손익 = 0.35 × 21 − 0.65 × 9 = 7.35 − 5.85 = <strong>+1.5BB</strong>. 한 줄 식으로도 (0.35 − 0.3) × 30 = <strong>1.5BB</strong>예요.</p>
+</details>
+<p><strong>문제 2.</strong> 팟 8BB에 상대가 4BB(하프팟). 우리 승률 <strong>20%</strong>. 콜? 폴드?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>폴드.</strong> 필요 에퀴티 = 4 ÷ (8 + 4 + 4) = <strong>25%</strong>, 20%가 더 작아요.
+콜 평균 손익 = 0.2 × 12 − 0.8 × 4 = 2.4 − 3.2 = <strong>−0.8BB</strong>.</p>
+</details>
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>필요 에퀴티는 <strong>손익이 딱 0이 되는 승률</strong>이에요. 그래서 승률과 비교만 해도 손익의 +·−가 보여요</li>
+<li>기준선은 <strong>상대가 건 금액</strong>이, 우리 승률은 <strong>상대가 든 핸드</strong>가 정해요</li>
+<li>같은 승률이어도 벳이 커지면 기준선이 올라가 <strong>결론이 뒤집힐 수 있어요</strong></li>
+<li>이 비교가 최종 결과와 그대로 맞는 건 <strong>콜한 뒤 베팅이 더 없을 때</strong>예요</li>
+</ul>
+</section><section class="sec end"><h2>정리하며</h2>
+<p>오늘은 필요 에퀴티 옆에 우리 승률을 놓고 콜과 폴드를 정했어요.</p>
+<p>10번 콜해 보며 확인하니, 승률이 기준선보다 높으면 실제로 돈이 남고, 같으면 딱 본전이었어요. 필요 에퀴티가 <strong>손익이 0이 되는 승률</strong>이라서 비교 하나로 답이 나오는 거예요.</p>
+<p>그리고 평균 손익은 <strong>(승률 − 필요 에퀴티) × 콜한 뒤 팟</strong>, 기준선에서 벗어난 만큼이었죠. 실전에서는 두 숫자를 나란히 적고, 승률이 기준선 위인지 아래인지부터 보세요.</p>
+<p>다음 글 B07에서는 오늘 비교를 처음으로 <strong>실제 한 판</strong>에 써 봐요. 리버에 상대가 하프팟을 걸었을 때, 애매한 88로 콜할지 처음부터 끝까지 따라가요.</p>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 승률은 예시로 정한 값</small></p></section>
+</article>
+<nav class="nav"><a class="prev" href="010_B12.html"><div class="l">← 이전 글</div><div class="t">사이드팟 계산: 올인이 여러 명이면 팟은 어떻게 나눌까?</div></a><a class="next" href="012_B07.html"><div class="l">다음 글 →</div><div class="t">리버에 상대가 하프팟 벳, 애매한 88로 콜해도 될까?</div></a></nav></main>
+</body>
+</html>

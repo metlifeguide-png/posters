@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>알파와 MDF는 동전의 양면: 같은 벳을 두 자리에서 보면? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge a">상급</span><span class="chip">개념</span><span class="n">상급 3번째 글 (전체 122편 중 66번째)</span></div><h1>알파와 MDF는 동전의 양면: 같은 벳을 두 자리에서 보면?</h1>
+<article>
+<p>안녕하세요. A01에서 <strong>알파</strong>(블러프가 본전이 되는 상대 폴드율), A02에서 <strong>MDF</strong>(상대 블러프를 막으려면 지켜야 하는 비율)를 배웠죠.
+오늘은 이 둘이 <strong>같은 벳을 두 자리에서 본 숫자</strong>라는 걸 확인하고, 벳 크기를 고를 때 어떻게 쓰는지 봐요.</p>
+<p>오늘 목표는 하나예요. <strong>벳 하나를 보면 "벳하는 쪽 알파"와 "맞는 쪽 MDF"를 함께 떠올리기.</strong></p>
+<hr />
+<h2>1단계. 같은 벳, 두 가지 질문</h2>
+<p>팟 12BB에 9BB(3/4팟) 벳이 나왔어요.</p>
+<ul>
+<li><strong>벳하는 쪽</strong>: "상대가 몇 % 접어야 내 블러프가 본전일까?" → 알파 = 9 ÷ (12 + 9) = <strong>약 42.86%</strong></li>
+<li><strong>맞는 쪽</strong>: "나는 몇 %를 지켜야 상대 블러프가 본전일까?" → MDF = 12 ÷ (12 + 9) = <strong>약 57.14%</strong></li>
+</ul>
+<p>두 숫자를 더하면 <strong>1(전체)</strong> 이에요. 분자만 벳과 팟으로 바뀌었을 뿐, 분모(팟 + 벳)가 같거든요.
+비유하면 <strong>피자 한 판을 둘이 나누는 것</strong>이에요. 한쪽 조각이 커진 만큼 다른 쪽이 작아지고, 합은 늘 한 판이죠.</p>
+<h2>2단계. 딱 맞게 지키면 블러프는 본전</h2>
+<p>A01·A02처럼 <strong>블러프는 콜 받으면 항상 지고, 맞는 쪽은 콜 아니면 폴드</strong>라고 가정해요. 맞는 쪽이 딱 MDF만큼 지키고, 알파만큼(약 42.86%) 접는다면 벳하는 쪽 블러프는:</p>
+<blockquote>
+<p>EV = 0.4286 × 12 − 0.5714 × 9 = 5.14 − 5.14 = <strong>0BB</strong></p>
+</blockquote>
+<p>7번 블러프하면 3번 폴드를 받아 36BB를 얻고, 4번 콜을 받아 36BB를 잃어요. <strong>정확히 본전</strong>이죠.</p>
+<ul>
+<li>맞는 쪽이 <strong>더 많이 접으면</strong> → 블러프가 이득(A02에서 봤죠)</li>
+<li>맞는 쪽이 <strong>더 많이 지키면</strong> → 블러프가 손해</li>
+</ul>
+<h2>3단계. 처음 보는 벳 크기로 두 숫자 같이 읽기 (팟 12BB)</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>벳 크기</th>
+<th>벳</th>
+<th>알파</th>
+<th>MDF</th>
+<th>콜하는 쪽 필요 에퀴티</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1/4팟</td>
+<td>3BB</td>
+<td>20%</td>
+<td>80%</td>
+<td>16.7%</td>
+</tr>
+<tr>
+<td>3/4팟</td>
+<td>9BB</td>
+<td>42.9%</td>
+<td>57.1%</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>1.5배 오버벳</td>
+<td>18BB</td>
+<td>60%</td>
+<td>40%</td>
+<td>37.5%</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>벳이 <strong>커지면</strong>: 블러프는 더 자주 성공해야 하고(알파 ↑), 맞는 쪽은 덜 지켜도 돼요(MDF ↓)</li>
+<li>벳이 <strong>작아지면</strong>: 블러프는 조금만 성공해도 되고, 맞는 쪽은 많이 지켜야 해요</li>
+<li>오른쪽 필요 에퀴티는 <strong>핸드 하나</strong>의 콜 기준이에요. 알파는 <strong>상대 레인지 전체가 접는 비율</strong>과, MDF는 <strong>맞는 쪽 레인지 전체가 지키는 비율</strong>과 비교하는 숫자예요</li>
+</ul>
+<h2>4단계. 벳하는 쪽은 이걸 어떻게 쓰나</h2>
+<p>상대가 실제로 지키는 비율을 짐작할 수 있다면, <strong>알파와 비교해서 벳 크기</strong>를 고를 수 있어요.</p>
+<ul>
+<li>상대 폴드율이 <strong>알파보다 높은 크기</strong> → 블러프가 이득인 크기</li>
+<li>상대 폴드율이 <strong>알파보다 낮은 크기</strong> → 그 크기의 블러프는 손해</li>
+</ul>
+<p>맞는 쪽 시선으로 보면 같은 이야기예요. 늘 40%를 접는 상대는 하프팟에는 MDF(66.7%)보다 덜 지켜서 <strong>블러프에 뚫리고</strong>, 팟벳에는 MDF(50%)보다 더 지켜서 <strong>블러프를 막아요</strong>.
+단, 실제 상대는 벳 크기에 따라 지키는 비율을 바꾸기도 해요. 벳 크기와 폴드율의 관계는 A20에서 다뤄요.</p>
+<hr />
+<h2>"그럼 상대가 MDF보다 많이 지키면 블러프를 아예 안 해요?"</h2>
+<p>좋은 질문이에요. 순수한 블러프(콜 받으면 늘 지는 핸드)라면 손해니 줄여야 해요. 하지만 드로우처럼 <strong>콜을 받아도 이길 기회가 있는 핸드</strong>는 계산이 달라요. 이건 세미블러프라고 하고 A22에서 배워요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li><strong>알파 + MDF = 1</strong>: 같은 벳을 두 자리에서 본 숫자</li>
+<li>딱 MDF만큼 지키면 상대 블러프는 <strong>본전</strong></li>
+<li>벳이 커지면 <strong>알파 ↑, MDF ↓</strong> — 작아지면 반대</li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>학습툴에는 알파를 직접 넣는 칸이 없어요. 홀덤학습 <strong>팟 오즈</strong> 퀴즈 <strong>Lv.5(블러프 본전)</strong>로 같은 계산을 연습해 보세요. MDF는 Lv.5 해설 끝의 "상대의 최소 방어율"과 같아요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 팟 10BB에 8BB 벳. 알파와 MDF는? 맞는 쪽이 50%를 접는다면 벳하는 쪽 블러프는 이득일까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p>알파 = 8 ÷ (10 + 8) = <strong>약 44.44%</strong>, MDF = 10 ÷ (10 + 8) = <strong>약 55.56%</strong>.
+폴드 50%가 알파보다 크니 <strong>이득</strong>. EV = 0.5 × 10 − 0.5 × 8 = 5 − 4 = <strong>+1BB</strong>.</p>
+</details>
+<p><strong>문제 2.</strong> 팟 12BB. 맞는 쪽 MDF가 <strong>60%</strong> 가 되게 하려면 벳을 얼마로 해야 할까요? 그때 벳하는 쪽 알파는?</p>
+<details>
+<summary>정답 보기</summary>
+<p>MDF = 12 ÷ (12 + 벳) = 60%가 되는 벳은 <strong>8BB</strong>(2/3팟): 12 ÷ (12 + 8) = <strong>60%</strong>.
+알파 = 8 ÷ (12 + 8) = <strong>40%</strong>. 둘을 더하면 1, 동전의 양면이죠.</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 블러프는 콜을 받으면 항상 진다고 가정</small></p>
+</article>
+<nav class="nav"><a class="prev" href="065_A02.html"><div class="l">← 이전 글</div><div class="t">MDF: 상대 블러프를 막으려면 우리는 얼마나 지켜야 할까?</div></a><a class="next" href="067_A04.html"><div class="l">다음 글 →</div><div class="t">리버 팟벳에 탑페어, MDF는 &quot;콜&quot;이라는데 왜 폴드일까?</div></a></nav></main>
+</body>
+</html>

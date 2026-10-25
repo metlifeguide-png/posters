@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>블로커로 고르는 블러프캐처: 같은 K-T인데 T♣는 콜, T♥는 폴드? · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">스팟</span><span class="n">고급 3번째 글 (전체 122편 중 99번째)</span></div><h1>블로커로 고르는 블러프캐처: 같은 K-T인데 T♣는 콜, T♥는 폴드?</h1>
+<article>
+<p>안녕하세요. E01에서 블로커가 상대 <strong>밸류를 지우면 좋고, 블러프를 지우면 나쁘다</strong>고 배웠죠. A04의 리버를 다시 꺼내서, 이번엔 <strong>어떤 핸드로 콜할지 고르는 데</strong> 써 볼게요.</p>
+<p>오늘 목표는 하나예요. <strong>같은 리버에서 블러프캐처 후보마다 상대 밸류·블러프 콤보를 다시 세고, 콜할 핸드를 고르기.</strong></p>
+<hr />
+<h2>오늘의 핸드 (A04의 리버)</h2>
+<p>A04처럼 버튼 2.5BB 오픈에 Hero가 BB에서 콜했고, 플랍·턴은 상대 벳에 Hero가 콜해서 리버까지 왔어요. 리버도 Hero가 먼저 체크했어요.</p>
+<p><img src="../카드/Kh.svg" width="48"> <img src="../카드/8h.svg" width="48"> <img src="../카드/3c.svg" width="48"> <img src="../카드/2s.svg" width="48"> <img src="../카드/Jd.svg" width="48"></p>
+<p>리버 팟 20BB, 상대가 이번엔 <strong>10BB(하프팟)</strong> 를 벳했어요. 상대 레인지는 A04와 같다고 <strong>가정</strong>해요.</p>
+<ul>
+<li><strong>밸류</strong>: AK, KQ, KJ, JJ, 88</li>
+<li><strong>블러프</strong>: 하트 플러시 드로우가 빗나간 A♥Q♥·A♥T♥·A♥9♥·A♥6♥·A♥5♥·A♥4♥·Q♥T♥·Q♥9♥·T♥9♥·9♥7♥·7♥6♥·6♥5♥</li>
+</ul>
+<blockquote>
+<p>필요 에퀴티 = 10 ÷ (20 + 10 + 10) = <strong>25%</strong></p>
+</blockquote>
+<hr />
+<p class="concl"><strong>결론부터 말할게요. 오늘 가정한 상대라면 K♣T♣·Q♣Q♠는 콜, K♣T♥·K♠9♥는 폴드가 이득입니다.</strong></p>
+<h2>1단계. 후보마다 다시 세기</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Hero 핸드</th>
+<th>상대 밸류</th>
+<th>상대 블러프</th>
+<th>블러프캐처 에퀴티</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>K♣T♣</td>
+<td>28콤보</td>
+<td>12콤보</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>K♣T♥</td>
+<td>28콤보</td>
+<td>9콤보</td>
+<td>약 24.32%</td>
+</tr>
+<tr>
+<td>K♠9♥</td>
+<td>28콤보</td>
+<td>8콤보</td>
+<td>약 22.22%</td>
+</tr>
+<tr>
+<td>Q♣Q♠</td>
+<td>33콤보</td>
+<td>12콤보</td>
+<td>약 26.67%</td>
+</tr>
+</tbody>
+</table></div>
+<h2>2단계. 왜 이렇게 달라질까</h2>
+<ul>
+<li><strong>K♣T♥</strong>: T♥가 상대 블러프 중 A♥T♥·Q♥T♥·T♥9♥ <strong>3콤보</strong>를 지워요. 키커는 K♣T♣와 똑같은데, 블러프만 줄었어요</li>
+<li><strong>K♠9♥</strong>: 9♥가 A♥9♥·Q♥9♥·T♥9♥·9♥7♥ 네 개를 지워요. 블러프가 가장 적게 남아요</li>
+<li><strong>Q♣Q♠</strong>: K가 없어서 상대 AK가 <strong>12콤보</strong>, KJ가 <strong>9콤보</strong>로 오히려 늘어요(K♣T♣일 때 AK 8콤보, KJ 6콤보). 대신 Q 두 장이 KQ를 <strong>6콤보</strong>로 줄이고, 하트는 하나도 안 지워서 블러프 12콤보가 그대로예요</li>
+</ul>
+<h2>3단계. EV로 비교</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Hero 핸드</th>
+<th>콜 손익</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>K♣T♣</td>
+<td>+2BB</td>
+</tr>
+<tr>
+<td>Q♣Q♠</td>
+<td>약 +0.67BB</td>
+</tr>
+<tr>
+<td>K♣T♥</td>
+<td>약 −0.27BB</td>
+</tr>
+<tr>
+<td>K♠9♥</td>
+<td>약 −1.11BB</td>
+</tr>
+</tbody>
+</table></div>
+<p>K♣T♣를 풀어 보면:</p>
+<blockquote>
+<p>콜 손익 = 0.3 × 30(이기면 버는 돈: 팟 20 + 상대 벳 10) − 0.7 × 10(지면 잃는 콜) = 9 − 7 = <strong>+2BB</strong></p>
+</blockquote>
+<h2>4단계. 블러프캐처 고르는 기준</h2>
+<ol>
+<li>상대 <strong>블러프에 들어가는 카드</strong>(오늘은 하트)를 쥐고 있으면 → 블러프캐처로는 나빠요</li>
+<li>상대 <strong>밸류에 들어가는 카드</strong>를 쥐고 있으면 → 좋아요. 다만 오늘 Q♣Q♠처럼 <strong>다른 밸류가 늘어나는</strong> 경우도 있으니 전체를 다시 세요</li>
+<li>결론은 늘 <strong>블러프캐처 에퀴티 vs 필요 에퀴티</strong></li>
+</ol>
+<hr />
+<h2>"같은 K-T인데 무늬 하나로 콜과 폴드가 갈리는 게 이상해요"</h2>
+<p>좋은 질문이에요. 핸드의 <strong>쇼다운 힘</strong>은 똑같아요. 달라진 건 <strong>상대가 들 수 있는 블러프의 수</strong>예요. 리버처럼 이기고 지는 게 정해진 곳에서는, 이런 콤보 몇 개 차이가 필요 에퀴티 근처의 결정을 바꿔요. 그래서 고급에서는 무늬까지 세요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>블러프캐처 후보마다 <strong>상대 밸류·블러프를 다시 세기</strong></li>
+<li>상대 <strong>블러프 카드를 쥔 핸드</strong>는 블러프캐처 에퀴티가 줄어드니 <strong>꼭 다시 세기</strong></li>
+<li>콤보 차이가 작아도 <strong>필요 에퀴티 근처</strong>에서는 결론이 바뀌어요</li>
+</ol></section>
+<hr />
+<h2>연습 문제 (같은 리버, 같은 상대)</h2>
+<blockquote>
+<p>학습툴 [콤보 분류 보기]는 준비 중이에요. 직접 세어 보세요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> Hero가 <strong>K♦7♥</strong> 라면 상대 블러프 중 몇 콤보가 지워질까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p>7♥가 들어간 9♥7♥·7♥6♥ <strong>2콤보</strong>가 지워져요. 블러프가 10콤보로 줄어서, K♣T♣보다 콜이 불리해져요.</p>
+</details>
+<p><strong>문제 2.</strong> 상대가 <strong>20BB(팟벳)</strong> 를 걸었다면 네 후보 중 콜할 핸드가 있을까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p>필요 에퀴티가 <strong>약 33.33%</strong> 로 올라가요. 네 후보 모두 블러프캐처 에퀴티가 30% 이하라 <strong>모두 폴드</strong>예요(A04에서 K♣T♣가 폴드였던 것과 같아요).</p>
+</details>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 (콤보는 실제 카드로 하나씩 셈) · 가정 레인지 기준 (솔버 결과 아님) · 리버 마지막 결정이라 콜 손익이 최종 결과</small></p>
+</article>
+<nav class="nav"><a class="prev" href="098_E02.html"><div class="l">← 이전 글</div><div class="t">리버 넛 블로커로 블러프: A♥ 한 장이 오버벳 블러프를 바꿀까?</div></a><a class="next" href="100_E26.html"><div class="l">다음 글 →</div><div class="t">헤즈업 솔버 결과 읽는 법: 빈도·사이즈·섞는 전략은 어떻게 볼까? (헤즈업 기준)</div></a></nav></main>
+</body>
+</html>
