@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>뚝티오 · 프리플랍 차트</title>
+<style>
+:root{--bg:#f4f6f9;--card:#fff;--ink:#1d2433;--sub:#6b7486;--line:#e3e7ee;--blue:#2f6fde;
+  --cF:#5b8fd9;--cC:#43a35a;--cX:#43a35a;--cL:#9bc53d;--cR:#e5803a;--cJ:#c62f3a;--cN:#e9ecf1}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;-webkit-text-size-adjust:100%}
+.wrap{max-width:720px;margin:0 auto;padding:12px 12px 40px}
+h1{font-size:19px;margin:2px 0 2px;font-weight:900}
+.lead{font-size:13px;color:var(--sub);margin-bottom:10px;line-height:1.5}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;margin-bottom:10px}
+.lab{font-size:12px;color:var(--sub);font-weight:800;margin:2px 2px 6px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 12px;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer}
+.chips button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chips button:disabled{opacity:.35;cursor:default}
+.chips.sm button{padding:5px 10px;font-size:13px}
+.path{display:flex;flex-wrap:wrap;align-items:center;gap:4px;font-size:13px}
+.path .st{background:#eef2f8;border-radius:8px;padding:4px 8px;font-weight:700}
+.path .ar{color:var(--sub)}
+.path button{border:0;background:none;color:var(--blue);font-weight:800;font-size:13px;cursor:pointer;padding:4px 6px}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;margin-top:8px}
+.tabs button{flex:none;border:1px solid var(--line);background:#fff;border-radius:10px;padding:7px 12px;font-size:14px;font-weight:800;cursor:pointer;color:var(--ink)}
+.tabs button.on{border-color:var(--blue);background:#eaf1ff;color:var(--blue)}
+.tabs small{display:block;font-size:11px;font-weight:700;color:var(--sub)}
+.acts{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.act{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff;font-size:15px;font-weight:800;text-align:left;width:100%;color:var(--ink)}
+.act i{width:12px;height:12px;border-radius:3px;flex:none}
+.act b{margin-left:auto;font-variant-numeric:tabular-nums}
+.act.go{cursor:pointer}
+.act.go::after{content:"›";color:var(--sub);font-size:18px;margin-left:6px}
+.act.on{outline:2px solid var(--ink)}
+.bar{display:flex;height:10px;border-radius:5px;overflow:hidden;margin:8px 0 2px;background:var(--cN)}
+.grid{display:grid;grid-template-columns:repeat(13,1fr);gap:2px;margin-top:8px;user-select:none}
+.cell{position:relative;aspect-ratio:1/1;border-radius:3px;overflow:hidden;background:var(--cN);cursor:pointer}
+.cell .fill{position:absolute;inset:0;display:flex}
+.cell span{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;font-size:clamp(8px,2.4vw,12px);font-weight:800;color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.35);letter-spacing:-.3px}
+.cell.na span{color:#a7aebb;text-shadow:none}
+.cell.sel{outline:2px solid var(--ink);z-index:1}
+.det{font-size:14px;margin-top:8px;min-height:22px;line-height:1.5}
+.det b{font-size:15px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--sub);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.foot{font-size:12px;color:var(--sub);line-height:1.6;margin-top:6px}
+.e{color:var(--sub);text-align:center;padding:24px 8px;font-size:14px}
+.hd{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.hd .m{font-size:13px;color:var(--sub)}
+.view{display:flex;gap:4px;margin-left:auto}
+.view button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:3px 8px;font-size:12px;font-weight:800;cursor:pointer;color:var(--ink)}
+.view button.on{background:var(--ink);color:#fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>📊 뚝티오 · 프리플랍 차트</h1>
+  <div class="lead">뚝섬 솔버로 푼 MTT 프리플랍 전략이에요. 상황을 고르고 액션을 따라가며 13×13 차트를 보세요.</div>
+  <div class="card">
+    <div class="lab">게임 종류</div><div class="chips" id="cM"></div>
+    <div class="lab" style="margin-top:10px">인원</div><div class="chips sm" id="cN"></div>
+    <div class="lab" style="margin-top:10px">스택 (BB)</div><div class="chips sm" id="cS"></div>
+    <div class="foot" id="icmNote"></div>
+  </div>
+  <div class="card" id="main"><div class="e">불러오는 중…</div></div>
+  <div class="foot">· 플랍 이후는 실제로 풀지 않고 '에퀴티 × 실현율'로 근사한 결과예요. 큰 흐름 공부용으로 보세요.<br>· 레이즈 크기: 오픈 2.3BB(30BB 이하 2BB, SB 3BB) · 3벳 IP 3배 / OOP 4배 · 4벳 2.3배 · 스택 40% 넘게 들어가면 올인<br>· 나올 확률이 아주 낮은 상황(0.05% 미만)은 빠져 있어요.</div>
+</div>
+<script>
+const MODES=[['ante','토너먼트 (BB앤티)'],['noante','앤티 없음'],['ft','ICM 파이널'],['bubble','ICM 버블']];
+const AN={F:'폴드',C:'콜',X:'체크',L:'림프',R:'레이즈',J:'올인'};
+const RK='AKQJT98765432',NAMES=[];
+for(let a=0;a<13;a++)for(let b=0;b<13;b++)NAMES.push(a===b?RK[a]+RK[a]:a<b?RK[a]+RK[b]+'s':RK[b]+RK[a]+'o');
+const COMBO=NAMES.map(n=>n.length===2?6:n[2]==='s'?4:12);
+const col=c=>`var(--c${c})`;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let IDX=[],S={m:'ante',n:9,st:100},DATA=null,G=null,ST={h:'',p:null},SEL=null,VIEW='mix';
+const LS={get(k){try{return localStorage.getItem('tto_'+k)}catch(e){return null}},set(k,v){try{localStorage.setItem('tto_'+k,v)}catch(e){}}};
+try{const q=JSON.parse(LS.get('sel')||'null');if(q&&q.m)S=q;}catch(e){}
+(function(){const u=new URLSearchParams(location.search);if(u.get('m'))S.m=u.get('m');if(u.get('n'))S.n=+u.get('n');if(u.get('st'))S.st=+u.get('st');})();
+
+function chips(id,list,cur,fn){const el=document.getElementById(id);
+  el.innerHTML=list.map(([v,t,dis])=>`<button type="button" class="${String(v)===String(cur)?'on':''}" ${dis?'disabled':''} data-v="${v}">${t}</button>`).join('');
+  el.querySelectorAll('button').forEach(b=>b.onclick=()=>fn(b.dataset.v));}
+function drawSel(){
+  const has=m=>IDX.some(x=>x.m===m);
+  if(!has(S.m))S.m=(MODES.find(m=>has(m[0]))||MODES[0])[0];
+  chips('cM',MODES.map(([v,t])=>[v,t,!has(v)]),S.m,v=>{S.m=v;pick();});
+  const L=IDX.filter(x=>x.m===S.m),ns=[...new Set(L.map(x=>x.n))].sort((a,b)=>b-a);
+  if(!ns.includes(S.n))S.n=ns.includes(9)?9:ns[0];
+  chips('cN',ns.map(n=>[n,(S.m==='ft'?'남은 ':'')+n+'명']),S.n,v=>{S.n=+v;pick();});
+  const ss=[...new Set(L.filter(x=>x.n===S.n).map(x=>x.st))].sort((a,b)=>a-b);
+  if(!ss.includes(S.st))S.st=ss.reduce((a,b)=>Math.abs(b-S.st)<Math.abs(a-S.st)?b:a,ss[0]);
+  chips('cS',ss.map(s=>[s,s]),S.st,v=>{S.st=+v;pick();});
+  document.getElementById('icmNote').textContent=S.m==='ft'?'· ICM 파이널: 테이블에 남은 사람이 전부, 모두 같은 스택 · 상금은 1등 20% 기준 표준표':S.m==='bubble'?'· ICM 버블: 19명 남고 18명 입상(다른 테이블도 같은 스택) · 한 명만 더 떨어지면 입상':'';}
+function pick(){drawSel();LS.set('sel',JSON.stringify(S));
+  const x=IDX.find(z=>z.m===S.m&&z.n===S.n&&z.st===S.st);if(!x){main('<div class="e">이 조합은 아직 안 풀었어요</div>');return;}
+  main('<div class="e">불러오는 중…</div>');
+  fetch('data/'+x.k+'.json',{cache:'no-cache'}).then(r=>r.json()).then(d=>{DATA=d;build();ST={h:'',p:null};SEL=null;draw();}).catch(()=>main('<div class="e">차트를 못 불러왔어요. 잠시 뒤 다시 열어 주세요</div>'));}
+function main(h){document.getElementById('main').innerHTML=h;}
+
+// 라벨 'H · 자리' → 상태 H (처음 행동은 '자리 먼저 행동' → H='')
+function build(){G={};DATA.spots.forEach((s,i)=>{const L=s[0];let h,p;
+  if(L.endsWith(' 먼저 행동')){h='';p=L.slice(0,-6);}else{const j=L.lastIndexOf(' · ');h=L.slice(0,j);p=L.slice(j+3);}
+  (G[h]=G[h]||[]).push({i,p,s});});}
+function kids(h,p){   // 이 자리 행동 → 이어지는 상태들
+  const pre=h===''?p+' ':h+' → '+p+' ';
+  return Object.keys(G).filter(k=>k.startsWith(pre)&&!k.slice(pre.length).includes(' → ')&&!(h===''&&k.includes(' → ')));}
+function actOf(word){return /폴드/.test(word)?'F':/^콜$/.test(word)?'C':/림프$/.test(word)&&!/레이즈/.test(word)?'L':/올인/.test(word)?'J':'R';}
+function nameOf(code,word){return word||AN[code];}
+function hv(s,h){const A=s[2].length,v=s[6].slice(h*(A-1),(h+1)*(A-1));if(v[0]<0)return null;const last=100-v.reduce((a,b)=>a+b,0);return v.concat([Math.max(0,last)]);}
+function draw(){
+  const L=G[ST.h]||[];if(!L.length){main('<div class="e">이 상황 데이터가 없어요</div>');return;}
+  let cur=L.find(x=>x.p===ST.p)||L[0];ST.p=cur.p;const s=cur.s,A=s[2].split('');if(VIEW!=='mix'&&!A.includes(VIEW))VIEW='mix';
+  const K=kids(ST.h,cur.p),km={};K.forEach(k=>{const w=k.slice(k.lastIndexOf(' ')+1);const c=actOf(w);(km[c]=km[c]||[]).push({k,w});});
+  const steps=ST.h?ST.h.split(' → '):[];
+  const path=`<div class="path">${steps.length?`<button type="button" data-back="0">⟲ 처음</button>`:''}${steps.map((t,i)=>`<span class="st">${esc(t)}</span><span class="ar">→</span>`).join('')}<span class="st" style="background:#eaf1ff;color:var(--blue)">${esc(cur.p)} 차례</span>${steps.length?`<button type="button" data-back="1">← 한 단계 뒤로</button>`:''}</div>`;
+  const tabs=L.length>1?`<div class="tabs">${L.map(x=>`<button type="button" class="${x===cur?'on':''}" data-p="${esc(x.p)}">${esc(x.p)}<small>${ST.h===''?'앞사람 모두 폴드':''}${x.s[4]<1?' '+x.s[4]+'%':''}</small></button>`).join('')}</div>`:'';
+  const nextP=(()=>{const j=L.indexOf(cur);return L[j+1]?L[j+1].p:null;})();
+  const acts=A.map((c,i)=>{const go=(km[c]||[]).filter(z=>G[z.k]);const w=(km[c]||[])[0];let tgt='';
+    if(go.length===1)tgt=`data-go="${esc(go[0].k)}"`;else if(c==='F'&&!go.length&&nextP)tgt=`data-tab="${esc(nextP)}"`;
+    const nm=c==='F'?'폴드':c==='X'?'체크':w?w.w:AN[c];
+    return `<button type="button" class="act ${tgt?'go':''} ${SEL===c?'on':''}" ${tgt} data-hl="${c}"><i style="background:${col(c)}"></i>${esc(nm)}<b>${s[3][i]}%</b></button>`;}).join('');
+  const bar=`<div class="bar">${A.map((c,i)=>`<span style="width:${s[3][i]}%;background:${col(c)}"></span>`).join('')}</div>`;
+  let grid='';for(let a=0;a<13;a++)for(let b=0;b<13;b++){const h=a*13+b,v=hv(s,h);
+    if(!v){grid+=`<div class="cell na" data-h="${h}"><span>${NAMES[h]}</span></div>`;continue;}
+    let fill;if(VIEW==='mix')fill=A.map((c,i)=>v[i]>0?`<i style="flex:${v[i]};background:${col(c)}"></i>`:'').join('');
+    else{const i=A.indexOf(VIEW);const f=i<0?0:v[i];fill=`<i style="flex:${f};background:${col(VIEW)}"></i><i style="flex:${100-f};background:#d5dae3"></i>`;}
+    grid+=`<div class="cell" data-h="${h}"><div class="fill" style="flex-direction:row">${fill}</div><span>${NAMES[h]}</span></div>`;}
+  const M=DATA.meta;
+  main(`${path}${tabs}
+   <div class="hd" style="margin-top:10px"><b style="font-size:16px">${esc(cur.p)}</b><span class="m">이 상황이 나올 확률 ${s[4]}% · 레인지 ${s[5]}%</span></div>
+   ${bar}<div class="acts">${acts}</div>
+   <div class="hd" style="margin-top:12px"><span class="m">핸드별 전략 (칸을 누르면 숫자)</span><div class="view"><button type="button" class="${VIEW==='mix'?'on':''}" data-view="mix">전체</button>${A.map(c=>`<button type="button" class="${VIEW===c?'on':''}" data-view="${c}">${c==='F'?'폴드':AN[c]}</button>`).join('')}</div></div>
+   <div class="grid">${grid}</div>
+   <div class="det" id="det">&nbsp;</div>
+   <div class="legend">${A.map(c=>`<span><i style="background:${col(c)}"></i>${c==='F'?'폴드':AN[c]}</span>`).join('')}<span><i style="background:var(--cN)"></i>이 상황에 안 오는 핸드</span></div>
+   <div class="foot">${M.n}명 · ${M.st}BB${M.ante?' · BB앤티 '+M.ante:''}${M.icm?' · '+(M.icm.mode==='ft'?'ICM 파이널':'ICM 버블'):''} · 솔버 ${esc(M.ver)} · 정확도(탐색가능도) ${M.ex}${M.icm?' 상금풀%':' bb'}</div>`);
+  const W=document.getElementById('main');
+  W.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{ST.p=b.dataset.p;draw();});
+  W.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{ST.p=b.dataset.tab;draw();});
+  W.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{ST={h:b.dataset.go,p:null};SEL=null;draw();window.scrollTo({top:document.getElementById('main').offsetTop-8,behavior:'smooth'});});
+  W.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>{if(b.dataset.back==='0'){ST={h:'',p:null};}else{const t=ST.h.split(' → ');const last=t.pop();ST={h:t.join(' → '),p:last.slice(0,last.lastIndexOf(' '))};}SEL=null;draw();});
+  W.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{VIEW=b.dataset.view;draw();});
+  W.querySelectorAll('.cell').forEach(el=>el.onclick=()=>{W.querySelectorAll('.cell.sel').forEach(z=>z.classList.remove('sel'));el.classList.add('sel');
+    const h=+el.dataset.h,v=hv(s,h);document.getElementById('det').innerHTML=`<b>${NAMES[h]}</b> <span style="color:var(--sub)">(${COMBO[h]}콤보)</span> · `+(v?A.map((c,i)=>`<span style="color:${col(c)};font-weight:800">${c==='F'?'폴드':AN[c]} ${v[i]}%</span>`).join(' · '):'이 상황에 오지 않는 핸드');});
+}
+fetch('data/index.json',{cache:'no-cache'}).then(r=>r.json()).then(j=>{IDX=j.sets||[];if(!IDX.length){main('<div class="e">아직 올라간 차트가 없어요</div>');return;}pick();})
+  .catch(()=>main('<div class="e">차트 목록을 못 불러왔어요</div>'));
+</script>
+</body>
+</html>
