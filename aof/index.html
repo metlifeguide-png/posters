@@ -215,6 +215,22 @@ body.isetc .noetc{display:none!important}
 #ezEntD .ez-ctl .row2>.bt{flex:0 0 30px!important;width:30px!important;height:42px!important;padding:0!important;font-size:20px!important;border-radius:10px!important}
 #ezEntD .ez-ctl .row2>input{flex:1 1 auto!important;min-width:0!important;height:42px!important;font-size:19px!important;padding:0 2px!important}
 @media(max-width:520px){#easy .ez-row3,#ezVar .ez-row3{gap:6px!important}#easy .ez-row3 .ez-ctl .row2,#ezEntD .ez-ctl .row2{gap:2px!important}#easy .ez-row3 .ez-ctl .row2>.bt,#ezEntD .ez-ctl .row2>.bt{flex:0 0 24px!important;width:24px!important;font-size:18px!important;border-radius:8px!important}#easy .ez-row3 .ez-ctl .row2>input{font-size:17px!important}#easy .ez-row3 .ez-ctl .row2>input::placeholder{font-size:11px}}
+
+/*mtttab*/ body.mtttab .modebar~*:not(#mttTab):not(script):not(style){display:none!important}
+body.mtttab .modebar~#mttTab:not(script):not(style){display:block!important}
+.modebar.mttOn button[data-ui].on{background:var(--surface);border-color:var(--line);color:var(--text)}
+#mttTab .mrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:7px 0}
+#mttTab .mlab{width:58px;flex:none;font-size:13px;color:var(--muted);font-weight:600}
+#mttTab .mrow .chips{flex:1}
+#mttTab input[type=range]{flex:1;min-width:140px}
+#mttTab .msv{font-weight:800;width:56px;text-align:right}
+#mttTab .msum{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;margin:12px 0 8px;font-size:14px;line-height:1.5}
+#mttTab .msum b{font-size:20px}
+#mttTab .c{cursor:default}
+#mttTab .c.p{background:var(--push);color:#fff}
+#mttTab .c.k{background:var(--call);color:#fff}
+#mttTab .mnote{font-size:12.5px;color:var(--muted);line-height:1.65;margin-top:10px}
+#mttTab .mnote p{margin:4px 0}
 </style>
 </head>
 <body class="easy">
@@ -223,8 +239,9 @@ body.isetc .noetc{display:none!important}
   <h1>♠ 새틀 프리플랍 차트</h1>
   <div class="sub">게임과 레지 마감 전·후를 고르고 인원·스택을 넣으면 <b>티켓 안정권 스택</b>, <b>지금 스택에 맞는 전략</b>, <b>상황별 올인·콜 차트</b>를 계산해요.</div>
 </header>
-<div class="modebar"><button type="button" id="mEasy" data-ui="easy">⚡ 이지 모드 (실전)</button><button type="button" id="mPro" data-ui="pro">🔍 세부 모드</button><button type="button" id="mSnap" data-ui="snap">📸 스샷 차트</button></div>
+<div class="modebar"><button type="button" id="mEasy" data-ui="easy">⚡ 이지 모드 (실전)</button><button type="button" id="mPro" data-ui="pro">🔍 세부 모드</button><button type="button" id="mSnap" data-ui="snap">📸 스샷 차트</button><button type="button" id="mMtt">📊 MTT 차트</button></div>
 <div class="panel" id="snapTab" style="display:none"></div>
+<div class="panel" id="mttTab" style="display:none"></div>
 
 <div class="panel easy-only" id="easy">
   <div class="chips" id="ezGames"></div>
@@ -2159,5 +2176,86 @@ n.addEventListener('click',function(ev){ev.preventDefault();try{if(confirm('입�
 }catch(e){return false;}}
 put();setInterval(put,1000);
 })();</script>
+<script>/*mtttab*/
+(function(){
+  const MTT_URL=/\/aof$/.test(location.pathname)?"aof/mtt_charts.json":"mtt_charts.json";   // 깃허브: /aof/mtt_charts.json · 서버: /aof → /aof/mtt_charts.json
+  const R="AKQJT98765432";
+  const hn=k=>{const r=Math.floor(k/13),c=k%13;return r===c?R[r]+R[c]:(r<c?R[r]+R[c]+"s":R[c]+R[r]+"o");};
+  const unhex=h=>{let s="";for(const ch of h)s+=parseInt(ch,16).toString(2).padStart(4,"0");return s.slice(0,169);};
+  const COND={chip:"칩 기준",ft_std:"FT 표준 상금",ft_top:"FT 1등 쏠림",bubble:"머니 버블"};
+  const ANTE={none:"앤티 없음",bb:"BB 앤티"};
+  const S={n:"9",cond:"chip",ante:"none",st:10,view:"push",pos:null,vs:null};
+  try{Object.assign(S,JSON.parse(localStorage.getItem("aofmtt")||"{}"));}catch(e){}
+  let D=null,loading=false,err=false;
+  const el=()=>document.getElementById("mttTab");
+  const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  function load(){if(D||loading)return;loading=true;err=false;draw();
+    fetch(MTT_URL,{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();})
+      .then(j=>{D=j;loading=false;draw();}).catch(()=>{loading=false;err=true;draw();});}
+  function seg(key,items,cur){return '<div class="chips">'+items.map(([v,t])=>'<button type="button" class="chip'+(String(v)===String(cur)?' on':'')+'" data-mtt="'+key+'" data-v="'+esc(v)+'">'+esc(t)+'</button>').join("")+'</div>';}
+  function draw(){
+    const box=el(); if(!box||!document.body.classList.contains("mtttab")) return;
+    const head='<div style="font-weight:800;font-size:16px">📊 MTT 올인 차트</div><div class="hint" style="margin:2px 0 6px">일반 MTT용 푸시/폴드 차트예요. <b>모두 같은 스택, 오픈 레이즈 없이 올인/폴드만</b> 계산했어요.</div>';
+    if(!D){box.innerHTML=head+(err?'<div class="info">차트를 못 불러왔어요. <button type="button" class="chip" data-mtt="retry">다시 시도</button></div>':'<div class="hint" style="padding:20px 0;text-align:center">차트 불러오는 중… (처음 한 번 약 1MB)</div>');return;}
+    try{localStorage.setItem("aofmtt",JSON.stringify(S));}catch(e){}
+    if(!D.pos[S.n])S.n="9"; if(!COND[S.cond])S.cond="chip"; if(!ANTE[S.ante])S.ante="none"; S.st=Math.max(5,Math.min(25,+S.st||10));
+    const file=D.charts[S.n+"_"+S.cond+"_"+S.ante], pos=D.pos[S.n], ch=file[String(S.st)];
+    let bits,pct,title,rows='';
+    rows+='<div class="mrow"><span class="mlab">인원</span>'+seg("n",[["9","9명"],["8","8명"],["6","6명"]],S.n)+'</div>';
+    rows+='<div class="mrow"><span class="mlab">조건</span>'+seg("cond",Object.entries(COND),S.cond)+'</div>';
+    rows+='<div class="mrow"><span class="mlab">앤티</span>'+seg("ante",Object.entries(ANTE),S.ante)+'</div>';
+    rows+='<div class="mrow"><span class="mlab">스택</span><input type="range" id="mttSt" min="5" max="25" step="1" value="'+S.st+'"><span class="msv">'+S.st+'BB</span></div>';
+    rows+='<div class="mrow"><span class="mlab">보기</span>'+seg("view",[["push","먼저 올인"],["call","올인에 콜"]],S.view)+'</div>';
+    if(S.view==="push"){
+      const ps=pos.slice(0,-1); if(!ps.includes(S.pos)) S.pos=ps[ps.length-1];
+      rows+='<div class="mrow"><span class="mlab">내 자리</span>'+seg("pos",ps.map(p=>[p,p]),S.pos)+'</div>';
+      const c=ch[S.pos]; bits=unhex(c.push); pct=c.push_pct; title='<b>'+esc(S.pos)+'</b> · 앞에서 모두 폴드 → 올인';
+    }else{
+      const cs=pos.slice(1); if(!cs.includes(S.pos)) S.pos="BB";
+      rows+='<div class="mrow"><span class="mlab">내 자리</span>'+seg("pos",cs.map(p=>[p,p]),S.pos)+'</div>';
+      const pushers=pos.slice(0,pos.indexOf(S.pos)); if(!pushers.includes(S.vs)) S.vs=pushers[pushers.length-1];
+      rows+='<div class="mrow"><span class="mlab">상대</span>'+seg("vs",pushers.map(p=>[p,p+" 올인"]),S.vs)+'</div>';
+      const c=ch[S.vs].call[S.pos]; bits=unhex(c.hands); pct=c.pct; title='<b>'+esc(S.vs)+'</b> 올인 → <b>'+esc(S.pos)+'</b> 콜 (사이 자리는 폴드)';
+    }
+    const cls=S.view==="push"?"p":"k";
+    let cells='';for(let k=0;k<169;k++)cells+='<div class="c'+(bits[k]==="1"?" "+cls:"")+'">'+hn(k)+'</div>';
+    const CN={chip:"칩 기준(cEV): 상금 구조 없이 칩 기댓값만 봐요. 레지 마감 전·초중반에 맞아요.",
+      ft_std:"파이널 테이블, 남은 사람이 모두 입상. 상금(%): "+D.pay.ft_std.join(" · ")+" — N명이 남으면 앞 N자리.",
+      ft_top:"파이널 테이블, 1등 쏠림 상금(%): "+D.pay.ft_top.join(" · ")+" — N명이 남으면 앞 N자리.",
+      bubble:"한 테이블에 N명이 남고 N−1명이 입상하는 머니 버블. 상금은 FT 표준의 앞 N−1자리, 꼴찌는 0. (여러 테이블 버블은 아님)"};
+    box.innerHTML=head+rows+
+      '<div class="msum"><span>'+S.n+'명 · '+COND[S.cond]+' · '+ANTE[S.ante]+' · '+S.st+'BB<br>'+title+'</span><span>'+(S.view==="push"?"올인":"콜")+' <b>'+pct.toFixed(1)+'%</b></span></div>'+
+      '<div class="chart">'+cells+'</div>'+
+      '<div class="legend"><span><i style="display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;background:var(--'+(cls==="p"?"push":"call")+')"></i> '+(cls==="p"?"올인":"콜")+'</span><span><i style="display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;background:var(--cell)"></i> 폴드</span><span>오른쪽 위 = 수티드(s) · 왼쪽 아래 = 오프수트(o) · 대각선 = 페어</span></div>'+
+      '<div class="mnote"><p>📌 '+CN[S.cond]+'</p>'+
+      '<p>· 모든 자리가 <b>같은 스택</b>이라고 보고 계산했어요. 스택이 섞인 실제 상황은 ⚡ 이지 모드·🔍 세부 모드 계산기를 쓰세요.</p>'+
+      '<p>· 오픈 레이즈 없이 올인/폴드만 계산했어요. 15BB가 넘으면 실전은 레이즈도 섞이니 "올인만 한다면"의 기준선으로 보세요.</p>'+
+      (S.ante==="bb"?'<p>· BB 앤티: BB가 앤티 1BB를 먼저 내서 <b>BB는 1BB 짧게</b> 시작해요(표의 스택은 앤티 내기 전).</p>':'')+
+      '<p>· 이 사이트 올인차트 엔진으로 계산했어요. 다른 솔버와 범위 %가 조금 다를 수 있어요.</p></div>';
+    const r=document.getElementById("mttSt"); if(r) r.oninput=e=>{S.st=+e.target.value;draw();};
+  }
+  function setMode(on){
+    document.body.classList.toggle("mtttab",on);
+    const mb=document.querySelector(".modebar"); if(mb) mb.classList.toggle("mttOn",on);
+    const b=document.getElementById("mMtt"); if(b) b.classList.toggle("on",on);
+    try{sessionStorage.setItem("aofmttOn",on?"1":"");}catch(e){}
+    if(on){window.scrollTo(0,0);load();draw();}
+  }
+  document.addEventListener("click",e=>{
+    const t=e.target.closest&&e.target.closest("#mMtt,.modebar [data-ui],#mttTab [data-mtt]"); if(!t) return;
+    if(t.id==="mMtt"){e.preventDefault();e.stopPropagation();setMode(true);return;}
+    if(t.dataset.ui!=null){setMode(false);return;}
+    const k=t.dataset.mtt,v=t.dataset.v; e.stopPropagation();
+    if(k==="retry"){load();return;}
+    if(k==="n"){S.n=v;S.pos=null;S.vs=null;}
+    else if(k==="view"){S.view=v;S.pos=null;S.vs=null;}
+    else if(k==="pos"){S.pos=v;if(S.view==="call")S.vs=null;}
+    else S[k]=v;
+    draw();
+  },true);
+  try{if(sessionStorage.getItem("aofmttOn")==="1"||/[#&]mtt\b/.test(location.hash))setMode(true);}catch(e){}
+  window.mttChart=function(q){if(!D)return null;const c=D.charts[q.n+"_"+q.cond+"_"+q.ante][String(q.st)][q.pos];const x=q.caller?c.call[q.caller]:{pct:c.push_pct,hands:c.push};const bits=unhex(x.hands);return {pct:x.pct,hands:[...Array(169).keys()].map(k=>({name:hn(k),on:bits[k]==="1"}))};};
+})();
+</script>
 </body>
 </html>
