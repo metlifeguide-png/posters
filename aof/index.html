@@ -199,6 +199,22 @@ input[type=range]{padding:0;border:0;background:transparent;accent-color:var(--a
 .rng .k b{color:var(--text)}
 footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px;line-height:1.6}
 body.isetc .noetc{display:none!important}
+/*ezline: 이지 모드 수치 한 줄 정렬 (세부 모드처럼)*/
+#easy .ez-row3,#ezVar .ez-row3{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important;flex-direction:initial!important}
+#easy .ez-row3 .ez-ctl,#ezVar .ez-row3 .ez-ctl{display:block!important;padding:0!important;border:0!important;background:none!important;min-width:0}
+#easy .ez-row3 .ez-ctl .k,#ezVar .ez-row3 .ez-ctl .k{display:block;margin:0 0 4px!important;font-size:13px!important;font-weight:700!important;color:var(--muted)!important;white-space:nowrap;flex:none!important}
+#easy .ez-row3 .ez-ctl .row2{display:flex!important;gap:3px!important;align-items:stretch}
+#easy .ez-row3 .ez-ctl .row2>.bt{flex:0 0 30px!important;width:30px!important;height:42px!important;padding:0!important;font-size:20px!important;border-radius:10px!important}
+#easy .ez-row3 .ez-ctl .row2>input{flex:1 1 auto!important;width:100%!important;min-width:0!important;height:42px!important;font-size:19px!important;padding:0 2px!important}
+#easy .ez-row3 .ez-ctl .row2>input::placeholder{font-size:14px}
+#ezEntD .ez-ctl{display:inline-block!important;width:calc(50% - 9px);vertical-align:top;margin-top:4px!important;min-width:0}
+#ezEntD .ez-ctl+.ez-ctl{margin-left:10px}
+#ezEntD .ez-ctl .k{display:block;margin:0 0 4px!important;font-size:13px!important;font-weight:700!important;color:var(--muted)!important;flex:none!important}
+#ezEntD .ez-ctl .k b{font-weight:700}
+#ezEntD .ez-ctl .row2{display:flex!important;gap:3px!important}
+#ezEntD .ez-ctl .row2>.bt{flex:0 0 30px!important;width:30px!important;height:42px!important;padding:0!important;font-size:20px!important;border-radius:10px!important}
+#ezEntD .ez-ctl .row2>input{flex:1 1 auto!important;min-width:0!important;height:42px!important;font-size:19px!important;padding:0 2px!important}
+@media(max-width:520px){#easy .ez-row3,#ezVar .ez-row3{gap:6px!important}#easy .ez-row3 .ez-ctl .row2,#ezEntD .ez-ctl .row2{gap:2px!important}#easy .ez-row3 .ez-ctl .row2>.bt,#ezEntD .ez-ctl .row2>.bt{flex:0 0 24px!important;width:24px!important;font-size:18px!important;border-radius:8px!important}#easy .ez-row3 .ez-ctl .row2>input{font-size:17px!important}#easy .ez-row3 .ez-ctl .row2>input::placeholder{font-size:11px}}
 </style>
 </head>
 <body class="easy">
