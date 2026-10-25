@@ -390,7 +390,7 @@ G.push({k:'hustudy',cat:'홀덤',e:'🎓',n:'헤즈업 공부',d:'스택별 헤�
  async askAI(){if(this.ai&&this.ai.loading)return;const D=this.shared&&this.shared.fb?this.shared:this.pack();
   const t=this.sumText(D,'').replace(/<[^>]+>/g,'')+'\n\n[앱 해설]\n'+D.fb.map(x=>`${HU_ST[x.street]}: `+x.why.join(' / ').replace(/<[^>]+>/g,'')).join('\n');
   this.ai={loading:true};rr();
-  try{const r=await fetch(API+'/api/hu/ask',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({text:t})}).then(r=>r.json());this.ai={text:r.answer||'답을 못 받았어요'};}
+  try{const r=await fetch(API+'/api/hu/ask',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({text:t,token:MEM.tok})}).then(r=>r.json());if(r.need_login)memNeed('AI 코치');this.ai={text:r.answer||'답을 못 받았어요'};}
   catch(e){this.ai={text:'서버에 연결이 안 돼요'};}rr();},
  askHtml(){return `<div class="card" style="border-color:var(--blue)"><div class="t">🙋 이 스팟 물어보기</div><div class="m" style="margin:4px 0 8px">단톡방 사람들에게 물어보거나, AI 코치에게 바로 물어봐요</div>
    <div class="g2b" style="margin-top:0"><button class="btn b2" onclick="CUR.copySum()">📋 카톡용 요약+링크 복사</button><button class="btn" onclick="CUR.shareIt()">📤 공유하기</button></div>
@@ -638,7 +638,7 @@ function askBox(o){return `<div class="card askb" style="margin-top:10px"><div c
  <div class="g3b"><button class="btn b2" onclick="CUR.xCopy()">📋 카톡복사</button><button class="btn" onclick="CUR.xShareBtn()">📤 공유하기</button><button class="btn g" onclick="CUR.xAsk()">🤖 AI 코치</button></div>
  ${o&&o.ai?`<div class="card" style="margin-top:10px;background:#fff;white-space:pre-wrap;font-size:14px;line-height:1.65">${o.ai.loading?'🤖 생각 중… (10~20초)':esc(o.ai.text)}</div><div class="m">AI 답변도 틀릴 수 있어요. 참고용이에요.</div>`:''}</div>`;}
 async function xAskAI(kind,text,obj){if(obj.ai&&obj.ai.loading)return;obj.ai={loading:true};rr();
- try{const r=await fetch(API+'/api/hu/ask',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({text,kind})}).then(r=>r.json());obj.ai={text:r.answer||'답을 못 받았어요'};}
+ try{const r=await fetch(API+'/api/hu/ask',{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({text,kind,token:MEM.tok})}).then(r=>r.json());if(r.need_login)memNeed('AI 코치');obj.ai={text:r.answer||'답을 못 받았어요'};}
  catch(e){obj.ai={text:'서버에 연결이 안 돼요'};}rr();}
 const xPlain=h=>String(h).replace(/<br>/g,'\n').replace(/<div class="h">/g,'\n').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').replace(/\n{3,}/g,'\n\n').trim();
 
