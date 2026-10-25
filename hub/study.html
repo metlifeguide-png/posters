@@ -993,11 +993,12 @@ G.push({k:'calcquiz',cat:'홀덤',e:'🧮',n:'계산 퀴즈',d:'초급~고급 68
    <div style="display:grid;gap:8px;margin-top:10px">${q.opts.map((o,k)=>`<button class="btn b2" style="text-align:left;padding:13px 14px;font-size:15.5px;line-height:1.5" onclick="CUR.ans(${k})">${esc(o)}</button>`).join('')}</div>
    <div class="m" style="text-align:center;margin-top:8px">${esc(NOTE)}</div>`;}});
 })();
-// GORDER:pushfold,potodds,nutadv,hustudy,huview,geom,aofprac,rulequiz,riverq,calcquiz
+// GORDER:pushfold,potodds,nutadv,hustudy,huview,geom,aofprac,rulequiz,riverq,calcquiz,prochoice
 G.push({k:'hustudy',stub:'study_hu.html',cat:'홀덤',e:'🎓',n:'헤즈업 공부',d:'스택별 헤즈업 · 플랍은 솔버 기준 · AI 해설'});
 G.push({k:'huview',stub:'study_hu.html',cat:'홀덤',e:'📊',n:'헤즈업 레인지 뷰어',d:'프리플랍 액션 → 플랍 솔버 자동 연동 · 핸드별 빈도·EV'});
 G.push({k:'geom',stub:'study_adv.html',cat:'홀덤',e:'📐',n:'팟 지오메트리',d:'SPR · 베팅 사이즈 · 올인 라인 레벨 1~4'});
 G.push({k:'aofprac',stub:'study_adv.html',cat:'홀덤',e:'🎯',n:'새틀 AOF 연습',d:'앞액션 3종류 · 올인/콜/폴드 · 이번 주 새틀 인원 기준'});
+G.push({k:'prochoice',stub:'study_pro.html',cat:'홀덤',e:'🎬',n:'프로의 선택',d:'파이널 테이블 실전 결정 · 상황을 보고 내 선택을 한 뒤 프로와 비교'});
 
 // ===== 목록 · 랭킹 · 오늘의 문제 · 화면 전환 =====
 G.forEach(g=>g.nm=g.n);   // 게임 안에서 this.n 을 숫자로 쓰는 경우가 있어 이름은 따로 보관
