@@ -2189,8 +2189,8 @@ put();setInterval(put,1000);
   const COND={chip:"칩 기준",r27:"27명 남음",semi:"세미파테 18명",ft_std:"FT 표준 상금",ft_top:"FT 1등 쏠림",mbub:"머니 버블 (여러 테이블)",bubble:"머니 버블 (한 테이블)"};
   const ANTE={none:"앤티 없음",bb:"BB 앤티"};
   const VIEW={push:"먼저 올인",call:"올인에 콜",re:"앞 오픈 → 내 올인",oc:"내 오픈 → 올인 받고 콜"};
-  const TEND={t:"타이트",n:"보통",l:"루즈"};
-  const S={n:"9",cond:"chip",ante:"none",st:10,view:"push",pos:null,vs:null,tend:"n",pk:{reg:"closed",left:"",paid:"",top:false}};
+  const TEND={v:"솔버(v4)",t:"타이트",n:"보통",l:"루즈"};   /*mttv4*/
+  const S={n:"9",cond:"chip",ante:"none",st:10,view:"push",pos:null,vs:null,tend:"v",pk:{reg:"closed",left:"",paid:"",top:false}};
   try{const o=JSON.parse(localStorage.getItem("aofmtt")||"{}");Object.assign(S,o,{pk:Object.assign(S.pk,o.pk||{})});}catch(e){}
   const CACHE={},LOADING={},ERR={};
   const el=()=>document.getElementById("mttTab");
@@ -2237,6 +2237,9 @@ put();setInterval(put,1000);
     const pos=D.pos, ch=D.st[String(S.st)];
     let bits,pct,title,cls,soft=null,extra='';
     const re=S.view==="re"||S.view==="oc";
+    /*mttv4*/ const tkOf=o=>(S.tend==="v"&&!(ch.vo&&ch.vo[o]))?"n":S.tend;
+    const v4Note=(o,who)=>{const v=ch.vo[o];return '<p>· '+who+' 오픈 범위: <b>솔버 v4</b>('+v[2]+'BB 결과'+(S.st<13?' · 10BB대 솔버는 작은 오픈 없이 올인만 해서 15BB 범위를 씀':'')+') <b>'+v[1]+'%</b>'+(v[3]<1?' · 상금 조건이라 칩 기준 범위에서 약한 패부터 빼 <b>'+Math.round(v[3]*100)+'%</b> 크기로 좁혔어요':'')+'.</p>';};
+    const v4Miss=()=>S.tend==="v"&&ch.x&&!(ch.vo)?'<p>· 이 스택·조건은 솔버(v4) 범위가 없어서 <b>보통</b>으로 보여 줘요.</p>':'';
     if(S.view==="push"){
       const ps=pos.slice(0,-1); if(!ps.includes(S.pos)) S.pos=ps[ps.length-1];
       rows+='<div class="mrow"><span class="mlab">내 자리</span>'+seg("pos",ps.map(p=>[p,p]),S.pos)+'</div>';
@@ -2253,19 +2256,21 @@ put();setInterval(put,1000);
       const ops=pos.slice(0,pos.indexOf(S.pos)); if(!ops.includes(S.vs)) S.vs=ops[0];
       rows+='<div class="mrow"><span class="mlab">오픈</span>'+seg("vs",ops.map(p=>[p,p+" 오픈"]),S.vs)+'</div>';
       rows+='<div class="mrow"><span class="mlab">상대</span>'+seg("tend",Object.entries(TEND),S.tend)+'</div>';
-      if(ch.x){const c=ch.x[S.vs][S.pos][S.tend]; bits=unhex(c[0]); pct=c[1];}
+      const tk=tkOf(S.vs);
+      if(ch.x){const c=ch.x[S.vs][S.pos][tk]; bits=unhex(c[0]); pct=c[1];}
       cls="p"; title='<b>'+esc(S.vs)+'</b> '+D.open_size+'BB 오픈 → <b>'+esc(S.pos)+'</b> 올인 (사이 자리는 폴드)';
-      const op=D.open[S.vs][S.tend]; extra='<p>· 상대 오픈 범위: <b>상위 '+op[1]+'%</b> ('+TEND[S.tend]+'). 상대가 오픈을 넓게 할수록 올인 범위도 넓어져요.</p><p>· 콜(플랫)은 빼고 <b>올인 / 폴드</b>만 계산했어요. 내 뒤 사람은 내 올인에 콜/폴드, 아무도 안 받으면 오픈한 사람이 콜/폴드해요.</p>';
+      const op=D.open[S.vs][tk==="v"?"n":tk]; extra=(tk==="v"?v4Note(S.vs,"상대"):v4Miss()+'<p>· 상대 오픈 범위: <b>상위 '+op[1]+'%</b> ('+TEND[tk]+').</p>')+'<p>· 상대가 오픈을 넓게 할수록 올인 범위도 넓어져요.</p><p>· 콜(플랫)은 빼고 <b>올인 / 폴드</b>만 계산했어요. 내 뒤 사람은 내 올인에 콜/폴드, 아무도 안 받으면 오픈한 사람이 콜/폴드해요.</p>';
     }else{
       const os_=pos.slice(0,-1); if(!os_.includes(S.pos)) S.pos=os_[0];
       rows+='<div class="mrow"><span class="mlab">내 자리</span>'+seg("pos",os_.map(p=>[p,p+" 오픈"]),S.pos)+'</div>';
       const shs=pos.slice(pos.indexOf(S.pos)+1); if(!shs.includes(S.vs)) S.vs=shs[shs.length-1];
       rows+='<div class="mrow"><span class="mlab">상대</span>'+seg("vs",shs.map(p=>[p,p+" 올인"]),S.vs)+'</div>';
       rows+='<div class="mrow"><span class="mlab">내 오픈</span>'+seg("tend",Object.entries(TEND),S.tend)+'</div>';
-      if(ch.x){const c=ch.x[S.pos][S.vs][S.tend]; bits=unhex(c[2]); pct=c[3];}
-      soft=unhex(D.open[S.pos][S.tend][0]);
+      const tk=tkOf(S.pos);
+      if(ch.x){const c=ch.x[S.pos][S.vs][tk]; bits=unhex(c[2]); pct=c[3];}
+      soft=unhex(tk==="v"?ch.vo[S.pos][0]:D.open[S.pos][tk][0]);
       cls="k"; title='<b>'+esc(S.pos)+'</b> '+D.open_size+'BB 오픈 → <b>'+esc(S.vs)+'</b> 올인 → 콜';
-      const op=D.open[S.pos][S.tend]; extra='<p>· 내 오픈 범위: <b>상위 '+op[1]+'%</b> ('+TEND[S.tend]+', 연한 칸). 진한 칸이 올인을 받았을 때 콜하는 패예요. %는 전체 패 기준.</p><p>· 상대 올인 범위는 "앞 오픈 → 내 올인" 계산과 같아요(오픈 범위에 맞춘 값).</p>';
+      const op=D.open[S.pos][tk==="v"?"n":tk]; extra=(tk==="v"?v4Note(S.pos,"내"):v4Miss()+'<p>· 내 오픈 범위: <b>상위 '+op[1]+'%</b> ('+TEND[tk]+').</p>')+'<p>· 연한 칸 = 내 오픈 범위. 진한 칸이 올인을 받았을 때 콜하는 패예요. %는 전체 패 기준.</p><p>· 상대 올인 범위는 "앞 오픈 → 내 올인" 계산과 같아요(오픈 범위에 맞춘 값).</p>';
     }
     let body;
     if(re&&!ch.x){ body='<div class="info" style="margin-top:10px">이 상황은 <b>8BB부터</b> 계산했어요. 8BB보다 짧으면 오픈 대신 먼저 올인하는 경우가 많아서 <b>먼저 올인</b> 차트를 보세요.</div>'; }
