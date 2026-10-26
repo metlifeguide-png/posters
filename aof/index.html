@@ -2178,126 +2178,219 @@ n.addEventListener('click',function(ev){ev.preventDefault();try{if(confirm('입�
 }catch(e){return false;}}
 put();setInterval(put,1000);
 })();</script>
-<script>/*mtttab*/
+<script>/*mtttab*/ /*mtt3*/
 (function(){
-  // 데이터: templates/aof_mtt/{인원}_{조건}_{앤티}.json (MTT차트만들기.js로 만듦) · 고른 것만 받아 옴
+  // 단계 3개: 레지마감 전 = 미리 계산한 칩 기준 표(templates/aof_mtt/{인원}_chip_{앤티}.json, MTT차트만들기.js)
+  //           레지마감 후(ITM 전) · ITM 후 = 넣은 남은 인원·입상 인원으로 이 자리에서 ICM 계산(전용 워커, 차트 하나에 1~몇 초)
   const BASE=/\/aof$/.test(location.pathname)?"aof/mtt/":"mtt/";   // 깃허브: /aof/mtt/… · 서버: /aof → /aof/mtt/…
   const R="AKQJT98765432";
   const hn=k=>{const r=Math.floor(k/13),c=k%13;return r===c?R[r]+R[c]:(r<c?R[r]+R[c]+"s":R[c]+R[r]+"o");};
   const unhex=h=>{let s="";for(const ch of h)s+=parseInt(ch,16).toString(2).padStart(4,"0");return s.slice(0,169);};
   const NS=[3,4,5,6,7,8,9];
-  const COND={chip:"칩 기준",r27:"27명 남음",semi:"세미파테 18명",ft_std:"FT 표준 상금",ft_top:"FT 1등 쏠림",mbub:"머니 버블 (여러 테이블)",bubble:"머니 버블 (한 테이블)"};
+  const STAGE={pre:"레지마감 전",post:"레지마감 후 (ITM 전)",itm:"ITM 후"};
   const ANTE={none:"앤티 없음",bb:"BB 앤티"};
   const VIEW={push:"먼저 올인",call:"올인에 콜",re:"앞 오픈 → 내 올인",oc:"내 오픈 → 올인 받고 콜"};
-  const TEND={v:"솔버(v4)",t:"타이트",n:"보통",l:"루즈"};   /*mttv4*/
-  const S={n:"9",cond:"chip",ante:"none",st:10,view:"push",pos:null,vs:null,tend:"v",pk:{reg:"closed",left:"",paid:"",top:false}};
-  try{const o=JSON.parse(localStorage.getItem("aofmtt")||"{}");Object.assign(S,o,{pk:Object.assign(S.pk,o.pk||{})});}catch(e){}
+  const TEND={v:"솔버(v4)",t:"타이트",n:"보통",l:"루즈"};
+  const OPEN_SIZE=2, OPEN_PCT={UTG:14,"UTG+1":15,"UTG+2":17,LJ:19,HJ:23,CO:29,BTN:42,SB:45}, TF={t:0.7,n:1,l:1.5};
+  // 표준 상금(1등부터, 비율만 씀). 27명 넘게 입상하면 뒤는 최소 입상(1)으로 이어 붙임
+  const PAY_STD=[24,15.5,11.5,8.8,6.8,5.3,4.2,3.4,2.8,1.9,1.9,1.9,1.6,1.6,1.6,1.3,1.3,1.3,1,1,1,1,1,1,1,1,1];
+  const payFor=P=>P<=PAY_STD.length?PAY_STD.slice(0,P):PAY_STD.concat(new Array(P-PAY_STD.length).fill(1));
+  const S={n:"9",stage:"pre",ante:"none",st:10,view:"push",pos:null,vs:null,tend:"v",L:"",P:""};
+  try{const o=JSON.parse(localStorage.getItem("aofmtt3")||"{}");Object.assign(S,o);}catch(e){}
   const CACHE={},LOADING={},ERR={};
   const el=()=>document.getElementById("mttTab");
   const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-  const fkey=()=>S.n+"_"+S.cond+"_"+S.ante;
   function load(k){if(CACHE[k]||LOADING[k]||ERR[k])return;   // 실패하면 '다시 시도'를 누를 때까지 다시 안 받음
-   LOADING[k]=1;ERR[k]=0;
+    LOADING[k]=1;ERR[k]=0;
     fetch(BASE+k+".json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();})
       .then(j=>{CACHE[k]=j;LOADING[k]=0;draw();}).catch(()=>{LOADING[k]=0;ERR[k]=1;draw();});}
   function seg(key,items,cur){return '<div class="chips">'+items.map(([v,t])=>'<button type="button" class="chip'+(String(v)===String(cur)?' on':'')+'" data-mtt="'+key+'" data-v="'+esc(v)+'">'+esc(t)+'</button>').join("")+'</div>';}
-  // 💡 내 상황 고르기: 레지 마감 · 남은 인원 · 입상 인원 → 맞는 조건
-  function pick(){const p=S.pk,left=+p.left||0,paid=+p.paid||0;
-    if(p.reg==="open") return {cond:"chip",why:"레지 중이라 아직 칩 = 가치예요."};
-    if(!left||!paid) return null;
-    if(left>paid){const gap=left-paid,near=Math.max(2,Math.ceil(paid*0.1));
-      if(gap<=near) return left<=9?{cond:"bubble",n:Math.max(3,Math.min(9,left)),why:"입상까지 "+gap+"명 · 한 테이블 버블이에요."}:{cond:"mbub",why:"입상까지 "+gap+"명 · 여러 테이블 머니 버블이에요."};
-      if(gap<=Math.max(5,Math.ceil(paid*0.3))) return {cond:"mbub",why:"입상까지 "+gap+"명 · 버블이 가까워요. 버블 차트로 보되 경계 패는 칩 기준 쪽으로(조금 넓게) 보세요."};
-      return {cond:"chip",why:"입상까지 "+gap+"명 · 아직 멀어서 칩 기준이 가까워요."};}
-    if(left<=9) return {cond:p.top?"ft_top":"ft_std",n:Math.max(3,left),why:"파이널 테이블 "+left+"명 · "+(p.top?"1등 상금이 커요(쏠림).":"표준 상금 구조예요.")};
-    if(left<=22) return {cond:"semi",why:left+"명 · 세미파테(2테이블) 구간이에요."};
-    return {cond:"r27",why:left+"명 · 머니인 뒤 3테이블쯤 남은 구간이에요."+(left>40?" 사람이 많이 남아 칩 기준과 27명 차트 사이로 보세요.":"")};}
-  function pickBox(){const p=S.pk,r=pick();
-    const inp=(k,ph)=>'<input type="number" inputmode="numeric" min="1" data-mttin="'+k+'" value="'+esc(p[k])+'" placeholder="'+ph+'" style="width:76px;font-size:16px;font-weight:700;text-align:center">';
-    return '<details class="more" id="mttPick"'+(S.pkOpen?" open":"")+' style="margin:4px 0 8px"><summary><b>🧭 내 상황 고르기</b> · 어떤 조건을 볼지 모르겠으면</summary>'+
-      '<div class="mrow"><span class="mlab">레지</span>'+seg("pk_reg",[["open","레지 중"],["closed","레지 마감"]],p.reg)+'</div>'+
-      (p.reg==="open"?'':'<div class="mrow"><span class="mlab">인원</span>남은 '+inp("left","예: 27")+' 명 · 입상 '+inp("paid","예: 24")+' 명</div>'+
-      '<div class="mrow"><span class="mlab">상금</span>'+seg("pk_top",[["0","표준"],["1","1등 쏠림"]],p.top?"1":"0")+'</div>')+
-      (r?'<div class="info" style="margin-top:6px">👉 <b>'+esc(COND[r.cond])+'</b>'+(r.n?' · '+r.n+'명':'')+' — '+esc(r.why)+' <button type="button" class="chip" data-mtt="pk_go">이걸로 보기</button></div>':'<div class="hint">남은 인원과 입상(상금 받는) 인원을 넣으면 맞는 조건을 골라 줘요.</div>')+
-      '<div class="hint" style="margin-top:4px">기준: 레지 중 = 칩 기준 · 입상까지 멀면 칩 기준 · 입상 바로 앞 = 머니 버블 · 머니인 뒤 23명 이상 = 27명 · 10~22명 = 세미파테 · 9명 이하 = 파이널 테이블</div></details>';}
+
+  // ===== 이 자리 계산용 워커: 엔진(ENGINE_SRC) + 리셔브 계산(MTT차트만들기.js와 같은 방식) =====
+  const LIVE_SRC = `
+let E=null,SC2=null,WEAK=null;
+const W=()=>SAT.W;
+function hex(f){let b="";for(let k=0;k<169;k++)b+=f[k]>=0.5?"1":"0";b=b.padEnd(172,"0");let s="";for(let i=0;i<172;i+=4)s+=parseInt(b.slice(i,i+4),2).toString(16);return s;}
+function pct(f){let p=0;for(let k=0;k<169;k++)if(f[k]>=0.5)p+=W()[k];return Math.round(p*1000)/10;}
+function wsum(f){let p=0;for(let k=0;k<169;k++)p+=W()[k]*f[k];return p;}
+function topBy(sc,p){const out=new Float64Array(169);let acc=0;for(const h of [...Array(169).keys()].sort((a,b)=>sc[b]-sc[a])){if(acc>=p-1e-9)break;out[h]=1;acc+=W()[h];}return out;}
+function prep(){SC2=SAT.eqVs(E,topBy(SAT.eqVs(E,new Float64Array(169).fill(1))[0],0.25))[0];WEAK=[...Array(169).keys()].sort((a,b)=>SC2[a]-SC2[b]);}
+const topRange=p=>topBy(SC2,p);
+function ctx(q){const n=q.n,anteArr=q.ante==="bb"?new Array(n).fill(0).map((_,j)=>j===n-1?1:0):0,pressure=(1.5+(q.ante==="bb"?1:0))/4;
+  return {n,S:q.S,pay:q.pay,R:q.L,mode:"icm",pressure,anteArr};}
+function solveP(q){const c=ctx(q);const r=SAT.solve({stacks:new Array(c.n).fill(c.S),opener:q.o,pay:c.pay,off:new Array(c.R-c.n).fill(c.S),ante:c.anteArr,raise:0,mode:"icm",pressure:c.pressure,iters:200},E);
+  const cs={};r.callers.forEach((ci,k)=>{cs[ci]=[hex(r.cs[k]),pct(r.cs[k])];});return {p:[hex(r.sh),pct(r.sh)],cs};}
+function openR(q){const c=ctx(q);
+  if(q.tend!=="v"){return {r:topRange(Math.min(0.7,q.openPct/100*q.tf)),f:1};}
+  const r=Float64Array.from(q.v4r); const S2=Math.max(10,c.S), cfg={stacks:new Array(c.n).fill(S2),opener:q.o,ante:c.anteArr,raise:${OPEN_SIZE},iters:200};
+  const a=SAT.solve(Object.assign({},cfg,{pay:c.pay,off:new Array(c.R-c.n).fill(S2),mode:"icm",pressure:c.pressure}),E);
+  const b=SAT.solve(Object.assign({},cfg,{pay:null,off:[],mode:"chip",pressure:0}),E);
+  const f=b.raPct>1e-9?Math.max(0.3,Math.min(1,a.raPct/b.raPct)):1;
+  const target=wsum(r)*f; for(const h of WEAK){ if(wsum(r)<=target+1e-9) break; r[h]=0; }
+  return {r,f:Math.round(f*100)/100};}
+function reshove(q,openR){
+  const c=ctx(q),T=c.n,S=c.S,o=q.o,h=q.h,pay=c.pay,R=c.R,pressure=c.pressure,anteArr=c.anteArr,Wt=W();
+  const a=new Array(T).fill(0).map((_,j)=>Math.min(Array.isArray(anteArr)?anteArr[j]:0,S));
+  const s=a.map(x=>S-x),A=a.reduce((x,y)=>x+y,0);
+  const cont=new Array(T).fill(0);cont[T-2]=Math.min(0.5,s[T-2]);cont[T-1]=Math.min(1,s[T-1]);cont[o]=Math.min(${OPEN_SIZE},s[o]);
+  const off=new Array(R-T).fill(S);
+  const sq=arr=>pressure>0?arr.map(x=>x>1e-9?Math.max(0,x-pressure):0):arr;
+  const offP=sq(off);
+  const val=(fin,i)=>SAT.icmPay(sq(fin).concat(offP),i,pay);
+  const base=()=>s.map((x,j)=>x-cont[j]);
+  const potExcept=(...ids)=>A+cont.reduce((t,cc,j)=>t+(ids.includes(j)?0:cc),0);
+  const fFold=base();fFold[o]=s[o]-cont[o]+A+cont.reduce((t,cc)=>t+cc,0);
+  const evFold=val(fFold,h);
+  const fSteal=base();fSteal[h]=s[h]-cont[h]+A+cont.reduce((t,cc)=>t+cc,0);
+  const duel=j=>{const m=Math.min(s[h],s[j]),dead=potExcept(h,j);
+    const win=base();win[h]=s[h]-m+dead+2*m;win[j]=s[j]-m;const lose=base();lose[h]=s[h]-m;lose[j]=s[j]-m+dead+2*m;return {win,lose};};
+  const behind=[];for(let j=h+1;j<T;j++)behind.push(j);
+  const D={};for(const j of behind.concat([o]))D[j]=duel(j);
+  const info={};
+  for(const j of behind.concat([o])){const CW=val(D[j].lose,j),CL=val(D[j].win,j),CF=val(fSteal,j);
+    info[j]={need:(CW-CL)>1e-12?(CF-CL)/(CW-CL):1,Hw:val(D[j].win,h),Hl:val(D[j].lose,h)};}
+  const evSteal=val(fSteal,h);
+  const pOpen=wsum(openR);
+  const hero=new Float64Array(169).fill(0.3);
+  const call={};for(const j of behind)call[j]=new Float64Array(169).fill(0.1);
+  const ocall=new Float64Array(169);for(let k=0;k<169;k++)ocall[k]=openR[k]*0.3;
+  for(let t=0;t<200;t++){const al=1/(t+2);const eqC={},pC={};
+    for(const j of behind){const r=SAT.eqVs(E,call[j]);eqC[j]=r[0];pC[j]=r[1];}
+    const ro=SAT.eqVs(E,ocall),pO=pOpen>1e-9?ro[1]/pOpen:0;
+    for(let x=0;x<169;x++){let reach=1,ev=0;
+      for(const j of behind){const I=info[j],p=pC[j],e=eqC[j][x];ev+=reach*p*(e*I.Hw+(1-e)*I.Hl);reach*=1-p;}
+      {const I=info[o],e=ro[0][x];ev+=reach*(pO*(e*I.Hw+(1-e)*I.Hl)+(1-pO)*evSteal);}
+      hero[x]+=al*((ev>evFold?1:0)-hero[x]);}
+    const [eqH]=SAT.eqVs(E,hero);
+    for(const j of behind)for(let y=0;y<169;y++)call[j][y]+=al*((eqH[y]>info[j].need?1:0)-call[j][y]);
+    for(let y=0;y<169;y++)ocall[y]+=al*((eqH[y]>info[o].need?openR[y]:0)-ocall[y]);}
+  return {hero:[hex(hero),pct(hero)],ocall:[hex(ocall),pct(ocall)]};}
+onmessage=e=>{const m=e.data;
+  if(m.type==="init"){E=decodeE(m.b64);prep();return;}
+  let res;try{ if(m.q.kind==="push") res=solveP(m.q);
+    else { const op=openR(m.q); const r=reshove(m.q,op.r); res={hero:r.hero,ocall:r.ocall,open:[hex(op.r),Math.round(wsum(op.r)*1000)/10],f:op.f}; } }
+  catch(err){res={err:String(err&&err.message||err)};}
+  postMessage({id:m.id,res});};`;
+  let LW=null,lseq=0; const LRES={},LPEND={};
+  function liveWorker(){ if(LW) return LW;
+    try{ LW=new Worker(URL.createObjectURL(new Blob([ENGINE_SRC+"\n"+decodeE.toString()+"\n"+LIVE_SRC],{type:"text/javascript"})));
+      LW.postMessage({type:"init",b64:EQB64});
+      LW.onmessage=e=>{const m=e.data,k=LPEND[m.id];delete LPEND[m.id];if(k){LRES[k]=m.res;draw();}}; }catch(e){LW=null;}
+    return LW; }
+  function live(q){const k=JSON.stringify(q); if(LRES[k]) return LRES[k];
+    if(!Object.values(LPEND).includes(k)){const w=liveWorker(); if(!w) return {err:"이 브라우저에서는 계산 창을 못 열었어요."}; const id=++lseq; LPEND[id]=k; w.postMessage({id,q});}
+    return null;}
+  // 솔버 v4 오픈 범위(프리플랍솔버 v4 '앞 모두 폴드 → 오픈'): aof_mtt/v4_open.json (v4오픈추출.py)
+  let V4=null,V4L=0,V4E=0;
+  function v4(){ if(V4||V4L||V4E) return V4; V4L=1;
+    fetch(BASE+"v4_open.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw 0;return r.json();}).then(j=>{V4=j;V4L=0;draw();}).catch(()=>{V4L=0;V4E=1;draw();}); return null; }
+  function v4Range(n,ante,St,o){ const T=V4&&V4.open[n+"_"+ante]; if(!T) return null;
+    const want=St<=17?15:(St<=22?20:25);
+    const c=Object.keys(T).map(Number).filter(x=>T[x][o]).sort((a,b)=>Math.abs(a-want)-Math.abs(b-want)||b-a);
+    return c.length?{r:T[c[0]][o],S:c[0]}:null; }
+
+  // 넣은 숫자 → 계산할 상황
+  function sit(){
+    const n0=+S.n;
+    if(S.stage==="pre") return {n:n0};
+    const L=Math.round(+S.L||0),P=Math.round(+S.P||0);
+    if(!(L>0)||!(P>0)) return {need:1,n:n0};
+    if(S.stage==="post"&&L<=P) return {err:"남은 인원("+L+")이 입상 인원("+P+") 이하라 이미 ITM이에요.",fix:"itm",n:n0};
+    if(S.stage==="itm"&&L>P) return {err:"남은 인원("+L+")이 입상 인원("+P+")보다 많아 아직 ITM 전이에요.",fix:"post",n:n0};
+    if(L<3) return {err:"2명(헤즈업)은 이 차트에 없어요. 뚝티오나 세부 모드를 쓰세요.",n:n0};
+    const n=L<=9?L:n0, tb=L<=9?1:Math.ceil(L/n0);
+    const pay=S.stage==="post"?payFor(P):payFor(P).slice(0,L);
+    let desc;
+    if(S.stage==="post") desc=(tb===1?"한 테이블":"약 "+tb+"테이블")+" · "+L+"명 남고 "+P+"명 입상 · 버블까지 "+(L-P)+"명";
+    else desc=(L<=9?"파이널 테이블 "+L+"명":"약 "+tb+"테이블 · "+L+"명 남음")+" · 모두 입상 확정("+P+"명 입상)";
+    return {n,L,P,pay,tb,desc,auto:L<=9&&n!==n0};
+  }
   function draw(){
     const box=el(); if(!box||!document.body.classList.contains("mtttab")) return;
-    try{localStorage.setItem("aofmtt",JSON.stringify(S));}catch(e){}
-    if(!NS.includes(+S.n))S.n="9"; if(!COND[S.cond])S.cond="chip"; if(!ANTE[S.ante])S.ante="none"; if(!VIEW[S.view])S.view="push"; if(!TEND[S.tend])S.tend="n";
+    try{localStorage.setItem("aofmtt3",JSON.stringify(S));}catch(e){}
+    if(!NS.includes(+S.n))S.n="9"; if(!STAGE[S.stage])S.stage="pre"; if(!ANTE[S.ante])S.ante="none"; if(!VIEW[S.view])S.view="push"; if(!TEND[S.tend])S.tend="v";
     S.st=Math.max(5,Math.min(25,+S.st||10));
-    const head='<div style="font-weight:800;font-size:16px">📊 MTT 올인 차트</div><div class="hint" style="margin:2px 0 6px">입력 없이 바로 보는 MTT 표예요. <b>모두 같은 스택</b>으로 미리 계산했어요. 스택이 섞인 실제 상황은 ⚡ 이지·🔍 세부 모드에서 계산하세요.</div>';
-    let rows=pickBox();
-    rows+='<div class="mrow"><span class="mlab">인원</span>'+seg("n",NS.map(x=>[x,x+"명"]),S.n)+'</div>';
-    rows+='<div class="mrow"><span class="mlab">조건</span>'+seg("cond",Object.entries(COND),S.cond)+'</div>';
+    const head='<div style="font-weight:800;font-size:16px">📊 MTT 올인 차트</div><div class="hint" style="margin:2px 0 6px"><b>모두 같은 스택</b>으로 보는 MTT 표예요. 레지마감 전은 바로, 레지마감 후·ITM 후는 넣은 인원으로 그 자리에서 계산해요. 스택이 섞인 실제 상황은 ⚡ 이지·🔍 세부 모드에서 계산하세요.</div>';
+    const st=sit(), n=st.n, pos=SAT.POS[n];
+    const inp=(k,ph)=>'<input type="number" inputmode="numeric" min="1" data-mttin="'+k+'" value="'+esc(S[k])+'" placeholder="'+ph+'" style="width:76px;font-size:16px;font-weight:700;text-align:center">';
+    let rows='<div class="mrow"><span class="mlab">단계</span>'+seg("stage",Object.entries(STAGE),S.stage)+'</div>';
+    if(S.stage!=="pre"){
+      rows+='<div class="mrow"><span class="mlab">인원</span>남은 '+inp("L","예: 27")+' 명 · 입상 '+inp("P","예: 24")+' 명</div>';
+      if(st.err) rows+='<div class="info" style="margin:4px 0">'+esc(st.err)+(st.fix?' <button type="button" class="chip" data-mtt="stage" data-v="'+st.fix+'">'+esc(STAGE[st.fix])+'로 바꾸기</button>':'')+'</div>';
+      else if(st.desc) rows+='<div class="hint" style="margin:2px 0 4px">👉 '+esc(st.desc)+'</div>';
+    }
+    rows+='<div class="mrow"><span class="mlab">내 테이블</span>'+seg("n",NS.map(x=>[x,x+"명"]),st.auto?"":S.n)+'</div>';
+    if(st.auto) rows+='<div class="hint" style="margin:-2px 0 4px">남은 인원이 '+n+'명이라 한 테이블 '+n+'명으로 계산해요.</div>';
     rows+='<div class="mrow"><span class="mlab">앤티</span>'+seg("ante",Object.entries(ANTE),S.ante)+'</div>';
     rows+='<div class="mrow"><span class="mlab">스택</span><input type="range" id="mttSt" min="5" max="25" step="1" value="'+S.st+'"><span class="msv">'+S.st+'BB</span></div>';
     rows+='<div class="mrow"><span class="mlab">상황</span>'+seg("view",Object.entries(VIEW),S.view)+'</div>';
-    const k=fkey(), D=CACHE[k];
-    if(!D){ load(k); box.innerHTML=head+rows+(ERR[k]?'<div class="info">차트를 못 불러왔어요. <button type="button" class="chip" data-mtt="retry">다시 시도</button></div>':'<div class="hint" style="padding:20px 0;text-align:center">차트 불러오는 중…</div>'); bindRange(); return; }
-    const pos=D.pos, ch=D.st[String(S.st)];
-    let bits,pct,title,cls,soft=null,extra='';
     const re=S.view==="re"||S.view==="oc";
-    /*mttv4*/ const tkOf=o=>(S.tend==="v"&&!(ch.vo&&ch.vo[o]))?"n":S.tend;
-    const v4Note=(o,who)=>{const v=ch.vo[o];return '<p>· '+who+' 오픈 범위: <b>솔버 v4</b>('+v[2]+'BB 결과'+(S.st<13?' · 10BB대 솔버는 작은 오픈 없이 올인만 해서 15BB 범위를 씀':'')+') <b>'+v[1]+'%</b>'+(v[3]<1?' · 상금 조건이라 칩 기준 범위에서 약한 패부터 빼 <b>'+Math.round(v[3]*100)+'%</b> 크기로 좁혔어요':'')+'.</p>';};
-    const v4Miss=()=>S.tend==="v"&&ch.x&&!(ch.vo)?'<p>· 이 스택·조건은 솔버(v4) 범위가 없어서 <b>보통</b>으로 보여 줘요.</p>':'';
-    if(S.view==="push"){
-      const ps=pos.slice(0,-1); if(!ps.includes(S.pos)) S.pos=ps[ps.length-1];
-      rows+='<div class="mrow"><span class="mlab">내 자리</span>'+seg("pos",ps.map(p=>[p,p]),S.pos)+'</div>';
-      const c=ch.p[S.pos]; bits=unhex(c[0]); pct=c[1]; cls="p"; title='<b>'+esc(S.pos)+'</b> · 앞에서 모두 폴드 → 올인';
-    }else if(S.view==="call"){
-      const cs=pos.slice(1); if(!cs.includes(S.pos)) S.pos="BB";
+    // 자리 고르기
+    let title='',hero,opp;
+    if(S.view==="push"){ const ps=pos.slice(0,-1); if(!ps.includes(S.pos)) S.pos=ps[ps.length-1];
+      rows+='<div class="mrow"><span class="mlab">내 자리</span>'+seg("pos",ps.map(p=>[p,p]),S.pos)+'</div>'; title='<b>'+esc(S.pos)+'</b> · 앞에서 모두 폴드 → 올인'; }
+    else if(S.view==="call"){ const cs=pos.slice(1); if(!cs.includes(S.pos)) S.pos="BB";
       rows+='<div class="mrow"><span class="mlab">내 자리</span>'+seg("pos",cs.map(p=>[p,p]),S.pos)+'</div>';
-      const pushers=pos.slice(0,pos.indexOf(S.pos)); if(!pushers.includes(S.vs)) S.vs=pushers[pushers.length-1];
-      rows+='<div class="mrow"><span class="mlab">상대</span>'+seg("vs",pushers.map(p=>[p,p+" 올인"]),S.vs)+'</div>';
-      const c=ch.c[S.vs][S.pos]; bits=unhex(c[0]); pct=c[1]; cls="k"; title='<b>'+esc(S.vs)+'</b> 올인 → <b>'+esc(S.pos)+'</b> 콜 (사이 자리는 폴드)';
-    }else if(S.view==="re"){
-      const hs=pos.slice(1); if(!hs.includes(S.pos)) S.pos="BB";
+      const ps=pos.slice(0,pos.indexOf(S.pos)); if(!ps.includes(S.vs)) S.vs=ps[ps.length-1];
+      rows+='<div class="mrow"><span class="mlab">상대</span>'+seg("vs",ps.map(p=>[p,p+" 올인"]),S.vs)+'</div>'; title='<b>'+esc(S.vs)+'</b> 올인 → <b>'+esc(S.pos)+'</b> 콜 (사이 자리는 폴드)'; }
+    else if(S.view==="re"){ const hs=pos.slice(1); if(!hs.includes(S.pos)) S.pos="BB";
       rows+='<div class="mrow"><span class="mlab">내 자리</span>'+seg("pos",hs.map(p=>[p,p]),S.pos)+'</div>';
       const ops=pos.slice(0,pos.indexOf(S.pos)); if(!ops.includes(S.vs)) S.vs=ops[0];
       rows+='<div class="mrow"><span class="mlab">오픈</span>'+seg("vs",ops.map(p=>[p,p+" 오픈"]),S.vs)+'</div>';
-      rows+='<div class="mrow"><span class="mlab">상대</span>'+seg("tend",Object.entries(TEND),S.tend)+'</div>';
-      const tk=tkOf(S.vs);
-      if(ch.x){const c=ch.x[S.vs][S.pos][tk]; bits=unhex(c[0]); pct=c[1];}
-      cls="p"; title='<b>'+esc(S.vs)+'</b> '+D.open_size+'BB 오픈 → <b>'+esc(S.pos)+'</b> 올인 (사이 자리는 폴드)';
-      const op=D.open[S.vs][tk==="v"?"n":tk]; extra=(tk==="v"?v4Note(S.vs,"상대"):v4Miss()+'<p>· 상대 오픈 범위: <b>상위 '+op[1]+'%</b> ('+TEND[tk]+').</p>')+'<p>· 상대가 오픈을 넓게 할수록 올인 범위도 넓어져요.</p><p>· 콜(플랫)은 빼고 <b>올인 / 폴드</b>만 계산했어요. 내 뒤 사람은 내 올인에 콜/폴드, 아무도 안 받으면 오픈한 사람이 콜/폴드해요.</p>';
-    }else{
-      const os_=pos.slice(0,-1); if(!os_.includes(S.pos)) S.pos=os_[0];
+      rows+='<div class="mrow"><span class="mlab">상대</span>'+seg("tend",Object.entries(TEND),S.tend)+'</div>'; title='<b>'+esc(S.vs)+'</b> '+OPEN_SIZE+'BB 오픈 → <b>'+esc(S.pos)+'</b> 올인 (사이 자리는 폴드)'; }
+    else { const os_=pos.slice(0,-1); if(!os_.includes(S.pos)) S.pos=os_[0];
       rows+='<div class="mrow"><span class="mlab">내 자리</span>'+seg("pos",os_.map(p=>[p,p+" 오픈"]),S.pos)+'</div>';
       const shs=pos.slice(pos.indexOf(S.pos)+1); if(!shs.includes(S.vs)) S.vs=shs[shs.length-1];
       rows+='<div class="mrow"><span class="mlab">상대</span>'+seg("vs",shs.map(p=>[p,p+" 올인"]),S.vs)+'</div>';
-      rows+='<div class="mrow"><span class="mlab">내 오픈</span>'+seg("tend",Object.entries(TEND),S.tend)+'</div>';
-      const tk=tkOf(S.pos);
-      if(ch.x){const c=ch.x[S.pos][S.vs][tk]; bits=unhex(c[2]); pct=c[3];}
-      soft=unhex(tk==="v"?ch.vo[S.pos][0]:D.open[S.pos][tk][0]);
-      cls="k"; title='<b>'+esc(S.pos)+'</b> '+D.open_size+'BB 오픈 → <b>'+esc(S.vs)+'</b> 올인 → 콜';
-      const op=D.open[S.pos][tk==="v"?"n":tk]; extra=(tk==="v"?v4Note(S.pos,"내"):v4Miss()+'<p>· 내 오픈 범위: <b>상위 '+op[1]+'%</b> ('+TEND[tk]+').</p>')+'<p>· 연한 칸 = 내 오픈 범위. 진한 칸이 올인을 받았을 때 콜하는 패예요. %는 전체 패 기준.</p><p>· 상대 올인 범위는 "앞 오픈 → 내 올인" 계산과 같아요(오픈 범위에 맞춘 값).</p>';
-    }
-    let body;
-    if(re&&!ch.x){ body='<div class="info" style="margin-top:10px">이 상황은 <b>8BB부터</b> 계산했어요. 8BB보다 짧으면 오픈 대신 먼저 올인하는 경우가 많아서 <b>먼저 올인</b> 차트를 보세요.</div>'; }
-    else{
-      let cells='';for(let k=0;k<169;k++)cells+='<div class="c'+(bits[k]==="1"?" "+cls:(soft&&soft[k]==="1"?" o":""))+'">'+hn(k)+'</div>';
-      const word=cls==="p"?"올인":"콜";
-      body='<div class="msum"><span>'+S.n+'명 · '+COND[S.cond]+' · '+ANTE[S.ante]+' · '+S.st+'BB<br>'+title+'</span><span>'+word+' <b>'+(+pct).toFixed(1)+'%</b></span></div>'+
-        '<div class="chart">'+cells+'</div>'+
-        '<div class="legend"><span><i style="display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;background:var(--'+(cls==="p"?"push":"call")+')"></i> '+word+'</span>'+(soft?'<span><i style="display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;background:var(--raise-soft)"></i> 오픈했지만 폴드</span>':'')+'<span><i style="display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;background:var(--cell)"></i> 폴드</span><span>오른쪽 위 = 수티드(s) · 왼쪽 아래 = 오프수트(o)</span></div>';
-    }
-    const pay=D.pay?D.pay.map((x,i)=>(i+1)+"등 "+x).slice(0,9).join(" · ")+(D.pay.length>9?" … "+D.pay.length+"등 "+D.pay[D.pay.length-1]:""):"";
-    const CN={chip:"칩 기준(cEV): 상금 구조 없이 칩 기댓값만 봐요. 레지 마감 전·초중반, 머니까지 먼 구간에 맞아요.",
-      r27:"27명이 남았고 모두 입상한 상태(머니인 뒤). 다른 테이블 사람도 같은 스택으로 봐요. 상금 비율: "+pay,
-      semi:"18명이 남은 세미 파이널 테이블(머니인 뒤). 상금 비율: "+pay,
-      ft_std:"파이널 테이블, 남은 사람이 모두 입상. 상금 비율: "+pay,
-      ft_top:"파이널 테이블, 1등 쏠림 상금. 상금 비율: "+pay,
-      mbub:"28명이 남고 27명이 입상하는 머니 버블(여러 테이블). 상금 비율: "+pay,
-      bubble:"한 테이블에 "+S.n+"명이 남고 "+(S.n-1)+"명이 입상하는 버블. 상금 비율: "+pay};
-    box.innerHTML=head+rows+body+
-      '<div class="mnote"><p>📌 '+esc(CN[S.cond])+'</p>'+extra+
-      '<p>· 모든 자리가 <b>같은 스택</b>이라고 보고 계산했어요. 스택이 섞인 실제 상황은 ⚡ 이지 모드·🔍 세부 모드 계산기를 쓰세요. <button type="button" class="chip" data-mtt="calc">⚡ 이지 모드로 가기</button></p>'+
+      rows+='<div class="mrow"><span class="mlab">내 오픈</span>'+seg("tend",Object.entries(TEND),S.tend)+'</div>'; title='<b>'+esc(S.pos)+'</b> '+OPEN_SIZE+'BB 오픈 → <b>'+esc(S.vs)+'</b> 올인 → 콜'; }
+    const fin=(body,extra)=>{ box.innerHTML=head+rows+body+'<div class="mnote">'+extra+
+      '<p>· 모든 자리가 <b>같은 스택</b>이라고 보고 계산했어요(다른 테이블 사람도 같은 스택). 스택이 섞인 실제 상황은 ⚡ 이지 모드·🔍 세부 모드 계산기를 쓰세요. <button type="button" class="chip" data-mtt="calc">⚡ 이지 모드로 가기</button></p>'+
       (S.view==="push"||S.view==="call"?'<p>· 오픈 레이즈 없이 올인/폴드만 계산했어요. 15BB가 넘으면 실전은 레이즈도 섞이니 "올인만 한다면"의 기준선으로 보세요. 오픈에 대한 올인은 <b>앞 오픈 → 내 올인</b>을 보세요.</p>':'')+
       (S.ante==="bb"?'<p>· BB 앤티: BB가 앤티 1BB를 먼저 내서 <b>BB는 1BB 짧게</b> 시작해요(표의 스택은 앤티 내기 전).</p>':'')+
-      '<p>· 이 사이트 올인차트 엔진으로 계산했어요. 다른 솔버와 범위 %가 조금 다를 수 있어요.</p></div>';
-    bindRange();
+      '<p>· 이 사이트 올인차트 엔진으로 계산했어요. 다른 솔버와 범위 %가 조금 다를 수 있어요.</p></div>'; bindRange(); };
+    const wait=t=>'<div class="hint" style="padding:20px 0;text-align:center">'+t+'</div>';
+    const stageNote=S.stage==="pre"?'<p>📌 레지마감 전: 다시 들어올 수 있고 상금 순위를 신경 쓸 때가 아니라 <b>칩 = 가치(칩 기준)</b>로 봐요.</p>':
+      (S.stage==="post"?'<p>📌 레지마감 후 ITM 전: 남은 '+(st.L||"?")+'명 · 입상 '+(st.P||"?")+'명. 떨어지면 0원이라 버블이 가까울수록 조여요(버블이 멀면 칩 기준에 가까워져요). 표준 상금 구조(1등 24 : 최소 입상 1 비율)로 ICM 계산.</p>':
+      '<p>📌 ITM 후: 남은 '+(st.L||"?")+'명 모두 입상 확정. 한 등수 오를 때마다 늘어나는 상금 차이로 ICM 계산(표준 상금 구조).</p>');
+    if(re&&S.st<8){ fin('<div class="info" style="margin-top:10px">이 상황은 <b>8BB부터</b> 계산해요. 8BB보다 짧으면 오픈 대신 먼저 올인하는 경우가 많아서 <b>먼저 올인</b> 차트를 보세요.</div>',stageNote); return; }
+    let bits,pct,cls=S.view==="push"||S.view==="re"?"p":"k",soft=null,extra=stageNote;
+    const tOf=o=>{if(S.tend!=="v")return S.tend; const v=v4Range(n,S.ante,S.st,o); return v?"v":"n";};
+    if(S.stage==="pre"){
+      const k=n+"_chip_"+S.ante, D=CACHE[k];
+      if(!D){ load(k); fin(ERR[k]?'<div class="info">차트를 못 불러왔어요. <button type="button" class="chip" data-mtt="retry">다시 시도</button></div>':wait("차트 불러오는 중…"),stageNote); return; }
+      const ch=D.st[String(S.st)];
+      if(S.view==="push"){const c=ch.p[S.pos];bits=unhex(c[0]);pct=c[1];}
+      else if(S.view==="call"){const c=ch.c[S.vs][S.pos];bits=unhex(c[0]);pct=c[1];}
+      else { const o=S.view==="re"?S.vs:S.pos, h=S.view==="re"?S.pos:S.vs, tk=(S.tend==="v"&&!(ch.vo&&ch.vo[o]))?"n":S.tend, c=ch.x[o][h][tk];
+        if(S.view==="re"){bits=unhex(c[0]);pct=c[1];} else {bits=unhex(c[2]);pct=c[3];soft=unhex(tk==="v"?ch.vo[o][0]:D.open[o][tk][0]);}
+        extra+=tk==="v"?'<p>· '+(S.view==="re"?"상대":"내")+' 오픈 범위: <b>솔버 v4</b>('+ch.vo[o][2]+'BB 결과'+(S.st<13?' · 10BB대 솔버는 작은 오픈 없이 올인만 해서 15BB 범위':'')+') <b>'+ch.vo[o][1]+'%</b>.</p>':'<p>· '+(S.view==="re"?"상대":"내")+' 오픈 범위: <b>상위 '+D.open[o][tk][1]+'%</b> ('+TEND[tk]+').</p>'; }
+    }else{
+      if(st.need||st.err){ fin(wait(st.err?"위 단계를 바꾸거나 숫자를 고쳐 주세요.":"남은 인원과 입상 인원을 넣으면 그 자리에서 계산해요."),stageNote); return; }
+      const q={n,S:S.st,ante:S.ante,L:st.L,pay:st.pay};
+      let r;
+      if(S.view==="push"||S.view==="call"){ r=live(Object.assign({kind:"push",o:pos.indexOf(S.view==="push"?S.pos:S.vs)},q));
+        if(r&&!r.err){ if(S.view==="push"){bits=unhex(r.p[0]);pct=r.p[1];} else {const c=r.cs[pos.indexOf(S.pos)];bits=unhex(c[0]);pct=c[1];} } }
+      else { const o=pos.indexOf(S.view==="re"?S.vs:S.pos), h=pos.indexOf(S.view==="re"?S.pos:S.vs);
+        if(S.tend==="v"&&!V4&&!V4E){ v4(); fin(wait("솔버(v4) 범위 불러오는 중…"),stageNote); return; }
+        const tk=S.tend==="v"?(V4?tOf(o):"n"):S.tend, vr=tk==="v"?v4Range(n,S.ante,S.st,o):null;
+        r=live(Object.assign({kind:"re",o,h,tend:tk,openPct:OPEN_PCT[pos[o]],tf:TF[tk]||1,v4r:vr?vr.r:null},q));
+        if(r&&!r.err){ if(S.view==="re"){bits=unhex(r.hero[0]);pct=r.hero[1];} else {bits=unhex(r.ocall[0]);pct=r.ocall[1];soft=unhex(r.open[0]);}
+          const who=S.view==="re"?"상대":"내";
+          extra+=tk==="v"?'<p>· '+who+' 오픈 범위: <b>솔버 v4</b>('+vr.S+'BB 결과'+(S.st<13?' · 10BB대 솔버는 작은 오픈 없이 올인만 해서 15BB 범위':'')+') <b>'+r.open[1]+'%</b>'+(r.f<1?' · 상금 조건이라 칩 기준 범위에서 약한 패부터 빼 <b>'+Math.round(r.f*100)+'%</b> 크기로 좁혔어요':'')+'.</p>':
+            (S.tend==="v"?'<p>· 솔버(v4) 범위를 못 불러와 <b>보통</b>으로 계산했어요.</p>':'')+'<p>· '+who+' 오픈 범위: <b>상위 '+r.open[1]+'%</b> ('+TEND[tk]+').</p>'; } }
+      if(!r){ fin(wait("⏳ "+st.L+"명 · "+st.P+"명 입상으로 계산 중… (사람이 많으면 몇 초 걸려요)"),stageNote); return; }
+      if(r.err){ fin('<div class="info">계산 중 오류: '+esc(r.err)+'</div>',stageNote); return; }
+    }
+    if(re) extra+=S.view==="re"?'<p>· 콜(플랫)은 빼고 <b>올인 / 폴드</b>만 계산했어요. 내 뒤 사람은 내 올인에 콜/폴드, 아무도 안 받으면 오픈한 사람이 콜/폴드해요.</p>':'<p>· 연한 칸 = 내 오픈 범위. 진한 칸이 올인을 받았을 때 콜하는 패예요. %는 전체 패 기준. 상대 올인 범위는 "앞 오픈 → 내 올인" 계산과 같아요.</p>';
+    let cells='';for(let k=0;k<169;k++)cells+='<div class="c'+(bits[k]==="1"?" "+cls:(soft&&soft[k]==="1"?" o":""))+'">'+hn(k)+'</div>';
+    const word=cls==="p"?"올인":"콜";
+    const sub=S.stage==="pre"?STAGE.pre:(STAGE[S.stage]+' · '+st.L+'명/'+st.P+'명 입상');
+    const body='<div class="msum"><span>'+n+'명 · '+esc(sub)+' · '+ANTE[S.ante]+' · '+S.st+'BB<br>'+title+'</span><span>'+word+' <b>'+(+pct).toFixed(1)+'%</b></span></div>'+
+      '<div class="chart">'+cells+'</div>'+
+      '<div class="legend"><span><i style="display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;background:var(--'+(cls==="p"?"push":"call")+')"></i> '+word+'</span>'+(soft?'<span><i style="display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;background:var(--raise-soft)"></i> 오픈했지만 폴드</span>':'')+'<span><i style="display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;background:var(--cell)"></i> 폴드</span><span>오른쪽 위 = 수티드(s) · 왼쪽 아래 = 오프수트(o)</span></div>';
+    fin(body,extra);
   }
-  function bindRange(){const r=document.getElementById("mttSt"); if(r) r.oninput=e=>{S.st=+e.target.value;draw();};}
+  function bindRange(){const r=document.getElementById("mttSt"); if(r){ r.oninput=e=>{S.st=+e.target.value; const v=r.parentNode.querySelector(".msv"); if(v) v.textContent=S.st+"BB"; if(S.stage==="pre") draw();}; r.onchange=e=>{S.st=+e.target.value;draw();}; }}
   function setMode(on){
     document.body.classList.toggle("mtttab",on);
     const mb=document.querySelector(".modebar"); if(mb) mb.classList.toggle("mttOn",on);
@@ -2310,21 +2403,17 @@ put();setInterval(put,1000);
     if(t.id==="mMtt"){e.preventDefault();e.stopPropagation();setMode(true);return;}
     if(t.dataset.ui!=null){setMode(false);return;}
     const k=t.dataset.mtt,v=t.dataset.v; e.stopPropagation();
-    const pd=document.getElementById("mttPick"); S.pkOpen=!!(pd&&pd.open);
-    if(k==="retry"){delete ERR[fkey()];draw();return;}
+    if(k==="retry"){Object.keys(ERR).forEach(x=>delete ERR[x]);draw();return;}
     if(k==="calc"){setMode(false);const m=document.getElementById("mEasy");if(m)m.click();return;}
-    if(k==="pk_reg"){S.pk.reg=v;}
-    else if(k==="pk_top"){S.pk.top=v==="1";}
-    else if(k==="pk_go"){const r=pick(); if(r){S.cond=r.cond; if(r.n)S.n=String(r.n); S.pkOpen=false;}}
-    else if(k==="n"){S.n=v;S.pos=null;S.vs=null;}
+    if(k==="n"){S.n=v;S.pos=null;S.vs=null;}
     else if(k==="view"){S.view=v;S.pos=null;S.vs=null;}
     else if(k==="pos"){S.pos=v;S.vs=null;}
     else S[k]=v;
     draw();
   },true);
-  document.addEventListener("input",e=>{const t=e.target; if(!t.closest||!t.closest("#mttTab [data-mttin]")) return;
-    S.pk[t.dataset.mttin]=t.value; S.pkOpen=true; const pos0=t.selectionStart, key=t.dataset.mttin; draw();
-    const n=document.querySelector('#mttTab [data-mttin="'+key+'"]'); if(n){n.focus(); try{n.setSelectionRange(pos0,pos0);}catch(_){}}});
+  // 인원 칸: 다 쓰고 나서(칸을 벗어나거나 엔터) 계산 — 칠 때마다 계산하지 않음
+  document.addEventListener("change",e=>{const t=e.target; if(!t.closest||!t.closest("#mttTab [data-mttin]")) return; S[t.dataset.mttin]=t.value; S.pos=null; S.vs=null; draw();});
+  document.addEventListener("keydown",e=>{const t=e.target; if(e.key!=="Enter"||!t.closest||!t.closest("#mttTab [data-mttin]")) return; t.blur();});
   try{if(sessionStorage.getItem("aofmttOn")==="1"||/[#&]mtt\b/.test(location.hash))setMode(true);}catch(e){}
   // 다른 화면에서 쓰는 값 읽기: 이미 받아 온 차트에서만 (없으면 null)
   window.mttChart=function(q){const D=CACHE[q.n+"_"+q.cond+"_"+q.ante]; if(!D) return null; const e=D.st[String(q.st)]; if(!e) return null;
