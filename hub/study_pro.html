@@ -242,12 +242,23 @@ const PRO_POSTS=[{"id":"djBffoipkLQ/hand_5.md","v":"djBffoipkLQ","t":"리버 세
 // ===== 🎬 프로의 선택 — 파이널 테이블 실전 결정 (글은 prodata.js 의 PRO_POSTS · holdem\pro_pack.py 가 C:\poker 영상분석 글 + games_src\pro_hands.json 으로 만듦) =====
 // v2(10/25): 핸드 구조 데이터(p.h = pro_hands.json)가 있으면 → 테이블 그림 + 스트리트별 카드·액션 + 한글 해설 + 근거 카드
 //            없으면 → 예전처럼 글(sit/rest/html) 그대로
-// 내 선택은 이 기기에만(lsGet/lsSet 'pc_st_ans'), 점수·랭킹 없음. 키: 핸드 1개면 글 id, 여러 개면 id#번호
+// 내 선택은 이 기기(lsGet/lsSet 'pc_st_ans') + 회원이면 서버에도(pcsync), 점수·랭킹 없음. 키: 핸드 1개면 글 id, 여러 개면 id#번호
 const all=()=>(typeof PRO_POSTS!=='undefined'&&Array.isArray(PRO_POSTS)?PRO_POSTS:[]).filter(p=>p&&p.id&&p.t&&(p.h||p.html||(p.sit&&p.rest&&p.a)));
 const byId=id=>all().find(p=>p.id===id);
 const HS=p=>(p.h&&Array.isArray(p.h.hands))?p.h.hands.filter(h=>h&&h.seats&&h.st&&h.q):[];
 const KEY=(p,i)=>HS(p).length>1?p.id+'#'+i:p.id;
 const ANS=()=>lsGet('pc_st_ans',{})||{};
+/*pcsync*/ // 10/26: 로그인한 회원은 내 선택을 서버(study.py /api/study/kv)에도 저장 → PC·휴대폰이 같은 기록
+//   이 기기에서 이 회원으로 처음 맞출 때만 이 기기 기록을 서버 기록에 합치고, 그 뒤로는 서버 기록을 그대로 씀(지운 것도 따라감)
+let PCS_AT=0;
+const pcsPost=(u,b)=>fetch(API+u,{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b)}).then(r=>r.json());
+function pcsPush(){if(!MEM.tok)return;if(lsGet('pc_st_sync','')!==MEM.nick){PCS_AT=0;pcsPull();return;}   // 아직 서버 기록과 안 맞춘 기기면 먼저 합치기(서버 기록을 덮어쓰지 않게)
+  pcsPost('/api/study/kv/save',{token:MEM.tok,key:'pc_st_ans',val:ANS()}).catch(()=>{});}
+function pcsPull(){if(!MEM.tok||Date.now()-PCS_AT<15000)return;PCS_AT=Date.now();
+  pcsPost('/api/study/kv/load',{token:MEM.tok,key:'pc_st_ans'}).then(r=>{if(!r||!r.ok)return;const S=r.val||{},L=ANS(),first=lsGet('pc_st_sync','')!==MEM.nick;
+    const M=first?Object.assign({},S,L):S;lsSet('pc_st_ans',M);lsSet('pc_st_sync',MEM.nick);
+    if(first&&Object.keys(L).some(k=>S[k]!==L[k]))pcsPush();
+    if(JSON.stringify(M)!==JSON.stringify(L)&&CUR&&CUR.k==='prochoice')rr();}).catch(()=>{});}
 const CSS=`<style>.pcx{font-size:15px;line-height:1.75}.pcx h3{font-size:17px;margin:16px 0 6px}.pcx h4{font-size:15.5px;margin:14px 0 4px}.pcx p{margin:6px 0}.pcx ul{margin:4px 0;padding-left:20px}.pcx li{margin:2px 0}
 .pcx blockquote{margin:6px 0;padding:6px 10px;border-left:3px solid var(--blue);opacity:.9;font-size:14px}.pcx hr{border:0;border-top:1px solid rgba(128,128,128,.3);margin:14px 0}
 .pcx-tw{overflow-x:auto;margin:6px 0}.pcx table{border-collapse:collapse;font-size:13.5px;min-width:100%}.pcx th,.pcx td{border:1px solid rgba(128,128,128,.35);padding:4px 7px;text-align:left;white-space:nowrap}.pcx th{background:rgba(128,128,128,.12)}.pcx a{color:var(--blue)}
@@ -354,15 +365,15 @@ function handView(p,k){const H=HS(p),h=H[k],A=ANS(),my=A[KEY(p,k)];
  return o;}
 
 G.push({k:'prochoice',cat:'홀덤',e:'🎬',n:'프로의 선택',d:'파이널 테이블 실전 결정 · 상황을 보고 내 선택을 한 뒤 프로와 비교',
- start(){this.cur=null;this.hi=0;rr();},
+ start(){this.cur=null;this.hi=0;rr();pcsPull();},
  stop(){},
- open(id){if(!byId(id)){toast('글을 찾지 못했어요');return;}this.cur=id;this.hi=0;rr();scrollTo(0,0);},
+ open(id){if(!byId(id)){toast('글을 찾지 못했어요');return;}this.cur=id;this.hi=0;rr();scrollTo(0,0);pcsPull();},
  hand(j){this.hi=j;rr();scrollTo(0,0);},
  pick(a,b){const p=byId(this.cur);if(!p)return;const A=ANS();
   if(b===undefined){if(!p.o||!p.o[a])return;A[p.id]=p.o[a];}   // 예전 글
   else{const h=HS(p)[a];if(!h||!h.q.o[b])return;A[KEY(p,a)]=h.q.o[b];}
-  lsSet('pc_st_ans',A);rr();setTimeout(()=>{const e=document.getElementById('pxv');if(e)e.scrollIntoView({behavior:'smooth',block:'start'});},40);},
- redo(a){const A=ANS();if(a===undefined)delete A[this.cur];else{const p=byId(this.cur);if(p)delete A[KEY(p,a)];}lsSet('pc_st_ans',A);rr();scrollTo(0,0);},
+  lsSet('pc_st_ans',A);pcsPush();rr();setTimeout(()=>{const e=document.getElementById('pxv');if(e)e.scrollIntoView({behavior:'smooth',block:'start'});},40);},
+ redo(a){const A=ANS();if(a===undefined)delete A[this.cur];else{const p=byId(this.cur);if(p)delete A[KEY(p,a)];}lsSet('pc_st_ans',A);pcsPush();rr();scrollTo(0,0);},
  menu(){const L=all(),A=ANS();let nq=0,nd=0,nok=0;
   const st=p=>{const H=HS(p);if(H.length){return H.map((h,j)=>{nq++;const m=A[KEY(p,j)];if(m){nd++;if(m===h.q.a)nok++;}return (H.length>1?String.fromCharCode(65+j)+' ':'')+(m?(m===h.q.a?'✅':'❌')+' 내 선택 '+esc(m):'❓ 아직');}).join(' · ');}
    if(!p.a)return '📖 글';nq++;const m=A[p.id];if(m){nd++;if(m===p.a)nok++;}return m?(m===p.a?'✅':'❌')+' 내 선택 '+esc(m):'❓ 아직';};
