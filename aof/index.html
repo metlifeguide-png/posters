@@ -2322,7 +2322,7 @@ onmessage=e=>{const m=e.data;
     rows+='<div class="mrow"><span class="mlab">내 테이블</span>'+seg("n",NS.map(x=>[x,x+"명"]),st.auto?"":S.n)+'</div>';
     if(st.auto) rows+='<div class="hint" style="margin:-2px 0 4px">남은 인원이 '+n+'명이라 한 테이블 '+n+'명으로 계산해요.</div>';
     rows+='<div class="mrow"><span class="mlab">앤티</span>'+seg("ante",Object.entries(ANTE),S.ante)+'</div>';
-    rows+='<div class="mrow"><span class="mlab">스택</span><input type="range" id="mttSt" min="5" max="25" step="1" value="'+S.st+'"><span class="msv">'+S.st+'BB</span></div>';
+    rows+='<div class="mrow"><span class="mlab">스택</span><input type="number" id="mttStN" inputmode="numeric" min="5" max="25" step="1" value="'+S.st+'" style="width:58px;font-size:16px;font-weight:800;text-align:center">BB<input type="range" id="mttSt" min="5" max="25" step="1" value="'+S.st+'"></div>';   /*mttstn*/
     rows+='<div class="mrow"><span class="mlab">상황</span>'+seg("view",Object.entries(VIEW),S.view)+'</div>';
     const re=S.view==="re"||S.view==="oc";
     // 자리 고르기
@@ -2390,7 +2390,11 @@ onmessage=e=>{const m=e.data;
       '<div class="legend"><span><i style="display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;background:var(--'+(cls==="p"?"push":"call")+')"></i> '+word+'</span>'+(soft?'<span><i style="display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;background:var(--raise-soft)"></i> 오픈했지만 폴드</span>':'')+'<span><i style="display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;background:var(--cell)"></i> 폴드</span><span>오른쪽 위 = 수티드(s) · 왼쪽 아래 = 오프수트(o)</span></div>';
     fin(body,extra);
   }
-  function bindRange(){const r=document.getElementById("mttSt"); if(r){ r.oninput=e=>{S.st=+e.target.value; const v=r.parentNode.querySelector(".msv"); if(v) v.textContent=S.st+"BB"; if(S.stage==="pre") draw();}; r.onchange=e=>{S.st=+e.target.value;draw();}; }}
+  // 스택: 바를 움직이면 칸 숫자가 따라가고, 칸에 직접 넣으면(엔터·칸 벗어나기) 바가 따라감 /*mttstn*/
+  function bindRange(){const r=document.getElementById("mttSt"), nb=document.getElementById("mttStN");
+    if(r){ r.oninput=e=>{S.st=+e.target.value; if(nb) nb.value=S.st; if(S.stage==="pre") draw();}; r.onchange=e=>{S.st=+e.target.value;draw();}; }
+    if(nb){ const go=()=>{const v=Math.round(+nb.value); if(!(v>0)){nb.value=S.st;return;} S.st=Math.max(5,Math.min(25,v)); nb.value=S.st; if(r) r.value=S.st; draw();};
+      nb.onchange=go; nb.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();nb.blur();}}; nb.onfocus=()=>{try{nb.select();}catch(_){}}; } }
   function setMode(on){
     document.body.classList.toggle("mtttab",on);
     const mb=document.querySelector(".modebar"); if(mb) mb.classList.toggle("mttOn",on);
