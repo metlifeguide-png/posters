@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>버튼 오픈 vs BB 콜: 드라이 보드 c-bet부터 리버 밸류까지 · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge r">실전</span><span class="chip">스팟</span><span class="n">실전 1번째 글 (전체 143편 중 143번째)</span></div><h1>버튼 오픈 vs BB 콜: 드라이 보드 c-bet부터 리버 밸류까지</h1>
+<article>
+<p>안녕하세요. 지금까지는 결정 하나를 따로 떼어 배웠어요. 오늘부터는 <strong>한 판을 프리플랍부터 리버까지 이어서</strong> 따라가 봐요.</p>
+<p>새 개념은 없어요. 이미 배운 도구를 <strong>순서대로 꺼내 쓰는 연습</strong>이에요. 한 판 안에서 결정이 세 번 나오는데, 결정마다 <strong>어떤 기준을 꺼낼지</strong>가 달라요. 그 감각이 오늘의 주제예요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>같은 한 판에서도 결정마다 <strong>다른 기준</strong>을 쓰는 법: 플랍은 폴드율, 턴은 콜을 받아도 되는지, 리버는 더 나쁜 콜 대 더 좋은 콜</li>
+<li>같은 핸드가 스트리트마다 <strong>블러프 쪽에서 밸류 쪽으로</strong> 옮겨 가는 과정</li>
+<li>앞 결정이 뒤 결정의 <strong>팟 크기와 상대 레인지</strong>를 어떻게 바꾸는지</li>
+</ul></div>
+<hr />
+<h2>오늘의 한 판</h2>
+<p><strong>Hero (BTN 자리 · 스택 100BB)</strong> · 상대 (BB)</p>
+<p><img src="../카드/Ah.svg" width="48"> <img src="../카드/Qd.svg" width="48"></p>
+<h3>프리플랍</h3>
+<p>Hero(BTN) <strong>2.5BB 오픈</strong> → SB 폴드 → 상대(BB) 콜. 팟은 <strong>5.5BB</strong>예요.</p>
+<h3>플랍 · 팟 5.5BB</h3>
+<p><img src="../카드/Js.svg" width="48"> <img src="../카드/7d.svg" width="48"> <img src="../카드/2c.svg" width="48"></p>
+<p>상대 체크 → Hero <strong>2BB c-bet</strong> → 상대 콜. 팟 5.5 + 2 + 2 = <strong>9.5BB</strong></p>
+<blockquote>
+<p>J♠ 7♦ 2♣는 높은 카드 하나에 낮은 카드 둘이라 서로 이어지지 않고 무늬도 다 달라요. 이런 보드를 <strong>드라이 보드</strong>라고 불러요. Hero는 아직 페어가 없는 <strong>A 하이</strong>(오버카드 A와 Q)예요.</p>
+</blockquote>
+<h3>턴 · 팟 9.5BB</h3>
+<p><img src="../카드/Js.svg" width="48"> <img src="../카드/7d.svg" width="48"> <img src="../카드/2c.svg" width="48"> <img src="../카드/Qc.svg" width="48"></p>
+<p>Q♣가 와서 Hero는 <strong>탑페어, 키커 A</strong>가 됐어요. 상대 체크 → Hero <strong>6.5BB 벳</strong> → 상대 콜. 팟 9.5 + 6.5 + 6.5 = <strong>22.5BB</strong></p>
+<h3>리버 · 팟 22.5BB</h3>
+<p><img src="../카드/Js.svg" width="48"> <img src="../카드/7d.svg" width="48"> <img src="../카드/2c.svg" width="48"> <img src="../카드/Qc.svg" width="48"> <img src="../카드/4h.svg" width="48"></p>
+<p>상대 체크 → <strong>Hero는 11BB를 벳할까, 체크할까?</strong></p>
+<hr />
+<p class="concl"><strong>결론부터 말할게요. 오늘 가정한 상대라면 플랍도, 턴도, 리버도 벳이 체크보다 나아요.</strong> 다만 이유는 셋이 전부 달라요. 플랍은 상대 폴드율이 기준을 <strong>조금</strong> 넘어서, 턴은 콜을 받아도 되는 핸드가 돼서, 리버는 콜해 주는 핸드 중 <strong>우리보다 약한 쪽이 더 많아서</strong>예요.</p>
+<blockquote>
+<p>남은 베팅이 있어 실제 결과는 달라질 수 있어요. 그래서 플랍·턴은 금액 대신 <strong>폴드율과 에퀴티 비교</strong>로 판정하고, BB 금액은 기준을 구하는 계산용으로만 써요.</p>
+</blockquote>
+<h2>오늘의 가정 세 가지</h2>
+<ul>
+<li><strong>상대 레인지</strong>: BB가 가질 만한 핸드를 아래 표처럼 가정해요(솔버 결과 아님). 프리플랍에 3벳했을 AA·KK·QQ·AK는 뺐어요</li>
+<li><strong>상대 대응</strong>: 콜 아니면 폴드만 해요(체크레이즈 없음)</li>
+<li><strong>콜을 받은 뒤</strong>: 다음 스트리트에서 따로 계산하는 곳을 빼면, 남은 카드는 양쪽 다 체크로 쇼다운한다고 단순화해요</li>
+</ul>
+<h2>1단계. 프리플랍이 정해 주는 것 (SPR)</h2>
+<p>팟 5.5BB에 Hero 뒤에 남은 돈은 <strong>97.5BB</strong>예요. <strong>SPR은 남은 스택 ÷ 팟</strong>이라 97.5 ÷ 5.5, 약 <strong>17.7</strong>이에요(A10).</p>
+<p>SPR이 17.7이면 팟벳을 <strong>4번</strong> 하면 스택이 다 들어가요. 하프팟으로는 6번이고요. 이 판은 한 번에 끝나는 팟이 아니라 <strong>스트리트마다 한 번씩 결정이 나오는 팟</strong>이라는 뜻이에요. 그래서 이 글이 세 번의 결정으로 이어져요.</p>
+<h2>2단계. 플랍: c-bet이 체크를 이길까</h2>
+<h3>알파는 출발점이에요</h3>
+<p>Hero가 2BB를 걸었어요. 팟의 약 3분의 1(36.4%)이에요. 순수 블러프라고 치면 상대가 접어야 하는 최소 비율, <strong>알파</strong>는 이래요(A08).</p>
+<blockquote>
+<p>알파 = 2(벳) ÷ (5.5(지금 팟) + 2(벳)) = <strong>약 26.7%</strong></p>
+</blockquote>
+<p>상대가 26.7%만 접어도 이 벳은 손해가 아니에요. 그런데 Hero는 <strong>순수 블러프가 아니에요.</strong> 콜을 받아도 A나 Q를 맞히면 이길 수 있고, 체크해도 리버까지 공짜로 보거든요. A21에서 배운 그대로 <strong>체크 기준</strong>으로 다시 따져야 해요.</p>
+<h3>BB는 뭘 들고 있을까 (가정 레인지)</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>상대 대응</th>
+<th>핸드</th>
+<th>콤보</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>콜</td>
+<td>JJ-22, AJs, KJs, QJs, JTs, J9s, J8s, J7s, AJo, KJo, QJo, JTo, A7s, K7s, 87s, 76s, 97s, A2s-A5s, K2s, Q2s, T9s, 98s, 65s, 54s</td>
+<td>147</td>
+</tr>
+<tr>
+<td>폴드</td>
+<td>AQs, AQo, ATs, A9s, A8s, A6s, ATo, A9o, KQs, KQo, KTs, K9s, QTs, Q9s, KTo, QTo, T8s, 96s, 86s, 85s, 75s, 64s, 53s, 43s</td>
+<td>117</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>읽는 법</strong>: 콜은 J 페어, 7·2 페어, 포켓페어처럼 만들어진 핸드에, 나중에 기대를 걸 수 있는 수딧 커넥터·수딧 A를 일부 섞은 가정이에요. 폴드는 보드에 안 맞은 A·K·Q 하이와 연결 없는 핸드예요(75s처럼 페어가 있어도 약하다고 본 핸드도 있어요). 전체 264콤보 중 117콤보를 접으니 상대 폴드율은 <strong>약 44.3%</strong>예요(I10).</p>
+<blockquote>
+<p>상대 폴드율 = 117 ÷ 264 = <strong>약 44.3%</strong></p>
+</blockquote>
+<p>Hero 핸드가 A♥Q♦라서 AQ 콤보가 줄어드는 것도 반영했어요(I07).</p>
+<h3>체크와 비교하기</h3>
+<p>콜 레인지가 상당히 강해서, 콜을 받으면 Hero 에퀴티는 <strong>약 29.0%</strong>예요. 콜 받은 뒤 팟 9.5BB 중 <strong>약 2.76BB</strong>를 가져가고, 이번에 더 낸 2BB를 빼면 <strong>약 0.76BB</strong> 남아요. 콜을 받아도 손해가 아니에요.</p>
+<p>그럼 체크하면 얼마일까요? 상대 <strong>전체</strong> 레인지를 상대로 Hero 에퀴티가 <strong>약 49.3%</strong>라서, 체크해서 쇼다운까지 가면 5.5BB 중 <strong>약 2.71BB</strong>를 가져가요.</p>
+<blockquote>
+<p>체크 몫 = 5.5 × 49.3% = <strong>약 2.71BB</strong></p>
+</blockquote>
+<p>이 2.71BB를 넘으려면 접는 몫과 콜 받는 몫이 합쳐져야 해요. 그래서 체크 기준 본전 폴드율은 알파 26.7%보다 높은 <strong>약 41.2%</strong>가 돼요. 알파보다 높아진 이유는 <strong>체크가 공짜 리버를 주기 때문</strong>이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>기준</th>
+<th>본전 폴드율</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>알파(콜 받으면 늘 짐)</td>
+<td>약 26.7%</td>
+</tr>
+<tr>
+<td>체크 기준</td>
+<td>약 41.2%</td>
+</tr>
+<tr>
+<td><strong>오늘 상대 폴드율</strong></td>
+<td><strong>약 44.3%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>44.3%가 41.2%를 <strong>넘었어요.</strong> 벳이 체크보다 나아요. 다만 차이가 크지 않다는 것도 읽어 두세요. 벳은 약 2.86BB, 체크는 약 2.71BB예요.</p>
+<!-- 그림: 알파·체크 기준·상대 폴드율 막대 -->
+
+<h2>3단계. 턴: 블러프가 밸류로 바뀌었어요</h2>
+<h3>같은 핸드, 다른 역할</h3>
+<p>Q♣가 와서 Hero는 탑페어가 됐어요. 플랍의 A 하이는 <strong>이기려면 접게 해야 하는 핸드</strong>였는데, 이제는 <strong>상대의 더 약한 핸드한테 돈을 받는 핸드</strong>예요. 그래서 기준도 바뀌어요.</p>
+<p>플랍 c-bet에 콜한 BB의 턴 레인지를 가정해 볼게요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>상대 대응</th>
+<th>핸드</th>
+<th>콤보</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>콜</td>
+<td>QJ(투페어), J7s, Q2s(투페어), JJ·77·22(셋), J 페어(AJ·KJ·JT), TT·99·88·44, T9s</td>
+<td>80</td>
+</tr>
+<tr>
+<td>폴드</td>
+<td>66·55·33, J9s·J8s, 7이나 2가 맞은 약한 페어, 수딧 커넥터, 약한 A 하이</td>
+<td>64</td>
+</tr>
+</tbody>
+</table></div>
+<p>상대 폴드율은 64 ÷ 144, 약 <strong>44.4%</strong>예요. 이번에는 폴드율보다 <strong>콜을 받았을 때</strong>를 먼저 봐요.</p>
+<h3>콜을 받아도 체크보다 나아요</h3>
+<p>콜 레인지 상대 Hero 에퀴티는 <strong>약 70.5%</strong>예요. 콜을 받으면 팟이 22.5BB가 되니, 팟 몫은 <strong>약 15.87BB</strong>이고 이번에 낸 6.5BB를 빼면 <strong>약 9.37BB</strong> 남아요. 체크 몫은 <strong>약 7.52BB</strong>예요(전체 레인지 상대 에퀴티 79.2%).</p>
+<p><strong>콜을 받은 몫(9.37BB)만으로도 체크 몫(7.52BB)보다 커요.</strong> 그러니 이 벳은 상대가 하나도 안 접어도 체크보다 나아요. 접어 주면 덤이고요.</p>
+<p>플랍에서는 "폴드율이 기준을 넘는가"가 핵심이었는데, 턴에서는 <strong>"콜해 오는 핸드가 대부분 우리보다 약한가"</strong>가 핵심으로 바뀌었어요.</p>
+<h2>4단계. 리버: 얇은 밸류, 더 나쁜 콜 vs 더 좋은 콜</h2>
+<h3>리버 카드가 레인지를 옮겨요</h3>
+<p>4♥가 왔어요. 이 보드는 같은 무늬가 두 장뿐이고 숫자도 5장 안에 이어지지 않아서 플러시도 스트레이트도 나올 수 없어요. 턴에 콜한 핸드 중 44의 콤보가 절반으로 줄어(4♥가 보드에 깔려서) 전체가 77콤보가 됐고, 몇몇 핸드의 <strong>자리가 바뀌었어요.</strong> 44는 턴에는 Hero보다 약한 포켓페어였지만 이제 <strong>셋</strong>이라 Hero를 이겨요. 반대로 T9s는 턴의 스트레이트 드로우가 빗나가 <strong>더 이상 이길 길이 없어요.</strong></p>
+<p>리버 팟은 22.5BB, Hero 벳은 11BB(팟의 48.9%)예요. 이 벳에 BB가 콜하려면 필요 에퀴티가 <strong>약 24.7%</strong>예요(B06). 상대는 어떤 핸드가 이 콜을 할까요?</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>구분</th>
+<th>핸드</th>
+<th>콤보</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>더 좋은 핸드(콜)</td>
+<td>QJs·QJo, J7s, Q2s(투페어), JJ·77·22·44(셋)</td>
+<td>22</td>
+</tr>
+<tr>
+<td>더 나쁜 핸드(콜)</td>
+<td>AJs·KJs·AJo·KJo·JTs·JTo(J 페어), TT·99·88</td>
+<td>51</td>
+</tr>
+<tr>
+<td>더 나쁜 핸드(폴드)</td>
+<td>T9s(빗나간 드로우)</td>
+<td>4</td>
+</tr>
+</tbody>
+</table></div>
+<h3>체크와 벳 사이 차이</h3>
+<p>E22에서 배운 대로, <strong>씬밸류</strong>는 "콜해 주는 핸드 중 우리가 이기는 쪽이 지는 쪽보다 많은가"로 판단해요. 콜하는 핸드 중 Hero가 이기는 쪽은 51콤보, 지는 쪽은 22콤보예요. 이기는 비율은 51 ÷ (51 + 22), <strong>약 69.9%</strong>예요.</p>
+<p>벳이 체크보다 더 버는 돈은 이렇게 구해요.</p>
+<blockquote>
+<p>(더 나쁜 콜 51 − 더 좋은 콜 22) ÷ 상대 레인지 77 × 벳 11 = <strong>약 4.14BB</strong></p>
+</blockquote>
+<p>체크하면 쇼다운에서 이기는 만큼만 가져가지만, 벳을 하면 <strong>더 나쁜 핸드의 콜 51번</strong>에서 11BB씩 더 받고 <strong>더 좋은 핸드의 콜 22번</strong>에서 11BB씩 더 잃어요. 그 차이를 레인지 전체로 나눈 게 4.14BB예요. 이 계산은 상대가 레이즈하지 않는다고 본 거예요.</p>
+<!-- 그림: 리버 상대 레인지 77콤보를 더 좋은 22 · 더 나쁜 콜 51 · 더 나쁜 폴드 4로 나눈 막대 -->
+
+<section class="sec why"><h2>왜 그럴까: 같은 핸드의 일이 스트리트마다 바뀌어요</h2>
+<h3>결정마다 묻는 질문이 달라요</h3>
+<ul>
+<li><strong>플랍</strong>: 이 핸드는 <strong>접게 해야 이기는</strong> 핸드예요. 그래서 "상대가 기준 이상 접는가"를 물었어요</li>
+<li><strong>턴</strong>: 이 핸드는 <strong>콜을 받아도 앞서는</strong> 핸드예요. 그래서 "콜해 오는 핸드보다 앞서는가"를 물었어요</li>
+<li><strong>리버</strong>: 더 나쁜 핸드만 콜해 주는 게 아니라 더 좋은 핸드도 콜해요. 그래서 "더 나쁜 콜이 더 좋은 콜보다 많은가"를 물었어요</li>
+</ul>
+<p>세 질문은 모두 <strong>이 벳이 어떤 핸드에게 어떻게 받아들여지느냐</strong>를 묻는 거예요. 핸드가 완성될수록 무게가 "접는가"에서 "받아 주는 쪽이 약한가"로 옮겨 가요.</p>
+<h3>앞 결정이 뒤 결정을 만들어요</h3>
+<p>플랍 c-bet이 팟을 5.5BB에서 9.5BB로 키웠고, 턴 벳이 22.5BB로 다시 키웠어요. 팟이 커지니 리버 11BB 벳도 의미 있는 돈이 돼요.</p>
+<p>또 상대는 스트리트를 지날 때마다 약한 핸드를 접어서 <strong>점점 강해져요.</strong> 리버 레인지 77콤보에는 처음의 약한 A 하이가 하나도 없고, 그래서 콜을 받아도 이기는 비율은 69.9%예요. 레인지는 줄어들수록 단단해진다는 걸 기억하세요.</p>
+</section><section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. 플랍의 알파 26.7%만 보고 "무조건 c-bet"</strong>
+"26.7%만 접으면 이득이래" 하고 바로 거는 경우예요. 하지만 체크하면 리버를 공짜로 보고 2.71BB를 가져가요. 그래서 진짜 기준은 41.2%이고, 오늘은 44.3%라 넘었지만 <strong>차이가 크지 않아서</strong> 상대가 조금만 덜 접어도 뒤집혀요. 대신 <strong>체크 기준</strong>으로 비교해요.</p></div><div class="mis-card"><p><strong>실수 2. 턴에도 플랍과 같은 방식으로 폴드율만 봄</strong>
+"상대가 44.4%밖에 안 접네, 벳이 별로네" 하는 경우예요. 하지만 Hero는 이제 탑페어라 콜을 받아도 9.37BB가 남고, 이게 체크 몫 7.52BB보다 커요. 대신 핸드가 <strong>블러프에서 밸류로 바뀌었는지</strong>를 먼저 보세요.</p></div><div class="mis-card"><p><strong>실수 3. 리버에서 "탑페어니까 벳"이라고만 생각</strong>
+얇은 밸류는 내 핸드 이름이 아니라 <strong>상대의 콜 레인지 구성</strong>이 결정해요. 오늘은 더 나쁜 콜이 51, 더 좋은 콜이 22라서 벳이 이득이었지만, 이 비율이 뒤집히면 같은 탑페어도 체크가 나아요. 대신 상대가 콜해 줄 핸드를 <strong>좋은 쪽과 나쁜 쪽으로 세어 보세요.</strong></p></div></section>
+<hr />
+<h2>"그럼 한 판은 항상 이 순서로 흘러가요?"</h2>
+<p>아니에요. 오늘은 계산을 끝까지 보이려고 <strong>상대가 체크·콜만 하는 한 갈래</strong>를 따라갔어요. 실전에서는 플랍에서 상대가 체크레이즈를 하거나, 턴에서 먼저 벳하거나, 리버에서 레이즈할 수 있어요.</p>
+<p>그래도 오늘 배운 틀은 갈래가 달라져도 똑같이 써요. <strong>"이 결정을 받아 주는 핸드들 중에서 내가 얼마나 앞서 있나"</strong>를 그 순간의 레인지로 다시 세면 돼요. 갈래가 바뀌면 레인지가 바뀔 뿐, 질문은 그대로예요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<p>한 판에서 결정이 나올 때마다 이 순서로 점검해 보세요.</p>
+<ol>
+<li><strong>내 핸드가 지금 블러프인가, 밸류인가?</strong> 스트리트마다 바뀔 수 있어요</li>
+<li>블러프라면 <strong>상대 폴드율 vs 체크 기준</strong>, 밸류라면 <strong>콜해 오는 핸드 중 내가 앞서는 비율</strong>을 봐요</li>
+<li>리버라면 <strong>더 나쁜 콜의 수 vs 더 좋은 콜의 수</strong>를 세요</li>
+<li>기준에 가까운 장면은 상대 레인지 가정을 조금만 바꿔 보고 결론이 뒤집히는지 확인해요</li>
+</ol></section>
+<hr />
+<h2>연습 문제 (같은 보드, 같은 Hero 핸드)</h2>
+<blockquote>
+<p>학습툴 에퀴티 계산기는 레인지 입력이 없어서, 내 카드·보드와 상대 핸드 하나를 넣는 <strong>핸드 대 핸드</strong>로만 확인할 수 있어요. 폴드율과 콤보 수는 위 표대로 직접 계산해요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 플랍에서 Hero가 2BB 대신 <strong>4BB</strong>를 걸어요. 벳이 커져도 상대는 <strong>같은 핸드로 접는다고 가정</strong>해요. 벳? 체크?</p>
+<details>
+<summary>정답 보기</summary>
+<p>알파는 4 ÷ (5.5 + 4), 약 <strong>42.1%</strong>로 올라가요. 콜을 받으면 팟이 13.5BB가 돼서 Hero의 팟 몫은 <strong>약 3.92BB</strong>이고, 낸 4BB를 빼면 <strong>약 −0.08BB</strong>로 이번엔 살짝 모자라요.
+체크 기준 본전 폴드율은 <strong>약 50%</strong>인데 상대 폴드율은 <strong>44.3%</strong> 그대로라서 기준에 못 미쳐요. 벳 몫 약 2.39BB &lt; 체크 몫 약 2.71BB → <strong>체크</strong>가 나아요.
+실제로는 벳이 커지면 더 접는 핸드가 늘 수 있으니, 그때는 폴드율도 다시 세야 해요(A20).</p>
+</details>
+<p><strong>문제 2.</strong> 리버에서 상대 레인지가 달라졌어요. 이 상대는 KJ와 JT, 99·88은 접고 <strong>AJ와 TT만</strong> 더 나쁜 핸드로 콜해요(더 좋은 핸드 22콤보는 그대로 콜). 더 나쁜 콜은 <strong>15콤보</strong>, 더 나쁜 폴드는 <strong>40콤보</strong>예요(상대 레인지는 그대로 77콤보). 11BB 벳? 체크?</p>
+<details>
+<summary>정답 보기</summary>
+<p>더 나쁜 콜 15 &lt; 더 좋은 콜 22예요. 콜하는 핸드 중 Hero가 이기는 비율이 <strong>약 40.5%</strong>로 절반이 안 돼요.</p>
+<blockquote>
+<p>(15 − 22) ÷ 77 × 11 = <strong>−1BB</strong></p>
+</blockquote>
+<p>벳이 체크보다 <strong>1BB 손해</strong>예요 → <strong>체크</strong>. 같은 탑페어, 같은 벳이어도 <strong>콜해 주는 쪽에 약한 핸드가 얼마나 있느냐</strong>로 결론이 뒤집혀요.</p>
+</details>
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>한 판에서는 결정마다 쓰는 기준이 달라요: <strong>플랍 블러프는 체크 기준 폴드율</strong>, <strong>턴 밸류는 콜을 받아도 앞서는지</strong>, <strong>리버 얇은 밸류는 더 나쁜 콜 대 더 좋은 콜</strong></li>
+<li>같은 핸드도 카드가 나올 때마다 <strong>블러프 → 밸류</strong>로 바뀌고, 그때마다 던지는 질문도 바뀌어요</li>
+<li>질문의 뿌리는 같아요: <strong>이 벳을 받아 주는 핸드들 중에서 내가 얼마나 앞서 있나</strong></li>
+<li>앞 스트리트의 벳은 <strong>팟을 키우고 상대 레인지를 단단하게</strong> 만들어서 뒤 결정의 조건을 바꿔요</li>
+</ul>
+</section><section class="sec end"><h2>정리하며</h2>
+<p>오늘은 BTN 오픈에 BB가 콜한 한 판을 플랍 c-bet, 턴 벳, 리버 얇은 밸류까지 따라갔어요.</p>
+<p>플랍은 상대 폴드율 <strong>44.3%</strong>가 체크 기준 <strong>41.2%</strong>를 살짝 넘어서, 턴은 콜을 받아도 체크보다 나아서, 리버는 더 나쁜 콜 <strong>51</strong>이 더 좋은 콜 <strong>22</strong>보다 많아서 벳이었어요. 이유는 달랐지만 결국 같은 질문이었죠.</p>
+<p>오늘 하나만 가져가면 돼요. 한 판에서 헷갈리면 <strong>"지금 내 벳을 받아 주는 핸드들보다 내가 앞서 있나?"</strong>를 그 스트리트의 레인지로 다시 세어 보세요.</p>
+<p>다음 글 R02에서는 CO가 오픈하고 버튼이 3벳한 뒤, CO가 콜하고 <strong>포지션 없이 치르는 3벳팟</strong>을 따라가요. 오늘과 달리 프리플랍에서 팟이 훨씬 커진 상태로 시작해요.</p>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 가정 레인지 기준(솔버 결과 아님) · 남은 베팅이 있어 플랍·턴 BB 금액은 계산용이고, 리버 숫자는 상대가 레이즈하지 않는다는 가정</small></p></section>
+</article>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="006_B06.html">팟오즈 처음 배우기: 콜하려면 몇 번 이겨야 할까?</a></li><li><a href="071_A08.html">c-bet은 상대가 몇 % 접어야 이득일까? 알파로 보는 컨티뉴에이션 벳</a></li><li><a href="073_A10.html">SPR: 플랍에서 &quot;이 핸드로 올인까지 갈까&quot;를 미리 정하는 숫자</a></li></ul></aside><nav class="nav"><a class="prev" href="142_P20.html"><div class="l">← 이전 글</div><div class="t">프로 마무리: 원칙 지도</div></a></nav></main>
+</body>
+</html>

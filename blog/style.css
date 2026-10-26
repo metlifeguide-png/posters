@@ -1,5 +1,5 @@
 :root{--bg:#f6f7f5;--card:#fff;--ink:#1d2321;--sub:#5d6763;--line:#e3e7e4;--felt:#0f5c43;--felt2:#13784f;
---b:#2f8f4e;--i:#2f6fd0;--a:#d9822b;--e:#7a4cc2;--p:#b8323c;--tip:#eef6f1;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.05)}
+--b:#2f8f4e;--i:#2f6fd0;--a:#d9822b;--e:#7a4cc2;--p:#b8323c;--r:#0e8a8a;--tip:#eef6f1;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.05)}
 @media (prefers-color-scheme:dark){:root{--bg:#121614;--card:#1b211e;--ink:#e6ebe8;--sub:#9aa5a0;--line:#2c3430;--tip:#1d2a24;
 --shadow:0 1px 2px rgba(0,0,0,.4)}}
 *{box-sizing:border-box}
@@ -11,7 +11,7 @@ a{color:var(--felt2)}
 .top .brand{font-weight:700;letter-spacing:-.2px}.top .sp{flex:1}
 .wrap{max-width:780px;margin:0 auto;padding:20px 16px 60px}
 .badge{display:inline-block;font-size:12.5px;font-weight:700;padding:2px 10px;border-radius:999px;color:#fff;vertical-align:middle}
-.badge.b{background:var(--b)}.badge.i{background:var(--i)}.badge.a{background:var(--a)}.badge.e{background:var(--e)}.badge.p{background:var(--p)}
+.badge.b{background:var(--b)}.badge.i{background:var(--i)}.badge.a{background:var(--a)}.badge.e{background:var(--e)}.badge.p{background:var(--p)}.badge.r{background:var(--r)}
 .chip{display:inline-block;font-size:12px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--sub);vertical-align:middle}
 .meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:6px 0 4px}
 .meta .n{color:var(--sub);font-size:13px}
@@ -51,7 +51,7 @@ small{display:block;color:var(--sub);font-size:12.5px;line-height:1.6}
 .list a:hover{border-color:var(--felt2)}
 .list .no{flex:0 0 30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff}
 .list .tt{flex:1;line-height:1.45;font-size:15.5px}
-.no.b{background:var(--b)}.no.i{background:var(--i)}.no.a{background:var(--a)}.no.e{background:var(--e)}.no.p{background:var(--p)}
+.no.b{background:var(--b)}.no.i{background:var(--i)}.no.a{background:var(--a)}.no.e{background:var(--e)}.no.p{background:var(--p)}.no.r{background:var(--r)}
 /* 읽기 쉽게(10/24 사용자 요청): 형광펜 강조, 소제목 막대, 상자 */
 :root{--mark:#fff1a8;--warn:#fff4f0;--warnline:#e2724f;--why:#f0f5ff;--whyline:#2f6fd0;--key:#eaf6ef}
 @media (prefers-color-scheme:dark){:root{--mark:#5a4b12;--warn:#2d1f1a;--warnline:#e2724f;--why:#1a2233;--whyline:#6d9be6;--key:#1b2b22}}
