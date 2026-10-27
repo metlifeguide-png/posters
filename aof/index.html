@@ -827,7 +827,7 @@ function snapToSt(r){
   return {ok:true,scen:'vr',patch:Object.assign(patch,{proV:'vr',qvil:a.j,qvStack:R1(toBB(a.s.stack)),vraise:R1(toBB(a.s.bet))}),note};
 }
 
-const SNAP_API="https://211-233-211-164.sslip.io";   /*snapsrv*/
+const SNAP_API="https://majority-rebuild-take.ngrok-free.dev";   /*snapsrv*/
 const SNAP_URL=SNAP_API?SNAP_API+'/api/snap/read':'http://127.0.0.1:8765/ocrtable';
 /*snapinfo*/function snapMerge(list){ const o={}; let pr=[], wr=[]; list.forEach(x=>{ Object.keys(x).forEach(k=>{ if(k==='prizes'){ if(Array.isArray(x.prizes)&&x.prizes.length) pr=x.prizes; } else if(k==='warn'){ wr=wr.concat(x.warn||[]); } else if(x[k]!=null&&x[k]!=='') o[k]=x[k]; }); }); o.prizes=pr; o.warn=wr; return o; }
 function snapInfoText(I){ const n=x=>(typeof x==='number'&&isFinite(x)); const L=[];
