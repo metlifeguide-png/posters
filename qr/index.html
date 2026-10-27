@@ -126,7 +126,7 @@ function norm(L){L={...L};if(L.card===undefined&&L.hero!==undefined)L.card=L.her
 const BLV=[[50,100],[100,200],[150,300],[200,400],[300,600],[400,800],[500,1000],[600,1200],[800,1600],[1000,2000],[1500,3000],[2000,4000],[2500,5000],[3000,6000],[4000,8000],[5000,10000]];
 let D={tours:[]},T=null,ed=null,aK='card',R=null,U=null,pend=null;/*guesthand*/let GUEST=0;
 const MTOK=(()=>{try{return localStorage.getItem("mtok")||""}catch(e){return ""}})();   // 👤 뚝섬 회원 token (홈 로그인)
-const API="https://211-233-211-164.sslip.io",H={"Content-Type":"application/json","ngrok-skip-browser-warning":"true"};
+const API="https://majority-rebuild-take.ngrok-free.dev",H={"Content-Type":"application/json","ngrok-skip-browser-warning":"true"};
 // 📣 광고 띠 (광고 자리 'bar' = 휴대폰 하단 고정 띠, 'side' = PC 좌우 여백 세로 배너)
 // 같은 코드가 games_src/p7.js · hub.html · qr.html · review.html 네 군데에 있음 (고칠 땐 넷 다)
 // 페이지마다 ABAR.go(광고)=누르면, ABAR.src(파일이름)=그림 주소, ABAR.api=서버 주소, ABAR.sel=본문 칸(여백 계산용) 을 정해 줌
