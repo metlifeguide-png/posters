@@ -102,6 +102,13 @@ h1{font-size:19px;margin:2px 0 2px;font-weight:900}
 .box.on{outline:3px solid var(--ink);outline-offset:-3px}
 .box .go{position:absolute;right:10px;top:8px;font-size:12px;font-weight:800;opacity:.9}
 .box.no .go{font-weight:700;font-size:11px}
+.abar{display:flex;gap:4px;margin:0 0 6px}
+.abar button{flex:1 1 0;min-width:0;border:0;border-radius:8px;padding:7px 4px 6px;color:#fff;font:inherit;font-weight:900;font-size:13px;line-height:1.15;cursor:pointer;text-align:center;box-shadow:inset 0 -2px 0 rgba(0,0,0,.12)}
+.abar button small{display:block;font-size:11px;font-weight:700;opacity:.92;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.abar button span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.abar button.F{color:#2b3240}.abar button.end{opacity:.55}
+.abar button:active{transform:translateY(1px)}
+.endnote{font-size:12px;color:var(--sub);min-height:0;margin:-2px 0 6px}
 .bar{display:flex;height:10px;border-radius:5px;overflow:hidden;margin:8px 0 4px;background:var(--cN)}
 .ctx{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12px;color:var(--sub);margin-bottom:8px}
 .ctx b{color:var(--ink)}
@@ -161,7 +168,9 @@ function drawSel(){
   document.getElementById('icmNote').textContent=S.m==='ft'?'· ICM 파이널: 테이블에 남은 사람이 전부, 모두 같은 스택 · 상금은 1등 20% 기준 표준표':S.m==='bubble'?'· ICM 버블: 19명 남고 18명 입상(다른 테이블도 같은 스택) · 한 명만 더 떨어지면 입상':'';}
 function hasPost(m,n,st){return m==='ante'&&+n===8&&+st===100&&Object.values(SPX).some(x=>+x.n===8&&+x.st===100&&x.nb>0);}
 function drawSum(){const el=document.getElementById('sum');if(!el)return;const mm=(MODES.find(x=>x[0]===S.m)||[])[1]||'';
-  el.innerHTML=`${esc(mm)} · ${S.m==='ft'?'남은 ':''}${S.n}명 · ${S.st}BB${hasPost(S.m,S.n,S.st)?'<span class="badge">플랍 솔버</span>':''}<small>${S.m==='ft'||S.m==='bubble'?'ICM':'칩 EV'} · 프리플랍 오픈 2.3BB${hasPost(S.m,S.n,S.st)?' · 콜로 끝나는 줄은 플랍·턴·리버까지':''}</small>`;}
+  const cfg=S.m==='ante'&&+S.n===8&&+S.st===100;
+  const why=hasPost(S.m,S.n,S.st)?' · 콜로 끝나는 줄은 플랍·턴·리버까지':cfg?(POSTST==='fail'||!API?' · 플랍 솔버: 서버에 연결이 안 돼요':POSTST==='loading'?' · 플랍 솔버 확인 중…':' · 플랍 솔버: 서버에 아직 데이터가 없어요'):' · 플랍 이후는 지금 8명 · 100BB · 토너먼트(BB앤티)에서만 볼 수 있어요';
+  el.innerHTML=`${esc(mm)} · ${S.m==='ft'?'남은 ':''}${S.n}명 · ${S.st}BB${hasPost(S.m,S.n,S.st)?'<span class="badge">플랍 솔버</span>':''}<small>${S.m==='ft'||S.m==='bubble'?'ICM':'칩 EV'} · 프리플랍 오픈 2.3BB${why}</small>`;}
 function openSet(){const box=document.getElementById('setBox');openModal('솔루션 고르기','',el=>{el.appendChild(box);box.hidden=false;});}
 document.getElementById('setBtn').onclick=openSet;
 function pick(){PF=null;drawSel();drawSum();LS.set('sel',JSON.stringify(S));
@@ -250,18 +259,22 @@ function draw(){
   const boxes=AS.map(c=>{const i=A.indexOf(c),t=target(ST.h,cur.p,c);
     return `<div class="box ${c} ${VIEW===c?'on':''} ${t?'':'no'}" style="background:${col(c)}" data-view="${c}"><span class="n">${esc(actLabel(c,steps,cur.p))}</span><span class="p">${s[3][i]}%</span><span class="k">${r1(rangeC*s[3][i]/100)}<br>콤보</span>${t?`<span class="go" data-gh="${esc(t.h)}" data-gp="${esc(t.p||'')}">이 행동으로 ›</span>`:c==='C'&&postSpotFor(ST.h,cur.p)?`<span class="go" data-post="${postSpotFor(ST.h,cur.p)}" data-ph="${esc(ST.h)}" data-pp="${esc(cur.p)}">플랍 솔버 ›</span>`:c==='C'||c==='X'?'<span class="go">→ 플랍</span>':c==='F'?'<span class="go">핸드 끝</span>':'<span class="go">안 풀린 갈래</span>'}</div>`;}).join('');
   const bar=`<div class="bar">${AS.map(c=>`<span style="width:${s[3][A.indexOf(c)]}%;background:${col(c)}"></span>`).join('')}</div>`;
+  // abar: 미니 터치바 (차트 위 · 작게 · 누르면 바로 그 행동으로)
+  const abar=`<div class="abar">${AS.map(c=>{const i=A.indexOf(c),t=target(ST.h,cur.p,c),ps=c==='C'&&!t?postSpotFor(ST.h,cur.p):null;
+    const at=t?`data-gh="${esc(t.h)}" data-gp="${esc(t.p||'')}"`:ps?`data-post="${ps}" data-ph="${esc(ST.h)}" data-pp="${esc(cur.p)}"`:`data-end="${c==='F'?'폴드하면 핸드가 끝나요':c==='C'||c==='X'?'플랍으로 가요 · 이 줄은 플랍 이후를 아직 안 풀었어요':'이 갈래는 안 풀었어요'}"`;
+    return `<button type="button" class="${c==='F'?'F':''} ${t||ps?'':'end'}" style="background:${col(c)}" ${at}><span>${esc(actLabel(c,steps,cur.p))}${ps?' → 플랍':''}</span><small>${s[3][i]}% · ${Math.round(rangeC*s[3][i]/100)}콤보</small></button>`;}).join('')}</div><div class="endnote" id="endNote"></div>`;
   const M=DATA.meta;
   main(`<div class="seats" id="seats">${seats}</div>
    <div class="body">
     <div>
      <div class="tool"><span class="ttl">${esc(cur.p)} 차례</span><span class="m">이 상황이 나올 확률 ${s[4]}% · 레인지 ${s[5]}%</span>
       <div class="view"><button type="button" class="${VIEW==='mix'?'on':''}" data-view="mix">전체</button>${AS.map(c=>`<button type="button" class="${VIEW===c?'on':''}" data-view="${c}">${AN[c]}</button>`).join('')}</div></div>
+     ${abar}
      <div class="grid" id="grid">${grid}</div>
      <div class="legend">${AS.map(c=>`<span><i style="background:${col(c)}"></i>${AN[c]}</span>`).join('')}<span><i style="background:#e8ebf0"></i>이 상황에 안 오는 핸드</span></div>
     </div>
     <div>
      <div class="ctx"><span>팟 <b>${pot}BB</b></span>${toCall>0?`<span>콜 금액 <b>${toCall}BB</b></span><span>팟 오즈 <b>${r1(toCall/(pot+toCall)*100)}%</b></span>`:''}</div>
-     <div class="boxes">${boxes}</div>${bar}
      <div class="hand" id="hand"></div>
     </div>
    </div>
@@ -269,6 +282,7 @@ function draw(){
   const W=document.getElementById('main');
   W.querySelectorAll('[data-gh]').forEach(b=>b.onclick=e=>{e.stopPropagation();go({h:b.dataset.gh,p:b.dataset.gp||null});window.scrollTo({top:W.offsetTop-8,behavior:'smooth'});});
   W.querySelectorAll('.seat').forEach(b=>b.onclick=()=>go({h:b.dataset.sh,p:b.dataset.sp}));
+  W.querySelectorAll('[data-end]').forEach(b=>b.onclick=()=>{const n=document.getElementById('endNote');if(n)n.textContent='· '+b.dataset.end;});
   W.querySelectorAll('[data-post]').forEach(b=>b.onclick=e=>{e.stopPropagation();enterPost(b.dataset.ph,b.dataset.pp,b.dataset.post);window.scrollTo({top:W.offsetTop-8,behavior:'smooth'});});
   W.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{VIEW=VIEW===b.dataset.view&&b.classList.contains('box')?'mix':b.dataset.view;draw();});
   const showHand=h=>{const v=hv(s,h),el=document.getElementById('hand');
@@ -283,9 +297,9 @@ function draw(){
 const API="https://211-233-211-164.sslip.io";
 const HDR={headers:{'ngrok-skip-browser-warning':'1'}};
 const SUIT={s:'♠',h:'♥',d:'♦',c:'♣'};
-let SPX={},PF=null;
+let SPX={},PF=null,POSTST='loading';
 function api(path){return fetch(API+path,HDR).then(r=>r.json());}
-api('/api/tto/post/spots').then(j=>{if(j&&j.ok){SPX=j.spots||{};if(DATA&&!PF)draw();drawSum();}}).catch(()=>{});
+api('/api/tto/post/spots').then(j=>{if(j&&j.ok){SPX=j.spots||{};POSTST=Object.keys(SPX).length?'ok':'empty';}else POSTST='empty';if(DATA&&!PF)draw();drawSum();}).catch(()=>{POSTST='fail';drawSum();});
 function pcard(c,sm){if(!c)return '<span class="pc sm ghost">?</span>';const s=c[1].toLowerCase();return `<span class="pc ${s}${sm?' sm':''}">${c[0].toUpperCase()}${SUIT[s]||''}</span>`;}
 function pcards(b,sm){return String(b||'').split(',').filter(Boolean).map(c=>pcard(c,sm)).join('');}
 const pkey=a=>a.length?a.join('>'):'root';
@@ -373,14 +387,15 @@ function drawPost(){const D=PF.D;if(!D){main('<div class="e">플랍 불러오는
       grid+=`<div class="cell ${HSEL===h?'sel':''}" data-h="${h}"><div class="fill">${ord.map(i=>v[i]>0?`<i style="flex:${v[i]};background:${cols[i]};opacity:${VIEW==='mix'||VIEW===acts[i]?1:.2}"></i>`:'').join('')}</div><span>${n}</span></div>`;}
     const boxes=ord.map(i=>`<div class="box ${acts[i]==='FOLD'?'F':''} ${VIEW===acts[i]?'on':''}" style="background:${cols[i]}" data-pview="${esc(acts[i])}"><span class="n">${esc(labs[i])}</span><span class="p">${r1(nd.all[i])}%</span><span class="go" data-pa="${esc(acts[i])}">이 행동으로 ›</span></div>`).join('');
     const bar=`<div class="bar">${ord.map(i=>`<span style="width:${nd.all[i]}%;background:${cols[i]}"></span>`).join('')}</div>`;
+    const abar=`<div class="abar">${ord.map(i=>`<button type="button" class="${acts[i]==='FOLD'?'F':''}" style="background:${cols[i]}" data-pa="${esc(acts[i])}"><span>${esc(labs[i])}</span><small>${r1(nd.all[i])}%</small></button>`).join('')}</div>`;
     body=`<div class="body"><div>
       <div class="tool"><span class="ttl">${esc(pPos(nd.p))} 차례</span><span class="m">${{flop:'플랍',turn:'턴',river:'리버'}[s]}</span>
        <div class="view"><button type="button" class="${VIEW==='mix'?'on':''}" data-pview="mix">전체</button>${ord.map(i=>`<button type="button" class="${VIEW===acts[i]?'on':''}" data-pview="${esc(acts[i])}">${esc(labs[i].replace(/ \(.*\)/,''))}</button>`).join('')}</div></div>
+      ${abar}
       <div class="grid" id="grid">${grid}</div>
       <div class="legend">${ord.map(i=>`<span><i style="background:${cols[i]}"></i>${esc(labs[i])}</span>`).join('')}<span><i style="background:#e8ebf0"></i>여기까지 안 오는 핸드</span></div>
      </div><div>
       <div class="ctx"><span>팟 <b>${bbx(ps.pot)}BB</b></span>${ps.c[1-pl]>ps.c[pl]?`<span>콜 금액 <b>${bbx(ps.c[1-pl]-ps.c[pl])}BB</b></span><span>팟 오즈 <b>${r1((ps.c[1-pl]-ps.c[pl])/(ps.pot+ps.c[1-pl]-ps.c[pl])*100)}%</b></span>`:''}<span>남은 스택 <b>${bbx(ps.stk0-ps.c[pl])}BB</b></span></div>
-      <div class="boxes">${boxes}</div>${bar}
       <div class="hand" id="hand"></div>
       ${s==='turn'&&PF.TN&&!PF.TN.exact&&P.tp.length===0&&nd.cards?pCardTable(nd):''}
      </div></div>`;
