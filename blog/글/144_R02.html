@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CO 오픈에 버튼 3벳, 콜하고 아웃 오브 포지션으로 치르는 3벳팟 · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge r">실전</span><span class="chip">스팟</span><span class="n">실전 2번째 글 (전체 144편 중 144번째)</span></div><h1>CO 오픈에 버튼 3벳, 콜하고 아웃 오브 포지션으로 치르는 3벳팟</h1>
+<article>
+<p>안녕하세요. 지난 글에서는 BTN에서 오픈하고 BB가 콜한, 포지션을 가진 한 판을 따라갔어요. 오늘은 반대로 <strong>버튼에게 3벳을 맞고, 포지션 없이</strong> 끝까지 가 보는 한 판이에요.</p>
+<p>새 개념은 없어요. 팟오즈와 SPR을 이미 배웠으니, 이번에는 <strong>콜 하나가 뒤 스트리트의 결정을 어떻게 끌고 가는지</strong>를 봐요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>3벳을 콜하는 순간 <strong>SPR이 얼마로 정해지는지</strong>, 그리고 그게 스택을 거는 시점을 어떻게 앞당기는지</li>
+<li>프리플랍·플랍·턴의 콜을 같은 도구(<strong>필요 에퀴티 vs Hero 에퀴티</strong>)로 판정하는 법</li>
+<li>콜할 때마다 <strong>남은 스택 대비 팟이 커져서</strong>, 마지막 콜이 사실상 올인이 되는 과정</li>
+</ul></div>
+<hr />
+<h2>오늘의 한 판</h2>
+<p><strong>Hero (CO 자리 · 스택 100BB)</strong> · 상대 (BTN)</p>
+<p><img src="../카드/Ad.svg" width="48"> <img src="../카드/Jd.svg" width="48"></p>
+<h3>프리플랍</h3>
+<p>Hero(CO)가 <strong>2.5BB 오픈</strong> → BTN이 <strong>8BB로 3벳</strong> → SB, BB 폴드 → Hero <strong>콜</strong>. Hero가 더 내는 돈은 <strong>5.5BB</strong>, 팟은 <strong>17.5BB</strong>예요.</p>
+<h3>플랍 · 팟 17.5BB</h3>
+<p><img src="../카드/Js.svg" width="48"> <img src="../카드/8d.svg" width="48"> <img src="../카드/3h.svg" width="48"></p>
+<p>Hero(포지션 없음)가 먼저 체크 → BTN이 <strong>6BB 벳</strong> → Hero 콜. 팟 17.5 + 6 + 6 = <strong>29.5BB</strong></p>
+<blockquote>
+<p>Hero는 <strong>탑페어, 키커 A</strong>(탑페어 중 가장 좋은 키커)예요. 다이아몬드도 3장이라 턴과 리버에 다이아몬드가 둘 더 오면 플러시가 되는 <strong>백도어 플러시 드로우</strong>도 있어요.</p>
+</blockquote>
+<h3>턴 · 팟 29.5BB</h3>
+<p><img src="../카드/Js.svg" width="48"> <img src="../카드/8d.svg" width="48"> <img src="../카드/3h.svg" width="48"> <img src="../카드/2c.svg" width="48"></p>
+<p>2♣가 오면서 Hero의 탑페어는 그대로지만 <strong>백도어 플러시 드로우는 사라졌어요.</strong> 대신 보드에 2와 3이 깔려서 A5s·A4s·65s에는 스트레이트 드로우가 생겼어요(A5s·65s는 4 한 장, A4s는 5 한 장이 필요해요). Hero 체크 → BTN이 <strong>20BB 벳</strong>. <strong>Hero는 콜할까요, 폴드할까요?</strong></p>
+<hr />
+<p class="concl"><strong>결론부터 말할게요. 오늘 가정한 상대라면 프리플랍 콜도, 플랍 콜도, 턴 콜도 이득이에요.</strong> 다만 세 번의 콜이 쌓이면 턴 콜이 끝나는 순간 <strong>남은 스택이 팟보다 작아져요.</strong> 그래서 리버는 거의 올인 결정이 돼요. 이 흐름을 미리 보고 있는 것이 오늘의 주제예요.</p>
+<blockquote>
+<p>남은 베팅이 있어 실제 결과는 달라질 수 있어요. 그래서 EV(기대 손익)를 BB로 잘라 말하지 않아요. 대신 <strong>Hero 에퀴티가 필요 에퀴티를 넘는가</strong>로 판정해요. 에퀴티는 카드를 끝까지 다 본다고 센 값이라, <strong>포지션이 없는 Hero는 이 값을 전부 챙기지 못해요.</strong> 그래서 넘는 폭이 클수록 안심이에요.</p>
+</blockquote>
+<h2>오늘의 가정 세 가지</h2>
+<ul>
+<li><strong>상대 레인지</strong>: BTN의 3벳 레인지를 아래처럼 가정해요(솔버 결과 아님). 밸류는 QQ 이상·AK, 그 아래는 JJ·TT·AQs, 블러프 쪽은 A5s·A4s·KQs·76s·65s예요</li>
+<li><strong>플랍</strong>: BTN은 이 레인지 <strong>전체</strong>로 작게 c-bet해요. 레인지 전체로 같은 크기를 거는 것을 <strong>레인지 벳</strong>이라고 불러요</li>
+<li><strong>턴</strong>: 오버페어·셋(밸류)과 AK, 그리고 블러프 후보 76s·65s만 계속 벳하고 TT·AQs·A5s·A4s·KQs는 포기한다고 가정해요. 드로우가 생긴 A5s·A4s까지 접는 건 글을 단순하게 하려는 가정이에요(체크레이즈와 리버 레이즈도 따로 보지 않아요)</li>
+</ul>
+<h2>1단계. 프리플랍 콜: 5.5BB로 17.5BB 팟에 들어가요</h2>
+<h3>필요 에퀴티</h3>
+<p>콜 5.5BB를 내면 팟이 17.5BB가 돼요. 필요 에퀴티는 <strong>내가 낼 돈 ÷ 콜한 뒤 팟</strong>이라 이래요(B06).</p>
+<blockquote>
+<p>필요 에퀴티 = 5.5 ÷ 17.5 = <strong>약 31.4%</strong></p>
+</blockquote>
+<h3>BTN의 3벳 레인지 상대 Hero 에퀴티</h3>
+<p>BTN이 가진 3벳 핸드를 57콤보로 가정했어요. A♦J♦가 이 레인지 전체를 상대로 갖는 에퀴티는 <strong>약 41.6%</strong>예요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>상대 핸드</th>
+<th>콤보</th>
+<th>Hero 에퀴티</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QQ</td>
+<td>6</td>
+<td>약 30.8%</td>
+</tr>
+<tr>
+<td>KK</td>
+<td>6</td>
+<td>약 32.0%</td>
+</tr>
+<tr>
+<td>AA</td>
+<td>3</td>
+<td>약 12.9%</td>
+</tr>
+<tr>
+<td>AKs / AKo</td>
+<td>3 / 9</td>
+<td>약 29.5% / 약 30.5%</td>
+</tr>
+<tr>
+<td>JJ / TT</td>
+<td>3 / 6</td>
+<td>약 33.6% / 약 45.0%</td>
+</tr>
+<tr>
+<td>AQs</td>
+<td>3</td>
+<td>약 28.6%</td>
+</tr>
+<tr>
+<td>A5s / A4s</td>
+<td>3 / 3</td>
+<td>약 66.9% / 약 67.1%</td>
+</tr>
+<tr>
+<td>KQs</td>
+<td>4</td>
+<td>약 57.8%</td>
+</tr>
+<tr>
+<td>76s / 65s</td>
+<td>4 / 4</td>
+<td>약 63.2% / 약 62.7%</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><strong>빨리 세는 팁</strong>: Hero가 A♦를 들고 있어서 AA는 6콤보가 아니라 3콤보, AQs도 A♦Q♦가 빠져서 3콤보예요.</p>
+</blockquote>
+<p><strong>읽는 법</strong>: AA에는 크게 뒤지고, KK·QQ·AK·AQs 상대로는 30% 안팎이에요. 블러프로 가정한 A5s·KQs·커넥터 같은 약한 핸드에서 크게 올려 줘서 <strong>전체 41.6%</strong>가 돼요. 31.4%를 크게 넘으니 콜이 맞아요.</p>
+<p>그런데 이 숫자는 BTN이 블러프를 섞는다고 가정해서 나온 값이에요. 블러프가 하나도 없는 상대라면 41.6%보다 한참 낮아지겠죠. 그래서 3벳 콜은 <strong>"상대가 블러프를 얼마나 섞는가"에 기대는 콜</strong>이라는 걸 기억해 두세요.</p>
+<h2>2단계. 콜하는 순간 SPR이 정해져요</h2>
+<h3>지난 글과 비교하기</h3>
+<p>SPR은 <strong>남은 스택 ÷ 팟</strong>이에요(A10). 3벳을 콜하고 나면 남은 스택은 <strong>92BB</strong>, 팟은 <strong>17.5BB</strong>라서 이래요.</p>
+<blockquote>
+<p>SPR = 92 ÷ 17.5 = <strong>약 5.3</strong></p>
+</blockquote>
+<p>지난 글의 단일 오픈 팟은 97.5 ÷ 5.5, 약 <strong>17.7</strong>이었어요. 같은 100BB인데 SPR이 3분의 1 아래로 내려왔죠(A16).</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>팟</th>
+<th>SPR</th>
+<th>팟벳 몇 번이면 올인</th>
+<th>하프팟 몇 번이면 올인</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>지난 글 (오픈 + 콜)</td>
+<td>약 17.7</td>
+<td>4번</td>
+<td>6번</td>
+</tr>
+<tr>
+<td>오늘 (오픈 + 3벳 + 콜)</td>
+<td>약 5.3</td>
+<td><strong>3번</strong></td>
+<td><strong>4번</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>이게 무슨 뜻이냐면</strong>, 오늘 한 판은 <strong>스트리트가 세 번 남았는데 팟벳 세 번이면 스택이 끝나요.</strong> 한 번 걸고 한 번 콜할 때마다 올인이 가까워져요. 그래서 3벳 팟의 콜은 지금 한 번의 콜이 아니라 <strong>끝까지 갈 각오가 있는 콜</strong>이에요.</p>
+<h2>3단계. 플랍 콜: 작은 벳 앞에서</h2>
+<h3>필요 에퀴티가 낮아요</h3>
+<p>BTN의 벳 6BB는 팟의 약 34.3%예요. 이 크기는 A28에서 본 작은 c-bet이에요. 필요 에퀴티는 이래요.</p>
+<blockquote>
+<p>필요 에퀴티 = 6 ÷ (17.5 + 6 + 6) = 6 ÷ 29.5 = <strong>약 20.3%</strong></p>
+</blockquote>
+<p>벳이 작으면 Hero가 내는 돈이 작으니, 이겨야 하는 몫도 작아요.</p>
+<h3>상대 레인지 전체로 보면</h3>
+<p>J♠8♦3♥에서 A♦J♦는 탑페어예요. BTN의 c-bet 레인지 55콤보 상대로 Hero 에퀴티는 <strong>약 68.2%</strong>예요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>상대 핸드</th>
+<th>콤보</th>
+<th>Hero 에퀴티</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AA / KK / QQ (오버페어)</td>
+<td>3 / 6 / 6</td>
+<td>약 13.1% / 약 24.2% / 약 24.2%</td>
+</tr>
+<tr>
+<td>JJ (셋)</td>
+<td>1</td>
+<td>약 3.9%</td>
+</tr>
+<tr>
+<td>AK / AQs / KQs</td>
+<td>12 / 3 / 4</td>
+<td>약 84~87% / 약 82.6% / 약 74.3%</td>
+</tr>
+<tr>
+<td>TT</td>
+<td>6</td>
+<td>약 88.6%</td>
+</tr>
+<tr>
+<td>A5s·A4s·76s·65s</td>
+<td>3 / 3 / 4 / 4</td>
+<td>약 91.9~95.3%</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p><strong>빨리 세는 팁</strong>: J♠가 보드에, J♦가 Hero 손에 있으니 JJ는 J♥J♣ 하나뿐이에요.</p>
+</blockquote>
+<p><strong>읽는 법</strong>: Hero를 이기는 핸드는 오버페어(AA·KK·QQ)와 셋(JJ), 이렇게 16콤보뿐이에요. 나머지는 Hero가 앞서요. 레인지 벳은 약한 핸드를 많이 섞은 벳이라서, 탑페어 탑키커가 편하게 콜할 수 있는 장면이에요.</p>
+<h3>콜하고 나면 SPR이 또 내려가요</h3>
+<p>콜하면 팟은 29.5BB, 남은 스택은 86BB예요.</p>
+<blockquote>
+<p>SPR = 86 ÷ 29.5 = <strong>약 2.9</strong></p>
+</blockquote>
+<p>팟벳 <strong>두 번</strong>이면 올인이에요. 5.3이던 숫자가 한 번의 콜로 2.9까지 내려왔어요.</p>
+<!-- 그림: 프리플랍 SPR 5.3 → 플랍 콜 뒤 2.9 → 턴 콜 뒤 0.95로 줄어드는 막대 -->
+
+<h2>4단계. 턴 콜: 20BB 벳, 그리고 마지막 SPR</h2>
+<h3>필요 에퀴티</h3>
+<p>BTN이 팟 29.5BB에 20BB를 걸었어요. 팟의 약 67.8%로 크게 걸었죠. 이번 콜의 필요 에퀴티는 이래요.</p>
+<blockquote>
+<p>필요 에퀴티 = 20 ÷ (29.5 + 20 + 20) = 20 ÷ 69.5 = <strong>약 28.8%</strong></p>
+</blockquote>
+<p>벳이 팟의 약 34.3%에서 약 67.8%로 두 배가 됐는데 필요 에퀴티는 20.3%에서 28.8%로 조금만 올랐어요. 그래서 이번에도 문제는 상대가 이 벳을 하는 핸드예요.</p>
+<h3>약한 핸드를 접으면 레인지가 달라져요</h3>
+<p>BTN이 턴에도 벳하는 핸드는 36콤보예요. 밸류는 AA·KK·QQ·JJ, 여기에 AK(A 하이)가 있고, 블러프로 아무것도 없는 76s와 거트샷(4 한 장이 필요한 드로우)이 있는 65s를 넣었어요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>상대 핸드</th>
+<th>콤보</th>
+<th>Hero 에퀴티</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AA</td>
+<td>3</td>
+<td>약 4.5%</td>
+</tr>
+<tr>
+<td>KK / QQ</td>
+<td>6 / 6</td>
+<td>약 11.4% / 약 11.4%</td>
+</tr>
+<tr>
+<td>JJ (셋)</td>
+<td>1</td>
+<td>0</td>
+</tr>
+<tr>
+<td>AK</td>
+<td>12</td>
+<td>약 93.2%</td>
+</tr>
+<tr>
+<td>65s</td>
+<td>4</td>
+<td>약 90.9%</td>
+</tr>
+<tr>
+<td>76s</td>
+<td>4</td>
+<td>100%</td>
+</tr>
+</tbody>
+</table></div>
+<p>이 36콤보 전체를 상대로 Hero 에퀴티는 <strong>약 56.4%</strong>예요. 필요 에퀴티 28.8%를 넘어요.</p>
+<p>플랍 68.2%에서 내려온 이유는 Hero를 이기는 16콤보는 그대로인데 전체가 55콤보에서 36콤보로 줄어서 <strong>그 비중이 커졌기</strong> 때문이에요. 약한 핸드가 빠질수록 남은 레인지는 단단해져요.</p>
+<h3>하지만 이 콜이 마지막이에요</h3>
+<p>콜하면 팟은 69.5BB, 남은 스택은 66BB가 돼요.</p>
+<blockquote>
+<p>SPR = 66 ÷ 69.5 = <strong>약 0.95</strong></p>
+</blockquote>
+<p>SPR이 1보다 작아졌어요. <strong>팟벳 한 번이면 스택이 다 들어가요.</strong> 그러니 <strong>턴 콜은 사실상 스택을 거는 결정</strong>이에요.</p>
+<h3>리버는 원칙으로</h3>
+<p>리버에 BTN이 올인하면 Hero는 그 순간의 레인지로 같은 계산을 다시 해요. 36콤보에서 76s·65s 같은 블러프가 카드로 완성되지 않고 남아 있으면 콜 쪽, 밸류만 남은 모양이면 폴드 쪽으로 기울어요. 오늘 장면에서는 새 숫자를 만들지 않고 여기까지만 봐요.</p>
+<section class="sec why"><h2>왜 그럴까: 벳 크기와 레인지는 따로 움직여요</h2>
+<h3>필요 에퀴티는 벳이, Hero 에퀴티는 레인지가 정해요</h3>
+<ul>
+<li><strong>필요 에퀴티</strong>는 벳 크기만 바꿔요. 6BB 벳은 20.3%, 20BB 벳은 28.8%</li>
+<li><strong>Hero 에퀴티</strong>는 상대 레인지 구성과 보드가 바꿔요. 프리플랍 41.6%에서 플랍 68.2%로 오른 건 J가 맞은 데다 약한 핸드가 전부 남아 있어서고, 턴 56.4%로 내려온 건 약한 핸드가 빠졌기 때문이에요</li>
+</ul>
+<p>세 번의 콜이 모두 되려면 두 쪽을 따로 확인해야 해요.</p>
+<h3>포지션이 없으면 여유를 더 둬요</h3>
+<p>Hero가 먼저 체크하면 BTN은 그 체크를 보고 벳 크기를 정해요. 에퀴티가 필요치를 넘는 폭이 작은 콜은 포지션이 없을 때 더 위험해져요.</p>
+</section><section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. "프리플랍 41.6%니까 이후엔 계속 이길 거야"</strong>
+프리플랍 에퀴티는 <strong>카드를 모르는 상태</strong>의 값이에요. 플랍에 J가 떨어져 68.2%로 올랐지만, 같은 3벳 콜이라도 A♦J♦가 4♠7♣9♥ 같은 보드를 만나면 사정이 달라져요. 대신 <strong>스트리트마다 보드와 상대 레인지로 에퀴티를 다시 재요.</strong></p></div><div class="mis-card"><p><strong>실수 2. 플랍에서 콜할 땐 턴을 생각하지 않음</strong>
+"6BB만 내면 되네" 하고 콜하는 경우예요. 하지만 이 콜 하나로 SPR이 5.3에서 2.9로 내려오고, 턴 콜 뒤엔 0.95가 돼요. 플랍 콜은 <strong>턴과 리버에 낼 돈까지 포함한 계획</strong>이에요. 대신 플랍에서 <strong>"턴에 큰 벳이 오면 어떻게 하지"를 정하고</strong> 콜해요.</p></div><div class="mis-card"><p><strong>실수 3. 벳이 작으니 아무 핸드로나 콜해도 된다고 생각함</strong>
+필요 에퀴티 20.3%만 보고 "이 정도면 되겠지" 하는 경우예요. 하지만 같은 6BB 벳을 Hero를 이기는 16콤보도 하고 지는 나머지도 해요. 벳 크기는 핸드 강도를 알려 주지 않으니, <strong>내 핸드가 이 레인지 안에서 어디쯤인지</strong>를 따로 세어야 해요.</p></div></section>
+<hr />
+<h2>"그럼 3벳 팟에선 항상 끝까지 가요?"</h2>
+<p>아니에요. 오늘은 Hero 핸드가 탑페어 탑키커라서 세 번 다 콜이 쉬웠어요. 같은 3벳 팟이라도 보드가 K♥Q♣4♠처럼 상대 레인지에 잘 맞는 카드로 오거나, Hero 핸드가 플랍에서 아무것도 못 맞히면 플랍이나 턴에서 폴드가 나와요.</p>
+<p>SPR이 낮다는 건 <strong>끝까지 갈 수도 있다</strong>는 뜻이지, <strong>끝까지 가야 한다</strong>는 뜻이 아니에요. 그래서 매 스트리트 상대 레인지를 새로 놓고 다시 계산해요.</p>
+<h2>숫자가 뒤집히는 지점</h2>
+<ul>
+<li><strong>프리플랍</strong>: 3벳이 커져서 필요 에퀴티가 올라가거나, 블러프가 줄어서 Hero 에퀴티가 내려가면 콜의 여유가 사라져요</li>
+<li><strong>턴</strong>: 벳 레인지에서 블러프가 빠져 Hero를 이기는 콤보의 비중이 커지면 에퀴티가 필요 에퀴티 아래로 내려가요</li>
+</ul>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<p>3벳 팟에서 콜을 누르기 전에 이 순서로 확인해 보세요.</p>
+<ol>
+<li>콜한 뒤 <strong>SPR이 얼마가 되는지</strong> 먼저 계산해서, 끝까지 갈 판인지 봐요</li>
+<li>상대 레인지에서 <strong>나를 이기는 핸드가 몇 콤보인지</strong> 세 보세요</li>
+<li>필요 에퀴티를 구해 비교해요</li>
+<li>턴에 큰 벳이 오면 어떻게 할지 <strong>플랍에서 미리</strong> 정해 두세요</li>
+</ol></section>
+<hr />
+<h2>연습 문제 (같은 장면, 다른 조건)</h2>
+<blockquote>
+<p>학습툴 에퀴티 계산기는 레인지 입력이 없어서, 내 카드·보드와 상대 핸드 하나를 넣는 <strong>핸드 대 핸드</strong>로만 확인할 수 있어요. 필요 에퀴티와 SPR은 위 공식으로 직접 계산해요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 프리플랍에서 BTN이 8BB 대신 <strong>12BB로 3벳</strong>해요(블라인드 폴드, 스택 100BB). Hero 핸드는 <strong>K♦9♦</strong>이고, BTN의 3벳 레인지는 오늘과 같다고 가정하면 Hero 에퀴티는 <strong>약 34.4%</strong>예요. 콜? 폴드? 그리고 콜한다면 플랍 SPR은 얼마일까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p>콜해야 할 돈은 <strong>9.5BB</strong>이고, 콜한 뒤 팟은 <strong>25.5BB</strong>예요.</p>
+<blockquote>
+<p>필요 에퀴티 = 9.5 ÷ 25.5 = <strong>약 37.3%</strong></p>
+</blockquote>
+<p>Hero 에퀴티 34.4%가 <strong>필요 37.3%에 못 미쳐요</strong> → <strong>폴드</strong>예요.
+콜했다면 남은 스택 88BB ÷ 팟 25.5BB로 SPR은 <strong>약 3.5</strong>였어요. 같은 3벳 팟이어도 크기가 커지면 SPR은 낮아지고, 필요 에퀴티는 올라가요.</p>
+</details>
+<p><strong>문제 2.</strong> 오늘 턴(J♠8♦3♥2♣)에서 BTN이 20BB를 걸었는데, 이 상대는 <strong>블러프를 하지 않는</strong> 사람이라 턴 벳 레인지가 <strong>AA·KK·QQ·JJ의 16콤보</strong>뿐이에요. 위 턴 표의 핸드별 에퀴티를 콤보 수로 가중해서 A♦J♦의 에퀴티를 어림하고, 콜할지 폴드할지 정해 보세요.</p>
+<details>
+<summary>정답 보기</summary>
+<p>콤보 수로 가중하면 Hero 에퀴티는 <strong>약 9.4%</strong>예요. 필요 에퀴티는 20 ÷ 69.5, 약 28.8%라서 한참 못 미쳐요 → <strong>폴드</strong>예요.
+같은 보드, 같은 벳이어도 상대 벳 레인지가 달라지면 결론이 뒤집혀요.</p>
+</details>
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>3벳을 콜하면 SPR이 약 5.3이 되어, 팟벳 세 번이면 올인이 돼요</li>
+<li><strong>벳 크기는 필요 에퀴티를, 상대 레인지 구성은 Hero 에퀴티를</strong> 따로 바꿔요. 둘 다 확인해야 콜이 맞아요</li>
+<li>스트리트가 지날수록 약한 핸드가 빠져 레인지가 단단해지고, 콜이 쌓이면 SPR이 1 아래까지 내려가요</li>
+<li>포지션이 없으면 에퀴티가 필요치를 넘는 폭이 작은 콜은 더 조심해요</li>
+</ul>
+</section><section class="sec end"><h2>정리하며</h2>
+<p>오늘은 CO가 오픈하고 BTN이 3벳한 뒤, 콜하고 포지션 없이 치른 한 판을 프리플랍, 플랍, 턴까지 따라갔어요. 세 번의 콜이 모두 이득이었지만, 그 사이 SPR이 5.3에서 0.95까지 내려가 턴 콜은 사실상 스택을 거는 결정이 됐죠.</p>
+<p>3벳을 콜하기 전에 <strong>"이 콜이 끝까지 가면 몇 번 더 콜해야 하지?"</strong>를 SPR로 먼저 세어 보세요.</p>
+<p>다음 글 R03에서는 BB에서 디펜스한 뒤 플랍에서 체크레이즈로 <strong>세미블러프</strong>를 하는 한 판을 따라가요. 오늘과 달리 콜만 하는 쪽이 아니라 Hero가 먼저 공격하는 쪽이에요.</p>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 가정 레인지 기준(솔버 결과 아님) · 남은 베팅이 있어 EV는 쓰지 않고 필요 에퀴티와 비교했으며, 에퀴티는 카드를 끝까지 보는 값이라 포지션 없는 실제 몫은 이보다 작을 수 있어요</small></p></section>
+</article>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="079_A16.html">3벳 팟의 SPR: 왜 플랍부터 큰 결정이 올까?</a></li><li><a href="091_A28.html">3벳 팟 c-bet, 작게 걸까 크게 걸까? 폴드율과 SPR로 고르기</a></li></ul></aside><nav class="nav"><a class="prev" href="143_R01.html"><div class="l">← 이전 글</div><div class="t">버튼 오픈 vs BB 콜: 드라이 보드 c-bet부터 리버 밸류까지</div></a></nav></main>
+</body>
+</html>
