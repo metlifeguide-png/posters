@@ -456,6 +456,12 @@ function kkCombos(len,sum){const o=[];const rec=(st,a,s)=>{if(a.length===len){if
 
   function lookOf(pet) {
     var L = pet.look && typeof pet.look === 'object' ? pet.look : {};
+    // 완성 펫은 _pet_final_look 이 final 에 담은 모습(sizeMul = 1 + size/100)을 쓴다
+    var F = pet.done && pet.final && typeof pet.final === 'object' ? pet.final : null;
+    if (F && (own(F, 'pattern') || own(F, 'tone') || own(F, 'parts') || own(F, 'sizeMul'))) {
+      L = { tone: F.tone, pattern: F.pattern, face: F.face, parts: F.parts,
+        size: fin(F.sizeMul) ? (F.sizeMul - 1) * 100 : 0 };
+    }
     var pattern = typeof L.pattern === 'string' ? token(L.pattern, 24)
       : fin(L.pattern) ? Math.round(clamp(L.pattern, 0, 99, 0)) : null;
     var parts = [];
@@ -621,6 +627,14 @@ function kkCombos(len,sum){const o=[];const rec=(st,a,s)=>{if(a.length===len){if
     return act || 'idle';
   }
 
+  // PET_COL 값(#hex · gold · rainbow · 색 이름)만 받아 배경 값으로 바꾼다. 그 외는 null
+  function coatPaint(v) {
+    if (typeof v !== 'string') return null;
+    if (v === 'gold') return 'linear-gradient(135deg,#f9dc7a,#c9962c 60%,#f3d27a)';
+    if (v === 'rainbow') return 'conic-gradient(from 200deg at 50% 55%,#ff9a9a,#ffd36e,#9be27a,#7fc8ff,#c39bff,#ff9a9a)';
+    return /^(#[0-9a-f]{3,8}|[a-z]{3,16})$/i.test(v) ? v : null;
+  }
+
   function render(pet, options, registry) {
     var o = options || {};
     var hit = lookup(pet, o, registry);
@@ -646,26 +660,47 @@ function kkCombos(len,sum){const o=[];const rec=(st,a,s)=>{if(a.length===len){if
     if (space) back = front = '';
     var uid = o.uid != null ? ' id="tpr-' + esc(o.uid) + '"' : '';
     var label = esc(pet.name || '');
-    var look = pet.look && typeof pet.look === 'object' ? pet.look : {};
-    var pattern = Number.isFinite(Number(look.pattern)) ? Math.max(0, Math.min(99, Math.round(Number(look.pattern))) % 8) : 0;
+    // 몸 무늬 마스크는 아틀라스 crop 과 같은 크기·위치로 깔아야 실루엣과 맞는다
+    vars += ';--tpr-ms:' + c.imgW + 'px ' + c.imgH + 'px;--tpr-mp:' + c.left + 'px ' + c.top + 'px';
+    // o.look = TtukPetCare.describe() 결과(완성 펫은 final 의 look) · 없으면 pet.look 원본
+    var look = o.look && typeof o.look === 'object' ? o.look : (pet.look && typeof pet.look === 'object' ? pet.look : {});
+    var pattern = num(Number(look.pattern)) ? Math.max(0, Math.min(99, Math.round(Number(look.pattern)))) % 8 : 0;
     var parts = Array.isArray(look.parts) ? look.parts.slice(0, 8).map(Number).filter(function (n) { return Number.isInteger(n) && n >= 1 && n <= 3; }) : [];
     var face = Number.isInteger(Number(look.face)) ? Math.max(0, Math.min(2, Number(look.face))) : 1;
-    var mix = pet.mix && typeof pet.mix === 'object' && Number.isInteger(Number(pet.mix.c2)) ? Math.abs(Number(pet.mix.c2)) % 14 : null;
-    var marks = pattern ? '<span class="tpr-markings tpr-pattern-' + pattern + '" aria-hidden="true"></span>' : '';
-    var partMarks = parts.map(function (n) { return '<span class="tpr-markings tpr-part-' + n + '" aria-hidden="true"></span>'; }).join('');
-    var mixColor = typeof o.mixColor === 'string' && /^(#[0-9a-f]{3,8}|[a-z]{3,16})$/i.test(o.mixColor) ? o.mixColor : '#7fb7cf';
-    if (mix === 14) mixColor = '#f5c542'; else if (mix === 15) mixColor = '#b89cf4';
-    var mixed = mix !== null ? '<span class="tpr-mix-coat" style="--tpr-mix-color:' + mixColor + '" aria-hidden="true"></span>' : '';
+    var tone = num(Number(look.tone)) ? Math.max(-3, Math.min(3, Math.round(Number(look.tone)))) : 0;
+    if (tone) vars += ';--tpr-tone-bright:' + r2(1 + tone * 0.03) + ';--tpr-tone-sat:' + r2(1 + tone * 0.07);
+    var fa = Array.isArray(o.faceAt) && num(o.faceAt[0]) && num(o.faceAt[1]) ? o.faceAt : null;
+    if (fa) vars += ';--tpr-face-x:' + r2(Math.max(0, Math.min(100, fa[0]))) + '%;--tpr-face-y:' + r2(Math.max(0, Math.min(100, fa[1]))) + '%';
+    var mk = function (k) { return '<span class="tpr-markings ' + k + '" aria-hidden="true"></span>'; };
+    var marks = pattern ? mk('tpr-pattern-' + pattern) : '';
+    var partMarks = parts.map(function (n) { return mk('tpr-part-' + n); }).join('');
+    if (face !== 1) partMarks += mk('tpr-face-' + face);
+    // 교배: 다른 부모 2.5D 그림을 뒤에 깔고 한쪽으로 부드럽게 사라지게(체형) + 실루엣 안 색 번짐(색)
+    var mx = o.mix && typeof o.mix === 'object' ? o.mix : null, mixBody = '', mixed = '';
+    var side = mx && mx.side === 'l' ? 'l' : 'r';
+    if (mx && validAsset(mx.asset) && !space && safeSrc(mx.asset.src)) {
+      var b = mx.asset, s2 = Math.min(c.w / b.rect[2], c.h / b.rect[3]) * 0.96;
+      var bw = r2(b.rect[2] * s2), bh = r2(b.rect[3] * s2), ox = r2((c.w - bw) / 2), oy = r2(c.h - bh);
+      mixBody = '<span class="tpr-mix-body tpr-mix-' + side + '" style="left:' + ox + 'px;top:' + oy + 'px;width:' + bw + 'px;height:' + bh + 'px" aria-hidden="true">' +
+        '<img src="' + esc(b.src) + '" alt="" draggable="false" decoding="async" style="width:' + r2(b.sheet[0] * s2) + 'px;height:' + r2(b.sheet[1] * s2) + 'px;left:' + r2(-b.rect[0] * s2) + 'px;top:' + r2(-b.rect[1] * s2) + 'px"' +
+        ' onerror="this.parentNode.style.display=\'none\'"></span>';
+    }
+    var mixColor = mx ? coatPaint(mx.color) : null;
+    if (mixColor) mixed = '<span class="tpr-mix-coat tpr-mix-' + side + '" style="--tpr-mix-color:' + mixColor + '" aria-hidden="true"></span>';
+    // 완성형 고유 색(종 기본색과 다를 때만 caller 가 준다) → 실루엣 안 색조만 바꾼다
+    var coat = coatPaint(o.coatColor);
+    var coatLayer = coat ? '<span class="tpr-coat" style="--tpr-coat-color:' + coat + '" aria-hidden="true"></span>' : '';
     var form = /^(fire|forest|thunder|moon)$/.test(o.formVariant) ? o.formVariant : '';
-    var html = '<div class="' + cls.join(' ') + (form ? ' tpr-form-' + form : '') + '"' + uid + ' data-key="' + esc(hit.key) + '" data-care="' + esc(o.careVariant || 'neutral') + '" data-quality="' + esc(o.careQuality || 'neutral') + '" data-face="' + face + '" style="' + vars + '">' +
+    var formLayer = form ? '<span class="tpr-form-layer" aria-hidden="true"></span>' : '';
+    var html = '<div class="' + cls.join(' ') + (form ? ' tpr-form-' + form : '') + (mx ? ' tpr-hybrid' : '') + '"' + uid + ' data-key="' + esc(hit.key) + '" data-care="' + esc(o.careVariant || 'neutral') + '" data-quality="' + esc(o.careQuality || 'neutral') + '" data-face="' + face + '" style="' + vars + '">' +
       '<i class="tpr-shadow"></i>' +
       // 앞/뒤 장식과 몸체를 같은 애니메이션 래퍼에 넣어 동작 중에도 장식이 몸을 따라간다. crop 은 .tpr-vp 에만.
       '<div class="tpr-anim">' +
       (back ? '<div class="tpr-deco tpr-deco-back">' + back + '</div>' : '') +
-      '<div class="tpr-body"><span class="tpr-vp">' +
+      '<div class="tpr-body"><span class="tpr-vp">' + mixBody +
       '<img class="tpr-img" src="' + esc(a.src) + '" alt="' + label + '" draggable="false" decoding="async"' +
       ' style="width:' + c.imgW + 'px;height:' + c.imgH + 'px;left:' + c.left + 'px;top:' + c.top + 'px"' +
-      ' onerror="this.closest(\'.tpr\').classList.add(\'tpr-broken\')">' + marks + partMarks + mixed + '</span></div>' +
+      ' onerror="this.closest(\'.tpr\').classList.add(\'tpr-broken\')">' + coatLayer + mixed + marks + partMarks + formLayer + '</span></div>' +
       (front ? '<div class="tpr-deco tpr-deco-front">' + front + '</div>' : '') +
       '</div><div class="tpr-fb">' + (o.fallbackHtml || '') + '</div></div>';
     return { html: html, key: hit.key, mood: m, classes: cls, crop: c, decorHidden: decorHidden };
@@ -677,20 +712,49 @@ function kkCombos(len,sum){const o=[];const rec=(st,a,s)=>{if(a.length===len){if
     '.tpr-body{position:absolute;inset:0}',
     '.tpr-vp{position:absolute;inset:0;overflow:hidden;display:block;contain:paint}',
     '.tpr-img{position:absolute;max-width:none;max-height:none;object-fit:fill;user-select:none;pointer-events:none;image-rendering:auto}',
-    /* 장기 look 패턴은 액세서리로 얹지 않고 그림의 알파 실루엣 안에 털 무늬로 표현 */
-    '.tpr-markings,.tpr-mix-coat{position:absolute;inset:0;pointer-events:none;mask-image:var(--tpr-mask);mask-mode:alpha;mask-repeat:no-repeat;mask-position:center;mask-size:100% 100%;-webkit-mask-image:var(--tpr-mask);-webkit-mask-repeat:no-repeat;-webkit-mask-position:center;-webkit-mask-size:100% 100%}',
-    '.tpr-markings{opacity:.22;mix-blend-mode:multiply}',
-    '.tpr-pattern-1{background:radial-gradient(ellipse at 28% 38%,#fff 0 7%,transparent 8%),radial-gradient(ellipse at 72% 56%,#fff 0 8%,transparent 9%)}',
-    '.tpr-pattern-2{background:repeating-linear-gradient(135deg,transparent 0 16px,#fff 17px 21px,transparent 22px 34px)}',
-    '.tpr-pattern-3{background:radial-gradient(ellipse at 32% 55%,#fff 0 17%,transparent 18%),radial-gradient(ellipse at 68% 48%,#fff 0 14%,transparent 15%)}',
-    '.tpr-pattern-4{background:repeating-radial-gradient(ellipse at 50% 50%,transparent 0 13px,#fff 14px 17px,transparent 18px 28px)}',
-    '.tpr-pattern-5{background:radial-gradient(ellipse at 35% 28%,#fff9,transparent 40%),linear-gradient(125deg,#fff6,transparent 54%)}',
-    '.tpr-part-1{opacity:.18;background:radial-gradient(ellipse at 28% 42%,#fff 0 10%,transparent 11%),radial-gradient(ellipse at 70% 52%,#fff 0 10%,transparent 11%)}',
-    '.tpr-part-2{opacity:.16;background:repeating-linear-gradient(35deg,transparent 0 25px,#fff 26px 30px,transparent 31px 45px)}',
-    '.tpr-part-3{opacity:.14;background:radial-gradient(ellipse at 50% 35%,#fff 0 9%,transparent 10%),radial-gradient(ellipse at 40% 64%,#fff 0 12%,transparent 13%)}',
-    '.tpr-mix-coat{opacity:.28;mix-blend-mode:color;background:linear-gradient(110deg,transparent 42%,var(--tpr-mix-color) 43% 100%)}',
-    '.tpr-form-fire .tpr-img{--tpr-sat:1.16;--tpr-sepia:.12;--tpr-hue:-8deg}.tpr-form-forest .tpr-img{--tpr-sat:1.12;--tpr-hue:16deg}.tpr-form-thunder .tpr-img{--tpr-sat:1.16;--tpr-hue:55deg}.tpr-form-moon .tpr-img{--tpr-sat:.9;--tpr-hue:220deg;--tpr-bright:1.08}.tpr-form-fire .tpr-shadow{box-shadow:0 0 9px #ff9c4c99}.tpr-form-forest .tpr-shadow{box-shadow:0 0 9px #8dcc7299}.tpr-form-thunder .tpr-shadow{box-shadow:0 0 9px #ffe36aaa}.tpr-form-moon .tpr-shadow{box-shadow:0 0 10px #d4c5ffbb}',
-    '.tpr-img{filter:saturate(calc(var(--tpr-sat,1)*var(--tpr-quality-sat,1))) brightness(calc(var(--tpr-bright,1)*var(--tpr-quality-bright,1))) sepia(var(--tpr-sepia,0)) hue-rotate(var(--tpr-hue,0deg)) contrast(var(--tpr-contrast,1))}',
+    /* 장기 look·교배 색·완성 색·진화 분기는 액세서리로 얹지 않고 그림의 알파 실루엣 안(털·피부)에만 칠한다.
+       마스크는 img 와 같은 크기·위치(--tpr-ms/--tpr-mp). 마스크를 못 쓰는 브라우저는 이 층을 숨겨 네모 색판이 생기지 않게 한다. */
+    '.tpr-markings,.tpr-mix-coat,.tpr-coat,.tpr-form-layer{position:absolute;inset:0;pointer-events:none;display:none;mask-image:var(--tpr-mask);mask-mode:alpha;mask-repeat:no-repeat;mask-position:var(--tpr-mp,0 0);mask-size:var(--tpr-ms,100% 100%);-webkit-mask-image:var(--tpr-mask);-webkit-mask-repeat:no-repeat;-webkit-mask-position:var(--tpr-mp,0 0);-webkit-mask-size:var(--tpr-ms,100% 100%)}',
+    '@supports (mask-image:none) or (-webkit-mask-image:none){.tpr-markings,.tpr-coat,.tpr-form-layer{display:block}}',
+    /* 무늬 1~7 (fun.py _pet_small_change: 1..7) · 가장자리는 넓은 그라데이션으로 번지게 */
+    '.tpr-markings{opacity:.34;mix-blend-mode:multiply;--tpr-ink:#6a4632}',
+    '.tpr-pattern-1{background:radial-gradient(ellipse 9% 8% at 30% 40%,var(--tpr-ink),transparent),radial-gradient(ellipse 8% 7% at 66% 58%,var(--tpr-ink),transparent),radial-gradient(ellipse 6% 6% at 48% 70%,var(--tpr-ink),transparent),radial-gradient(ellipse 6% 5% at 74% 36%,var(--tpr-ink),transparent)}',
+    '.tpr-pattern-2{opacity:.26;background:repeating-linear-gradient(100deg,transparent 0 9%,var(--tpr-ink) 12% 14%,transparent 17% 24%)}',
+    '.tpr-pattern-3{background:radial-gradient(ellipse 20% 17% at 32% 56%,var(--tpr-ink),transparent 100%),radial-gradient(ellipse 15% 13% at 70% 44%,var(--tpr-ink),transparent 100%)}',
+    '.tpr-pattern-4{opacity:.24;background:repeating-radial-gradient(ellipse at 50% 58%,transparent 0 8%,var(--tpr-ink) 10% 12%,transparent 14% 19%)}',
+    '.tpr-pattern-5{mix-blend-mode:screen;opacity:.5;background:radial-gradient(ellipse 34% 26% at 38% 30%,#fff,transparent),linear-gradient(125deg,#fff8,transparent 50%)}',
+    '.tpr-pattern-6{mix-blend-mode:screen;opacity:.42;background:radial-gradient(ellipse 26% 22% at 50% 72%,#fff7e6,transparent)}',
+    '.tpr-pattern-7{opacity:.3;background:radial-gradient(ellipse 46% 22% at 50% 18%,var(--tpr-ink),transparent)}',
+    /* 파츠 1 볼터치 · 2 이마 별빛 털 · 3 가슴 밝은 털 (2D petSVG 와 같은 뜻, 몸 색으로만) */
+    '.tpr-part-1{mix-blend-mode:multiply;opacity:.38;background:radial-gradient(ellipse 8% 6% at calc(var(--tpr-face-x,50%) - 14%) calc(var(--tpr-face-y,48%) + 6%),#ff7b9c,transparent),radial-gradient(ellipse 8% 6% at calc(var(--tpr-face-x,50%) + 14%) calc(var(--tpr-face-y,48%) + 6%),#ff7b9c,transparent)}',
+    '.tpr-part-2{mix-blend-mode:screen;opacity:.55;background:radial-gradient(ellipse 7% 9% at var(--tpr-face-x,50%) calc(var(--tpr-face-y,48%) - 14%),#fff6c8,transparent)}',
+    '.tpr-part-3{mix-blend-mode:screen;opacity:.45;background:radial-gradient(ellipse 14% 12% at var(--tpr-face-x,50%) calc(var(--tpr-face-y,48%) + 22%),#ffe9ef,transparent)}',
+    /* 표정 0 시무룩: 얼굴 쪽 그늘·몸이 살짝 처짐 · 2 반짝: 얼굴 쪽 윤기 */
+    '.tpr-face-0{mix-blend-mode:multiply;opacity:.28;background:radial-gradient(ellipse 28% 18% at var(--tpr-face-x,50%) calc(var(--tpr-face-y,48%) - 6%),#4a5266,transparent)}',
+    '.tpr-face-2{mix-blend-mode:screen;opacity:.5;background:radial-gradient(ellipse 22% 14% at var(--tpr-face-x,50%) calc(var(--tpr-face-y,48%) - 4%),#fff,transparent)}',
+    '.tpr[data-face="0"] .tpr-body{transform:scale(1.015,.975);transform-origin:50% 100%}.tpr[data-face="2"] .tpr-img{--tpr-face-bright:1.04}',
+    /* 교배: 다른 부모 그림(뒤)은 한쪽으로 넓게 번지며 사라짐 → 귀·꼬리·몸 윤곽만 자연스럽게 섞인다 */
+    '.tpr-mix-body{position:absolute;overflow:hidden;pointer-events:none;display:none}',
+    '.tpr-mix-body img{position:absolute;max-width:none;max-height:none;user-select:none}',
+    '.tpr-mix-body.tpr-mix-r{-webkit-mask-image:linear-gradient(to left,#000 18%,transparent 78%);mask-image:linear-gradient(to left,#000 18%,transparent 78%)}',
+    '.tpr-mix-body.tpr-mix-l{-webkit-mask-image:linear-gradient(to right,#000 18%,transparent 78%);mask-image:linear-gradient(to right,#000 18%,transparent 78%)}',
+    '@supports (mask-image:none) or (-webkit-mask-image:none){.tpr-mix-body{display:block}}',
+    /* 교배 색: 실루엣 ∩ 한쪽에서 번지는 그라데이션 (경계선 없음) */
+    '.tpr-mix-coat{opacity:.5;mix-blend-mode:color;background:var(--tpr-mix-color)}',
+    '.tpr-mix-coat.tpr-mix-r{mask-image:var(--tpr-mask),linear-gradient(to left,#000 10%,transparent 85%);mask-size:var(--tpr-ms,100% 100%),100% 100%;mask-position:var(--tpr-mp,0 0),0 0;mask-composite:intersect;-webkit-mask-image:var(--tpr-mask),linear-gradient(to left,#000 10%,transparent 85%);-webkit-mask-size:var(--tpr-ms,100% 100%),100% 100%;-webkit-mask-position:var(--tpr-mp,0 0),0 0;-webkit-mask-composite:source-in}',
+    '.tpr-mix-coat.tpr-mix-l{mask-image:var(--tpr-mask),linear-gradient(to right,#000 10%,transparent 85%);mask-size:var(--tpr-ms,100% 100%),100% 100%;mask-position:var(--tpr-mp,0 0),0 0;mask-composite:intersect;-webkit-mask-image:var(--tpr-mask),linear-gradient(to right,#000 10%,transparent 85%);-webkit-mask-size:var(--tpr-ms,100% 100%),100% 100%;-webkit-mask-position:var(--tpr-mp,0 0),0 0;-webkit-mask-composite:source-in}',
+    '@supports (mask-composite:intersect) or (-webkit-mask-composite:source-in){.tpr-mix-coat{display:block}}',
+    /* 완성형 고유 색 */
+    '.tpr-coat{opacity:.32;mix-blend-mode:color;background:var(--tpr-coat-color)}',
+    /* 진화 분기: 불용 아래에서 타오르는 열기 · 숲용 잎 그늘 · 번개용 번쩍이는 줄 · 달빛 유령 반투명하게 아래가 흐려짐 */
+    '.tpr-form-fire .tpr-form-layer{mix-blend-mode:overlay;opacity:.7;background:linear-gradient(to top,#ff5a1f,#ff9a3c 30%,transparent 62%),radial-gradient(ellipse 30% 20% at 50% 96%,#ffd27a,transparent)}',
+    '.tpr-form-forest .tpr-form-layer{mix-blend-mode:multiply;opacity:.42;background:radial-gradient(ellipse 12% 9% at 28% 34%,#4f9a3a,transparent),radial-gradient(ellipse 10% 8% at 64% 26%,#5aa845,transparent),radial-gradient(ellipse 13% 9% at 72% 62%,#3f8a34,transparent),radial-gradient(ellipse 10% 8% at 38% 70%,#62b04a,transparent),linear-gradient(to top,#8fd16a66,transparent 50%)}',
+    '.tpr-form-thunder .tpr-form-layer{mix-blend-mode:screen;opacity:.55;background:linear-gradient(115deg,transparent 30%,#fff4a0 34% 36%,transparent 40% 58%,#ffe45c 61% 62.5%,transparent 66%),radial-gradient(ellipse 40% 30% at 50% 30%,#fff3a066,transparent)}',
+    '.tpr-form-moon .tpr-form-layer{mix-blend-mode:color;opacity:.45;background:linear-gradient(to bottom,#d9ccff,#9fb4ff)}',
+    '.tpr-form-moon .tpr-vp{-webkit-mask-image:linear-gradient(to top,transparent 0,#000 32%);mask-image:linear-gradient(to top,transparent 0,#000 32%)}.tpr-form-moon .tpr-body{opacity:.86}',
+    '.tpr-form-fire .tpr-img{--tpr-sat:1.12;--tpr-rim:#ff8a3caa}.tpr-form-forest .tpr-img{--tpr-sat:1.08;--tpr-rim:#7fcf6a99}.tpr-form-thunder .tpr-img{--tpr-sat:1.12;--tpr-contrast:1.04;--tpr-rim:#ffe25acc}.tpr-form-moon .tpr-img{--tpr-sat:.85;--tpr-bright:1.08;--tpr-rim:#d4c5ffcc}',
+    '.tpr-form-fire .tpr-shadow{box-shadow:0 0 9px #ff9c4c99}.tpr-form-forest .tpr-shadow{box-shadow:0 0 9px #8dcc7299}.tpr-form-thunder .tpr-shadow{box-shadow:0 0 9px #ffe36aaa}.tpr-form-moon .tpr-shadow{box-shadow:0 0 10px #d4c5ffbb;opacity:.5}',
+    '.tpr-img{filter:saturate(calc(var(--tpr-sat,1)*var(--tpr-quality-sat,1)*var(--tpr-tone-sat,1))) brightness(calc(var(--tpr-bright,1)*var(--tpr-quality-bright,1)*var(--tpr-tone-bright,1)*var(--tpr-face-bright,1))) sepia(var(--tpr-sepia,0)) hue-rotate(var(--tpr-hue,0deg)) contrast(var(--tpr-contrast,1)) drop-shadow(0 0 3px var(--tpr-rim,transparent))}',
     '.tpr[data-care="bonded"] .tpr-img{--tpr-sat:1.12;--tpr-bright:1.035}.tpr[data-care="active"] .tpr-img{--tpr-sat:1.18;--tpr-contrast:1.035}.tpr[data-care="tidy"] .tpr-img{--tpr-sat:1.04;--tpr-bright:1.07}.tpr[data-care="botanical"] .tpr-img{--tpr-sat:1.12;--tpr-hue:5deg}.tpr[data-care="gourmet"] .tpr-img{--tpr-sat:1.1;--tpr-sepia:.08}.tpr[data-quality="radiant"] .tpr-img{--tpr-quality-bright:1.07;--tpr-quality-sat:1.1}.tpr[data-quality="rough"] .tpr-img{--tpr-quality-sat:.78;--tpr-contrast:.97}',
     '.tpr-shadow{position:absolute;left:18%;right:18%;bottom:-3%;height:9%;border-radius:50%;background:rgba(0,0,0,.18);transform-origin:50% 50%}',
     '.tpr-space .tpr-shadow{opacity:.35;bottom:-12%;filter:blur(2px)}',
