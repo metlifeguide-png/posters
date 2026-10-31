@@ -1502,15 +1502,15 @@ function petArtSize(v){const k=(typeof PET_SCALE!=='undefined'&&PET_SCALE[v.done
 function petHas25(v){try{if(!v||petVisualLegacyRequired(v))return false;const h=TtukPetCare.resolve(v.done?{...v,stage:'완전체'}:v,PET_ART_REGISTRY_V3,{});return !!(h&&h.art);}catch(e){return false;}}
 function petEyesOf(src){const E=typeof PET_ART_EYES!=='undefined'?PET_ART_EYES:null;if(!E||typeof src!=='string')return null;const f=src.split('?')[0].split('/').pop(),d=E[f];return d&&d.e&&d.e.length?d:null;}
 // 10/31 2.5D 바닥 똥: 펫 발치 양옆 · 3개↑ 파리·냄새 · 치우면(dirtCls=pfade) 사라짐
-function petPoop25(o){const n=Math.min(Number(o.poop)||0,6);if(!n)return '';const X=[-14,104,-4,94,6,84],B=[0,2,8,6,-2,10];let h='';
+function petPoop25(o){const n=Math.min(Number(o.poop)||0,6);if(!n)return '';const X=[-62,148,-88,172,-38,124],B=[0,2,8,6,-2,10];/*11/01 펫 몸에 붙어 보여서 바닥 양옆으로 떨어뜨림*/let h='';
  for(let i=0;i<n;i++)h+='<span class="pet-poop25 '+(o.dirtCls||'')+'" style="left:'+X[i]+'%;bottom:'+B[i]+'px;font-size:'+(18+(i%3)*2)+'px">💩</span>';
- if(n>=3)h+='<span class="pet-poop25 pfly" style="left:-6%;bottom:46px"><svg width="16" height="16" viewBox="-8 -10 16 16">'+petFly(-6.5,6.5,13,'')+'</svg></span><span class="pet-poop25 pfly" style="left:96%;bottom:40px;animation-delay:-1.2s"><svg width="16" height="16" viewBox="-8 -10 16 16">'+petFly(-6.5,6.5,13,'')+'</svg></span><span class="pet-stink" style="left:-4%">〰</span><span class="pet-stink" style="left:98%;animation-delay:-.9s">〰</span>';
+ if(n>=3)h+='<span class="pet-poop25 pfly" style="left:-64%;bottom:40px"><svg width="16" height="16" viewBox="-8 -10 16 16">'+petFly(-6.5,6.5,13,'')+'</svg></span><span class="pet-poop25 pfly" style="left:152%;bottom:36px;animation-delay:-1.2s"><svg width="16" height="16" viewBox="-8 -10 16 16">'+petFly(-6.5,6.5,13,'')+'</svg></span><span class="pet-stink" style="left:-60%">〰</span><span class="pet-stink" style="left:150%;animation-delay:-.9s">〰</span>';
  return h;}
 // 10/31 도감·명예의 전당 등 완성 모습(final)만 있는 곳 · 종 고르기(그 종의 어른 그림)
 function petPortrait(fin,o){o=o||{};return fin&&Number.isInteger(fin.body)?petVisualArt({sp:fin.body,done:1,final:fin,stage:'완성',light:1,happy:80,mix:fin.mix},{...o,artSize:o.size||96},'',fin):petSVG(fin,o);}
 function petSpArt(sp,f,o){o=o||{};return petVisualArt({sp:sp,stage:'어른',light:1,happy:80},{...o,artSize:o.size||64},'',f);}
 // 10/31 미니게임 펫도 2.5D 그림 (그림 없으면 petVisualArt 가 2D 로 되돌림)
-function petMini(v,f,o){o=o||{};return v?petVisualArt(v,{...o,artSize:o.size||130},'',f):petSVG(f,o);}
+function petMini(v,f,o){o=o||{};return v?petVisualArt(v,{...o,artSize:o.size||130,mini:1},'',f):petSVG(f,o);}
 function petWorldScene(bg,night,id){petExperienceStyle();return TtukPetWorld.render(bg,{night,reduced:petMotionReduced(),id:'room-'+(id||'preview')});}
 // 11/01 종 고유 동작이 있는 종(슬라임·펭귄·무당벌레)은 배경 일상 몸짓(통통·흔들)을 겹치지 않음 — 이름표·소품은 그대로
 function petWorldBehaviour(v,bg,action){const b=TtukPetWorld.behaviour(bg,v,{action:!!action,reduced:petMotionReduced()});return b.kind==='daily'&&([1,7,21].includes(v&&v.sp)&&petHas25(v)||(typeof petDotHas==='function'&&petDotHas(v)))?{...b,className:'pw-b pw-b-still'}:b;}
@@ -1525,7 +1525,7 @@ function petBackgroundPreview(v,key){
 }
 
 /* pet_dot.js — 뚝섬펫 도트 그림(프레임 넘김) + 공놀이 PK (11/01)
- * 시트: templates/blog/pet-assets/dot/sp<종>_a.png · _b.png (tools/pet_dot_cut.py 결과, 4칸 x 4줄, 칸 200px)
+ * 시트: templates/blog/pet-assets/dot/sp<종>_a.png · _b.png (tools/pet_dot_cut.py 결과, 4칸 x 4줄, 칸 300px)
  *   _a: 0 평소 · 1 걷기(오른쪽) · 2 먹기 · 3 잠      _b: 0 공차기 · 1 노래 · 2 기뻐하기 · 3 목욕
  * 시트가 있는 종만 도트로 그리고(PET_DOT), 나머지는 기존 2.5D/2D 그대로. 보기 설정 '그림'이면 도트 안 씀(localStorage petDot=0).
  * 단계(아기~노인)는 어른 시트 하나를 petArtSize 크기로 줄여 씀.
@@ -1534,7 +1534,7 @@ const PET_DOT={1:1};
 const PET_DOT_ROW={idle:['a',0,3.2],walk:['a',1,.9],eat:['a',2,1.4],sleep:['a',3,3.6],kick:['b',0,.8],sing:['b',1,1.2],joy:['b',2,1],bath:['b',3,1.6]};
 function petDotOn(){try{return localStorage.getItem('petDot')!=='0';}catch(e){return true;}}
 function petDotToggle(){try{localStorage.setItem('petDot',petDotOn()?'0':'1');}catch(e){}if(typeof rr==='function')rr();}
-function petDotHas(v){return !!(v&&PET_DOT[v.sp]&&v.stage!=='알'&&!v.mix&&petDotOn());}
+function petDotHas(v){return !!(v&&PET_DOT[v.sp]&&v.stage!=='알'&&petDotOn());}
 function petDotSrc(sp,sh){const p='/blog/pet-assets/dot/sp'+sp+'_'+sh+'.png';return (typeof API==='string'&&API?API.replace(/\/$/,''):'')+p;}
 let _petDotCss=0;
 function petDotStyle(){if(_petDotCss||typeof document==='undefined')return;_petDotCss=1;const s=document.createElement('style');s.textContent=
@@ -1562,6 +1562,8 @@ function petDotArt(v,o){if(!petDotHas(v))return null;o=o||{};
  if(/^(meal|snack|special|veg|med)$/.test(fx)||(!fx&&o.cls==='petchew')||(!fx&&v.eat&&v.eat.left>0&&!v.asleep))act='eat';
  else if(fx==='bath')act='bath';else if(fx==='sing')act='sing';else if(fx==='walk'||o.cls==='petwalk')act='walk';
  else if(fx&&fx!=='full')act='joy';else if(/^petj/.test(o.cls||''))act='joy';else if(sleep)act='sleep';
+ // 미니게임(petMini): 먹는 중·잠 상태는 무시하고 게임 동작만 (숨바꼭질 중에 밥 먹는 그림이 나오던 것)
+ if(o.mini)act=o.cls==='petchew'?'eat':(o.cls==='petwalk'||/^w[a-z]/.test(o.cls||''))?'walk':/^petj/.test(o.cls||'')?'joy':'idle';
  if(o.dotAct)act=o.dotAct;
  const size=Math.round((o.artSize||petArtSize(v))*1.3),still=(o.anim===false||petMotionReduced())?' pdot-still':'';
  const cls=(v.sick&&act==='idle'?'pdot-sick':'')+(act==='sleep'?' pdot-dim':'')+still;
