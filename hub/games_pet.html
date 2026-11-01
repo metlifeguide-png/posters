@@ -1516,7 +1516,9 @@ function petWorldScene(bg,night,id){petExperienceStyle();/*petdot 11/01 도트 �
 function petWorldBehaviour(v,bg,action){const b=TtukPetWorld.behaviour(bg,v,{action:!!action,reduced:petMotionReduced()});return b.kind==='daily'&&([1,7,21].includes(v&&v.sp)&&petHas25(v)||(typeof petDotHas==='function'&&petDotHas(v)))?{...b,className:'pw-b pw-b-still'}:b;}
 function petWorldExtra(v,bg,action){
  const b=petWorldBehaviour(v,bg,action),care=petCareVisual(v);if(action||v.stage==='알'||v.runaway)return '';
- const da=typeof petDotActOf==='function'?petDotActOf(v,bg||''):null;if(da)return '<span class="pet-world-caption">'+TtukPetRender.esc(da[0]+(care.variant!=='neutral'?' · '+care.label:''))+'</span>';
+ const da=typeof petDotActOf==='function'?petDotActOf(v,bg||''):null;
+ if(da&&typeof PET_ROOM!=='undefined'&&PET_ROOM.spots(bg||'').length&&!(v.eat&&v.eat.left>0))return PET_ROOM.stage(v,bg||'',care.variant!=='neutral'?care.label:'');   // 11/01 펫이 맵을 돌아다니며 장소마다 활동
+ if(da)return '<span class="pet-world-caption">'+TtukPetRender.esc(da[0]+(care.variant!=='neutral'?' · '+care.label:''))+'</span>';
  if(typeof petDotHas==='function'&&petDotHas(v)&&b.kind==='daily')return care.variant!=='neutral'?'<span class="pet-world-caption">'+TtukPetRender.esc(care.label)+'</span>':'';
  const prop=b.prop?'<span class="pet-behaviour-prop">'+TtukPetWorld.propSvg(b.prop)+'</span>':'';
  return prop+'<span class="pet-world-caption">'+TtukPetRender.esc(b.label+(care.variant!=='neutral'?' · '+care.label:''))+'</span>';
@@ -1533,7 +1535,7 @@ function petBackgroundPreview(v,key){
  * 단계(아기~노인)는 어른 시트 하나를 petArtSize 크기로 줄여 씀.
  */
 const PET_DOT={0:1,1:1,2:1,3:1,4:1,5:1,6:1,7:1,8:1,9:1,10:1,11:1,12:1,13:1,14:1,15:1,16:1,17:1,18:1,19:1,20:1,21:1,22:1,23:1,24:1,25:1,26:1,27:1,28:1,29:1,30:1,31:1,32:1,33:1,34:1,35:1,36:1};
-const PET_DOT_K=1;   // 11/01 도트 펫 크기 = petArtSize × 이 값 (1.3 은 어른이 방을 너무 가려서 줄임)
+const PET_DOT_K=1,PET_DOT_ROOM_K=.72;   // 방 장면에선 배경 대비 작게(배경에 녹아들게)   // 11/01 도트 펫 크기 = petArtSize × 이 값 (1.3 은 어른이 방을 너무 가려서 줄임)
 const PET_DOT_ROW={idle:['a',0,3.2],walk:['a',1,.9],eat:['a',2,1.4],sleep:['a',3,3.6],kick:['b',0,.8],sing:['b',1,1.2],joy:['b',2,1],bath:['b',3,1.6]};
 function petDotOn(){return true;}   // 11/01 37종 끝 → 전환 버튼 없앰, 늘 도트(시트 없는 종만 기존 그림)
 function petDotToggle(){try{localStorage.setItem('petDot',petDotOn()?'0':'1');}catch(e){}if(typeof rr==='function')rr();}
@@ -1557,7 +1559,7 @@ const PET_DOT_BED={0:['b1',0,'u',4],1:['b1',1,'u',4],2:['b1',2,'u',4],3:['b1',3,
 function petDotNest(v){const m=v&&PET_DOT_BED[v.sp];if(!m||!petDotOn())return '';const u=(typeof API==='string'&&API?API.replace(/\/$/,''):'')+'/blog/pet-assets/dot/bed/'+m[0]+'.webp';
  const w=Math.round(petArtSize(v)*PET_DOT_K*1.2),top=m[2]==='t',pos=top?'bottom:'+Math.round(22+petArtSize(v)*PET_DOT_K*.86)+'px;z-index:2':'bottom:4px;z-index:0';
  return '<span class="pdot-bed" style="position:absolute;left:50%;width:'+w+'px;height:'+w+'px;margin-left:'+(-w/2)+'px;'+pos+';pointer-events:none;background:url('+u+') no-repeat;background-size:400% '+(m[3]*100)+'%;background-position:'+(m[1]%4*100/3).toFixed(2)+'% '+(m[3]>1?(Math.floor(m[1]/4)*100/(m[3]-1)).toFixed(2):0)+'%;animation:pnestin .8s ease-out both"></span>';}
-const PET_DOT_FORM={'bouncejelly':1,'candyjelly':1,'chubbypeng':1,'emperor':1,'explorepeng':1,'gentpeng':1,'icejelly':1,'moonjelly':1,'surfpeng':1};   // 전용 도트 시트가 있는 진화갈래 키 (tools/pet_dot_forms.py 가 채움)
+const PET_DOT_FORM={'bouncejelly':1,'candyjelly':1,'chubbypeng':1,'emperor':1,'explorepeng':1,'galeslime':1,'gentpeng':1,'grassslime':1,'icejelly':1,'idolpeng':1,'kingpudding':1,'kingslime':1,'melodyjelly':1,'metalslime':1,'moonjelly':1,'poisonslime':1,'shadowslime':1,'surfpeng':1};   // 전용 도트 시트가 있는 진화갈래 키 (tools/pet_dot_forms.py 가 채움)
 // 11/01 진화갈래 키(자라는 중 formKey · 다 큰 펫 final.form) → 전용 시트가 있으면 'fm_<키>', 없으면 종 번호
 function petDotFormKey(v){return v&&(v.formKey||(v.final&&v.final.form))||'';}
 function petDotFormOn(v){const k=petDotFormKey(v);return k&&PET_DOT_FORM[k]&&(v.done||/^(어른|노인|완전체)$/.test(v.stage||''))?k:'';}   // 전용 모습은 어른부터
@@ -1586,7 +1588,7 @@ function petDotStyle(){if(_petDotCss||typeof document==='undefined')return;_petD
  '@keyframes phike{0%{transform:translate(calc(var(--rx)*-1),0) scaleX(1)}49.9%{transform:translate(var(--rx),calc(var(--s)*-.22)) scaleX(1)}50%{transform:translate(var(--rx),calc(var(--s)*-.22)) scaleX(-1)}99.9%{transform:translate(calc(var(--rx)*-1),0) scaleX(-1)}100%{transform:translate(calc(var(--rx)*-1),0) scaleX(1)}}'+
  '.pa-ride .pdot{z-index:1;transform:translateY(-34%) scale(.72)}.pa-swim .pa-in{animation:pbob 1.6s ease-in-out infinite}.pa-ride .pa-in{animation:pride 1.3s ease-in-out infinite}.pa-float .pa-in{animation:pfloat 3s ease-in-out infinite}.pa-hop .pa-in{animation:phop 1.4s ease-out infinite}.pa-cheer .pa-in{animation:phop .9s ease-out infinite}'+
  '@keyframes pbob{50%{transform:translateY(4px)}}@keyframes pride{0%,100%{transform:translateY(0)}50%{transform:translateY(calc(var(--s)*-.12))}}@keyframes pfloat{50%{transform:translateY(calc(var(--s)*-.16))}}@keyframes phop{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(calc(var(--s)*-.18))}}'+
- '.pa-water{position:absolute;left:-14%;right:-14%;bottom:-4%;height:40%;z-index:2;border-radius:45% 45% 8px 8px/14px 14px 8px 8px;background:linear-gradient(#7fd0ffd9,#2f8ae0e6);box-shadow:inset 0 3px 0 #ffffffb0;pointer-events:none;animation:pwave 1.6s ease-in-out infinite}@keyframes pwave{50%{transform:translateY(2px) scaleX(1.03)}}'+
+ '.pdot-shadow{position:absolute;left:50%;bottom:2px;height:10px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(#0006,#0000 70%);pointer-events:none;z-index:0}.pa-ripple{position:absolute;left:8%;right:8%;height:12px;border:2px solid #ffffffd0;border-radius:50%;border-top-color:transparent;pointer-events:none;animation:pripple 1.6s ease-in-out infinite}@keyframes pripple{50%{transform:scaleX(1.12);opacity:.6}}.pa-water{position:absolute;left:-14%;right:-14%;bottom:-4%;height:40%;z-index:2;border-radius:45% 45% 8px 8px/14px 14px 8px 8px;background:linear-gradient(#7fd0ffd9,#2f8ae0e6);box-shadow:inset 0 3px 0 #ffffffb0;pointer-events:none;animation:pwave 1.6s ease-in-out infinite}@keyframes pwave{50%{transform:translateY(2px) scaleX(1.03)}}'+
  '.pa-roll{animation:proll 2.4s ease-in-out infinite}@keyframes proll{0%,100%{transform:translateX(0) rotate(0)}50%{transform:translateX(calc(var(--s)*.35)) rotate(320deg)}}'+
  '.pa-wave{transform-origin:50% 100%;animation:pwavestick .7s ease-in-out infinite alternate}@keyframes pwavestick{from{transform:rotate(-24deg)}to{transform:rotate(24deg)}}'+
  '.pa-note{animation:pnote 2.2s ease-out infinite}@keyframes pnote{0%{opacity:0;transform:translateY(0)}30%{opacity:1}100%{opacity:0;transform:translateY(calc(var(--s)*-.35))}}'+
@@ -1608,41 +1610,54 @@ function petDotHTML(sp,act,size,cls,tint,t){petDotStyle();const R=PET_DOT_ROW[ac
 /* ── 11/01 배경마다 펫이 하는 일 (바다 수영·운동장 달리기·산 등산·놀이동산 회전목마·백화점 쇼핑·공연장 관람 …) ──
  * [이름표, 시트 줄, 움직임(pa-*), 소품들[이모지, 위치 style, 추가 class], 줄 빠르기(초)]  · 1분마다 다음 활동 (TtukPetWorld 와 같은 60초) */
 const PA_L='left:-38%;bottom:4%;font-size:calc(var(--s)*.34)',PA_R='right:-38%;bottom:4%;font-size:calc(var(--s)*.34)',PA_HEAD='left:50%;top:-22%;margin-left:calc(var(--s)*-.13);font-size:calc(var(--s)*.26)',PA_HAND='right:-6%;bottom:22%;font-size:calc(var(--s)*.3)',PA_FRONT='left:50%;bottom:-2%;margin-left:calc(var(--s)*-.15);font-size:calc(var(--s)*.3);z-index:3';
+// 11/01 고침: 바닥에 덩그러니 놓이는 소품·펫에게만 붙는 물 효과는 뺌 → 소품은 손에 든 것·머리 위 음표 정도만, 수영은 배경 그림 속 물로 들어감
+const PA_MOUTH='right:-4%;bottom:34%;font-size:calc(var(--s)*.2)';
 const PET_DOT_ACTS={
- '':[['방 안 산책','roam','roam',[]],['흥얼흥얼 노래','sing','',[['🎵',PA_HEAD,'pa-note']]],['책 읽기','idle','',[['📖',PA_FRONT,'']]]],
- sea:[['바다 수영','walk','swim',[['💦',PA_R,'pa-note']],1.1],['모래성 쌓기','eat','',[['🪣',PA_R,'']]],['파도 구경','joy','hop',[['🌊',PA_L,'']]]],
- pool:[['튜브 타고 둥둥','idle','swim',[['🛟','left:50%;bottom:6%;margin-left:calc(var(--s)*-.22);font-size:calc(var(--s)*.44);z-index:3','']]],['자유형 수영','walk','swim',[['💦',PA_R,'pa-note']],.8],['물장구','joy','hop',[['💦',PA_L,'pa-note'],['💦',PA_R,'pa-note']]]],
- track:[['달리기','walk','run',[['💨',PA_L,'pa-note']],.42],['허들 넘기','joy','hop',[]],['스트레칭','idle','',[['💪',PA_HAND,'']]]],
- soccer:[['드리블','kick','',[['⚽','left:70%;bottom:0;font-size:calc(var(--s)*.24)','pa-roll']]],['골 세리머니','joy','cheer',[['⚽',PA_L,'']]],['응원하기','sing','cheer',[['📣',PA_HAND,'']]]],
- mountain:[['등산','walk','hike',[['🎒',PA_L,'']],1.1],['정상에서 야호','joy','hop',[['🚩',PA_R,'']]],['바람 쐬기','idle','',[['🍃',PA_HEAD,'pa-note']]]],
- resort:[['바다 수영','walk','swim',[],1.1],['열대 음료','eat','',[['🍹',PA_R,'']]],['야자수 그늘','idle','',[['🌴',PA_L,'']]]],
- hotel:[['가방 끌고 체크인','roam','roam',[['🧳',PA_R,'']]],['룸서비스','eat','',[['🍰',PA_R,'']]],['벨 눌러보기','joy','hop',[['🛎',PA_R,'']]]],
+ '':[['방 안 산책','roam','roam',[]],['흥얼흥얼 노래','sing','',[['🎵',PA_HEAD,'pa-note']]],['신나서 폴짝','joy','hop',[]]],
+ sea:[['바다 수영','walk','swim',[],1.1],['해변 산책','roam','roam',[]],['파도 구경','joy','hop',[]]],
+ pool:[['튜브 끼고 둥둥','idle','swim',[],0,[['ring','f',.9,0,0]]],['수영장 수영','walk','swim',[],.9],['풀사이드 산책','roam','roam',[]],['물 보고 신나서 폴짝','joy','hop',[]]],
+ track:[['달리기','walk','run',[],.42],['제자리 점프','joy','hop',[]],['트랙 걷기','roam','roam',[]]],
+ soccer:[['드리블','kick','',[['⚽','left:70%;bottom:0;font-size:calc(var(--s)*.22)','pa-roll']]],['골 세리머니','joy','cheer',[]],['응원하기','sing','cheer',[]]],
+ mountain:[['등산','walk','hike',[],1.1],['바위 꼭대기에서 야호','joy','hop',[['🚩',PA_HAND,'']],0,[['rock','b',1.25,0,0]],{lift:.48}],['바람 쐬기','idle','',[]]],
+ resort:[['바다 수영','walk','swim',[],1.1],['선베드에서 낮잠','sleep','',[],0,[['lounger','b',1.5,0,0]],{lift:.2}],['해변 산책','roam','roam',[]]],
+ hotel:[['애프터눈 티타임','eat','',[],1.6,[['teatable','f',.8,.42,0]],{lift:.08}],['로비 구경','roam','roam',[]],['카펫 위에서 폴짝','joy','hop',[]]],
  arctic:[['썰매 타기','idle','slide',[['🛷','left:50%;bottom:-6%;margin-left:calc(var(--s)*-.2);font-size:calc(var(--s)*.4);z-index:-1','']],3],['눈송이 받기','joy','hop',[['❄️',PA_HEAD,'pa-note']]],['눈 위 산책','roam','roam',[]]],
- forest:[['사과 먹기','eat','',[['🍎',PA_R,'']]],['숲 탐험','roam','roam',[['🦋',PA_HEAD,'pa-note']]],['나비 쫓기','joy','hop',[['🦋',PA_L,'pa-note']]]],
- starry:[['별 구경','joy','float',[['✨',PA_HEAD,'pa-note'],['⭐',PA_L,'pa-note']]],['별 노래','sing','',[['🎵',PA_HEAD,'pa-note']]],['밤 산책','roam','roam',[]]],
- casino:[['잭팟!','joy','cheer',[['🪙',PA_HEAD,'pa-note'],['🎰',PA_R,'']]],['칩 쌓기','eat','',[['🪙',PA_R,'']]],['카드 구경','roam','roam',[['🃏',PA_L,'']]]],
- volcano:[['따뜻한 바위 산책','roam','roam',[['♨️',PA_L,'pa-note']]],['증기 피하기','joy','hop',[['💨',PA_R,'pa-note']]],['고구마 굽기','eat','',[['🍠',PA_R,'']]]],
- flowers:[['꽃향기 맡기','joy','',[['🌸',PA_R,''],['🦋',PA_HEAD,'pa-note']]],['꽃밭 산책','roam','roam',[['🌼',PA_L,'']]],['꽃꿀 먹기','eat','',[['🌷',PA_R,'']]]],
- bakery:[['빵 먹기','eat','',[['🥐',PA_R,'']]],['빵 고르기','roam','roam',[['🥖',PA_L,'']]],['갓 구운 냄새','joy','hop',[['♨️',PA_HEAD,'pa-note']]]],
- candy:[['사탕 먹기','eat','',[['🍭',PA_R,'']]],['젤리 위 통통','joy','hop',[['🍬',PA_L,'pa-note']]],['과자 나라 산책','roam','roam',[['🍫',PA_L,'']]]],
- rainy:[['빗소리 듣기','idle','',[['☂️',PA_HEAD,'']]],['따뜻한 코코아','eat','',[['☕',PA_R,'']]],['창가 흥얼흥얼','sing','',[['🎵',PA_HEAD,'pa-note']]]],
- library:[['책 읽기','idle','',[['📖',PA_FRONT,'']]],['책장 구경','roam','roam',[['📚',PA_L,'']]],['조용히 공부','eat','',[['✏️',PA_R,'']]]],
- themepark:[['회전목마','joy','ride',[['🎠','left:50%;bottom:-4%;margin-left:calc(var(--s)*-.45);font-size:calc(var(--s)*.9);z-index:0','']],1],['풍선 들고 구경','roam','roam',[['🎈',PA_HEAD,'pa-note']]],['솜사탕 먹기','eat','',[['🍭',PA_R,'']]]],
- mall:[['쇼핑하기','roam','roam',[['🛍',PA_HAND,'']]],['득템!','joy','cheer',[['🛍',PA_L,''],['✨',PA_HEAD,'pa-note']]],['옷 구경','idle','',[['👗',PA_R,'']]]],
- concert:[['공연 관람','joy','cheer',[['🪄',PA_HAND,'pa-wave'],['🎵',PA_HEAD,'pa-note']],.7],['떼창','sing','',[['🎤',PA_HAND,''],['🎶',PA_HEAD,'pa-note']]],['응원봉 흔들기','idle','hop',[['🪄',PA_HAND,'pa-wave']]]],
- ev_newyear:[['불꽃놀이 구경','joy','hop',[['🎆',PA_HEAD,'pa-note']]],['새해 인사','sing','',[['🎉',PA_R,'']]]],
- ev_seollal:[['세배하기','eat','',[['🧧',PA_R,'']]],['윷놀이 깡충','joy','hop',[]]],
- ev_chuseok:[['보름달에 소원','joy','float',[['🌕',PA_HEAD,'']]],['송편 먹기','eat','',[['🍡',PA_R,'']]]],
- ev_halloween:[['사탕 받으러 가기','roam','roam',[['🎃',PA_HAND,'']]],['으스스 춤','joy','hop',[['👻',PA_L,'pa-note']]]],
- ev_xmas:[['선물 열기','joy','cheer',[['🎁',PA_R,'']]],['캐럴 부르기','sing','',[['🎶',PA_HEAD,'pa-note']]],['눈송이 받기','joy','hop',[['❄️',PA_HEAD,'pa-note']]]]};
+ forest:[['돗자리 소풍','eat','',[['🍎',PA_MOUTH,'']],0,[['picnic','b',1.6,0,-.02]],{lift:.06}],['숲 탐험','roam','roam',[]],['나비 쫓기','joy','hop',[['🦋',PA_HEAD,'pa-note']]]],
+ starry:[['망원경으로 별 관측','idle','',[['✨',PA_HEAD,'pa-note']],0,[['telescope','b',1.05,-.7,0]]],['별 노래','sing','',[['🎵',PA_HEAD,'pa-note']]],['밤 산책','roam','roam',[]]],
+ casino:[['슬롯머신 버튼 누르기','eat','',[['🪙',PA_HEAD,'pa-note']],1,[['stool','b',.62,0,0],['slot','b',1.35,.95,0]],{lift:.36}],['잭팟! 의자 위에서 폴짝','joy','hop',[],0,[['stool','b',.62,0,0],['slot','b',1.35,.95,0]],{lift:.36}],['카지노 구경','roam','roam',[]]],
+ volcano:[['화산 온천욕','idle','',[['♨️',PA_HEAD,'pa-note']],0,[['onsen','f',1.4,0,0]],{lift:.3}],['따뜻한 바위 산책','roam','roam',[]],['증기 피하기','joy','hop',[['💨',PA_HEAD,'pa-note']]]],
+ flowers:[['꽃덤불 뒤에서 까꿍','joy','hop',[['🦋',PA_HEAD,'pa-note']],0,[['bush','f',.85,.38,0]],{lift:.04}],['꽃밭 산책','roam','roam',[]],['꽃꿀 먹기','eat','',[['🌸',PA_MOUTH,'']]]],
+ bakery:[['진열대 앞에서 빵 고르기','eat','',[],1.4,[['counter','b',1.3,-.6,.05]],{lift:0}],['빵집 구경','roam','roam',[]],['빵 냄새에 폴짝','joy','hop',[['♨️',PA_HEAD,'pa-note']]]],
+ candy:[['사탕 먹기','eat','',[['🍭',PA_MOUTH,'']]],['젤리 위 통통','joy','hop',[]],['과자 나라 산책','roam','roam',[]]],
+ rainy:[['창가 쿠션에서 꾸벅꾸벅','sleep','',[],0,[['cushion','b',1.3,0,0]],{lift:.12}],['빗소리 들으며 흥얼','sing','',[['🎵',PA_HEAD,'pa-note']],0,[['cushion','b',1.3,0,0]],{lift:.12}],['방 안 산책','roam','roam',[]]],
+ library:[['책상에서 공부','idle','',[],0,[['desk','f',1.2,0,0]],{lift:.4}],['책장 구경','roam','roam',[]],['조용히 흥얼','sing','',[]]],
+ themepark:[['회전목마','joy','ride',[],1,[['horse','b',1.6,.08,0]],{lift:.5}],['풍선 들고 구경','roam','roam',[['🎈',PA_HAND,'']]],['솜사탕 먹기','eat','',[['🍭',PA_MOUTH,'']]]],
+ mall:[['카트 밀며 쇼핑','roam','roam',[],0,[['cart','b',.85,.62,0]]],['득템!','joy','cheer',[['🛍',PA_HAND,'']]],['옷 구경','idle','',[]]],
+ concert:[['객석에서 공연 관람','joy','cheer',[['🪄',PA_HAND,'pa-wave'],['🎵',PA_HEAD,'pa-note']],.7,[['seats','f',1.6,0,0]],{lift:.5}],['떼창','sing','',[['🎤',PA_HAND,'']]],['응원봉 흔들기','idle','hop',[['🪄',PA_HAND,'pa-wave']]]],
+ ev_newyear:[['불꽃놀이 구경','joy','hop',[['🎆',PA_HEAD,'pa-note']]],['새해 인사','sing','',[]]],
+ ev_seollal:[['윷놀이 깡충','joy','hop',[]],['마당 산책','roam','roam',[]]],
+ ev_chuseok:[['보름달에 소원','joy','float',[]],['송편 먹기','eat','',[['🍡',PA_MOUTH,'']]]],
+ ev_halloween:[['사탕 받으러 가기','roam','roam',[['🎃',PA_HAND,'']]],['으스스 춤','joy','hop',[]]],
+ ev_xmas:[['선물 열기','joy','cheer',[['🎁',PA_HAND,'']]],['캐럴 부르기','sing','',[['🎶',PA_HEAD,'pa-note']]],['눈송이 받기','joy','hop',[['❄️',PA_HEAD,'pa-note']]]]};
+// 배경 그림 속 물 높이(그림 위에서부터 비율) — 수영은 여기까지 들어가서 몸 아래가 물에 잠김
+const PET_DOT_SET={slot:['set1',0],stool:['set1',1],teatable:['set1',2],desk:['set1',3],counter:['set1',4],seats:['set1',5],cart:['set1',6],horse:['set1',7],onsen:['set1',8],cushion:['set1',9],picnic:['set1',10],bush:['set1',11],rock:['set1',12],telescope:['set1',13],lounger:['set1',14],ring:['set1',15]};   // 장면 소품 이름 → [시트, 칸] (tools/pet_dot_sets.py 가 채움)
+const PET_DOT_WATER={sea:.36,pool:.44,resort:.41};
 function petDotActOf(v,bg){if(!petDotHas(v)||v.asleep||v.runaway||v.sick||(v.eat&&v.eat.left>0)||v.light===0||v.light===false)return null;
- const L=PET_DOT_ACTS[bg||'']||PET_DOT_ACTS[''];return L[Math.floor(Date.now()/60000+(v.seed||0))%L.length];}
-function petDotActHTML(v,a,size,cls,tint){const row=a[1]==='roam'?'idle':a[1],mv=a[2]||'',rx=Math.round(size*(mv==='run'?.75:mv==='slide'?.7:.5));
+ const L0=PET_DOT_ACTS[bg||'']||PET_DOT_ACTS[''],L=L0.filter(a=>!a[5]||a[5].every(s=>PET_DOT_SET[s[0]]));return L.length?L[Math.floor(Date.now()/60000+(v.seed||0))%L.length]:null;}
+// 장면 소품 한 개: 펫 크기 기준 폭·위치 · 앞(f)이면 펫을 가리고 뒤(b)면 펫 뒤에
+function petDotSetSpan(s,size){const m=PET_DOT_SET[s[0]];if(!m)return '';const W=Math.round(s[2]*size),u=(typeof API==='string'&&API?API.replace(/\/$/,''):'')+'/blog/pet-assets/dot/set/'+m[0]+'.webp';
+ return '<span class="pa-set" style="position:absolute;left:calc(50% + '+Math.round((s[3]||0)*size)+'px);bottom:'+Math.round((s[4]||0)*size)+'px;width:'+W+'px;height:'+W+'px;margin-left:'+(-W/2)+'px;z-index:'+(s[1]==='f'?3:0)+';pointer-events:none;background:url('+u+') no-repeat;background-size:400% 400%;background-position:'+(m[1]%4*100/3).toFixed(2)+'% '+(Math.floor(m[1]/4)*100/3).toFixed(2)+'%"></span>';}
+function petDotActHTML(v,a,size,cls,tint,bg){const row=a[1]==='roam'?'idle':a[1],wf=PET_DOT_WATER[bg||''],mv=(a[2]==='swim'&&!wf)?'roam':(a[2]||''),rx=Math.round(size*(mv==='run'?.75:mv==='slide'?.7:mv==='swim'?1.1:.5));
  const props=(a[3]||[]).map(p=>'<span class="pa-prop '+(p[2]||'')+'" style="'+p[1]+'">'+p[0]+'</span>').join('');
- const d={swim:14,run:6,slide:7,ride:12,hike:12}[mv]||0,water=mv==='swim'?'<div class="pa-water"></div>':'';
- const body=mv==='roam'?'<div class="pdot-roam" style="--rx:'+rx+'px;width:'+size+'px;height:'+size+'px">'+petDotHTML(petDotId(v),'idle',size,cls+' pdot-ri',tint)+petDotHTML(petDotId(v),'walk',size,cls+' pdot-rw',tint)+props+'</div>'
+ const d={swim:18,run:6,slide:7,ride:12,hike:12}[mv]||0;
+ // 수영: 멀리 있는 물 높이까지 올라가서(작게) 몸 아래 40%를 잘라 물에 잠긴 것처럼 · 물결은 하얀 잔물결만
+ if(mv==='swim'){const sc=.55,lift='calc('+((1-wf)*63.3).toFixed(1)+'cqw - 22px - '+Math.round(size*.4*sc)+'px)';
+  return '<div class="pdot-act pa-swim" style="--s:'+size+'px;--rx:'+rx+'px;--d:'+d+'s;width:'+size+'px;height:'+size+'px"><div style="transform:translateY(calc('+lift+' * -1)) scale('+sc+');transform-origin:50% 100%"><div class="pa-in"><div style="clip-path:inset(0 0 40% 0)">'+petDotHTML(petDotId(v),row,size,cls,tint,a[4])+'</div>'+
+   '<div class="pa-ripple" style="bottom:calc(40% - 6px)"></div>'+(a[5]||[]).map(s=>petDotSetSpan([s[0],'f',s[2],0,0],size).replace('bottom:0px','bottom:calc(40% - '+Math.round(s[2]*size*.42)+'px)')).join('')+'</div></div></div>';}
+ const body=mv==='roam'?'<div class="pdot-roam" style="--rx:'+rx+'px;width:'+size+'px;height:'+size+'px">'+petDotHTML(petDotId(v),'idle',size,cls+' pdot-ri',tint)+petDotHTML(petDotId(v),'walk',size,cls+' pdot-rw',tint)+props+(a[5]||[]).map(s=>petDotSetSpan(s,size)).join('')+'</div>'
+  :a[5]?'<div style="position:relative;z-index:2;transform:translateY('+Math.round(-((a[6]&&a[6].lift)||0)*size)+'px)">'+petDotHTML(petDotId(v),row,size,cls,tint,a[4])+'</div>'+a[5].map(s=>petDotSetSpan(s,size)).join('')
   :petDotHTML(petDotId(v),row,size,cls,tint,a[4]);
- return '<div class="pdot-act pa-'+(mv||'stay')+'" style="--s:'+size+'px;--rx:'+rx+'px;--d:'+d+'s;width:'+size+'px;height:'+size+'px"><div class="pa-in">'+body+(mv==='roam'?'':props)+water+'</div></div>';}
+ return '<div class="pdot-act pa-'+(mv||'stay')+'" style="--s:'+size+'px;--rx:'+rx+'px;--d:'+d+'s;width:'+size+'px;height:'+size+'px"><div class="pa-in">'+body+(mv==='roam'?'':props)+'</div></div>';}
 // 11/01 미니게임에서 이미 그려진 도트 칸의 줄만 바꿈 (걷기↔먹기 등 · data-sp 에 종/갈래 id)
 function petDotSetRow(el,act){const R=PET_DOT_ROW[act]||PET_DOT_ROW.idle,s=parseFloat(el.style.getPropertyValue('--s'))||100;
  el.style.backgroundImage='url('+petDotSrc(el.dataset.sp,R[0])+')';el.style.backgroundPositionY=(-R[1]*s)+'px';el.style.setProperty('--t',R[2]+'s');el.className='pdot pdot-'+act;}
@@ -1663,13 +1678,17 @@ function petDotArt(v,o,bg){if(!petDotHas(v))return null;o=o||{};
  if(o.dotAct)act=o.dotAct;
  // 11/01 진화갈래 모습: 그 갈래 색을 살짝 덧칠 + 빛 + 소품 (크기는 최대 1.1배까지만 — 방을 가리지 않게)
  const FL=petDotFormOn(v)?null:(v.formLook||(v.final&&v.final.formLook)),tint=FL&&FL.tint||'';
- const size=Math.round((o.artSize||petArtSize(v))*PET_DOT_K*(FL?Math.min(1.1,FL.scale||1):1)),still=(o.anim===false||petMotionReduced())?' pdot-still':'';
+ const inRoom=bg!==undefined&&!o.mini&&!o.artSize;
+ const size=Math.round((o.artSize||petArtSize(v))*PET_DOT_K*(inRoom?PET_DOT_ROOM_K:1)*(FL?Math.min(1.1,FL.scale||1):1)),still=(o.anim===false||petMotionReduced())?' pdot-still':'';
  const cls=(v.sick&&act==='idle'?'pdot-sick':'')+(act==='sleep'?' pdot-dim':'')+still;
  // 11/01 방에서 가만히 있을 땐 가끔 좌우로 걸어다님(걷기 줄 = 실제 다리 움직임) · 멈추면 평소 줄
- const roam=act==='idle'&&!o.mini&&!o.dotAct&&!still&&size>=80,pa=roam&&bg!==undefined?petDotActOf(v,bg):null;
- let art=pa?petDotActHTML(v,pa,size,cls,tint):roam?'<div class="pdot-roam" style="--rx:'+Math.round(size*.55)+'px;width:'+size+'px;height:'+size+'px">'+petDotHTML(petDotId(v),'idle',size,cls+' pdot-ri',tint)+petDotHTML(petDotId(v),'walk',size,cls+' pdot-rw',tint)+'</div>':petDotHTML(petDotId(v),act,size,cls,tint);
+ const roam=act==='idle'&&!o.mini&&!o.dotAct&&!still&&(size>=80||inRoom),pa=roam&&bg!==undefined?petDotActOf(v,bg):null;
+ if(pa&&inRoom&&PET_ROOM.spots(bg).length)return '<div class="pet-visual pet-dot" data-art="dot" data-stage="1" style="width:'+size+'px;height:'+size+'px;position:relative">'+petPoop25(o)+'</div>';
+ let art=pa?petDotActHTML(v,pa,size,cls,tint,bg):roam?'<div class="pdot-roam" style="--rx:'+Math.round(size*.55)+'px;width:'+size+'px;height:'+size+'px">'+petDotHTML(petDotId(v),'idle',size,cls+' pdot-ri',tint)+petDotHTML(petDotId(v),'walk',size,cls+' pdot-rw',tint)+'</div>':petDotHTML(petDotId(v),act,size,cls,tint);
  if(FL&&(FL.glow||FL.prop))art='<div style="position:relative;--s:'+size+'px;'+(FL.glow?'filter:drop-shadow(0 0 5px '+FL.glow+')':'')+'">'+art+(FL.prop&&!o.mini?'<span class="pdot-fprop">'+FL.prop+'</span>':'')+'</div>';
- return '<div class="pet-visual pet-dot" data-art="dot" style="--pet-eat-t:'+petEatT(v)+'s">'+art+petPoop25(o)+'</div>';}
+ // 발밑 그림자: 제자리 활동만(걷기·수영·의자 위는 펫이 움직이거나 떠 있어서 뺌)
+ const shadow=inRoom&&(pa?['','hop','cheer'].includes(pa[2]||'')&&!(pa[6]&&pa[6].lift>.25):!roam)?'<span class="pdot-shadow" style="width:'+Math.round(size*.62)+'px"></span>':'';
+ return '<div class="pet-visual pet-dot" data-art="dot" style="--pet-eat-t:'+petEatT(v)+'s;position:relative">'+shadow+art+petPoop25(o)+'</div>';}
 
 /* ── 공놀이 PK: 왼쪽·가운데·오른쪽 골라 슛 → 골키퍼가 한쪽으로 몸 날림 → 2골 넣으면 끝(놀이 보상은 기존 act('play')) ── */
 const PK_KEEPER='<svg viewBox="0 0 22 26" width="44" height="52" shape-rendering="crispEdges"><rect x="7" y="1" width="8" height="7" fill="#f2c9a0"/><rect x="7" y="1" width="8" height="2" fill="#5a3a22"/><rect x="8" y="4" width="2" height="2" fill="#222"/><rect x="12" y="4" width="2" height="2" fill="#222"/><rect x="6" y="8" width="10" height="9" fill="#ffcc33"/><rect x="6" y="8" width="10" height="2" fill="#e0a800"/><rect x="2" y="9" width="4" height="3" fill="#ffcc33"/><rect x="16" y="9" width="4" height="3" fill="#ffcc33"/><rect x="0" y="8" width="3" height="5" fill="#2e8b57"/><rect x="19" y="8" width="3" height="5" fill="#2e8b57"/><rect x="7" y="17" width="8" height="4" fill="#333"/><rect x="7" y="21" width="3" height="4" fill="#f2c9a0"/><rect x="12" y="21" width="3" height="4" fill="#f2c9a0"/><rect x="6" y="24" width="4" height="2" fill="#222"/><rect x="12" y="24" width="4" height="2" fill="#222"/></svg>';
@@ -1752,18 +1771,37 @@ const PET_RUN={
 /* 📸 펫 사진관: 지금 방 장면(도트 배경 + 펫 한 장면 + 이름·활동)을 그림 파일로 → 저장·공유 */
 const PET_PHOTO={
  img(u){return new Promise((ok,no)=>{const i=new Image();i.crossOrigin='anonymous';i.onload=()=>ok(i);i.onerror=no;i.src=u;});},
- btn(){return '<button class="btn" title="사진 찍기" style="position:absolute;left:8px;bottom:8px;z-index:6;padding:2px 8px;font-size:15px;background:#fffffff0" onclick="event.stopPropagation();PET_PHOTO.shot(CUR)">📸</button>';},
- async shot(g){const v=g.data&&g.data.pet;if(!v||!petDotHas(v)){toast('도트 펫만 찍을 수 있어요');return;}
-  try{const bg=petBgOf(v,g)||'',bk=PET_DOT_BG[bg]?bg:'default',base=(typeof API==='string'&&API?API.replace(/\/$/,''):'');
-   const a=petDotActOf(v,bg),row=v.asleep?'sleep':a?(a[2]==='roam'?'walk':a[1]):'idle',R=PET_DOT_ROW[row]||PET_DOT_ROW.idle;
-   const [bi,si]=await Promise.all([this.img(base+'/blog/pet-assets/dot/bg/'+bk+'.webp'),this.img(petDotSrc(petDotId(v),R[0]))]);
-   const c=document.createElement('canvas');c.width=960;c.height=700;const x=c.getContext('2d');
-   x.fillStyle='#fff';x.fillRect(0,0,960,700);x.drawImage(bi,0,0,960,608);if(v.asleep){x.fillStyle='#0b143399';x.fillRect(0,0,960,608);}
-   const cs=si.width/4,S=330;x.drawImage(si,cs,cs*R[1],cs,cs,480-S/2,608-S-18,S,S);
-   x.fillStyle='#222';x.font='900 34px sans-serif';x.fillText((v.name||'')+(a&&!v.asleep?' · '+a[0]:''),28,656);x.font='600 22px sans-serif';x.fillStyle='#888';
-   x.fillText('뚝섬펫 · '+new Date().toLocaleDateString('ko-KR'),28,688);
+ btn(){return '<button class="btn" title="사진 찍기" style="position:absolute;left:8px;bottom:8px;z-index:6;padding:2px 8px;font-size:15px;background:#fffffff0" onclick="event.stopPropagation();PET_PHOTO.shot(CUR,this)">📸</button>';},
+ // 11/01 지금 화면 그대로: 방 장면 안의 도트 그림(배경·펫 그 순간 칸·잠자리·소품 아이콘)을 화면에 보이는 위치·크기·방향 그대로 그림에 옮김
+ async shot(g,btn){const v=g.data&&g.data.pet,scene=btn&&btn.closest('.pet-live-scene');if(!v||!scene){toast('사진을 만들지 못했어요');return;}
+  try{const R=scene.getBoundingClientRect(),k=Math.max(2,Math.min(3,Math.round(window.devicePixelRatio||2))),W=Math.round(R.width),H=Math.round(R.height);
+   const c=document.createElement('canvas');c.width=W*k;c.height=(H+64)*k;const x=c.getContext('2d');x.scale(k,k);x.fillStyle='#fff';x.fillRect(0,0,W,H+64);
+   x.save();x.beginPath();x.rect(0,0,W,H);x.clip();
+   const url=el=>{const m=/url\(["']?([^"')]+)["']?\)/.exec(getComputedStyle(el).backgroundImage||'');return m?m[1]:'';};
+   const cache={},load=u=>cache[u]||(cache[u]=this.img(u));
+   const els=[...scene.querySelectorAll('*')].filter(el=>{if(el.closest('button,.pet-world-caption'))return false;const u=url(el);if(!u)return false;const cs=getComputedStyle(el);if(cs.visibility==='hidden'||+cs.opacity===0)return false;let p=el;while(p&&p!==scene){if(+getComputedStyle(p).opacity===0)return false;p=p.parentElement;}return true;});
+   for(const el of els){const im=await load(url(el)),cs=getComputedStyle(el),r=el.getBoundingClientRect();
+    if(el.classList.contains('pw-dot-bg')){   // 배경: cover · 아래 가운데
+     const s=Math.max(r.width/im.width,r.height/im.height),dw=im.width*s,dh=im.height*s;x.save();if(cs.filter&&cs.filter!=='none')x.filter=cs.filter;x.drawImage(im,r.left-R.left+(r.width-dw)/2,r.top-R.top+(r.height-dh),dw,dh);x.restore();continue;}
+    // 시트 한 칸: background-size·position(지금 움직이는 값) → 원본에서 잘라 올 범위
+    const sz=cs.backgroundSize.split(' '),ew=el.offsetWidth,eh=el.offsetHeight;
+    const bw=/%/.test(sz[0])?ew*parseFloat(sz[0])/100:parseFloat(sz[0])||ew,bh=sz[1]&&sz[1]!=='auto'?(/%/.test(sz[1])?eh*parseFloat(sz[1])/100:parseFloat(sz[1])):bw*im.height/im.width;
+    const pos=(v0,e0,b0)=>/%/.test(v0)?(e0-b0)*parseFloat(v0)/100:parseFloat(v0)||0,px=pos(cs.backgroundPositionX,ew,bw),py=pos(cs.backgroundPositionY,eh,bh);
+    const fx=im.width/bw,fy=im.height/bh;
+    // 뒤집힘(scaleX(-1))은 조상들 transform 을 곱해서 판단
+    let flip=1,p=el;while(p&&p!==scene){const m=getComputedStyle(p).transform;if(m&&m.startsWith('matrix(')){const a=parseFloat(m.slice(7));if(a<0)flip*=-1;}p=p.parentElement;}
+    // 잘린 칸(수영할 때 물에 잠긴 아래쪽)은 조상의 clip-path inset 아래쪽만큼 잘라서 그림
+    x.save();let pc=el;while(pc&&pc!==scene){const cp=getComputedStyle(pc).clipPath||'';const m=/^inset\(([^)]*)\)/.exec(cp);if(m){const q=m[1].trim().split(/\s+/),b=q.length>=3?q[2]:q[0],pr=pc.getBoundingClientRect(),bb=/%/.test(b)?pr.height*parseFloat(b)/100:parseFloat(b)||0;x.beginPath();x.rect(pr.left-R.left,pr.top-R.top,pr.width,pr.height-bb);x.clip();}pc=pc.parentElement;}
+    if(cs.filter&&cs.filter!=='none')x.filter=cs.filter;
+    const dx=r.left-R.left,dy=r.top-R.top;
+    if(flip<0){x.translate(dx+r.width,dy);x.scale(-1,1);x.drawImage(im,-px*fx,-py*fy,ew*fx,eh*fy,0,0,r.width,r.height);}
+    else x.drawImage(im,-px*fx,-py*fy,ew*fx,eh*fy,dx,dy,r.width,r.height);
+    x.restore();}
+   x.restore();
+   const a=petDotActOf(v,petBgOf(v,g)||'');x.fillStyle='#222';x.font='900 18px sans-serif';x.fillText((v.name||'')+(a&&!v.asleep?' · '+a[0]:''),12,H+28);
+   x.font='600 12px sans-serif';x.fillStyle='#888';x.fillText('뚝섬펫 · '+new Date().toLocaleString('ko-KR'),12,H+50);
    this.show(c.toDataURL('image/png'),(v.name||'pet')+'.png');}
-  catch(e){toast('사진을 만들지 못했어요');}},
+  catch(e){console.warn(e);toast('사진을 만들지 못했어요');}},
  show(url,fn){const d=document.createElement('div');d.style.cssText='position:fixed;inset:0;z-index:99999;background:#000c;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px';
   d.innerHTML='<img src="'+url+'" style="max-width:100%;max-height:70vh;border-radius:12px"><div style="display:flex;gap:8px"><a class="btn g" download="'+fn+'" href="'+url+'">💾 저장</a><button class="btn" id="pphShare">📤 공유</button><button class="btn" id="pphClose">닫기</button></div>';
   document.body.appendChild(d);d.querySelector('#pphClose').onclick=()=>d.remove();
@@ -1805,6 +1843,82 @@ const PET_GD={
    '<div style="position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px">'+G.slice(0,3).map(plot).join('')+'</div>'+
    (petDotHas(v)?'<div style="position:relative;z-index:1;display:flex;justify-content:center;margin-top:6px">'+petDotHTML(petDotId(v),'joy',size,'')+'</div>':'')+
    '<button class="btn" style="position:absolute;right:8px;top:8px;z-index:3;padding:3px 10px;font-size:12px" onclick="PET_GD.quit(CUR)">닫기</button></div>';}
+};
+
+/* ── 11/01 자유롭게 돌아다니는 방: 펫이 혼자 맵을 걸어다니며 배경 속 장소(소품)에 가서 그걸 함 ──
+ * 장소: {x 맵 가로 위치 0~1, row 시트 줄, label 이름표, dur 초, sets 장면 소품[[이름, 앞f/뒤b, 폭, 펫 기준 가로, 바닥]], lift 올라앉기, hop 폴짝, swim 물속, fx 머리 위 이모지, face -1 왼쪽 보기}
+ * 일정은 (펫, 배경, 2분 단위) 로 정해져서 화면을 다시 그려도 이어서 움직임 · 2분마다 가운데에서 시작·끝 */
+const PET_ROOM={
+ '':[{x:.22,row:'idle',label:'창밖 구경'},{x:.75,row:'sing',label:'흥얼흥얼 노래',fx:'🎵'},{x:.5,row:'joy',label:'신나서 폴짝',hop:1}],
+ sea:[{x:.5,row:'walk',label:'바다 수영',swim:1,dur:14},{x:.14,row:'idle',label:'파도 구경'},{x:.84,row:'sleep',label:'파라솔 아래 낮잠',dur:12}],
+ pool:[{x:.62,row:'idle',label:'튜브 끼고 둥둥',swim:1,ring:1,dur:14},{x:.38,row:'walk',label:'수영장 수영',swim:1,dur:12},{x:.18,row:'sleep',label:'선베드에서 쉬기',sets:[['lounger','b',1.5,0,0]],lift:.2}],
+ resort:[{x:.5,row:'walk',label:'바다 수영',swim:1,dur:14},{x:.2,row:'sleep',label:'선베드에서 낮잠',sets:[['lounger','b',1.5,0,0]],lift:.2,dur:12},{x:.8,row:'idle',label:'야자수 그늘 쉬기'}],
+ track:[{x:.5,row:'walk',label:'트랙 달리기',run:1,dur:9},{x:.25,row:'joy',label:'제자리 점프',hop:1},{x:.75,row:'idle',label:'숨 고르기'}],
+ soccer:[{x:.55,row:'kick',label:'공 차기',ball:1},{x:.25,row:'joy',label:'골 세리머니',hop:1},{x:.8,row:'sing',label:'응원하기',hop:1}],
+ mountain:[{x:.3,row:'joy',label:'바위 꼭대기에서 야호',sets:[['rock','b',1.25,0,0]],lift:.48,hop:1,fx:'🚩'},{x:.72,row:'idle',label:'바람 쐬기'}],
+ hotel:[{x:.24,row:'eat',label:'애프터눈 티타임',sets:[['teatable','f',.8,.42,0]],lift:.08},{x:.72,row:'joy',label:'카펫 위에서 폴짝',hop:1},{x:.5,row:'idle',label:'로비 구경'}],
+ arctic:[{x:.5,row:'idle',label:'썰매 타기',run:1,sled:1,dur:8},{x:.25,row:'joy',label:'눈송이 받기',hop:1,fx:'❄️'}],
+ forest:[{x:.3,row:'eat',label:'돗자리 소풍',sets:[['picnic','b',1.6,0,-.02]],lift:.06},{x:.72,row:'joy',label:'나비 쫓기',hop:1,fx:'🦋'}],
+ starry:[{x:.4,row:'idle',label:'망원경으로 별 관측',sets:[['telescope','b',1.05,-.7,0]],fx:'✨'},{x:.75,row:'sing',label:'별 노래',fx:'🎵'}],
+ casino:[{x:.68,row:'eat',label:'슬롯머신 돌리기',sets:[['stool','b',.62,0,0],['slot','b',1.35,.95,0]],lift:.36,fx:'🪙',dur:12},{x:.3,row:'joy',label:'잭팟 기대 중',hop:1}],
+ volcano:[{x:.5,row:'idle',label:'화산 온천욕',sets:[['onsen','f',1.4,0,0]],lift:.3,fx:'♨️',dur:14},{x:.18,row:'joy',label:'증기 피하기',hop:1}],
+ flowers:[{x:.7,row:'joy',label:'꽃덤불 뒤에서 까꿍',sets:[['bush','f',.85,.38,0]],lift:.04,hop:1},{x:.28,row:'eat',label:'꽃꿀 먹기',fx:'🌸'}],
+ bakery:[{x:.32,row:'eat',label:'진열대 앞에서 빵 고르기',sets:[['counter','b',1.3,-.6,.05]]},{x:.76,row:'joy',label:'빵 냄새에 폴짝',hop:1,fx:'♨️'}],
+ candy:[{x:.4,row:'eat',label:'사탕 먹기',fx:'🍭'},{x:.72,row:'joy',label:'젤리 위 통통',hop:1}],
+ rainy:[{x:.3,row:'sleep',label:'창가 쿠션에서 꾸벅꾸벅',sets:[['cushion','b',1.3,0,0]],lift:.12,dur:12},{x:.72,row:'sing',label:'빗소리 들으며 흥얼',fx:'🎵'}],
+ library:[{x:.35,row:'idle',label:'책상에서 공부',sets:[['desk','f',1.2,0,0]],lift:.4,dur:12},{x:.76,row:'sing',label:'조용히 흥얼'}],
+ themepark:[{x:.3,row:'joy',label:'회전목마',sets:[['horse','b',1.6,.08,0]],lift:.5,ride:1,dur:12},{x:.72,row:'idle',label:'풍선 들고 구경',fx:'🎈'}],
+ mall:[{x:.68,row:'eat',label:'카트에 쇼핑백 담기',sets:[['cart','b',.85,.62,0]]},{x:.3,row:'joy',label:'득템!',hop:1,fx:'🛍'}],
+ concert:[{x:.5,row:'joy',label:'객석에서 공연 관람',sets:[['seats','f',1.6,0,0]],lift:.5,hop:1,fx:'🪄',dur:14},{x:.2,row:'sing',label:'떼창',fx:'🎤'}],
+ ev_newyear:[{x:.5,row:'joy',label:'불꽃놀이 구경',hop:1,fx:'🎆'},{x:.25,row:'sing',label:'새해 인사'}],
+ ev_seollal:[{x:.4,row:'joy',label:'윷놀이 깡충',hop:1},{x:.75,row:'idle',label:'마당 구경'}],
+ ev_chuseok:[{x:.5,row:'joy',label:'보름달에 소원',fx:'🌕'},{x:.25,row:'eat',label:'송편 먹기',fx:'🍡'}],
+ ev_halloween:[{x:.6,row:'joy',label:'으스스 춤',hop:1,fx:'🎃'},{x:.25,row:'idle',label:'호박 구경'}],
+ ev_xmas:[{x:.4,row:'joy',label:'선물 열기',hop:1,fx:'🎁'},{x:.72,row:'sing',label:'캐럴 부르기',fx:'🎶'}],
+ BLOCK:120,SPEED:.09,_plans:{},_on:0,
+ spots(bg){const L=this[bg||'']||this[''];return L.filter(s=>!s.sets||s.sets.every(q=>PET_DOT_SET[q[0]]));},
+ rng(n){return ()=>{n|=0;n=n+0x6D2B79F5|0;let t=Math.imul(n^n>>>15,1|n);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};},
+ // 2분 단위 일정: 가운데(.5)에서 출발 → [걷기 → 하기] 반복 → 끝에 가운데로 돌아옴
+ plan(seed,bg,b){const key=seed+'|'+bg+'|'+b;if(this._plans[key])return this._plans[key];const S=this.spots(bg),r=this.rng(b*7919+(+seed||0)*104729+bg.length*31),t0=b*this.BLOCK,end=t0+this.BLOCK,seg=[];
+  let x=.5,t=t0,last=-1;const wk=(x0,x1)=>Math.max(.6,Math.abs(x1-x0)/this.SPEED);
+  while(S.length){let i=Math.floor(r()*S.length);if(S.length>1&&i===last)i=(i+1)%S.length;const s=S[i],w=wk(x,s.x),d=s.dur||(7+r()*5);
+   if(t+w+d+wk(s.x,.5)>end)break;seg.push({k:'walk',t0:t,t1:t+w,x0:x,x1:s.x});t+=w;seg.push({k:'do',t0:t,t1:t+d,s,i});t+=d;x=s.x;last=i;
+   if(r()<.35&&t+3+wk(x,.5)<end){seg.push({k:'rest',t0:t,t1:t+2.5,x});t+=2.5;}}
+  const wb=wk(x,.5);if(end-wb>t)seg.push({k:'rest',t0:t,t1:end-wb,x});seg.push({k:'walk',t0:end-wb,t1:end,x0:x,x1:.5});
+  const keys=Object.keys(this._plans);if(keys.length>40)delete this._plans[keys[0]];return this._plans[key]=seg;},
+ at(seed,bg,now){const b=Math.floor(now/this.BLOCK),P=this.plan(seed,bg,b);return P.find(g=>now>=g.t0&&now<g.t1)||P[P.length-1];},
+ // 방 장면에 깔리는 무대: 장소 소품(늘 그 자리) + 펫 + 이름표 · 움직임은 tick 이 매 프레임 맞춤
+ stage(v,bg,care){petDotStyle();const size=Math.round(petArtSize(v)*PET_DOT_K*PET_DOT_ROOM_K*((typeof PET_SCALE!=='undefined'&&PET_SCALE[v.stage])||1)),S=this.spots(bg),sp=petDotId(v);
+  const props=S.map(s=>(s.sets||[]).map(q=>petDotSetSpan(q,size).replace(/left:calc\(50% \+ (-?\d+)px\)/,(m,dx)=>'left:calc('+(s.x*100).toFixed(1)+'% + '+dx+'px)').replace(/bottom:(-?\d+)px/,(m,y)=>'bottom:'+(22+(+y))+'px')).join('')).join('')+
+   (S.some(s=>s.ball)?'<span class="pst-ball" style="position:absolute;bottom:24px;left:0;font-size:'+Math.round(size*.24)+'px;line-height:1;z-index:3">⚽</span>':'');
+  this.start();
+  return '<div class="pdot-stage" data-seed="'+(v.seed||0)+'" data-bg="'+(bg||'')+'" data-size="'+size+'" data-wf="'+(PET_DOT_WATER[bg||'']||'')+'" style="position:absolute;inset:0;z-index:1;pointer-events:none">'+props+
+   '<div class="pst-pet" style="position:absolute;bottom:22px;left:50%;width:'+size+'px;height:'+size+'px;margin-left:'+(-size/2)+'px;z-index:4"><span class="pdot-shadow" style="width:'+Math.round(size*.62)+'px"></span>'+
+   '<div class="pst-lift" style="width:100%;height:100%;transform-origin:50% 100%;transition:transform .35s ease-out"><div class="pst-hop" style="width:100%;height:100%"><div class="pst-clip" style="width:100%;height:100%">'+
+   petDotHTML(sp,'idle',size,'').replace('class="pdot','data-sp="'+sp+'" class="pdot')+'</div>'+(S.some(s=>s.ring)?petDotSetSpan(['ring','f',.9,0,0],size).replace('class="pa-set"','class="pst-ring pa-set"').replace('bottom:0px','display:none;bottom:calc(40% - '+Math.round(.9*size*.42)+'px)'):'')+(S.some(s=>s.sled)?'<span class="pst-sled" style="display:none;position:absolute;left:50%;bottom:-8%;transform:translateX(-50%);font-size:'+Math.round(size*.42)+'px;line-height:1;z-index:-1">🛷</span>':'')+
+   '<span class="pst-fx pa-note" style="position:absolute;left:50%;top:-24%;margin-left:-.5em;font-size:'+Math.round(size*.26)+'px;line-height:1"></span><div class="pa-ripple" style="display:none;bottom:calc(40% - 6px)"></div></div></div></div>'+
+   '<span class="pet-world-caption pst-cap" data-care="'+TtukPetRender.esc(care||'')+'"></span></div>';},
+ start(){if(this._on||typeof requestAnimationFrame==='undefined')return;this._on=1;const f=()=>{try{this.tick();}catch(e){}requestAnimationFrame(f);};requestAnimationFrame(f);},
+ tick(){const now=Date.now()/1000;document.querySelectorAll('.pdot-stage').forEach(st=>{
+  const bg=st.dataset.bg,size=+st.dataset.size,g=this.at(st.dataset.seed,bg,now),pet=st.querySelector('.pst-pet'),lift=st.querySelector('.pst-lift'),hop=st.querySelector('.pst-hop'),clip=st.querySelector('.pst-clip'),el=st.querySelector('.pdot'),cap=st.querySelector('.pst-cap'),fx=st.querySelector('.pst-fx'),rip=st.querySelector('.pa-ripple'),sh=st.querySelector('.pdot-shadow');
+  if(!pet||!el)return;let x,row,label,face=1,up=0,swim=0,hopOn=0,z=4,f='',runFast=0;
+  if(g.k==='walk'){const p=Math.min(1,(now-g.t0)/Math.max(.01,g.t1-g.t0));x=g.x0+(g.x1-g.x0)*p;row='walk';face=g.x1<g.x0?-1:1;label='어슬렁어슬렁 산책';}
+  else if(g.k==='rest'){x=g.x;row='idle';label='잠깐 쉬는 중';}
+  else{const s=g.s;x=s.x;row=s.row;label=s.label;up=s.lift||0;hopOn=s.hop;f=s.fx||'';face=s.face||1;if(s.sets&&s.sets.some(q=>q[1]==='f'))z=2;
+   if(s.swim||s.run){const k=(now-g.t0)/(g.t1-g.t0),w=s.swim?.22:.3;x=s.x+Math.sin(k*Math.PI*2)*w;face=Math.cos(k*Math.PI*2)>=0?1:-1;runFast=s.run;}
+   swim=s.swim;}
+  pet.style.left=(x*100).toFixed(2)+'%';pet.style.zIndex=z;
+  if(swim){const W=st.clientWidth,H=st.clientHeight,sc=Math.max(W/960,H/608),wf=+st.dataset.wf||.4,lp=(1-wf)*608*sc-22-size*.4*.55;
+   lift.style.transform='translateY('+(-lp).toFixed(1)+'px) scale(.55)';clip.style.clipPath='inset(0 0 40% 0)';}
+  else{lift.style.transform='translateY('+(-up*size).toFixed(1)+'px)';clip.style.clipPath='';}
+  clip.style.transform=face<0?'scaleX(-1)':'';   // 방향은 바로 뒤집음(천천히 바뀌면 납작해 보임)
+  if(rip)rip.style.display=swim?'':'none';if(sh)sh.style.display=(swim||up>.2)?'none':'';
+  hop.style.animation=hopOn?'phop 1.4s ease-out infinite':'';
+  const ring=st.querySelector('.pst-ring');if(ring)ring.style.display=swim&&g.s&&g.s.ring?'':'none';const sled=st.querySelector('.pst-sled');if(sled)sled.style.display=g.k==='do'&&g.s.sled?'':'none';
+  const want=row+(runFast?'+':'');if(el.dataset.row!==want){el.dataset.row=want;petDotSetRow(el,row);if(runFast)el.style.setProperty('--t','.45s');}
+  if(fx&&fx.textContent!==f)fx.textContent=f;
+  const ball=st.querySelector('.pst-ball');if(ball){const kick=g.k==='do'&&g.s.ball;ball.style.display=kick?'':'none';if(kick)ball.style.left='calc('+(x*100).toFixed(1)+'% + '+Math.round(size*(.25+.15*Math.abs(Math.sin(now*2))))+'px)';}
+  if(cap){const care=cap.dataset.care||'';const t=label+(care?' · '+care:'');if(cap.textContent!==t)cap.textContent=t;}});}
 };
 // ===== 🐣 뚝섬펫 v2 (다마고치 · 7일 키우기 · 이름+비번 로그인 · 20종 선택) =====
 const PET_COL=['#f8a5c2','#8ec5fc','#a8e063','#ffd76e','#b39ddb','#ffab76','#7fe0c8','#f4f1ea','#b0b7c3','#ef7676','#6c8cf5','#5cc27a','#c49a6c','#5a5a66','gold','rainbow'];
@@ -2106,7 +2220,7 @@ function petTricks(v){return Math.min(PET_TRICK.length,((v&&v.lookLog)||[]).filt
 /*petbg2*/const PET_BGMV={sea:'bswim',arctic:'bslide',pool:'blounge',hotel:'blounge',resort:'blounge',mountain:'bhike',track:'brun',soccer:'bkick',forest:'bfruit',starry:'mfloat',casino:'bchip',volcano:'bhot',flowers:'bsniff'};
 const PET_HOME=[['flowers'],['forest','candy'],['hotel'],['forest'],['mountain','bakery'],['mountain'],['flowers'],['arctic','sea'],['sea','rainy'],['starry'],['volcano'],['starry'],['forest'],['resort'],['starry','library'],['starry'],['track'],['volcano'],['casino'],['casino'],['forest'],['flowers'],['flowers','bakery'],['casino'],['casino'],['flowers'],['casino'],['starry'],['sea'],['flowers'],['sea','rainy'],['flowers'],['casino','candy'],['sea'],['forest'],['flowers'],['starry','library']];
 const PET_SHADES_BG=['pool','hotel','resort','sea'];
-function petBgFx(bg,v){if(!bg||!v||v.asleep)return '';let s='';if(bg==='bakery')s=pH('🥐',20,60,0,'pup 3.2s ease-out infinite',18)+pH('♨️',72,40,1.2,'pup 2.6s ease-out infinite',16);else if(bg==='candy')s=[10,34,62,86].map((l,i)=>pH(['🍬','🍭','🍫','🍬'][i],l,0,i*.7,'drop 3.4s linear infinite',14)).join('');else if(bg==='rainy')s=[18,40,60,80].map((l,i)=>pH('💧',l,0,i*.35,'drop 1.3s linear infinite',11)).join('')+pH('☕',16,62,0,'none',18);else if(bg==='library')s=pH('📖',74,46,0,'pup 3s ease-out infinite',18)+pH('✨',24,30,1.4,'pup 2.4s ease-out infinite',13);else if(bg==='sea')s=pH('💦',26,52,.5,'pup 4.4s ease-out infinite',20)+pH('💦',66,52,2.9,'pup 4.4s ease-out infinite',20)+pH('🫧',46,56,1.4,'bub 4.4s ease-out infinite',14);else if(bg==='arctic')s=[8,28,52,72,90].map((l,i)=>pH('❄️',l,0,i*.6,'drop 3s linear infinite',13)).join('');else if(bg==='pool'||bg==='hotel'||bg==='resort')s=`<div style="position:absolute;left:50%;bottom:2px;margin-left:-74px;width:148px;height:44px;z-index:-1"><svg viewBox="0 0 148 44" width="148" height="44"><path d="M8 36L40 8L60 14H138V24H46L18 40Z" fill="#fff" stroke="#e0a85a" stroke-width="2"/><path d="M50 16H136" stroke="#ffb6c1" stroke-width="3"/><path d="M20 38v6M128 24v18M62 24v18" stroke="#b07a3a" stroke-width="3"/></svg></div>`+pH('🍹',74,62,0,'none',22)+pH('✨',60,40,1.6,'pup 2.2s ease-out infinite',14);else if(bg==='mountain')s=pH('🚩',44,22,1.6,'pup 4s ease-out infinite',22);else if(bg==='track')s=pH('💨',30,70,0,'pup .8s ease-out infinite',16);else if(bg==='soccer')s=pH('⚽',46,58,0,'ball 1.4s linear infinite',22);else if(bg==='forest')s=pH('🍎',58,6,.3,'feed 2.6s ease-in infinite',18);else if(bg==='starry')s=pH('🌠',6,6,0,'shoot 3s linear infinite',18)+pH('⭐',70,20,1,'pup 2s ease-out infinite',14);else if(bg==='casino')s=pH('🃏',22,30,0,'pup 1.8s ease-out infinite',18)+pH('🪙',70,28,.6,'pup 1.8s ease-out infinite',18);else if(bg==='volcano')s=pH('🔥',18,62,0,'pup 1.6s ease-out infinite',18)+pH('🔥',78,60,.8,'pup 1.6s ease-out infinite',18);else if(bg==='flowers')s=pH('🦋',30,36,0,'pfly 2.4s ease-in-out infinite',18)+pH('🦋',66,28,.7,'pfly 1.9s ease-in-out infinite reverse',16);if((PET_HOME[v.sp]||[]).includes(bg))s+=pH('💕 여기 좋아!',30,4,.4,'pup 2.6s ease-out 1',13);return s;}
+function petBgFx(bg,v){if(!bg||!v||v.asleep)return '';let s='';if(bg==='bakery')s=pH('🥐',20,60,0,'pup 3.2s ease-out infinite',18)+pH('♨️',72,40,1.2,'pup 2.6s ease-out infinite',16);else if(bg==='candy')s=[10,34,62,86].map((l,i)=>pH(['🍬','🍭','🍫','🍬'][i],l,0,i*.7,'drop 3.4s linear infinite',14)).join('');else if(bg==='rainy')s=[18,40,60,80].map((l,i)=>pH('💧',l,0,i*.35,'drop 1.3s linear infinite',11)).join('')+pH('☕',16,62,0,'none',18);else if(bg==='library')s=pH('📖',74,46,0,'pup 3s ease-out infinite',18)+pH('✨',24,30,1.4,'pup 2.4s ease-out infinite',13);else if(bg==='sea')s=pH('💦',26,52,.5,'pup 4.4s ease-out infinite',20)+pH('💦',66,52,2.9,'pup 4.4s ease-out infinite',20)+pH('🫧',46,56,1.4,'bub 4.4s ease-out infinite',14);else if(bg==='arctic')s=[8,28,52,72,90].map((l,i)=>pH('❄️',l,0,i*.6,'drop 3s linear infinite',13)).join('');else if(bg==='pool'||bg==='hotel'||bg==='resort')s=`<div style="position:absolute;left:50%;bottom:2px;margin-left:-74px;width:148px;height:44px;z-index:-1"><svg viewBox="0 0 148 44" width="148" height="44"><path d="M8 36L40 8L60 14H138V24H46L18 40Z" fill="#fff" stroke="#e0a85a" stroke-width="2"/><path d="M50 16H136" stroke="#ffb6c1" stroke-width="3"/><path d="M20 38v6M128 24v18M62 24v18" stroke="#b07a3a" stroke-width="3"/></svg></div>`+pH('🍹',74,62,0,'none',22)+pH('✨',60,40,1.6,'pup 2.2s ease-out infinite',14);else if(bg==='mountain')s=pH('🚩',44,22,1.6,'pup 4s ease-out infinite',22);else if(bg==='track')s=pH('💨',30,70,0,'pup .8s ease-out infinite',16);else if(bg==='soccer')s=pH('⚽',46,58,0,'ball 1.4s linear infinite',22);else if(bg==='forest')s=pH('🍎',58,6,.3,'feed 2.6s ease-in infinite',18);else if(bg==='starry')s=pH('🌠',6,6,0,'shoot 3s linear infinite',18)+pH('⭐',70,20,1,'pup 2s ease-out infinite',14);else if(bg==='casino')s=pH('🃏',22,30,0,'pup 1.8s ease-out infinite',18)+pH('🪙',70,28,.6,'pup 1.8s ease-out infinite',18);else if(bg==='volcano')s=pH('🔥',18,62,0,'pup 1.6s ease-out infinite',18)+pH('🔥',78,60,.8,'pup 1.6s ease-out infinite',18);else if(bg==='flowers')s=pH('🦋',30,36,0,'pfly 2.4s ease-in-out infinite',18)+pH('🦋',66,28,.7,'pfly 1.9s ease-in-out infinite reverse',16);/*petdot 11/01 도트 배경엔 그림에 이미 소품이 있어서 덧그리던 의자·음료 등은 뺌*/if(typeof petDotHas==='function'&&petDotHas(v)&&PET_DOT_BG[bg])s='';if((PET_HOME[v.sp]||[]).includes(bg))s+=pH('💕 여기 좋아!',30,4,.4,'pup 2.6s ease-out 1',13);return s;}
 /*peteat2*/const PET_EAT=[["말랑말랑 한입씩~","푸딩이 출렁!","💗","up"],["쪽쪽 달콤해요","사탕이 반짝","✨","up"],["참치 냠냠 골골~","살살 핥아요","🐟","pop"],["당근을 오독오독","부스러기 톡톡","🥕","pop"],["꿀이 쭈욱~ 늘어나요","끈적끈적 든든","🍯","down"],["베리즙이 톡!","입가가 물들어요","🍇","pop"],["콕콕 쪼아먹어요","모이가 후두둑","🌾","pop"],["생선을 쭉쭉 발라요","꼬리까지 야무지게","🐟","pop"],["플랑크톤을 후루룩","입 속으로 둥실둥실","🫧","bub"],["달빛가루가 뿌려지고 있어요","유령의 혼이 살아나요","🌙","down"],["용 열매를 와작!","콧김에서 불꽃이 퐁","🔥","up"],["별사탕이 반짝반짝","별빛이 온몸에 퍼져요","⭐","up"],["바스락바스락 씹어요","낙엽이 팔랑","🍂","down"],["꿀꺽꿀꺽 물을 마셔요","시원한 물방울","💧","down"],["뼈다귀를 앙! 물어요","꼬리 붕붕 갉갉","🦴","pop"],["과일을 한 입 베어물어요","과즙이 주르륵","🍉","pop"],["충전 중… 삐빅","에너지 가득!","⚡","up"],["장작 덕에 더 활활 타요","화르륵! 불씨가 튀어요","🔥","up"],["카드 쿠키를 사각사각","카드 조각이 팔랑","🃏","down"],["코인 젤리를 쫀득쫀득","짤랑! 코인 소리","🪙","pop"],["애벌레를 쪽쪽","꿈틀꿈틀","🐛","pop"],["잎사귀를 아삭아삭","푸릇한 향기","🍃","down"],["씨를 톡 까먹어요","껍질이 포르르","🌻","pop"],["주사위 떡을 쫀득쫀득","데굴데굴 굴러요","🎲","pop"],["황금 코인을 반짝 깨물어요","금빛이 번쩍","✨","up"],["무지개 사탕을 빙글빙글","일곱 빛깔이 번져요","🌈","up"],["케이크를 우아하게 한 조각씩","왕관이 반짝","👑","up"],["달떡을 쿵덕쿵덕","달빛 떡고물이 톡","🌙","down"],["크릴새우를 후루룩","물보라가 퐁","💦","bub"],["좁쌀을 콕콕콕","좁쌀이 후두둑","🌾","pop"],["해초를 후룩후룩","물방울이 보글","🫧","bub"],["꽃꿀을 쪽쪽 빨아요","꽃내음이 폴폴","🌸","up"],["와일드 쿠키를 와작와작","조커가 씨익","🃏","pop"],["새우 껍질을 톡톡 까요","먹물이 퐁","🫧","bub"],["딸기를 한 입 쏙","씨가 톡톡","🍓","pop"],["꽃가루를 호로록","꽃가루가 흩날려요","🌸","down"],["밤 쿠키를 오독오독","고소한 냄새","🌙","pop"]];
 function petEatTxt(v){return '';/*11/01 먹을 때 날리던 이모지·글자는 그림과 따로 놀아서 뺌 (한 입씩은 pet_experience .pet-bite)*/}
 /*petbowl*/function petBowl(e,sz){return `<div class="pfl" style="left:calc(50% + 34px);bottom:12px;width:62px;height:12px;border-radius:50%;background:radial-gradient(ellipse at 50% 40%,#fff,#dfe6ee 62%,#b9c3cf);box-shadow:0 2px 3px #0003"></div><div class="pfl" style="left:calc(50% + 34px);bottom:16px;width:62px;text-align:center;animation:pdropin .45s ease-in both"><div style="display:inline-block;font-size:${Math.round((sz||46)*.62)}px;line-height:1">${petIco(e)}</div></div>`;}
