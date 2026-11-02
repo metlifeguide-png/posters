@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>뚝섬 홀덤이론 · 읽기</title>
+<link rel="stylesheet" href="style.css">
+<style>
+/* 11/02 책처럼 읽기: 등급 고르기 → 장 읽기(위 얇은 줄 · 아래 목차 시트 · 다음 장 버튼 · 좌우 넘김) */
+body{background:var(--bg)}
+.rb{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top)}
+.rb .in{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:6px;padding:6px 8px;height:46px}
+.rb button{background:none;border:0;color:var(--ink);font:inherit;font-size:15px;padding:6px 10px;border-radius:10px;cursor:pointer}
+.rb button:active{background:var(--line)}
+.rb .ttl{flex:1;text-align:center;font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rb .fs{font-size:13px;color:var(--sub);padding:6px 7px}.rb .fs b{font-size:17px}
+.prog{height:3px;background:var(--line)}.prog i{display:block;height:100%;width:0;background:var(--felt2);transition:width .1s}
+/* 첫 화면 */
+.home{max-width:760px;margin:0 auto;padding:18px 16px 40px}
+.home h1{font-size:24px;margin:6px 0 4px}.home .sub{color:var(--sub);font-size:14px;margin:0 0 18px}
+.cont{display:block;width:100%;text-align:left;border:0;border-radius:16px;padding:14px 18px;margin:0 0 18px;background:linear-gradient(135deg,var(--felt),var(--felt2));color:#fff;font:inherit;cursor:pointer;box-shadow:var(--shadow)}
+.cont .l{font-size:13px;opacity:.85}.cont .t{font-size:17px;font-weight:700;line-height:1.4;margin-top:2px}.cont .s{font-size:13px;opacity:.85;margin-top:4px}
+.lvs{display:grid;gap:10px}
+.lvc{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;font:inherit;color:var(--ink);cursor:pointer;box-shadow:var(--shadow)}
+.lvc:active{border-color:var(--felt2)}
+.lvc .bd{flex:0 0 52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:15px}
+.lvc .tx{flex:1;min-width:0}.lvc .nm{font-weight:700;font-size:16.5px}.lvc .ds{color:var(--sub);font-size:13px;line-height:1.45;margin-top:2px}
+.lvc .pb{height:5px;border-radius:3px;background:var(--line);margin-top:8px;overflow:hidden}.lvc .pb i{display:block;height:100%;background:var(--felt2)}
+.lvc .ct{font-size:12.5px;color:var(--sub);white-space:nowrap}
+.bg-b{background:var(--b)}.bg-i{background:var(--i)}.bg-a{background:var(--a)}.bg-e{background:var(--e)}.bg-p{background:var(--p)}.bg-r{background:var(--r)}.bg-m{background:var(--m)}
+/* 읽기 */
+.page{max-width:720px;margin:0 auto;padding:18px 18px 30px}
+.page .meta{margin:0 0 2px}
+.page h1{font-size:calc(var(--fs,17px) * 1.45);margin:8px 0 16px}
+.page article{background:none;border:0;box-shadow:none;padding:0;border-radius:0;font-size:var(--fs,17px);line-height:1.85}
+.page article h2{font-size:1.22em}.page article h3{font-size:1.07em}
+.page .more,.page .nav{display:none}
+.endnav{display:flex;gap:10px;margin:30px 0 10px}
+.endnav button{font:inherit;border-radius:14px;padding:14px 12px;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--ink);text-align:left}
+.endnav .pv{flex:1;color:var(--sub);font-size:14px}
+.endnav .nx{flex:2;background:var(--felt2);border-color:var(--felt2);color:#fff}
+.endnav .nx .l{font-size:12.5px;opacity:.85}.endnav .nx .t{font-weight:700;font-size:15px;line-height:1.4}
+.loading{color:var(--sub);text-align:center;padding:60px 0}
+/* 목차 시트 */
+.dim{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s}
+.dim.on{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;max-width:760px;margin:0 auto;background:var(--card);border-radius:18px 18px 0 0;max-height:78vh;display:flex;flex-direction:column;transform:translateY(105%);transition:transform .25s ease;padding-bottom:env(safe-area-inset-bottom)}
+.sheet.on{transform:none}
+.sheet .grab{width:40px;height:5px;border-radius:3px;background:var(--line);margin:8px auto 4px}
+.sheet .hd{display:flex;align-items:center;gap:8px;padding:4px 16px 10px;border-bottom:1px solid var(--line)}
+.sheet .hd b{font-size:16px}.sheet .hd span{color:var(--sub);font-size:13px;flex:1}
+.sheet .hd select{font:inherit;font-size:14px;padding:4px 6px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.sheet ol{list-style:none;margin:0;padding:6px 0;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.sheet li button{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;border:0;background:none;font:inherit;color:var(--ink);padding:10px 16px;cursor:pointer;line-height:1.45;font-size:15px}
+.sheet li button .k{flex:0 0 26px;color:var(--sub);font-size:13px;padding-top:2px;text-align:right}
+.sheet li button .ok{flex:0 0 16px;color:var(--felt2);font-weight:800}
+.sheet li.cur button{background:var(--tip);font-weight:700}
+.sheet li.done button .tt{color:var(--sub)}
+</style>
+</head>
+<body>
+<div class="rb"><div class="in" id="bar"></div><div class="prog"><i id="prog"></i></div></div>
+<main id="view"><div class="loading">불러오는 중…</div></main>
+<div class="dim" id="dim"></div>
+<div class="sheet" id="sheet"><div class="grab"></div><div class="hd"><b id="shT"></b><span id="shS"></span><select id="shL" aria-label="등급 바꾸기"></select></div><ol id="shList"></ol></div>
+<script>
+const LV=[['초급','b','룰·핸드 랭킹·포지션·팟오즈 기초'],['중급','i','아웃츠·에퀴티·레인지 콤보·푸시/폴드'],['상급','a','알파·MDF·블러프 비율·c-bet·3벳·SPR'],['고급','e','블로커·밸런스·ICM·헤즈업 솔버'],['프로','p','익스플로잇·사이징·멀티웨이·토너 운영'],['실전','r','한 판을 처음부터 끝까지 따라가는 응용'],['마스터','m','대회 입상자를 위한 토너·ICM·포스트플랍 심화']];
+const $=id=>document.getElementById(id);
+const LS={get(k,d){try{const v=localStorage.getItem('tt_'+k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem('tt_'+k,JSON.stringify(v));}catch(e){}}};
+let ALL=[],BY={},done=LS.get('done',{}),cur=null,fs=LS.get('fs',17),saveT=0;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const clean=t=>t.replace(/^\[[^\]]+\]\s*/,'');
+const fileOf=p=>p.split('/').pop();
+document.documentElement.style.setProperty('--fs',fs+'px');
+
+fetch('목록.json').then(r=>r.json()).then(d=>{
+  ALL=d.filter(x=>x.상태==='게시').sort((a,b)=>a.순번-b.순번);
+  LV.forEach(([n])=>BY[n]=ALL.filter(x=>x.등급===n));
+  ALL.forEach(x=>{x.f=fileOf(x.html);x.idx=BY[x.등급].indexOf(x)+1;});
+  $('shL').innerHTML=LV.filter(([n])=>BY[n].length).map(([n])=>`<option>${n}</option>`).join('');
+  route();
+}).catch(()=>{$('view').innerHTML='<div class="loading">목록을 불러오지 못했어요. 새로고침해 주세요.</div>';});
+addEventListener('hashchange',route);
+
+function route(){
+  const h=decodeURIComponent(location.hash.slice(1));
+  const it=h&&ALL.find(x=>x.f===h);
+  if(it)openPage(it);else home();
+}
+function go(f){location.hash=f?encodeURIComponent(f):'';}
+
+function home(){
+  cur=null;closeSheet();$('prog').style.width='0';
+  $('bar').innerHTML=`<button onclick="exitApp()" aria-label="나가기">←</button><span class="ttl">📚 홀덤이론</span><button class="fs" style="visibility:hidden">가</button>`;
+  const last=LS.get('last',null),li=last&&ALL.find(x=>x.f===last.f);
+  const nDone=n=>BY[n].filter(x=>done[x.f]).length;
+  $('view').innerHTML=`<div class="home"><h1>어디부터 읽을까요?</h1><p class="sub">초급부터 순서대로 읽으면 앞 장에서 배운 계산을 이어서 써요.</p>
+  ${li?`<button class="cont" onclick="go('${li.f}')"><div class="l">이어 읽기</div><div class="t">${esc(li.등급)} ${li.idx}장 · ${esc(clean(li.제목))}</div><div class="s">${Math.round((last.p||0)*100)}% 읽음</div></button>`:''}
+  <div class="lvs">${LV.filter(([n])=>BY[n].length).map(([n,c,ds])=>{const t=BY[n].length,k=nDone(n);return `<button class="lvc" onclick="openLevel('${n}')"><span class="bd bg-${c}">${n}</span><span class="tx"><div class="nm">${n} 과정</div><div class="ds">${ds}</div><div class="pb"><i style="width:${t?k/t*100:0}%"></i></div></span><span class="ct">${k} / ${t}장</span></button>`;}).join('')}</div></div>`;
+  scrollTo(0,0);
+}
+function openLevel(n){
+  const L=BY[n];const nxt=L.find(x=>!done[x.f])||L[0];go(nxt.f);
+}
+function exitApp(){if(window.parent!==window){window.parent.postMessage({t:'ttuk-back'},'*');return;}location.href='index.html';}   // 허브 안: 허브가 이전 화면으로 · 따로 열었을 때: 예전 글 목록
+
+function abs(u,base){try{return new URL(u,base).href;}catch(e){return u;}}
+function openPage(it){
+  cur=it;closeSheet();
+  const c=LV.find(l=>l[0]===it.등급)[1],L=BY[it.등급];
+  $('bar').innerHTML=`<button onclick="go('')" aria-label="등급 고르기로">←</button><button class="ttl" onclick="openSheet()">${esc(it.등급)} ${it.idx} / ${L.length} ▾</button><button class="fs" onclick="setFs(-1)" aria-label="글자 작게">가</button><button class="fs" onclick="setFs(1)" aria-label="글자 크게"><b>가</b></button>`;
+  $('view').innerHTML='<div class="loading">불러오는 중…</div>';
+  const url=abs(it.html,location.href);
+  fetch(url).then(r=>r.text()).then(t=>{
+    if(cur!==it)return;
+    const doc=new DOMParser().parseFromString(t,'text/html'),art=doc.querySelector('article');
+    art.querySelectorAll('[src]').forEach(e=>e.setAttribute('src',abs(e.getAttribute('src'),url)));
+    art.querySelectorAll('a[href]').forEach(a=>{const h=a.getAttribute('href');if(/^https?:/.test(h)){a.target='_blank';a.rel='noopener';return;}
+      const f=fileOf(h.split('#')[0]);if(ALL.find(x=>x.f===f)){a.setAttribute('href','#'+encodeURIComponent(f));}else a.setAttribute('href',abs(h,url));});
+    const i=L.indexOf(it),pv=L[i-1],nx=L[i+1]||ALL[ALL.indexOf(it)+1];
+    $('view').innerHTML=`<div class="page"><div class="meta"><span class="badge ${c}">${esc(it.등급)}</span><span class="n">${it.idx}장 · 전체 ${ALL.indexOf(it)+1} / ${ALL.length}</span></div><h1>${esc(clean(it.제목))}</h1>${art.outerHTML}
+    <div class="endnav">${pv?`<button class="pv" onclick="go('${pv.f}')">← ${pv.idx}장</button>`:''}${nx?`<button class="nx" onclick="go('${nx.f}')"><div class="l">다음 장 → ${nx.등급!==it.등급?nx.등급+' ':''}${nx.idx}장</div><div class="t">${esc(clean(nx.제목))}</div></button>`:''}</div></div>`;
+    const last=LS.get('last',null);
+    if(last&&last.f===it.f&&last.y>200){requestAnimationFrame(()=>scrollTo(0,last.y));}else scrollTo(0,0);
+    LS.set('last',{f:it.f,y:scrollY,p:0});onScroll();
+  }).catch(()=>{$('view').innerHTML='<div class="loading">글을 불러오지 못했어요.</div>';});
+}
+function setFs(d){fs=Math.min(23,Math.max(14,fs+d));LS.set('fs',fs);document.documentElement.style.setProperty('--fs',fs+'px');}
+
+function onScroll(){
+  if(!cur)return;const H=document.documentElement.scrollHeight-innerHeight,p=H>0?Math.min(1,scrollY/H):1;
+  $('prog').style.width=(p*100)+'%';
+  if(p>0.9&&!done[cur.f]){done[cur.f]=1;LS.set('done',done);}
+  clearTimeout(saveT);const f=cur.f;saveT=setTimeout(()=>LS.set('last',{f,y:scrollY,p}),300);
+}
+addEventListener('scroll',onScroll,{passive:true});
+
+function openSheet(lv){
+  const n=lv||(cur&&cur.등급)||'초급',L=BY[n];$('shL').value=n;
+  $('shT').textContent=n+' 목차';$('shS').textContent=L.filter(x=>done[x.f]).length+' / '+L.length+'장 읽음';
+  $('shList').innerHTML=L.map(x=>`<li class="${cur===x?'cur':''} ${done[x.f]?'done':''}"><button onclick="go('${x.f}')"><span class="ok">${done[x.f]?'✓':''}</span><span class="k">${x.idx}</span><span class="tt">${esc(clean(x.제목))}</span></button></li>`).join('');
+  $('dim').classList.add('on');$('sheet').classList.add('on');
+  const c=$('shList').querySelector('.cur');if(c)c.scrollIntoView({block:'center'});else $('shList').scrollTop=0;
+}
+function closeSheet(){$('dim').classList.remove('on');$('sheet').classList.remove('on');}
+$('dim').onclick=closeSheet;$('shL').onchange=e=>openSheet(e.target.value);
+
+/* 좌우로 밀어 이전·다음 장 (표처럼 옆으로 넘기는 곳은 제외) */
+let tx=0,ty=0,tOk=false;
+addEventListener('touchstart',e=>{const t=e.touches[0];tx=t.clientX;ty=t.clientY;tOk=!!cur&&!e.target.closest('.tbl,table,pre,.sheet');},{passive:true});
+addEventListener('touchend',e=>{if(!tOk)return;const t=e.changedTouches[0],dx=t.clientX-tx,dy=t.clientY-ty;
+  if(Math.abs(dx)>80&&Math.abs(dy)<50){const L=BY[cur.등급],i=L.indexOf(cur),nx=dx<0?(L[i+1]||ALL[ALL.indexOf(cur)+1]):L[i-1];if(nx)go(nx.f);}},{passive:true});
+addEventListener('keydown',e=>{if(!cur||e.target.closest('select'))return;const L=BY[cur.등급],i=L.indexOf(cur);
+  if(e.key==='ArrowRight'&&L[i+1])go(L[i+1].f);if(e.key==='ArrowLeft'&&L[i-1])go(L[i-1].f);if(e.key==='Escape')closeSheet();});
+</script>
+</body>
+</html>
