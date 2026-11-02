@@ -73,8 +73,12 @@ const clean=t=>t.replace(/^\[[^\]]+\]\s*/,'');
 const fileOf=p=>p.split('/').pop();
 document.documentElement.style.setProperty('--fs',fs+'px');
 
-fetch('목록.json').then(r=>r.json()).then(d=>{
-  ALL=d.filter(x=>x.상태==='게시').sort((a,b)=>a.순번-b.순번);
+/* 장 목록은 공개된 글 목록(index.html)에서 읽음 · 목록.json 은 깃허브 게시 때 안 올라감(.json 제외) */
+fetch('index.html').then(r=>{if(!r.ok)throw 0;return r.text();}).then(t=>{
+  const doc=new DOMParser().parseFromString(t,'text/html');ALL=[];
+  doc.querySelectorAll('section.lv').forEach(sec=>{const b=sec.querySelector('h2 .badge'),g=b&&b.textContent.trim();if(!g)return;
+    sec.querySelectorAll('ol.list a[href]').forEach(a=>{const tt=a.querySelector('.tt');ALL.push({등급:g,제목:(tt||a).textContent.trim(),html:a.getAttribute('href')});});});
+  if(!ALL.length)throw 0;
   LV.forEach(([n])=>BY[n]=ALL.filter(x=>x.등급===n));
   ALL.forEach(x=>{x.f=fileOf(x.html);x.idx=BY[x.등급].indexOf(x)+1;});
   $('shL').innerHTML=LV.filter(([n])=>BY[n].length).map(([n])=>`<option>${n}</option>`).join('');
