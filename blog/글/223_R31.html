@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>후반 30BB: 스틸에 작은 3벳(올인 아님)으로 대응한 판 · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge r">실전</span><span class="chip">토너</span><span class="n">실전 31번째 글 (전체 243편 중 223번째)</span></div><h1>후반 30BB: 스틸에 작은 3벳(올인 아님)으로 대응한 판</h1>
+<article>
+<p>안녕하세요. 대회 후반, 스택 <strong>30BB</strong> 레벨이에요. 버블 전이라 칩 기준으로 셈해요. 오늘은 BB에 앉아 BTN의 <strong>미니 오픈 스틸</strong>(2BB)을 받고, K♦J♦로 <strong>8BB 3벳</strong>을 했어요.</p>
+<p>BTN은 접지 않고 콜했어요. 그래서 오늘 판은 프리플랍에서 끝나지 않고, <strong>포지션 없이(OOP) 3벳 팟 플랍</strong>까지 가요. 결정은 세 번이고, 결정마다 묻는 질문이 달라요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>BB 앤티를 낸 Hero의 <strong>남은 스택</strong>으로 3벳 팟의 유효 스택과 SPR을 바로 세는 법</li>
+<li>3벳의 <strong>본전 폴드율</strong>이 어떻게 나오는지, 그리고 올인 3벳과 값이 거의 같을 때 무엇으로 고르는지</li>
+<li>낮은 SPR의 OOP 플랍에서 <strong>"콜만 받아도 이익인가"</strong>를 먼저 묻고 체크와 맞대는 순서</li>
+</ul></div>
+<hr />
+<h2>오늘의 한 판</h2>
+<p><strong>Hero (BB · 스택 30BB)</strong> · 상대 (BTN · 스택 30BB) · 블라인드 0.5/1, <strong>BB 앤티 1BB</strong>(Hero가 냄) · 대회 후반</p>
+<p><img src="../카드/Kd.svg" width="48"> <img src="../카드/Jd.svg" width="48"></p>
+<h3>프리플랍</h3>
+<p>UTG~CO 폴드 → BTN <strong>2BB 오픈</strong> → SB 폴드 → <strong>Hero(BB)는 콜할까, 3벳할까?</strong> Hero <strong>8BB 3벳</strong> → BTN <strong>콜</strong></p>
+<blockquote>
+<p>3벳 전 팟 = 0.5 + 1 + 1 + 2 = <strong>4.5BB</strong> (SB, Hero의 BB, Hero가 낸 앤티, BTN 오픈)
+콜 받은 팟 = 0.5 + 1 + 8 + 8 = <strong>17.5BB</strong> (SB, 앤티, 두 사람의 8BB)
+Hero 남은 스택 = 30 − 1 − 8 = <strong>21BB</strong>, BTN 남은 스택 = 30 − 8 = <strong>22BB</strong></p>
+</blockquote>
+<p>앤티 1BB는 Hero가 자기 스택에서 낸 돈이에요. 그래서 3벳 팟의 유효 스택은 작은 쪽인 <strong>21BB</strong>예요.</p>
+<h3>플랍 · 팟 17.5BB</h3>
+<p><img src="../카드/9d.svg" width="48"> <img src="../카드/5d.svg" width="48"> <img src="../카드/3c.svg" width="48"></p>
+<p>Hero가 먼저 말해요. <strong>올인할까, 체크할까?</strong> Hero <strong>올인 21BB</strong> → BTN <strong>콜</strong>(T♠9♠)</p>
+<h3>턴·리버</h3>
+<p><img src="../카드/2h.svg" width="48"> <img src="../카드/Kc.svg" width="48"></p>
+<p>턴 2♥, 리버 K♣. Hero는 리버에 <strong>K 페어</strong>가 돼서 BTN의 9 페어를 이기고 <strong>59.5BB</strong> 팟을 가져왔어요.</p>
+<hr />
+<p class="concl"><strong>결론부터 말할게요.</strong> 8BB 3벳은 통과해요. BTN이 <strong>약 67.67%</strong>를 접어 순수 블러프 기준 <strong>약 60.87%</strong>를 넘어요. 다만 이 모델에서 3벳 올인과 값이 <strong>거의 같아서</strong>, 8BB를 고른 이유는 계산 밖(4벳에 접을 길, 플랍 계획)에 있어요. 플랍 올인은 콜을 받을 때 필요한 <strong>약 35.29%</strong>보다 K♦J♦의 에퀴티가 <strong>약 51.70%</strong>로 높아, 콜만 받아도 이익인 올인이에요.</p>
+<blockquote>
+<p>남은 베팅이 있어 실제 결과는 달라질 수 있어요. 3벳 계산은 "콜을 받으면 리버까지 체크로 간다"는 단순화 위에 있어요. 금액은 비교용이고 최종 손익이 아니에요.</p>
+</blockquote>
+<h2>오늘의 가정</h2>
+<p>레인지는 설명을 위한 가정이에요(솔버 결과 아님).</p>
+<ul>
+<li><strong>BTN 미니 오픈</strong>: 22+, A2s+, K2s+, Q4s+, J6s+, T6s+, 96s+, 85s+, 74s+, 64s+, 53s+, 43s, A2o+, K7o+, Q8o+, J8o+, T8o+, 98o. K♦J♦를 빼면 <strong>566콤보</strong></li>
+<li><strong>8BB 3벳에 대한 BTN 대응</strong></li>
+<li>4벳 올인: 99+, AJs+, AQo+, KQs → <strong>64콤보</strong></li>
+<li>콜: 22-88, A9s-ATs, ATo-AJo, KJs, KTs, KQo, QTs+, JTs, J9s, T9s, 98s, 87s, 76s, 65s → <strong>119콤보</strong></li>
+<li>나머지 <strong>383콤보</strong>는 폴드</li>
+<li><strong>3벳 올인(29BB)에 대한 BTN 대응</strong>: 77+, ATs+, AJo+, KQs로 콜(<strong>89콤보</strong>), 나머지 <strong>477콤보</strong> 폴드</li>
+<li><strong>플랍 올인에 대한 BTN 대응</strong>: 페어 이상과 8장 이상 드로우(플러시 드로우·양방향)는 콜, 거트샷과 하이카드는 폴드</li>
+</ul>
+<h2>1단계. 스틸을 받으면: 콜할 수 있나</h2>
+<p>첫 질문은 가격이에요. BTN 2BB에 Hero가 콜하려면 1BB를 더 내요.</p>
+<blockquote>
+<p>콜 필요 에퀴티 = 1 ÷ 5.5 = <strong>약 18.18%</strong>
+K♦J♦의 BTN 오픈 레인지(566콤보) 상대 에퀴티 = <strong>약 55.99%</strong>(몬테카를로)</p>
+</blockquote>
+<p>I13에서 본 BB 디펜스 기준으로는 넉넉히 계속할 핸드예요. 그래서 질문이 "계속하나?"에서 <strong>"콜로 계속하나, 3벳으로 계속하나?"</strong>로 바로 넘어가요.</p>
+<h3>왜 K♦J♦로 3벳하나</h3>
+<p>3벳할 핸드를 고를 때는 <strong>BTN이 4벳으로 받는 핸드를 얼마나 막아 주나</strong>(블로커)와 <strong>콜을 받았을 때 플레이할 수 있나</strong>를 함께 봐요.</p>
+<ul>
+<li><strong>블로커</strong>: 4벳 레인지 99+, AJs+, AQo+, KQs는 원래 <strong>76콤보</strong>인데, K♦와 J♦를 Hero가 쥐어서 <strong>64콤보</strong>로 줄어요. KK·JJ는 <strong>3콤보</strong>씩만 남고, AK·AJs·KQs도 K♦·J♦가 든 콤보만큼 줄어요</li>
+<li><strong>플레이</strong>: 콜하는 119콤보 상대로 K♦J♦는 <strong>약 50.33%</strong>예요. 수딧이라 콜을 받은 플랍에서 플러시 드로우로 이어질 길도 있어요</li>
+</ul>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>콜 가격은 이미 통과했어요. 3벳을 고른 건 "4벳은 덜 맞고, 콜을 받아도 칠 만한 핸드"라서예요.</p>
+<h2>2단계. 8BB 3벳: BTN이 얼마나 접어야 하나</h2>
+<p>두 번째 질문은 <strong>폴드율</strong>이에요. A14에서 본 3벳 블러프 알파부터 셈해요. Hero는 BB 1BB를 이미 냈으니 8BB로 올리려면 <strong>7BB</strong>를 더 넣어요.</p>
+<blockquote>
+<p>알파 = 7 ÷ (4.5 + 7) = <strong>약 60.87%</strong>
+실제 폴드율 = 383 ÷ 566 = <strong>약 67.67%</strong></p>
+</blockquote>
+<p>콜이나 4벳을 받을 때 다 잃는다고 쳐도 본전이 넘어요. 그런데 실제로는 콜을 받아도 K♦J♦가 팟의 반쯤을 가져가요. 그 몫까지 넣은 기준이 <strong>본전 폴드율</strong>이에요.</p>
+<h3>본전 폴드율은 이렇게 나와요</h3>
+<p>BTN이 안 접는 <strong>183콤보</strong>는 콜 119콤보와 4벳 64콤보예요. 두 경우의 몫을 따로 셈하고, 그 비율대로 섞어요.</p>
+<blockquote>
+<p>콜 받을 때 몫 = 50.33% × 17.5 − 7 = <strong>약 1.81BB</strong> (리버까지 체크 가정)
+4벳 올인을 맞을 때 = 7BB를 놓고 접음 (3단계에서 확인)
+안 접는 핸드 중 콜 비율 = 119 ÷ 183 = <strong>약 65.03%</strong>
+안 접을 때 몫 = 65.03% × 1.81 − 34.97% × 7 = <strong>약 −1.27BB</strong></p>
+</blockquote>
+<p>BTN이 접으면 4.5BB를 얻고, 안 접으면 약 1.27BB를 잃어요. 두 쪽이 같아지는 폴드율이 본전이에요.</p>
+<blockquote>
+<p>본전 폴드율 = 1.27 ÷ (4.5 + 1.27) = <strong>약 22.05%</strong></p>
+</blockquote>
+<p>여기에는 가정이 하나 있어요. <strong>폴드율만 바뀌고, 안 접는 핸드의 콜:4벳 비율(119:64)은 그대로</strong>라는 가정이에요. BTN이 덜 접는 대신 4벳을 늘리면 이 기준은 올라가요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>알파는 "콜 받으면 0"이라고 보는 엄한 기준, 본전 폴드율은 "콜 받으면 내 에퀴티만큼 가져간다"고 보는 너그러운 기준이에요. 오늘 BTN의 약 67.67%는 둘 다 넘어요.</p>
+<h2>3단계. 크기를 고르는 질문: 8BB냐, 올인이냐</h2>
+<p>세 번째 질문은 <strong>같은 3벳을 어떤 크기로</strong>예요. 3벳 올인(29BB)은 R17에서 본 방법(콜 받을 때 에퀴티를 넣은 올인 본전 폴드율)으로 짧게 셈해요.</p>
+<blockquote>
+<p>BTN 콜 필요 에퀴티 = 27 ÷ 59.5 = <strong>약 45.38%</strong> → 89콤보로만 받음
+알파 = 28 ÷ (4.5 + 28) = <strong>약 86.15%</strong>, 실제 폴드율 <strong>약 84.28%</strong>
+콜 받을 때 K♦J♦ <strong>약 35.78%</strong> → 본전 폴드율 <strong>약 59.86%</strong> → 통과</p>
+</blockquote>
+<h3>두 길을 나란히</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>3벳</th>
+<th>더 거는 돈</th>
+<th>실제 폴드율</th>
+<th>알파</th>
+<th>본전 폴드율</th>
+<th>이 모델의 몫(계산용)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8BB</td>
+<td>7BB</td>
+<td>약 67.67%</td>
+<td>약 60.87%</td>
+<td>약 22.05%</td>
+<td>약 2.63BB</td>
+</tr>
+<tr>
+<td>올인 29BB</td>
+<td>28BB</td>
+<td>약 84.28%</td>
+<td>약 86.15%</td>
+<td>약 59.86%</td>
+<td>약 2.74BB</td>
+</tr>
+</tbody>
+</table></div>
+<p>두 몫은 <strong>거의 같아요.</strong> 여기서 "8BB는 기준을 훨씬 넉넉히 넘으니 더 좋다"고 읽으면 안 돼요. 두 3벳은 접게 하는 핸드도, 받아 주는 핸드도 달라서 <strong>여유의 크기로 우열을 가릴 수 없어요.</strong> 게다가 8BB 쪽 약 2.63BB는 '끝까지 체크' 가정 위의 값이라, 콜 받은 뒤 플레이에 따라 오르내려요.</p>
+<h3>그래서 고르는 이유는 계산 밖에 있어요</h3>
+<ul>
+<li><strong>4벳 올인이 오면 접을 수 있어요.</strong> BTN이 올인하면 Hero는 21BB를 더 내야 해요. 필요 에퀴티 = 21 ÷ 59.5 = <strong>약 35.29%</strong>인데, 4벳 64콤보 상대 K♦J♦는 <strong>약 33.86%</strong>라 <strong>폴드</strong>예요. 올인 3벳에는 이 갈래가 없어요</li>
+<li><strong>콜을 받으면 SPR이 낮은 플랍을 OOP로 쳐요.</strong> 이 플랍을 치를 계획이 있으면 8BB가, OOP 플랍이 부담스러우면 올인이 편할 수 있어요</li>
+</ul>
+<p>몫이 거의 같을 때는 이런 조건이 고르는 기준이 돼요. 오늘 Hero는 K♦J♦가 콜을 받아도 약 50.33%라 플랍 계획을 세울 수 있다고 보고 8BB를 골랐어요.</p>
+<h2>4단계. 플랍 9♦5♦3♣: 콜만 받아도 이익인가</h2>
+<p>BTN이 콜했어요. 네 번째 질문은 앞과 또 달라요. 이제는 폴드율보다 <strong>"다 넣었을 때 콜을 받아도 되나"</strong>가 먼저예요.</p>
+<h3>먼저 SPR</h3>
+<blockquote>
+<p>SPR = 21 ÷ 17.5 = <strong>1.2</strong></p>
+</blockquote>
+<p>A16에서 본 대로 3벳 팟은 SPR이 낮아요. 남은 21BB는 팟의 <strong>120%</strong>라, 플랍에서 한 번 걸면 사실상 끝이에요. 그래서 오늘 플랍 선택지는 <strong>올인과 체크</strong> 둘로 줄어요.</p>
+<h3>Hero의 핸드</h3>
+<p>K♦J♦는 노페어 <strong>K 하이</strong>예요. 남은 다이아 9장 중 하나면 <strong>플러시</strong>가 되고, K·J는 둘 다 보드의 9보다 높아요. 더 높은 플러시 드로우는 BTN 레인지에 A♦T♦ 하나뿐이에요.</p>
+<h3>BTN의 플랍 레인지(109콤보)</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>묶음</th>
+<th>핸드</th>
+<th>콤보</th>
+<th>올인에</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>셋</td>
+<td>33, 55</td>
+<td>6</td>
+<td>콜</td>
+</tr>
+<tr>
+<td>9 아래 포켓페어</td>
+<td>22, 44, 66, 77, 88</td>
+<td>30</td>
+<td>콜</td>
+</tr>
+<tr>
+<td>9 페어</td>
+<td>A9s, J9s, T9s, 98s</td>
+<td>12</td>
+<td>콜</td>
+</tr>
+<tr>
+<td>5 페어</td>
+<td>65s</td>
+<td>3</td>
+<td>콜</td>
+</tr>
+<tr>
+<td>드로우</td>
+<td>A♦T♦·Q♦T♦·8♦7♦·7♦6♦(플러시), 다이아 아닌 76s(양방향)</td>
+<td>7</td>
+<td>콜</td>
+</tr>
+<tr>
+<td>거트샷</td>
+<td>다이아 아닌 87s(6 한 장)</td>
+<td>3</td>
+<td>폴드</td>
+</tr>
+<tr>
+<td>하이카드</td>
+<td>ATs, ATo, AJo, KJs, KTs, KQo, QTs, QJs, JTs</td>
+<td>48</td>
+<td>폴드</td>
+</tr>
+</tbody>
+</table></div>
+<p>콜은 페어 <strong>51콤보</strong>와 드로우 <strong>7콤보</strong>를 합친 <strong>58콤보</strong>, 폴드는 <strong>51콤보</strong>로 폴드율 <strong>약 46.79%</strong>예요.</p>
+<h3>콜만 받아도 이익인가</h3>
+<blockquote>
+<p>콜 받을 때 필요 에퀴티 = 21 ÷ 59.5 = <strong>약 35.29%</strong>
+K♦J♦의 콜 58콤보 상대 에퀴티 = <strong>약 51.70%</strong>
+콜 판 몫 = 51.70% × 59.5 − 21 = <strong>약 9.76BB</strong></p>
+</blockquote>
+<p>필요보다 에퀴티가 높아요. BTN이 하나도 안 접어도 올인은 손해가 아니고, 접어 주는 51콤보는 <strong>덤</strong>이에요.</p>
+<h3>체크와 맞대기</h3>
+<p>R27에서 본 방법으로 체크 몫을 세요. 리버까지 체크로 간다고 보면 Hero는 BTN 전체 109콤보 상대 에퀴티만큼 가져가요.</p>
+<blockquote>
+<p>체크 몫 = 56.18% × 17.5 = <strong>약 9.83BB</strong>
+체크와 같아지는 폴드율 = (9.83 − 9.76) ÷ (17.5 − 9.76) = <strong>약 0.89%</strong></p>
+</blockquote>
+<p>BTN이 거의 안 접어도 올인이 체크를 따라잡아요. 실제로는 약 46.79%를 접으니 차이가 벌어져요.</p>
+<blockquote>
+<p>접어 줄 때 46.79% × 17.5 = <strong>약 8.19BB</strong>, 콜 받을 때 53.21% × 9.76 = <strong>약 5.20BB</strong>
+→ 올인 몫 <strong>약 13.38BB</strong>, 체크 몫 <strong>약 9.83BB</strong> → <strong>올인</strong></p>
+</blockquote>
+<p>게다가 체크 몫은 OOP에게 후한 가정이에요. 실제로 Hero가 체크하면 BTN이 고르게 돼요. 하이카드는 체크백해 공짜로 카드를 보고, 벳하는 쪽은 Hero가 상대하기 싫은 핸드가 많아질 수 있어요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p><strong>약 35.29%</strong>라는 같은 가격이 오늘 두 번 나와요. 프리플랍 4벳 앞에서는 K♦J♦가 약 33.86%라 접고, 플랍 올인 뒤에는 약 51.70%라 걸어요. 두 번 모두 21BB를 더 넣어 59.5BB를 다투는 가격이지만, <strong>맞서는 레인지가 달라서</strong> 답이 갈려요.</p>
+<h2>5단계. 결과: BTN 콜, 리버 K</h2>
+<p>BTN은 T♠9♠(9 페어, 탑페어)로 콜했어요. 턴 2♥는 두 사람의 핸드를 바꾸지 않았고, 리버 K♣에 Hero가 K 페어가 돼 이겼어요. 플러시는 안 됐어요. 이번에는 이겼지만, 판정의 근거는 결과가 아니라 <strong>콜 받을 때 약 51.70% 대 필요 약 35.29%</strong>였어요.</p>
+<section class="sec why"><h2>왜 그럴까: 3벳에 먼저 넣은 돈이 플랍 올인의 가격을 낮춰서</h2>
+<h3>콜만 했다면 같은 플랍이 어땠을까</h3>
+<p>Hero가 프리플랍에 콜만 했다면 플랍 팟은 <strong>5.5BB</strong>, Hero 남은 스택은 <strong>27BB</strong>예요.</p>
+<blockquote>
+<p>SPR = 27 ÷ 5.5 = <strong>약 4.91</strong>
+같은 플랍 올인 = 팟의 <strong>약 490.91%</strong>, 콜 받을 때 필요 = 27 ÷ 59.5 = <strong>약 45.38%</strong></p>
+</blockquote>
+<p>마지막에 다투는 팟은 똑같이 59.5BB예요. 다른 건 <strong>Hero가 플랍에서 더 넣어야 하는 몫</strong>이에요. 3벳 팟에서는 8BB가 이미 들어가 있어서 21BB만 더 넣고, 싱글 레이즈 팟에서는 27BB를 더 넣어요.</p>
+<h3>그래서 같은 드로우의 여유가 달라요</h3>
+<p>콜만 한 판에서 BTN 오픈 레인지 전체에 같은 콜 기준을 쓰면, K♦J♦는 콜하는 핸드 상대 <strong>약 50.45%</strong>라 필요 약 45.38%를 겨우 넘어요. 3벳 팟에서는 약 51.70% 대 약 35.29%로 여유가 커요. 3벳에 들어간 돈이 플랍 올인을 <strong>팟보다 조금 큰 벳</strong>으로 바꿔 놓은 셈이에요.</p>
+<h3>OOP의 불리도 줄어요</h3>
+<p>SPR 1.2에서는 남은 결정이 사실상 플랍 한 번이에요. 턴·리버 결정이 줄어든 만큼 BTN이 포지션으로 쓸 거리도 줄어들 수 있어요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>작은 3벳의 플랍은 3벳 버튼을 누를 때 반쯤 정해져요. 얼마를 넣었는지가 플랍 올인의 가격을 정하기 때문이에요.</p>
+</section><section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. "SPR은 BTN 스택으로 22 ÷ 17.5"</strong>
+22 ÷ 17.5 = <strong>약 1.26</strong>은 BTN 쪽 숫자예요. Hero는 BB라 앤티 1BB를 자기 스택에서 냈고, 남은 건 21BB예요. 대신 유효 스택은 <strong>작은 쪽</strong>으로, 30 − 1 − 8 = 21BB로 세요.</p></div><div class="mis-card"><p><strong>실수 2. "8BB가 기준을 더 넉넉히 넘으니 더 좋은 3벳"</strong>
+8BB의 여유(약 67.67% 대 약 22.05%)와 올인의 여유(약 84.28% 대 약 59.86%)는 서로 다른 위험의 크기예요. 이 모델에서 두 몫은 약 2.63BB와 약 2.74BB로 거의 같아요. 대신 몫이 비슷하면 4벳 대응과 플랍 계획으로 골라요.</p></div><div class="mis-card"><p><strong>실수 3. "플러시 드로우니까 체크하고 맞을 때까지 본다"</strong>
+오늘 체크 몫은 약 9.83BB, 올인 몫은 약 13.38BB예요. 콜만 받아도 약 51.70% 대 약 35.29%라 기다릴 이유가 약해요. 대신 낮은 SPR에서는 "콜 받아도 이익인가"부터 확인해요.</p></div></section><h2>"체크하고 BTN 벳에 올인하면 안 되나요?"</h2>
+<p>BTN이 벳해 주면 그 위에 올인할 수 있어요. 문제는 BTN이 벳하지 않을 때예요. 하이카드 48콤보가 체크백하면 Hero는 그 핸드를 접게 할 기회를 잃고 공짜 카드를 줘요. 벳하는 쪽에는 페어가 더 많이 섞일 수 있어서, 그 상대 에퀴티는 오늘 숫자보다 낮아질 수 있어요. 체크 뒤 올인은 R32에서 짧은 스택 판으로 다뤄요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<blockquote>
+<p>3벳 버튼 전에, 콜 받으면 남는 내 스택을 앤티까지 빼고 세요.
+두 크기의 몫이 비슷하면, 4벳과 플랍에서 할 일을 정할 수 있는 쪽을 골라요.
+낮은 SPR 플랍에서는 콜 받을 때의 가격부터 보고, 그다음 체크와 맞대요.</p>
+</blockquote>
+</section><h2>연습 문제</h2>
+<blockquote>
+<p>학습툴 팟오즈 계산기로 필요 에퀴티를 확인할 수 있어요. 에퀴티는 문제에 준 값을 써요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 프리플랍은 본문과 똑같이 8BB 3벳 → BTN 콜이에요. 이번 Hero 핸드는 <strong>K♣Q♥</strong>(다이아 없음), 플랍도 9♦5♦3♣예요. 본문과 같은 기준이면 BTN은 플랍 올인에 <strong>62콤보</strong>로 받고 <strong>48콤보</strong>를 접어요. K♣Q♥는 콜하는 62콤보 상대 <strong>약 25.96%</strong>, BTN 전체 상대 <strong>약 33.53%</strong>예요. 폴드율과 체크 몫을 직접 세고, 올인? 체크?</p>
+<details>
+<summary>정답 보기</summary>
+<blockquote>
+<p>폴드율 = 48 ÷ 110 = <strong>약 43.64%</strong>
+콜 판 몫 = 25.96% × 59.5 − 21 = <strong>약 −5.55BB</strong>
+체크 몫 = 33.53% × 17.5 = <strong>약 5.87BB</strong>
+체크와 같아지는 폴드율 = (5.87 + 5.55) ÷ (17.5 + 5.55) = <strong>약 49.54%</strong>
+실제 약 43.64% &lt; 약 49.54% → <strong>체크</strong></p>
+</blockquote>
+<p>콜만 받으면 손해라, 이번 올인은 폴드에 기대야 해요. 그냥 접는 것과 맞대면 본전 <strong>약 24.09%</strong>라 넘지만, 체크와 맞대면 모자라요. 같은 두 오버카드라도 플러시 드로우가 빠지자 콜 받을 때 에퀴티가 크게 줄어 답이 뒤집혔어요.</p>
+</details>
+<p><strong>문제 2.</strong> 본문과 같은 K♦J♦·8BB 3벳이에요. 이번 BTN은 3벳에 콜을 넓게 해요. 본문 콜 레인지에 A2s-A8s, K9s, Q9s, J8s, T8s, 97s, 86s, 75s, 64s, 54s, A9o, KJo, QJo를 더해 콜 <strong>208콤보</strong>, 4벳 <strong>64콤보</strong>(그대로), 폴드 <strong>294콤보</strong>예요(566콤보 중). K♦J♦는 콜 208콤보 상대 <strong>약 52.51%</strong>예요. 순수 블러프 기준은 넘나요? 안 접는 핸드를 만날 때의 몫까지 세면 3벳해도 되나요?</p>
+<details>
+<summary>정답 보기</summary>
+<blockquote>
+<p>폴드율 = 294 ÷ 566 = <strong>약 51.94%</strong> &lt; 알파 약 60.87% → 순수 블러프로는 못 넘음
+콜 받을 때 몫 = 52.51% × 17.5 − 7 = <strong>약 2.19BB</strong>
+안 접는 272콤보 중 콜 비율 = 208 ÷ 272 = <strong>약 76.47%</strong>
+안 접을 때 몫 = 76.47% × 2.19 − 23.53% × 7 = <strong>약 +0.03BB</strong></p>
+</blockquote>
+<p>안 접는 핸드를 만날 때의 몫은 <strong>0 근처</strong>예요. 이 값은 몬테카를로 에퀴티에 기대고 있어서 다시 셈하면 0 아래로 내려갈 수도 있는, 부호를 믿기 어려운 크기예요. 그래서 판정은 이 숫자가 아니라 전체로 봐요. 접는 51.94%에서 오는 몫이 <strong>약 2.34BB</strong>라, 3벳 전체는 <strong>약 2.35BB</strong> 쪽이에요. 즉 순수 블러프로는 못 넘어도, 안 접는 핸드를 만날 때 거의 본전이라 3벳은 여전히 해 볼 만해요. 다만 이번 3벳은 폴드보다 <strong>콜 받은 뒤의 몫</strong>에 기대요. 그 몫은 '끝까지 체크' 가정 위의 값이라, 콜 받은 OOP 플랍을 어떻게 칠지가 본문보다 더 중요해져요.</p>
+</details>
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>BB 앤티는 BB 자리가 자기 스택에서 낸 돈이에요. BB Hero의 3벳 팟 유효 스택은 30 − 1 − 8 = 21BB, SPR은 1.2</li>
+<li>3벳 본전 폴드율은 안 접는 핸드의 콜 몫과 4벳 몫을 콤보 비율로 섞은 값을 지금 팟과 맞대서 구해요</li>
+<li>두 3벳 크기의 몫이 거의 같으면, 여유의 크기가 아니라 4벳 대응·플랍 계획 같은 계산 밖 조건으로 골라요</li>
+<li>3벳에 먼저 넣은 돈은 플랍 올인의 필요 에퀴티를 낮춰요(3벳 팟 약 35.29%, 콜만 했을 때 약 45.38%)</li>
+<li>낮은 SPR의 OOP 플랍은 "콜만 받아도 이익인가"를 먼저, 아니면 체크 몫과 맞대요</li>
+</ul>
+</section><section class="sec end"><h2>정리하며</h2>
+<p>오늘은 대회 후반 30BB, BB K♦J♦로 BTN 미니 오픈에 8BB 3벳을 하고 콜을 받았어요. 프리플랍에서는 가격, 폴드율, 크기 순으로 질문이 바뀌었고, 크기는 올인과 몫이 거의 같아 4벳 대응과 플랍 계획으로 골랐어요. 플랍 9♦5♦3♣에서는 SPR 1.2라 올인과 체크만 남았고, 콜만 받아도 이익이라 올인했어요.</p>
+<p>다음 글 R32에서는 스택이 <strong>18BB</strong>로 줄어, <strong>BB에서 콜한 뒤 플랍에서 체크 올인</strong>하는 판을 봐요. 오늘은 3벳으로 낮은 SPR을 만든 쪽이었다면, 다음은 콜로 들어간 쪽이 체크한 뒤 올인을 고르는 판이에요.</p>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 가정 레인지 기준(솔버 결과 아님) · 토너 BB 앤티 1BB · 남은 베팅이 있어 BB 금액은 계산용</small></p></section>
+</article>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="077_A14.html">3벳 블러프는 상대가 몇 % 접어야 본전일까? 프리플랍 알파</a></li><li><a href="079_A16.html">3벳 팟의 SPR: 왜 플랍부터 큰 결정이 올까?</a></li></ul></aside><nav class="nav"><a class="prev" href="222_M50.html"><div class="l">← 이전 글</div><div class="t">마스터 마무리: 감 진단 시험</div></a><a class="next" href="224_M51.html"><div class="l">다음 글 →</div><div class="t">기하학적 사이징: 세 스트리트에 스택을 다 넣는 벳 크기</div></a></nav></main>
+</body>
+</html>

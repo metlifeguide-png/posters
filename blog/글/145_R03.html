@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>초반 150BB: 3벳 팟 오버페어, 스택을 다 넣을까 · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge r">실전</span><span class="chip">토너</span><span class="n">실전 3번째 글 (전체 243편 중 145번째)</span></div><h1>초반 150BB: 3벳 팟 오버페어, 스택을 다 넣을까</h1>
+<article>
+<p>안녕하세요. 오늘도 대회 초반이에요. 스타팅 스택이 넉넉한 대회라 이번엔 유효 스택이 <strong>150BB</strong>예요.</p>
+<p>Hero는 버튼에서 QQ로 3벳했고, 플랍·턴에 밸류로 걸었어요. 그리고 리버에서 남은 스택을 보니 <strong>팟보다 훨씬 많이 남아 있어요.</strong> "오버페어인데 다 넣어야 하나?" 그 고민을 숫자로 풀어 봐요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>3벳 팟에서 <strong>스택 깊이가 SPR</strong>을 얼마나 바꾸는지</li>
+<li>플랍·턴 밸류 벳은 "콜 받아도 앞서나"로, 리버 올인은 <strong>"올인을 받아 주는 핸드 중 내가 이기는 쪽이 많나"</strong>로 묻는다는 것</li>
+<li>앞 스트리트의 벳 크기가 <strong>리버에 남는 돈</strong>을 정한다는 것</li>
+</ul></div>
+<hr />
+<h2>오늘의 한 판</h2>
+<p><strong>Hero (BTN · 스택 150BB)</strong> · 상대 (CO · 스택 150BB) · 블라인드 0.5/1, <strong>BB 앤티 1BB</strong></p>
+<p><img src="../카드/Qs.svg" width="48"> <img src="../카드/Qd.svg" width="48"></p>
+<h3>프리플랍</h3>
+<p>CO <strong>2.2BB 오픈</strong> → Hero(BTN) <strong>7.5BB 3벳</strong> → 블라인드 폴드 → CO 콜. 팟은 SB 0.5 + BB 1 + 앤티 1 + 7.5 + 7.5 = <strong>17.5BB</strong>예요.</p>
+<h3>플랍 · 팟 17.5BB</h3>
+<p><img src="../카드/9h.svg" width="48"> <img src="../카드/7c.svg" width="48"> <img src="../카드/4d.svg" width="48"></p>
+<p>CO 체크 → Hero <strong>6BB 벳</strong> → CO 콜. 팟 <strong>29.5BB</strong></p>
+<blockquote>
+<p>9♥ 7♣ 4♦, 무늬가 다 다르지만 9·7·4가 가까워서 8·6·5 쪽 스트레이트 드로우가 많은 보드예요. Hero는 <strong>오버페어</strong>예요.</p>
+</blockquote>
+<h3>턴 · 팟 29.5BB</h3>
+<p><img src="../카드/9h.svg" width="48"> <img src="../카드/7c.svg" width="48"> <img src="../카드/4d.svg" width="48"> <img src="../카드/2s.svg" width="48"></p>
+<p>CO 체크 → Hero <strong>20BB 벳</strong> → CO 콜. 팟 <strong>69.5BB</strong></p>
+<h3>리버 · 팟 69.5BB</h3>
+<p><img src="../카드/9h.svg" width="48"> <img src="../카드/7c.svg" width="48"> <img src="../카드/4d.svg" width="48"> <img src="../카드/2s.svg" width="48"> <img src="../카드/2d.svg" width="48"></p>
+<p>CO 체크. Hero에게 남은 스택은 <strong>116.5BB</strong>예요. <strong>올인할까, 35BB(팟의 절반쯤)만 걸까, 체크할까?</strong></p>
+<hr />
+<p class="concl"><strong>결론부터 말할게요. 오늘 가정한 상대라면 플랍·턴은 밸류 벳, 리버는 올인이 아니라 절반 크기 벳이에요.</strong> 올인은 오히려 <strong>체크보다 못해요.</strong> QQ가 약해서가 아니라, 올인을 받아 주는 핸드에 QQ보다 강한 핸드가 너무 많이 남기 때문이에요.</p>
+<blockquote>
+<p>남은 베팅이 있어 실제 결과는 달라질 수 있어요. 플랍·턴은 에퀴티 비교로 판정하고, 리버는 상대가 레이즈하지 않는다는 가정에서 체크와 비교한 차이만 계산해요.</p>
+</blockquote>
+<h2>오늘의 가정</h2>
+<ul>
+<li><strong>CO 콜 레인지</strong>: AA·KK·AK는 4벳한다고 보고 콜 레인지에서 뺐어요. 나머지 포켓페어, A9s·수딧 브로드웨이·AQo, 수딧 커넥터로 콜한다고 가정해요(솔버 결과 아님)</li>
+<li><strong>CO 대응</strong>: 플랍·턴·리버 모두 콜 아니면 폴드(체크레이즈 없음)</li>
+</ul>
+<h2>1단계. 프리플랍이 정해 주는 것: 깊이가 SPR을 바꿔요</h2>
+<p>팟 17.5BB에 남은 스택은 <strong>142.5BB</strong>, SPR은 <strong>약 8.1</strong>이에요(A10). 같은 3벳 팟이라도 100BB였다면 남은 스택 92.5BB, SPR <strong>약 5.3</strong>이었어요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>스택</th>
+<th>남은 스택</th>
+<th>SPR</th>
+<th>하프팟벳 몇 번이면 올인</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100BB</td>
+<td>92.5BB</td>
+<td>약 5.3</td>
+<td>4번</td>
+</tr>
+<tr>
+<td><strong>150BB</strong></td>
+<td><strong>142.5BB</strong></td>
+<td><strong>약 8.1</strong></td>
+<td><strong>5번</strong></td>
+</tr>
+</tbody>
+</table></div>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>3벳 팟은 보통 "오버페어면 스택 다 들어가는 팟"으로 느끼기 쉬워요. 그런데 150BB에서는 하프팟벳으로 <strong>5번</strong>을 걸어야 다 들어가요. 100BB였다면 4번이면 됐어요. 스트리트는 세 번뿐이니, 깊을수록 <strong>한 번 한 번을 더 크게</strong> 걸어야 리버에 다 들어가요. 플랍·턴을 작게 걸면 리버에 큰 돈이 남고, 그 돈을 넣으려면 <strong>팟보다 큰 벳</strong>을 해야 해요. 오늘 판이 바로 그렇게 흘러가요.</p>
+<h2>2단계. 플랍: 콜을 받아도 앞서는 밸류 벳</h2>
+<p>Hero가 6BB(팟의 3분의 1쯤)를 걸어요. 가정한 CO 레인지 98콤보 중 <strong>62콤보가 콜</strong>하고 36콤보가 접어요.</p>
+<p>콜하는 쪽은 JJ·TT·88 같은 Hero보다 낮은 페어, 99·77·44 셋, T9s·98s·A9s(9 페어), 87s·76s(7 페어), 65s·JTs 같은 드로우예요. 이 콜 레인지 상대로도 Hero 에퀴티는 <strong>약 71.2%</strong>예요.</p>
+<blockquote>
+<p>콜 레인지 상대 에퀴티 약 71.2% → 콜을 받아도 크게 앞서는 <strong>밸류 벳</strong></p>
+</blockquote>
+<p>플랍에서 Hero의 질문은 R01 턴과 같아요. "콜해 오는 핸드보다 앞서나?" 답은 크게 "예"예요.</p>
+<h2>3단계. 턴: 아직 밸류, 그런데 남는 돈이 보여요</h2>
+<p>2♠는 거의 아무것도 바꾸지 않았어요. Hero가 20BB(팟의 3분의 2쯤)를 걸면 62콤보 중 <strong>46콤보가 콜</strong>해요. 66·55·JTs는 접고, 셋과 JJ·TT·88, 9 페어·7 페어, 65s(양방향 드로우)는 남아요. 이 콜 레인지 상대 Hero 에퀴티는 <strong>약 74.3%</strong>예요.</p>
+<blockquote>
+<p>콜 레인지 상대 에퀴티 약 74.3% → 여전히 <strong>밸류 벳</strong></p>
+</blockquote>
+<p>그런데 여기서 한 가지를 같이 봐야 해요. 이 턴 벳이 콜되면 팟은 69.5BB, Hero에게 남은 스택은 <strong>116.5BB</strong>예요. <strong>리버에서 다 넣으려면 팟(69.5BB)보다 훨씬 큰 116.5BB</strong>를 걸어야 해요. 플랍 6BB, 턴 20BB라는 크기가 리버의 선택지를 정해 버린 거예요.</p>
+<h2>4단계. 리버: 올인을 받아 주는 핸드를 세요</h2>
+<p>2♦는 보드를 페어로 만들었을 뿐 드로우를 하나도 완성시키지 않았어요. 턴에 콜한 46콤보는 이렇게 나뉘어요.</p>
+<ul>
+<li><strong>QQ보다 강한 핸드</strong>: 99·77·44(보드 2 페어와 합쳐 <strong>풀하우스</strong>)</li>
+<li><strong>QQ보다 약한 핸드</strong>: JJ·TT·88(Q 아래 포켓페어), T9s·98s·A9s(9 페어), 87s·76s(7 페어), 65s(빗나간 드로우)</li>
+</ul>
+<h3>올인하면</h3>
+<p>116.5BB 올인에 CO가 콜하려면 필요 에퀴티가 <strong>약 38.5%</strong>예요. 이 정도 돈을 받아 주는 약한 핸드는 <strong>JJ</strong> 정도라고 가정할게요. 9 페어나 TT·88은 이 크기에 접어요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>올인 116.5BB</th>
+<th>콤보</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>더 좋은 핸드가 콜(99·77·44)</td>
+<td>9</td>
+</tr>
+<tr>
+<td>더 나쁜 핸드가 콜(JJ)</td>
+<td>6</td>
+</tr>
+<tr>
+<td>더 나쁜 핸드가 폴드</td>
+<td>31</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>(6 − 9) ÷ 46 × 116.5 = <strong>약 −7.60BB</strong></p>
+</blockquote>
+<p>체크보다 <strong>손해</strong>예요. 콜을 받았을 때 이기는 비율이 <strong>40%</strong>밖에 안 돼요.</p>
+<h3>절반 크기 벳이면</h3>
+<p>35BB에 CO가 콜하려면 필요 에퀴티가 <strong>약 25.1%</strong>예요. 이번엔 JJ·TT·88, 9 페어까지 콜해 준다고 봐요. 7 페어와 빗나간 드로우만 접어요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>35BB 벳</th>
+<th>콤보</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>더 좋은 핸드가 콜(99·77·44)</td>
+<td>9</td>
+</tr>
+<tr>
+<td>더 나쁜 핸드가 콜(JJ·TT·88·9 페어)</td>
+<td>27</td>
+</tr>
+<tr>
+<td>더 나쁜 핸드가 폴드</td>
+<td>10</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>(27 − 9) ÷ 46 × 35 = <strong>약 13.70BB</strong></p>
+</blockquote>
+<p>콜을 받았을 때 이기는 비율이 <strong>75%</strong>로 올라가요. 체크보다 <strong>약 13.70BB 더</strong> 벌어요.</p>
+<!-- 그림: 올인 −7.60BB · 절반 벳 +13.70BB 체크 대비 막대 -->
+
+<h3>이게 무슨 뜻이냐면</h3>
+<p>올인이냐 절반이냐는 <strong>용기의 문제가 아니라 받아 주는 핸드의 구성 문제</strong>예요. 크게 걸수록 약한 핸드가 먼저 빠지고, 강한 핸드(셋·풀하우스)는 크기와 상관없이 남아요. 그래서 너무 크게 걸면 <strong>받아 주는 쪽이 강한 핸드 위주로</strong> 바뀌어요.</p>
+<section class="sec why"><h2>왜 그럴까: 깊은 스택에선 오버페어가 '받아 줄 핸드'를 잃어요</h2>
+<h3>크기와 콜 레인지는 같이 움직여요</h3>
+<p>R01 리버에서 배운 씬밸류의 원리 그대로예요. 벳의 가치 = (더 나쁜 콜 − 더 좋은 콜) ÷ 레인지 × 벳 크기. 크기를 키우면 곱하는 숫자는 커지지만, <strong>괄호 안이 줄어요.</strong> 올인에서는 괄호 안이 음수가 돼 버렸어요.</p>
+<h3>깊을수록 이 문제가 커져요</h3>
+<p>스택이 깊으면 올인 크기가 팟보다 훨씬 커져요. 오늘 가정한 레인지에서는 팟보다 큰 벳을 받아 주는 핸드가 <strong>오버페어 한 개보다 강한 핸드</strong> 쪽으로 쏠렸어요. 그래서 150BB 3벳 팟에서는 "오버페어 = 스택 다 넣는 핸드"가 아니에요. 오버페어의 일은 <strong>약한 페어와 9 페어한테 적당한 크기로 돈을 받는 것</strong>이에요.</p>
+</section><section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. "3벳 팟 오버페어는 무조건 스택 오프"</strong>
+100BB 3벳 팟의 감각을 150BB에 그대로 가져온 경우예요. SPR이 약 5.3에서 약 8.1로 커지면 리버에 남는 돈도 커지고, 그 돈을 받아 줄 핸드는 셋·풀하우스 위주로 좁아져요. 대신 <strong>스택 깊이를 보고 SPR부터</strong> 다시 세요.</p></div><div class="mis-card"><p><strong>실수 2. "리버에 남은 돈이 많으니 아까워서 다 넣는다"</strong>
+남은 116.5BB가 아까운 게 아니라, 그 돈을 걸었을 때 <strong>누가 받아 주느냐</strong>가 중요해요. 오늘은 올인이 체크보다도 약 7.60BB 손해였어요. 대신 크기별로 받아 주는 핸드를 나눠 세요.</p></div><div class="mis-card"><p><strong>실수 3. 플랍에서 리버까지의 크기 계획이 없음</strong>
+플랍을 작게, 턴을 중간으로 건 뒤 리버에서 "다 넣을까"를 고민하는 경우예요. 정말 스택을 다 넣고 싶은 핸드라면 플랍부터 크게 걸어 <strong>리버 올인이 팟 크기 정도</strong>가 되게 만들어야 해요. 대신 플랍 벳을 정할 때 <strong>리버까지 몇 번 걸면 다 들어가는지</strong>를 같이 보세요.</p></div></section>
+<hr />
+<h2>"그럼 넛에 가까운 핸드도 리버에 절반만 걸어요?"</h2>
+<p>아니에요. 오늘 결론은 <strong>오버페어</strong>에 대한 거예요. 오늘 가정에서는 풀하우스처럼 강한 핸드라면 올인을 받아 주는 핸드 대부분을 이겨서, 크게 걸수록 더 벌 수 있어요. 같은 판, 같은 레인지라도 <strong>내 핸드가 받아 주는 핸드를 얼마나 이기느냐</strong>에 따라 크기가 달라져요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<p>깊은 3벳 팟에서 밸류 핸드를 들면 이 순서로 점검하세요.</p>
+<ol>
+<li>프리플랍 직후 <strong>SPR</strong>을 봐요. 8 근처면 작은 벳을 이어 가서는 리버까지 다 안 들어가요</li>
+<li>플랍 벳을 정할 때 <strong>리버에 남을 돈</strong>을 같이 계산해요</li>
+<li>리버에서는 크기별로 <strong>받아 주는 더 나쁜 핸드와 더 좋은 핸드</strong>를 세요</li>
+<li>오버페어 한 개는 보통 <strong>받아 줄 약한 핸드가 남는 크기</strong>를 골라요</li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>학습툴 에퀴티 계산기는 <strong>핸드 대 핸드</strong>로만 확인할 수 있어요. 콤보 수는 위 나눔을 바탕으로 직접 세요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 같은 판, 같은 리버예요. 그런데 이 CO는 오늘 리버 큰 벳에 <strong>9 페어로도 콜하는</strong> 걸 여러 번 보여 줬어요. 116.5BB 올인에도 JJ·TT·88·9 페어가 다 콜하고, 7 페어와 빗나간 드로우만 접는다고 가정해요. 올인과 35BB 중 뭐가 더 벌까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p>올인이어도 더 나쁜 콜이 27, 더 좋은 콜이 9예요.</p>
+<blockquote>
+<p>(27 − 9) ÷ 46 × 116.5 = <strong>약 45.59BB</strong></p>
+</blockquote>
+<p>35BB 벳의 약 13.70BB보다 훨씬 커요 → <strong>올인</strong>. 크기를 키워도 받아 주는 구성이 안 바뀌는 상대라면 큰 벳이 맞아요. 결론을 정한 건 크기가 아니라 <strong>상대의 콜 구성</strong>이에요.</p>
+</details>
+<p><strong>문제 2.</strong> 이번엔 스택이 <strong>100BB</strong>였다고 해요. 프리플랍·플랍·턴은 똑같이 진행돼서, 리버에 남은 스택은 <strong>66.5BB</strong>예요(팟 69.5BB, 거의 팟 크기). 이 크기 올인에는 <strong>JJ·TT까지</strong> 콜하고, 88·9 페어·7 페어·드로우는 접는다고 가정해요. 올인은 체크보다 나을까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p>CO 필요 에퀴티는 <strong>약 32.8%</strong>예요. 더 나쁜 콜 12, 더 좋은 콜 9예요.</p>
+<blockquote>
+<p>(12 − 9) ÷ 46 × 66.5 = <strong>약 4.34BB</strong></p>
+</blockquote>
+<p>이번엔 올인이 <strong>체크보다 나아요</strong>. 스택이 얕아 올인 크기가 팟 정도로 줄자, 받아 주는 약한 핸드가 다시 생겼어요. 다만 같은 가정에서 35BB 벳(약 13.70BB)이 여전히 더 벌어요.</p>
+</details>
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>3벳 팟도 스택이 깊으면 SPR이 커져서 <strong>오버페어로 다 넣기 어려운 팟</strong>이 돼요</li>
+<li>플랍·턴 밸류는 <strong>콜 레인지 상대 에퀴티</strong>로, 리버 크기는 <strong>크기별 더 나쁜 콜 대 더 좋은 콜</strong>로 판단해요</li>
+<li>크기를 키우면 약한 핸드가 먼저 빠지고 <strong>강한 핸드는 남아요.</strong> 너무 크면 체크보다 못할 수 있어요</li>
+<li>앞 스트리트의 벳 크기가 <strong>리버에 남는 돈과 선택지</strong>를 정해요</li>
+</ul>
+</section><section class="sec end"><h2>정리하며</h2>
+<p>오늘은 150BB 3벳 팟에서 QQ로 플랍·턴을 밸류로 걸고, 리버에서 남은 스택을 어떻게 쓸지 따라갔어요.</p>
+<p>플랍·턴은 콜 레인지 상대로도 크게 앞서서 벳이었고, 리버는 올인이 아니라 절반 크기 벳이 체크보다 가장 많이 벌었어요. 올인을 받아 주는 핸드에 셋과 풀하우스가 많이 남았기 때문이에요.</p>
+<p>다음 글 R04에서는 <strong>림프가 여럿 들어온 멀티웨이 팟</strong>에서 넛 플러시 드로우를 들고 따라가는 판을 봐요. 오늘과 달리 상대가 한 명이 아니라서, 팟오즈와 에퀴티를 읽는 법이 달라져요.</p>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 가정 레인지 기준(솔버 결과 아님) · 토너 BB 앤티 1BB · 남은 베팅이 있어 BB 금액은 계산용, 리버 숫자는 상대가 레이즈하지 않는다는 가정</small></p></section>
+</article>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="075_A12.html">SPR 10에서 탑페어, 체크레이즈를 맞으면 왜 올인 대신 콜일까?</a></li><li><a href="079_A16.html">3벳 팟의 SPR: 왜 플랍부터 큰 결정이 올까?</a></li></ul></aside><nav class="nav"><a class="prev" href="144_R02.html"><div class="l">← 이전 글</div><div class="t">CO 오픈에 버튼 3벳, 콜하고 아웃 오브 포지션으로 치르는 3벳팟</div></a><a class="next" href="146_R04.html"><div class="l">다음 글 →</div><div class="t">초반 림프 멀티웨이 팟에서 넛 플러시 드로우</div></a></nav></main>
+</body>
+</html>

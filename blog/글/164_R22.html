@@ -1,0 +1,319 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>후반 30BB: BTN 3벳을 받고 콜한 뒤 치르는 판 · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge r">실전</span><span class="chip">토너</span><span class="n">실전 22번째 글 (전체 243편 중 164번째)</span></div><h1>후반 30BB: BTN 3벳을 받고 콜한 뒤 치르는 판</h1>
+<article>
+<p>안녕하세요. 이제 대회 <strong>후반</strong>이에요. 스택은 <strong>30BB</strong>까지 내려왔고, 오픈 하나에 3벳이 붙으면 스택의 상당 부분이 한 번에 걸리는 레벨이에요.</p>
+<p>오늘은 HJ에서 7♥7♣로 연 판에 BTN이 3벳을 했고, Hero가 <strong>콜</strong>한 뒤 플랍과 턴을 치러요. 3벳 팟을 콜하는 판은 R13에서 한 번 따라갔어요. 오늘은 스택이 더 얕아서 생기는 일, 특히 <strong>BTN의 c-bet 크기 하나가 답을 바꾸는 지점</strong>에 집중해요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>30BB에서 3벳을 콜하면 플랍 SPR이 <strong>약 1.49</strong>가 되고, 그래서 플랍 c-bet이 곧 <strong>"다음 장 입장료"</strong>가 되는 이유</li>
+<li>콜 길의 값을 <strong>어떤 가정으로 세는지</strong>, 그 가정이 무엇을 빼먹는지</li>
+<li>c-bet이 4BB에서 8BB로 커질 때 콜·올인 순서가 뒤집히는 경계와, 그 경계가 <strong>BTN이 올인을 받을 가격</strong>에 걸려 있다는 것</li>
+</ul></div>
+<hr />
+<h2>오늘의 한 판</h2>
+<p><strong>Hero (HJ · 스택 30BB)</strong> · 상대 (BTN · 스택 30BB) · 블라인드 0.5/1, <strong>BB 앤티 1BB</strong> · 대회 후반</p>
+<p><img src="../카드/7h.svg" width="48"> <img src="../카드/7c.svg" width="48"></p>
+<h3>프리플랍</h3>
+<p>UTG 폴드 → Hero(HJ) <strong>2.2BB 오픈</strong> → CO 폴드 → BTN <strong>6.6BB로 3벳</strong> → SB·BB 폴드. Hero 앞의 팟은 SB 0.5 + BB 1 + 앤티 1 + Hero 2.2 + BTN 6.6 = <strong>11.3BB</strong>예요(앤티는 BB가 낸 돈이에요). <strong>Hero는 접을까, 4.4BB를 더 내고 콜할까, 남은 27.8BB를 다 밀까?</strong> Hero는 콜했어요. 팟 <strong>15.7BB</strong>, 두 사람 남은 스택 <strong>23.4BB</strong></p>
+<blockquote>
+<p>Hero와 BTN은 둘 다 앤티를 내지 않는 자리라 남은 스택이 끝까지 같아요.</p>
+</blockquote>
+<h3>플랍 · 팟 15.7BB</h3>
+<p><img src="../카드/Td.svg" width="48"> <img src="../카드/5c.svg" width="48"> <img src="../카드/3h.svg" width="48"></p>
+<p>Hero <strong>체크</strong> → BTN <strong>4BB c-bet</strong>(팟의 약 25.48%) → <strong>Hero는 접을까, 콜할까, 23.4BB 체크레이즈 올인할까?</strong> Hero는 콜했어요. 팟 <strong>23.7BB</strong>, 남은 스택 <strong>19.4BB</strong></p>
+<blockquote>
+<p>77은 T 아래 포켓페어예요. 무늬가 다 다르고 연결도 약한 마른 보드예요.</p>
+</blockquote>
+<h3>턴 · 팟 23.7BB</h3>
+<p><img src="../카드/Td.svg" width="48"> <img src="../카드/5c.svg" width="48"> <img src="../카드/3h.svg" width="48"> <img src="../카드/Ks.svg" width="48"></p>
+<p>K♠. Hero <strong>체크</strong> → BTN <strong>19.4BB 올인</strong> → <strong>Hero는 콜할까, 접을까?</strong> Hero는 접었어요.</p>
+<hr />
+<p class="concl"><strong>결론부터 말할게요. 프리플랍은 콜, 플랍도 콜, 턴 올인에는 폴드예요.</strong> 플랍 콜이 올인보다 나았던 건 c-bet이 작아서 다음 장을 싸게 봤기 때문이에요. c-bet 크기가 바뀌면 이 순서가 어떻게 흔들리는지는 '이 판이 달라지는 조건'에서 따로 봐요.</p>
+<blockquote>
+<p>남은 베팅이 있어 실제 결과는 달라질 수 있어요. 프리플랍·플랍의 BB 금액은 선택끼리 비교하는 계산용이에요.</p>
+</blockquote>
+<h2>오늘의 가정</h2>
+<p>레인지는 설명을 위한 가정이에요(솔버 결과 아님).</p>
+<ul>
+<li><strong>BTN 3벳</strong>: 88+, ATs+, KJs+, QJs, AQo+, A5s-A3s. Hero 카드와 겹치는 콤보가 없어 <strong>106콤보</strong></li>
+<li><strong>Hero 4벳 올인에 BTN</strong>: 88+, AQs+, AQo+는 콜, 나머지는 폴드</li>
+<li><strong>플랍</strong>: BTN은 <strong>레인지 전체</strong>로 c-bet해요. Hero가 체크레이즈 올인하면 88+와 ATs(T 탑페어)는 콜, 나머지는 폴드</li>
+<li><strong>턴</strong>: BTN은 <strong>Hero를 이기고 있을 때만</strong> 남은 스택을 밀고, Hero는 그때 접어요. BTN이 지고 있으면 체크하고, <strong>리버도 둘 다 체크한 뒤 쇼다운</strong>해요</li>
+</ul>
+<h2>1단계. 프리플랍: 숫자만 짧게</h2>
+<blockquote>
+<p>필요 에퀴티 = 4.4 ÷ 15.7 = <strong>약 28.03%</strong></p>
+</blockquote>
+<p>106콤보 상대로 77의 에퀴티는 <strong>약 40.73%</strong>예요(카드를 무작위로 많이 돌려 센 값). 가격으로는 넉넉하지만, OOP라 이 에퀴티를 다 가져가진 못해요(I31). 이 숙제는 질문 절에서 닫을게요.</p>
+<p>4벳 올인은 E16에서 리스틸 값을 나눠 구한 방법(<strong>접을 때 몫 + 콜 받을 때 몫</strong>) 그대로예요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>4벳 올인 27.8BB</th>
+<th>값</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BTN 폴드 비율(32 ÷ 106)</td>
+<td>약 30.19%</td>
+</tr>
+<tr>
+<td>받아 줄 때 77 에퀴티(74콤보)</td>
+<td>약 33.86%</td>
+</tr>
+<tr>
+<td>접을 때 몫 / 콜 받을 때 몫</td>
+<td>약 +3.41BB / 약 −4.63BB</td>
+</tr>
+<tr>
+<td>폴드 대비 올인</td>
+<td><strong>약 −1.22BB</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>받아 주는 74콤보에 77보다 높은 포켓페어 42콤보가 다 들어 있어 올인은 폴드보다도 작아요. 남는 건 콜이에요.</p>
+<h2>2단계. 플랍: SPR 1.49에서 c-bet 콜은 무엇을 사나</h2>
+<h3>30BB라서 생기는 깊이</h3>
+<blockquote>
+<p>SPR = 23.4 ÷ 15.7 = <strong>약 1.49</strong></p>
+</blockquote>
+<p>A16에서 본 대로 3벳 팟은 SPR이 낮아요. SPR 2였던 R13에서는 c-bet을 콜한 뒤에도 남은 스택이 턴 팟보다 컸어요. 오늘은 4BB를 콜하면 턴 팟 23.7BB에 남은 스택 19.4BB라, <strong>남은 돈이 팟보다 작아요.</strong> 턴에 BTN이 밀어도 팟벳이 안 되는 크기예요.</p>
+<p>그래서 오늘 플랍 콜이 사는 건 딱 하나예요. <strong>턴 카드 한 장을 보고 나서 스택 전부를 정할 권리</strong>예요. 그 권리의 값이 c-bet 크기, 즉 <strong>입장료</strong>예요.</p>
+<h3>콜의 가격</h3>
+<blockquote>
+<p>필요 에퀴티 = 4 ÷ 23.7 = <strong>약 16.88%</strong></p>
+</blockquote>
+<p>BTN 100콤보 전체 상대 77의 에퀴티는 <strong>약 45.46%</strong>라 접을 이유는 없어요. 질문은 <strong>콜 대 체크레이즈 올인</strong>이에요.</p>
+<h3>올인 길: R13에서 본 '누가 남나'로 짧게</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Hero 올인에 BTN</th>
+<th>핸드</th>
+<th>콤보</th>
+<th>77 에퀴티</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>콜</td>
+<td>88·99·TT·JJ+·ATs</td>
+<td>42</td>
+<td>약 9.43%</td>
+</tr>
+<tr>
+<td>폴드</td>
+<td>AJs+·AQo+·KJs+·QJs, A4s(A 하이), A5s·A3s(5·3 페어)</td>
+<td>58</td>
+<td>약 71.55%</td>
+</tr>
+</tbody>
+</table></div>
+<p>접으면 벳 뒤 팟 19.7BB를 바로 가져오고, 콜을 받으면 23.4BB를 다 넣고 62.5BB 팟에서 약 9.43%만 돌려받아요.</p>
+<blockquote>
+<p>콜 받을 때 잃는 돈: 23.4 − 0.0943 × 62.5 → <strong>약 17.50BB</strong>
+올인: 0.58 × 19.7 − 0.42 × 17.50 → <strong>약 +4.07BB</strong></p>
+</blockquote>
+<h3>콜 길: 어떻게 셌나</h3>
+<p>콜 길은 턴과 리버가 남아 있어서 에퀴티 하나로 끝나지 않아요. 그래서 오늘의 가정대로 판을 끝까지 돌렸어요. <strong>나올 수 있는 턴 카드와 리버 카드를 하나씩 다 놓고</strong>, BTN 100콤보마다 이렇게 셌어요.</p>
+<ul>
+<li>턴에서 BTN이 77보다 <strong>앞서면</strong>: BTN이 밀고 Hero가 접어요 → 이 경우 Hero 몫은 0</li>
+<li>턴에서 BTN이 <strong>앞서지 않으면</strong>: 리버까지 둘 다 체크해 쇼다운해요 → 이기면 팟을 가져와요</li>
+</ul>
+<p>이렇게 센 Hero의 팟 가져가는 비율이 <strong>약 42.83%</strong>예요. 이기면 Hero 콜까지 들어간 턴 팟 23.7BB를 가져가고, 4BB는 어느 경우에도 이미 냈어요.</p>
+<blockquote>
+<p>콜 길: 0.4283 × 23.7 − 4 → <strong>약 +6.15BB</strong>
+콜 약 +6.15BB &gt; 올인 약 +4.07BB &gt; 폴드 0 → <strong>콜</strong></p>
+</blockquote>
+<!-- 그림: 플랍 선택별 손익 막대 — 콜 6.15 · 올인 4.07 · 폴드 0 (c-bet 4BB) -->
+
+<h3>이 차이는 모델 위의 값이에요</h3>
+<p>콜이 올인보다 <strong>약 2.08BB</strong> 크다는 건 위 가정 위에서 나온 값이에요. 이 모델은 두 쪽으로 단순해요. BTN이 블러프를 전혀 안 섞어서 <strong>Hero는 턴에 늘 맞게 접고</strong>, 반대로 Hero가 앞설 때 <strong>돈을 더 받지도 못해요.</strong></p>
+<p>BTN이 턴에 빗나간 핸드로도 민다면 Hero의 턴 답이 바뀌고(3단계), 그러면 콜 길의 값도 +6.15BB에서 달라져요. 그러니 "콜이 낫다"는 <strong>이 상대 모델에서</strong> 맞는 말이에요.</p>
+<h2>3단계. 턴: K♠ 올인, R13과 답이 갈린 이유</h2>
+<blockquote>
+<p>필요 에퀴티 = 19.4 ÷ 62.5 = <strong>약 31.04%</strong></p>
+</blockquote>
+<p>R13에서 본 방법대로 <strong>미는 목록에 지던 핸드가 몇 콤보인지</strong>를 봐요. K♠는 AK·KQs·KJs를 K 페어로, KK를 셋으로 만들어요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>BTN 턴 올인 레인지</th>
+<th>콤보</th>
+<th>77 에퀴티</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>이길 때만(오늘 가정): 88+·ATs·AK·KQs·KJs</td>
+<td>57</td>
+<td>약 4.07%</td>
+</tr>
+<tr>
+<td>77에 지는 34콤보까지 전부</td>
+<td>91</td>
+<td>약 32.07%</td>
+</tr>
+</tbody>
+</table></div>
+<p>지는 34콤보는 AQ·AJs·A4s(A 하이 거트샷), QJs(양방향 스트레이트 드로우), A5s·A3s(5·3 페어)예요. 오늘 가정에서는 약 4.07% &lt; 약 31.04%라 <strong>폴드</strong>예요.</p>
+<p>R13의 턴은 BTN이 A 하이(AK·AJs)를 섞어 민다고 봐서 약 44.29% &gt; 필요 약 33.94%로 콜이었어요. 오늘은 그 반대 끝이라 약 4.07% &lt; 약 31.04%예요. 34콤보를 <strong>전부</strong> 섞어야 약 32.07%로 필요를 겨우 넘으니, 같은 원페어라도 <strong>상대 모델이 답을 정해요.</strong></p>
+<section class="sec why"><h2>왜 그럴까: 얕은 SPR에서는 c-bet 한 번이 양쪽 가격을 함께 움직여요</h2>
+<h3>Hero 쪽: 입장료</h3>
+<p>SPR이 낮으면 플랍 콜 한 번이 턴의 밀기·받기 하나를 사는 값이에요. 사는 물건은 늘 "턴 한 장"인데, c-bet이 클수록 그 값이 비싸져요. 그래서 c-bet이 커질수록 <strong>Hero 쪽에서는</strong> 콜보다 올인이 상대적으로 나아 보이기 시작해요.</p>
+<h3>BTN 쪽: 받을 가격</h3>
+<p>같은 c-bet은 BTN이 Hero 올인을 받을 가격도 바꿔요. 4BB를 건 BTN은 19.4BB를 더 내고 43.1BB를 노리지만, 8BB를 건 BTN은 15.4BB만 더 내고 47.1BB를 노려요. 스택이 얕을수록 c-bet으로 이미 넣은 돈이 남은 스택에서 차지하는 몫이 커서, <strong>받을 가격이 빨리 좋아져요.</strong></p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>얕은 SPR에서 c-bet 크기는 Hero의 콜 값과 BTN의 폴드 값을 <strong>반대 방향으로 동시에</strong> 밀어요. 한쪽만 보고 판단하면 늘 반쪽짜리 계산이 돼요.</p>
+</section><section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. "콜 길은 지금 에퀴티로 셈하면 된다"</strong>
+플랍 에퀴티 약 45.46%는 끝까지 체크로 간다고 칠 때의 몫이에요. 턴에 밀리면 접는 길에서는 약 42.83%로 줄어요. 대신 <strong>콜한 뒤 턴에 무슨 일이 생기는지</strong>까지 넣어 길 전체로 셈해요.</p></div><div class="mis-card"><p><strong>실수 2. "오버카드에게 공짜 카드를 주면 안 된다"</strong>
+공짜가 아니라 4BB를 받고 주는 카드예요. 콜 길 계산에는 오버카드가 턴에 맞아 Hero가 접는 경우가 이미 0으로 들어 있어요. 대신 <strong>그 카드를 주는 값을 길 전체로</strong> 셈해요.</p></div><div class="mis-card"><p><strong>실수 3. "플랍에 콜했으니 턴 올인도 받아야 한다"</strong>
+플랍 콜의 값 +6.15BB는 처음부터 "BTN이 미는 턴에는 접는다"를 넣고 센 숫자예요. 턴 폴드는 계획대로예요. 대신 턴에는 <strong>그 턴의 미는 목록</strong>으로 다시 셈해요.</p></div></section>
+<hr />
+<h2>"프리플랍에 그냥 접으면 안 되나요?"</h2>
+<p>1단계에서 남긴 숙제예요. 프리플랍 콜이 받쳐지려면 <strong>더 낸 4.4BB보다 플랍 이후 길에서 돌려받는 몫이 커야</strong> 해요. 플랍 손익은 "플랍에서 접기 = 0" 기준이라, 프리플랍에 낸 4.4BB는 이미 들어간 돈이거든요.</p>
+<p>이 플랍 하나로 보면 콜 길이 <strong>약 +6.15BB</strong>라 4.4BB보다 커요. 다만 이 모델이 넣은 손해는 <strong>턴에 뒤지면 접어서 리버에 살아날 카드를 버리는 몫</strong>뿐이에요. IP인 BTN이 블러프나 얇은 밸류로 OOP Hero를 압박하는 손해(I31에서 본 실현 손해)는 빠져 있어서, 실제 몫은 이보다 작을 수 있어요.</p>
+<p>또 이건 T♦5♣3♥ 하나와 오늘 레인지 위의 값이에요. 77이 더 불리한 플랍이 나오거나 BTN이 더 좁게 3벳하는 사람이라면 같은 식으로 다시 셈해 봐야 해요.</p>
+<h2>이 판이 달라지는 조건</h2>
+<h3>c-bet이 8BB였다면: 숫자만 보면 올인</h3>
+<p>BTN이 팟의 절반쯤인 8BB를 걸었다고 해 볼게요. 먼저 올인에 접는 58콤보·받는 42콤보를 그대로 둬 볼게요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>c-bet</th>
+<th>콜 필요 에퀴티</th>
+<th>콜 길</th>
+<th>올인(58콤보가 접을 때)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4BB</td>
+<td>약 16.88%</td>
+<td>약 +6.15BB</td>
+<td>약 +4.07BB</td>
+</tr>
+<tr>
+<td>8BB</td>
+<td>약 25.24%</td>
+<td>약 +5.58BB</td>
+<td><strong>약 +6.39BB</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>콜 길의 승률 약 42.83%는 같은데 입장료만 두 배가 됐고, 올인이 접게 했을 때 가져오는 팟은 23.7BB로 커졌어요.</p>
+<h3>그런데 BTN은 그 가격에 접으면 손해예요</h3>
+<p>8BB를 건 BTN은 15.4BB만 더 내면 올인을 받을 수 있어요. 손마다 77 상대 에퀴티를 보면 이래요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>BTN 핸드</th>
+<th>콤보</th>
+<th>BTN 에퀴티</th>
+<th>4BB 때(필요 약 31.04%)</th>
+<th>8BB 때(필요 약 24.64%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>접는 58콤보 전체</td>
+<td>58</td>
+<td>약 28.45%</td>
+<td>접는 게 맞음</td>
+<td>받아야 맞음</td>
+</tr>
+<tr>
+<td>그중 A5s·A3s</td>
+<td>6</td>
+<td>약 24.44%</td>
+<td>접는 게 맞음</td>
+<td>그래도 접는 게 맞음</td>
+</tr>
+</tbody>
+</table></div>
+<p>Hero가 미는 핸드가 77 같은 핸드라고 볼 때, 8BB에서는 <strong>오버카드·A4s·QJs 같은 52콤보를 접는 게 BTN의 실수</strong>이고 A5s·A3s 6콤보만 접는 게 맞아요.</p>
+<h3>BTN이 가격대로 대응하면</h3>
+<p>A5s·A3s만 접고 나머지 <strong>94콤보가 받는다면</strong> 100콤보 중 6콤보만 접고, 받는 94콤보 상대 77 에퀴티는 <strong>약 43.54%</strong>예요.</p>
+<blockquote>
+<p>받을 때 몫: 0.4354 × 39.1 − 0.5646 × 23.4 → <strong>약 +3.81BB</strong>
+올인: 0.06 × 23.7 + 0.94 × 3.81 → <strong>약 +5.01BB</strong> &lt; 콜 길 약 +5.58BB → <strong>콜</strong></p>
+</blockquote>
+<p>39.1BB는 Hero가 이길 때 가져오는 62.5BB에서 자기가 넣은 23.4BB를 뺀 돈이에요. 8BB에서 올인이 앞서는 건 <strong>BTN이 이 가격에도 오버카드를 놓는 상대</strong>일 때뿐이에요.</p>
+<h3>BTN이 88·99를 올인에 접는다면</h3>
+<p>c-bet은 4BB 그대로인데 BTN이 88·99까지 올인에 놓는 사람이라면, 콜하는 쪽은 TT+·ATs 30콤보(77 에퀴티 약 9.21%)만 남고 접는 쪽은 70콤보로 커져요.</p>
+<blockquote>
+<p>올인: 0.7 × 19.7 − 0.3 × 약 17.65 → <strong>약 +8.50BB</strong> &gt; 콜 길 약 +6.15BB → <strong>올인</strong></p>
+</blockquote>
+<p>접는 묶음이 58에서 70콤보로 커지자 올인이 콜 길을 넘었어요. 3벳 팟 언더페어를 잘 놓는 상대인지는 계산 밖의 관찰이라 조건부로만 말할게요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>30BB 3벳 팟은 앉기 전에 <strong>이 BTN이 c-bet을 작게 거는지 크게 거는지</strong>부터 기억해 둬요</li>
+<li>큰 c-bet을 맞으면 체크레이즈 전에 <strong>"이 사람이 쇼다운에서 오버카드로 큰 올인을 받는 걸 본 적 있나"</strong>를 떠올려요</li>
+<li>턴에 원페어로 올인을 받으면 <strong>"이 사람이 빗나간 A 하이로 미는 걸 본 적 있나"</strong> 하나만 떠올려요</li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>학습툴 팟오즈 계산기로 필요 에퀴티를 확인할 수 있어요. 에퀴티·비율은 문제에 준 값을 써요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 같은 판인데 두 사람 스택이 <strong>35BB</strong>예요. 프리플랍(2.2BB 오픈·6.6BB 3벳·콜), 플랍 T♦5♣3♥, BTN 4BB c-bet까지 똑같아요. 이제 남은 스택은 <strong>28.4BB</strong>이고, Hero가 올인해 BTN이 받으면 최종 팟은 <strong>72.5BB</strong>예요. BTN 대응(올인에 42콤보 콜·58콤보 폴드, 받을 때 77 에퀴티 약 9.43%)과 턴 가정도 본문과 같아요. 콜 길과 올인을 비교하고, 이 깊이에서 BTN이 58콤보(77 상대 약 28.45%)를 접는 게 맞는지도 확인해 보세요.</p>
+<details>
+<summary>정답 보기</summary>
+<blockquote>
+<p>SPR = 28.4 ÷ 15.7 = <strong>약 1.81</strong></p>
+</blockquote>
+<p>콜 길은 그대로 <strong>약 +6.15BB</strong>예요. 턴에 BTN이 밀면 Hero는 금액과 상관없이 접고, 아니면 체크로 쇼다운하니 남은 스택 크기가 셈에 들어가지 않아요.</p>
+<blockquote>
+<p>콜 받을 때 잃는 돈: 28.4 − 0.0943 × 72.5 → <strong>약 21.56BB</strong>
+올인: 0.58 × 19.7 − 0.42 × 21.56 → <strong>약 +2.37BB</strong> &lt; 콜 길 약 +6.15BB → <strong>콜</strong></p>
+</blockquote>
+<p>BTN은 24.4BB를 더 내고 72.5BB 팟을 보니 필요 에퀴티가 <strong>약 33.66%</strong>예요. 58콤보의 약 28.45%보다 높아서 접는 게 맞아요. 스택이 깊어지면 접는 쪽에서 얻는 몫은 같은데, <strong>받아 줄 때 잃는 돈만 커져요.</strong></p>
+</details>
+<p><strong>문제 2.</strong> 본문과 같은 판, c-bet 4BB, BTN 대응도 같은데 Hero가 <strong>9♠9♥</strong>예요. BTN은 Hero 카드를 모르니 올인에 88+·ATs로 받고 나머지는 접어요. 아래 값만으로 콜 길과 올인을 직접 셈해 보세요.</p>
+<ul>
+<li>BTN 레인지(9♠9♥·보드 빼고) <strong>95콤보</strong> 중 올인에 콜 <strong>37콤보</strong>, 폴드 <strong>58콤보</strong></li>
+<li>받아 줄 때 99 에퀴티 <strong>약 22.35%</strong></li>
+<li>콜 길에서 99가 팟을 가져가는 비율 <strong>약 50.88%</strong>(본문과 같은 턴 가정)</li>
+</ul>
+<details>
+<summary>정답 보기</summary>
+<blockquote>
+<p>폴드 비율 = 58 ÷ 95 = <strong>약 61.05%</strong>
+콜 받을 때 잃는 돈: 23.4 − 0.2235 × 62.5 → <strong>약 9.43BB</strong>
+올인: 0.6105 × 19.7 − 0.3895 × 9.43 → <strong>약 +8.35BB</strong>
+콜 길: 0.5088 × 23.7 − 4 → <strong>약 +8.06BB</strong>
+올인 약 +8.35BB &gt; 콜 길 약 +8.06BB → <strong>올인</strong></p>
+</blockquote>
+<p>99에게 88은 이기는 핸드인데 올인을 <strong>받아 주는</strong> 쪽에 있어요. 받아 주는 묶음 안에 Hero가 이기는 핸드가 생기면 올인 값이 올라가요.</p>
+<p>다만 차이가 <strong>약 0.29BB</strong>뿐이에요. BTN이 88을 접는 사람이라면 폴드 64콤보(약 67.37%), 콜 31콤보(99 에퀴티 약 8.94%)가 돼요.</p>
+<blockquote>
+<p>올인(88이 접을 때): 0.6737 × 19.7 − 0.3263 × 약 17.81 → <strong>약 +7.46BB</strong> &lt; 콜 길 약 +8.06BB → <strong>콜</strong></p>
+</blockquote>
+<p>같은 99라도 <strong>88 6콤보의 대응 하나</strong>로 답이 다시 뒤집혀요.</p>
+</details>
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>30BB에서 3벳을 콜하면 플랍 SPR이 약 1.49라, 플랍 콜 뒤 턴에는 <strong>밀기·받기만</strong> 남아요. 플랍 콜은 턴 한 장을 보는 값이에요</li>
+<li>콜 길의 값은 <strong>상대가 턴에 무엇으로 미는지</strong>까지 정해 놓고 끝까지 세야 나와요. 그 모델이 바뀌면 값도 바뀌어요</li>
+<li>얕은 SPR에서 c-bet 크기는 <strong>Hero의 콜 값과 상대의 폴드 값을 함께</strong> 바꿔요. 한쪽 가격만 보고 고르면 계산이 반쪽이 돼요</li>
+<li>상대가 접어 줄지는 <strong>그 손의 에퀴티와 상대가 받을 가격</strong>을 손마다 맞대 봐야 알 수 있어요. 한 덩어리 평균으로 보면 맞게 접는 손을 놓쳐요</li>
+</ul>
+</section><section class="sec end"><h2>정리하며</h2>
+<p>오늘은 대회 후반 30BB에서 HJ 77로 BTN 3벳을 콜하고, SPR 약 1.49의 3벳 팟을 턴까지 따라갔어요. 프리플랍은 4벳 올인이 음수라 콜, 플랍은 4BB c-bet이 싸서 콜 길이 올인보다 컸고, 턴 K♠ 올인은 블러프 없는 BTN 모델에서 접었어요. c-bet이 8BB면 Hero의 입장료와 BTN의 받을 가격이 함께 움직여서, 손마다 다시 세어야 했어요.</p>
+<p>다음 글 R23에서는 스택이 더 얕아진 판에서, c-bet 한 번이 곧 커밋이 되는 지점을 봐요. 오늘은 콜 한 번 뒤에 턴 결정이 남았다면, 다음은 그 여유마저 사라지는 깊이예요.</p>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 가정 레인지 기준(솔버 결과 아님) · 토너 BB 앤티 1BB · 남은 베팅이 있어 BB 금액은 계산용</small></p></section>
+</article>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="079_A16.html">3벳 팟의 SPR: 왜 플랍부터 큰 결정이 올까?</a></li><li><a href="113_E16.html">12BB 리스틸 올인: 오픈한 상대에게 K9o로 다시 올인해도 될까?</a></li></ul></aside><nav class="nav"><a class="prev" href="163_R21.html"><div class="l">← 이전 글</div><div class="t">중반 50BB: 리버 블로커 레이즈 블러프</div></a><a class="next" href="165_R23.html"><div class="l">다음 글 →</div><div class="t">후반 25BB: c-bet 한 번에 커밋되는 판</div></a></nav></main>
+</body>
+</html>

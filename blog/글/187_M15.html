@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A 들고 리쉬브가 편하다 · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge m">마스터</span><span class="chip">토너</span><span class="n">마스터 15번째 글 (전체 243편 중 187번째)</span></div><h1>A 들고 리쉬브가 편하다</h1>
+<article>
+<p>안녕하세요. E01에서 블러프캐처 콜은 <strong>내 카드가 밸류를 지우나, 블러프를 지우나</strong>로 갈렸죠. 프리플랍 리쉬브에선 그 질문이 <strong>"내 카드가 콜할 핸드를 지우나, 접을 핸드를 지우나"</strong>로 바뀌어요. M11에선 리스틸 이득이 접을 때 몫과 받혔을 때 몫의 합이었고요.</p>
+<p>오늘은 이 둘을 한 장의 A 위에서 만나게 해요. A는 상대가 받을 핸드를 지워 주는 블로커이면서, 받혔을 때는 나를 누르는 카드이기도 해요. 그 두 얼굴을 콤보 수와 승률로 나눠 잴게요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>A 블로커가 콜 쪽과 접는 쪽을 <strong>각각 몇 콤보</strong> 지우는지 손으로 세는 법, 그리고 그 덕이 왜 접는 비율 몇 %p에 그치는지</li>
+<li>블로커 덕과 지배당하는 손해가 <strong>같은 A에서</strong> 나온다는 것: 받혔을 때 승률을 상대 묶음별로 쪼개 보기</li>
+<li>같은 A-x가 깊이 하나로 리쉬브에서 폴드로 뒤집힐 때, 그 원인을 <strong>깊이 몫과 지배 몫</strong>으로 갈라 보기</li>
+</ul></div>
+<hr />
+<h2>감: "A 들고 있으면 받힐 콤보가 적다"</h2>
+<h3>장면</h3>
+<p>M11과 같은 테이블이에요. 6명, 앤티 1인당 <strong>0.125BB</strong>, 블라인드 <strong>0.5BB / 1BB</strong>, 칩 기준. 대회 중반, CO는 <strong>30BB</strong>로 Hero의 두 배쯤 되는 스택이에요. 버튼과 SB는 Hero보다 짧아서, CO 입장에선 블라인드를 털기 좋은 자리죠.</p>
+<p>CO가 <strong>2BB</strong>로 열고 모두 폴드, Hero는 <strong>BB 15BB</strong>예요. 지금 팟은 <strong>4.25BB</strong>예요. Hero가 A♥3♥를 들었어요. 같은 자리에서 K♥9♥였다면 조금 망설였을 텐데, A3s는 손이 먼저 칩으로 가요. "A를 쥐었으니 AA·AK로 받힐 일이 줄었다"는 거죠. 이런 판단, 해 본 적 있죠.</p>
+<h3>계산 방법(가정, M11과 같음)</h3>
+<ul>
+<li>CO 오픈 범위: <strong>22+, A2s+, A7o+, K8s+, KTo+, Q9s+, QTo+, J9s+, JTo, T8s+, 97s+, 86s+, 75s+, 65s, 54s</strong></li>
+<li>CO는 Hero가 <strong>22+, A2s+, A8o+, K9s+, KJo+, QTs+, JTs</strong>로 리스틸한다고 보고, 그 범위 상대로 칩 기준 본전 이상인 핸드로만 콜해요. 오늘 쓰는 Hero 핸드는 모두 이 범위 <strong>안</strong>의 핸드예요</li>
+<li>콤보는 Hero 카드를 빼고 세고, 받혔을 때 승률은 몬테카를로로. 받히면 그대로 쇼다운이고, <strong>이번 한 번의 결정 기준</strong>까지만 봐요</li>
+<li>칩 기준이라, 장면에 적은 다른 자리의 스택이나 대회 단계(상금 압박)는 계산에 들어가지 않아요. 장면의 색깔로만 읽어 주세요</li>
+</ul>
+<p>15BB에서 이 규칙으로 고른 CO 콜 범위는 <strong>22+, A7s+, A9o+, KJs+, KQo</strong>예요. Hero 카드를 빼기 전 <strong>186콤보</strong>, 오픈 범위 전체는 <strong>362콤보</strong>예요.</p>
+<h2>이론: A는 콜 콤보를 가장 많이 지우고, 접는 콤보는 가장 적게 지운다</h2>
+<h3>표 1. Hero 카드가 지우는 콤보 (15BB)</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Hero 핸드</th>
+<th>CO 오픈 콤보</th>
+<th>CO 콜 콤보</th>
+<th>CO 접는 콤보</th>
+<th>CO가 접는 비율</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>(지우기 전)</td>
+<td>362</td>
+<td>186</td>
+<td>176</td>
+<td>—</td>
+</tr>
+<tr>
+<td>A♥3♥</td>
+<td>323</td>
+<td>158 (−28)</td>
+<td>165 (−11)</td>
+<td>약 51.1%</td>
+</tr>
+<tr>
+<td>K♥9♥</td>
+<td>329</td>
+<td>167 (−19)</td>
+<td>162 (−14)</td>
+<td>약 49.2%</td>
+</tr>
+<tr>
+<td>Q♥T♥</td>
+<td>322</td>
+<td>168 (−18)</td>
+<td>154 (−22)</td>
+<td>약 47.8%</td>
+</tr>
+</tbody>
+</table></div>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>감은 맞아요. 이 장면에서 A♥3♥는 셋 중 <strong>가장 좋은 블로커</strong>예요. 콜 콤보는 186에서 <strong>158콤보</strong>로 가장 많이 지우고, 접는 콤보는 176에서 <strong>165콤보</strong>로 가장 적게 지워요. 받을 핸드는 많이 빼고, 접어 줄 핸드는 덜 뺀 거예요.</p>
+<p>Q♥T♥는 반대예요. 콜 콤보는 18개만 지우는데 접는 콤보를 22개나 지워서, 접는 비율이 오히려 <strong>약 47.8%</strong>로 셋 중 가장 낮아요. CO가 열었다 접는 QJ·QT·KT·JT 같은 브로드웨이를 Q♥T♥가 잔뜩 지우거든요.</p>
+<p>그런데 A3s의 접는 비율은 K9s보다 <strong>2%p 남짓</strong> 높을 뿐이에요. 가장 좋은 블로커인데 왜 이것밖에 안 될까요. 그리고 표 아래 결과를 미리 말하면, 리스틸 이득은 블로커가 가장 나쁜 QTs가 1등이에요. 이 두 가지가 오늘의 핵심이에요.</p>
+<section class="sec why"><h2>왜 그럴까: 블로커는 콤보 몇 개, 승률은 팟 전체를 움직인다</h2>
+<h3>손으로 세 보기: 콜 쪽</h3>
+<p>CO 콜 범위를 네 묶음으로 나눠서, Hero 카드가 몇 개씩 지우는지 세어 볼게요. 한 장이 겹치면 페어는 6에서 3, 수딧은 4에서 3, 오프수딧은 12에서 9가 돼요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>CO 콜 범위 묶음</th>
+<th>지우기 전</th>
+<th>A♥3♥</th>
+<th>K♥9♥</th>
+<th>Q♥T♥</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>페어 22~AA</td>
+<td>78</td>
+<td>72 (AA·33)</td>
+<td>72 (KK·99)</td>
+<td>72 (QQ·TT)</td>
+</tr>
+<tr>
+<td>A 수딧 A7s~AKs</td>
+<td>28</td>
+<td>21 (일곱 개 전부)</td>
+<td>26 (A9s·AKs)</td>
+<td>26 (AQs·ATs)</td>
+</tr>
+<tr>
+<td>A 오프 A9o~AKo</td>
+<td>60</td>
+<td>45 (다섯 개 전부)</td>
+<td>54 (A9o·AKo)</td>
+<td>54 (AQo·ATo)</td>
+</tr>
+<tr>
+<td>KJs·KQs·KQo</td>
+<td>20</td>
+<td>20</td>
+<td>15</td>
+<td>16</td>
+</tr>
+<tr>
+<td>합계</td>
+<td>186</td>
+<td>158</td>
+<td>167</td>
+<td>168</td>
+</tr>
+</tbody>
+</table></div>
+<p>A♥는 <strong>콜 범위의 A-x 전부</strong>에 한 장씩 걸려요. K♥9♥는 A-x 중 K나 9가 든 것만 건드리고요. 차이는 거의 다 이 두 줄, A 수딧과 A 오프에서 나와요.</p>
+<h3>손으로 세 보기: 접는 쪽</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>CO 접는 범위 묶음</th>
+<th>지우기 전</th>
+<th>A♥3♥</th>
+<th>K♥9♥</th>
+<th>Q♥T♥</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>작은 A: A2s~A6s, A7o, A8o</td>
+<td>44</td>
+<td>33</td>
+<td>44</td>
+<td>44</td>
+</tr>
+<tr>
+<td>K-x: K8s·K9s·KTs, KTo·KJo</td>
+<td>36</td>
+<td>36</td>
+<td>27</td>
+<td>32</td>
+</tr>
+<tr>
+<td>Q-x: Q9s·QTs·QJs, QTo·QJo</td>
+<td>36</td>
+<td>36</td>
+<td>35</td>
+<td>24</td>
+</tr>
+<tr>
+<td>J-x·T-x·연결 수딧</td>
+<td>60</td>
+<td>60</td>
+<td>56</td>
+<td>54</td>
+</tr>
+<tr>
+<td>합계</td>
+<td>176</td>
+<td>165</td>
+<td>162</td>
+<td>154</td>
+</tr>
+</tbody>
+</table></div>
+<p>A♥3♥가 접는 쪽에서 지우는 건 작은 A 11개뿐이에요. 접는 쪽에서 A나 3이 든 핸드는 작은 A 44콤보뿐이고(33은 콜 쪽), 나머지 4분의 3은 A♥3♥와 겹치는 카드가 없어요. Q♥T♥는 QTo 한 줄에서만 두 장이 다 겹쳐 6개를 지워요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p><strong>접는 비율은 접는 콤보 ÷ 오픈 콤보</strong>예요. A3s는 165 ÷ 323, K9s는 162 ÷ 329예요. K9s와 비교하면 A3s는 콜 콤보를 9개 더 지우고, 접는 콤보는 3개 덜 지웠어요. 320여 콤보 중에서 콤보 열 개 남짓이 자리를 바꾼 거라, 접는 비율로는 <strong>2%p 남짓</strong>밖에 안 움직여요.</p>
+<p>희석 때문이 아니에요. 두 장의 카드가 지울 수 있는 콤보는 원래 수십 개뿐이라, 가장 좋은 블로커와 평범한 블로커의 차이도 <strong>몇 %p</strong>에 그쳐요. 블로커는 "있다/없다"가 아니라 이 정도 크기의 힘이에요.</p>
+<h3>같은 수를 지워도 A가 손해 보는 경우</h3>
+<p>희석이 실제로 일어나는 건 따로 있어요. CO가 <strong>22+, AKs, AKo</strong>로만 받는 사람이라고 해 볼게요(규칙이 아니라 정해 둔 범위). 콜 범위는 지우기 전 <strong>94콤보</strong>, 접는 쪽은 <strong>268콤보</strong>예요.</p>
+<p>A♥3♥는 AA·33에서 3개씩, AK에서 4개, K♥9♥는 KK·99에서 3개씩, AK에서 4개를 지워요. 둘 다 콜 콤보가 <strong>84콤보</strong>로 똑같아요. 그런데 접는 쪽은 A3s가 <strong>239콤보</strong>, K9s가 <strong>245콤보</strong>로 A3s가 더 많이 지워요. 이번엔 A7s~AQs, A9o~AQo까지 전부 <strong>접는 쪽</strong>에 있거든요.</p>
+<p>그래서 접는 비율은 A3s <strong>약 74.0%</strong>, K9s <strong>약 74.5%</strong>로 A3s가 오히려 낮아요. A 블로커의 값은 <strong>상대의 A-x가 콜 쪽에 있느냐, 접는 쪽에 있느냐</strong>로 정해져요. E01의 "밸류를 지우나 블러프를 지우나"가 여기서 "콜을 지우나 폴드를 지우나"가 되는 거예요.</p>
+<h3>받혔을 때: 같은 A가 나를 누른다</h3>
+<p>I19에서 Q6o가 T8o보다 못했던 건, Q가 콜 범위의 AQ·KQ에 눌렸기 때문이었죠. 오늘은 그 눌리는 카드가 <strong>블로커이기도 할 때</strong>예요. 15BB 콜 범위를 묶음별로 쪼개 받혔을 때 승률을 볼게요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>CO 콜 핸드</th>
+<th>A♥3♥ 승률</th>
+<th>K♥9♥ 승률</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AA</td>
+<td>약 12.8%</td>
+<td>약 16.4%</td>
+</tr>
+<tr>
+<td>KK</td>
+<td>약 33.1%</td>
+<td>약 12.3%</td>
+</tr>
+<tr>
+<td>AKs</td>
+<td>약 30.2%</td>
+<td>약 26.8%</td>
+</tr>
+<tr>
+<td>A7s</td>
+<td>약 39.8%</td>
+<td>약 42.7%</td>
+</tr>
+<tr>
+<td>AJo</td>
+<td>약 32.9%</td>
+<td>약 39.3%</td>
+</tr>
+<tr>
+<td>A9o</td>
+<td>약 35.3%</td>
+<td>약 30.1%</td>
+</tr>
+<tr>
+<td>KQo</td>
+<td>약 60.1%</td>
+<td>약 29.0%</td>
+</tr>
+<tr>
+<td>77</td>
+<td>약 33.4%</td>
+<td>약 47.3%</td>
+</tr>
+<tr>
+<td>22</td>
+<td>약 49.4%</td>
+<td>약 50.2%</td>
+</tr>
+</tbody>
+</table></div>
+<p>A3s는 <strong>콜 범위의 A-x 전부</strong>에게 30%대로 눌려요(AKs 약 30.2%부터 A7s 약 39.8%까지, 키커가 높은 A일수록 더 낮아요). 키커 3이 무엇과 붙어도 지니까요. A로 지운 콤보도 이 묶음이고, 남아서 나를 누르는 콤보도 이 묶음이에요. <strong>블로커 덕과 지배 손해가 같은 A에서 나와요.</strong></p>
+<p>K9s는 다른 데서 눌려요. AK·KQ·KJ는 K를, A9은 9를 같이 쥐고 더 높은 옆 카드를 가져서 K9s를 지배해요(AKs 약 26.8%, KQo 약 29.0%, A9o 약 30.1%). 그 대신 AJ·AT·AQ에게는 두 장 다 살아 있어 약 39.3% 근처를 지키고, 77 같은 작은 페어에겐 두 장 다 오버카드라 반 가까이 이겨요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>합치면 받혔을 때 승률은 A3s <strong>약 36.6%</strong>, K9s <strong>약 36.8%</strong>로 거의 같아요. QTs는 <strong>약 39.1%</strong>예요. 그리고 이득에서 승률이 블로커보다 훨씬 무거워요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Hero 핸드</th>
+<th>접는 비율</th>
+<th>접을 때 몫</th>
+<th>받혔을 때 승률</th>
+<th>받혔을 때 몫</th>
+<th>리스틸 이득</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A3s</td>
+<td>약 51.1%</td>
+<td>약 +2.171BB</td>
+<td>약 36.6%</td>
+<td>약 −1.238BB</td>
+<td>약 +0.933BB</td>
+</tr>
+<tr>
+<td>K9s</td>
+<td>약 49.2%</td>
+<td>약 +2.093BB</td>
+<td>약 36.8%</td>
+<td>약 −1.26BB</td>
+<td>약 +0.833BB</td>
+</tr>
+<tr>
+<td>QTs</td>
+<td>약 47.8%</td>
+<td>약 +2.033BB</td>
+<td>약 39.1%</td>
+<td>약 −0.913BB</td>
+<td>약 +1.12BB</td>
+</tr>
+</tbody>
+</table></div>
+<p>접을 때 몫은 지금 팟 4.25BB에 접는 비율을 곱한 거라, 접는 비율이 몇 %p 움직여도 몇 푼이에요. A3s와 QTs의 접을 때 몫은 +2.171 대 +2.033으로 거의 같아요. 받혔을 때는 31BB짜리 팟을 다투니 승률 몇 %p가 그대로 큰 돈이 돼요. 받혔을 때 몫이 −1.238과 −0.913으로 훨씬 크게 벌어지죠. <strong>블로커는 콤보 몇 개를 움직이고, 승률은 팟 전체를 움직여요.</strong></p>
+</section><h2>경계: 이 감이 틀리는 때</h2>
+<h3>경계 1. 깊어지면 A-x가 리쉬브에서 폴드로</h3>
+<p>Hero 스택을 바꿔요. 같은 규칙으로 고르면 CO 콜 범위는 깊을수록 좁아지고, 그 안의 A-x는 <strong>큰 A만</strong> 남아요(20BB에선 A9s+, ATo+, 25BB에선 44+, A9s+, ATo+, KQs).</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Hero 스택</th>
+<th>A8o 이득</th>
+<th>KJo 이득</th>
+<th>A3s 이득</th>
+<th>K9s 이득</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>15BB</td>
+<td>약 +0.748BB</td>
+<td>약 +0.813BB</td>
+<td>약 +0.933BB</td>
+<td>약 +0.833BB</td>
+</tr>
+<tr>
+<td>20BB</td>
+<td>약 +0.414BB</td>
+<td>약 +0.935BB</td>
+<td>약 +0.652BB</td>
+<td>약 +1.052BB</td>
+</tr>
+<tr>
+<td>25BB</td>
+<td><strong>약 −0.193BB</strong></td>
+<td><strong>약 +0.443BB</strong></td>
+<td>약 +0.099BB</td>
+<td>약 +0.577BB</td>
+</tr>
+</tbody>
+</table></div>
+<p>25BB에서 A8o는 손해라 폴드, KJo는 이득이라 올인이에요. 같은 A-x인 A3s도 15BB에선 K9s보다 나았지만, 20BB부터 뒤처져요.</p>
+<p>그런데 한 줄에서 거는 돈과 CO 콜 범위가 <strong>같이</strong> 바뀌었어요. 무엇이 A8o를 뒤집었는지 나눠 볼게요. 25BB로 깊이만 바꾸고 콜 범위는 15BB 것을 그대로 둔 줄을 하나 끼워요(실제로는 CO가 그렇게 받지 않는, 나눠 보기 위한 줄이에요).</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>줄</th>
+<th>A8o 승률</th>
+<th>A8o 본전 폴드율</th>
+<th>A8o 실제 접는 비율</th>
+<th>A8o 이득</th>
+<th>KJo 승률</th>
+<th>KJo 본전 폴드율</th>
+<th>KJo 이득</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>15BB</td>
+<td>약 35.8%</td>
+<td>약 39.5%</td>
+<td>약 50.2%</td>
+<td>약 +0.748BB</td>
+<td>약 37.0%</td>
+<td>약 36.3%</td>
+<td>약 +0.813BB</td>
+</tr>
+<tr>
+<td>25BB, 콜 범위는 15BB 그대로</td>
+<td>약 35.8%</td>
+<td>약 56.9%</td>
+<td>약 50.2%</td>
+<td>약 −0.667BB</td>
+<td>약 37.0%</td>
+<td>약 54.2%</td>
+<td>약 −0.532BB</td>
+</tr>
+<tr>
+<td>25BB, 실제</td>
+<td>약 31.3%</td>
+<td>약 65.1%</td>
+<td>약 63.5%</td>
+<td>약 −0.193BB</td>
+<td>약 35.6%</td>
+<td>약 57.4%</td>
+<td>약 +0.443BB</td>
+</tr>
+</tbody>
+</table></div>
+<h3>이게 무슨 뜻이냐면</h3>
+<p><strong>깊이 몫</strong>은 둘째 줄이에요. 받혔을 때 한 번 잃는 돈이 커져서 본전 폴드율이 둘 다 50%대 중반으로 올라가요. 그런데 콜 범위가 그대로면 접는 비율은 그대로라 A8o도 KJo도 손해예요. 깊이는 <strong>둘을 같이</strong> 끌어내릴 뿐 갈라놓지 않아요.</p>
+<p><strong>지배 몫</strong>은 셋째 줄에서 보여요. 이 줄은 접는 비율 상승과 승률 하락이 <strong>같이</strong> 담긴 줄이에요. 콜 범위가 좁아지면 접는 비율은 60%대로 올라 둘 다 다시 끌어올려져요(A8o −0.667 → −0.193, KJo −0.532 → +0.443). 대신 승률이 A8o는 약 35.8%에서 <strong>약 31.3%</strong>로, KJo는 약 37.0%에서 <strong>약 35.6%</strong>로 떨어져요. 남은 콜 범위에서 A8o는 A9s·AT·AJ·AQ·AK, <strong>모든 A에게</strong> 키커로 눌려요. KJo는 AK에겐 K가, AJ에겐 J가, KQs에겐 K가 눌리지만, AQ·AT·A9s에겐 두 장 다 살아 있어요. 그 차이 때문에 KJo는 본전 위로 돌아오고, A8o는 본전 바로 아래에 걸려요. A8o를 손해로 만든 건 깊이였고, 지배 몫은 A8o가 <strong>다시 올라오지 못하게</strong> 막았어요.</p>
+<h3>경계 2. 상대가 무엇으로 받느냐가 순위를 뒤집는다</h3>
+<p>15BB 그대로 두고 CO의 콜 범위 모양만 바꿔요(정해 둔 범위예요).</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>CO 콜 범위</th>
+<th>A3s 이득</th>
+<th>K9s 이득</th>
+<th>QTs 이득</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>규칙대로: 22+, A7s+, A9o+, KJs+, KQo</td>
+<td>약 +0.933BB</td>
+<td>약 +0.833BB</td>
+<td>약 +1.12BB</td>
+</tr>
+<tr>
+<td>페어 위주: 22+, AKs, AKo</td>
+<td>약 +2.214BB</td>
+<td>약 +2.594BB</td>
+<td>약 +2.738BB</td>
+</tr>
+<tr>
+<td>A 위주: 88+, A7s+, A9o+, KQs, KQo</td>
+<td>약 +1.639BB</td>
+<td>약 +1.249BB</td>
+<td>약 +1.464BB</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>페어 위주로 받는 상대</strong>면 A3s가 셋 중 꼴찌예요. 앞에서 본 대로 블로커 덕이 없을 뿐 아니라, 받혔을 때도 약 33.2%로 가장 약해요. 44~KK 같은 페어 상대로 A3s는 A 한 장만 위에 있지만, K9s는 22~88에게 두 장 다 오버카드거든요.</p>
+<p><strong>A 위주로 받는 상대</strong>면 A3s가 1등이에요. 접는 비율이 약 62.5%로 K9s(약 61.1%)보다 높고, 받혔을 때도 A3s 약 36.0%, K9s <strong>약 33.6%</strong>예요. 이 콜 범위에선 K9s가 AK·KQ에게 K를, A9에게 9를 잡혀 지배당하고, 페어는 88부터라 22~77이라는 K9s의 숨구멍이 사라졌어요. 99는 9를 누르고, TT 이상은 9 위에 있어요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>A 블로커가 가장 값진 건 <strong>상대의 A-x가 콜 쪽에 몰려 있고, 그 콜 범위에 내 다른 카드가 숨을 곳이 없을 때</strong>예요. 같은 15BB, 같은 A3s가 콜 범위 모양 하나로 1등에서 꼴찌까지 움직여요.</p>
+<section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. "A를 들었으니 그만큼 접는다"</strong></p>
+<p>A를 쥐면 접는 비율이 확 오를 것 같죠. 그런데 표 1에서 가장 좋은 블로커였던 A3s도 K9s보다 2%p 남짓 높았을 뿐이고, 이득은 블로커가 가장 나빴던 QTs가 더 컸어요. 페어로 받는 상대 앞에선 A3s가 접는 쪽을 더 지워서 접는 비율이 오히려 낮았고요.</p>
+<p>대신 이렇게: 블로커는 <strong>콜 쪽 A-x와 접는 쪽 A-x를 둘 다</strong> 센 뒤, 그 차이가 몇 %p인지로 봐요. 그다음엔 받혔을 때 승률이 더 무겁다는 걸 잊지 않아요.</p></div><div class="mis-card"><p><strong>실수 2. "깊어도 A-x면 리쉬브"</strong></p>
+<p>25BB에서 A8o는 손해, KJo는 이득이었어요. 깊이 자체는 둘을 같이 손해로 끌어내렸고, 좁아진 콜 범위가 둘을 다시 끌어올릴 때 A8o만 큰 A들에게 전부 눌려 본전에 못 미쳤어요. 둘을 가른 건 지배 몫이에요.</p>
+<p>대신 이렇게: 깊은 리쉬브일수록 <strong>"남은 콜 범위의 A 중 내 키커보다 큰 게 몇 개냐"</strong>로 A-x를 걸러요.</p></div></section><h2>"그럼 A5s 같은 수딧 A는요?"</h2>
+<p>수딧은 받혔을 때 플러시로 이기는 길이 하나 더 있어요. 키커를 고정하고 수딧 여부만 바꾸면, 15BB에서 A8s는 승률 <strong>약 39.1%</strong>, 이득 <strong>약 +1.233BB</strong>로 A8o(약 35.8%, 약 +0.748BB)보다 확 좋아요. 접는 비율은 A8s 약 49.8%, A8o 약 50.2%로 거의 같으니, 차이는 거의 다 받혔을 때 몫이에요.</p>
+<p>A5s는 같은 15BB에서 승률 <strong>약 38.7%</strong>, 이득 <strong>약 +1.23BB</strong>로 A3s(약 36.6%, 약 +0.933BB)보다 앞서요. facts가 보여 주는 건 승률 차이까지라, 이유는 해석이에요. 이렇게 읽을 수 있어요. A3도 A5도 A2345에는 두 장이 다 쓰이지만, 5는 A2345부터 56789까지 다섯 줄에, 3은 A2345·23456·34567 세 줄에만 쓰여요. 또 44를 만나면 A5s는 두 장 다 위인데 A3s는 A 한 장만 위예요. 다만 A-x에게 키커로 눌리는 구조는 그대로라, 콜 범위가 큰 A로 좁아질수록 같은 질문을 다시 해야 해요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<p>A-x로 리쉬브를 고민할 때 몇 초 안에 이것만 세요.</p>
+<ol>
+<li><strong>이 사람이 받는 A는 몇 개, 열었다 접는 A는 몇 개?</strong></li>
+<li><strong>그 받는 A 중 내 키커보다 큰 게 몇 개?</strong></li>
+<li><strong>K-x·Q-x로 바꿔 들었다면, 받는 범위에 내 카드가 숨을 곳(살아 있는 상대)이 있나?</strong></li>
+</ol>
+</section><h2>내 판단 점검</h2>
+<p><strong>문제 1.</strong> 같은 CO 오픈에서 Hero가 <strong>BB 18BB</strong>예요. 같은 규칙으로 고른 CO 콜 범위는 <strong>33+, A8s+, A9o+, KQs, KQo</strong>예요. Hero는 A♥6♥와 K♥T♥ 중 하나를 들었어요. "A가 있으면 받힐 콤보가 줄어든다"는 감이 들 수 있어요. 어느 쪽 리스틸 이득이 클까요? (리스틸하면 더 거는 돈 <strong>16.875BB</strong>, 받혔을 때 팟 <strong>37BB</strong>)</p>
+<details>
+<summary>정답 보기</summary>
+<p>K♥T♥예요. KTs <strong>약 +0.931BB</strong>, A6s <strong>약 +0.725BB</strong>예요.</p>
+<p>블로커는 감대로 일해요. A6s는 콜 콤보를 <strong>145콤보</strong>로, KTs(<strong>154콤보</strong>)보다 많이 지워서 접는 비율이 A6s <strong>약 54.7%</strong>, KTs <strong>약 52.0%</strong>예요. 그런데 받혔을 때 승률이 A6s <strong>약 36.1%</strong>, KTs <strong>약 38.4%</strong>로 뒤집혀요.</p>
+<p>이 콜 범위의 A는 A8s 이상이라, A6s는 <strong>받는 A 전부</strong>에게 키커로 눌려요. KTs가 키커로 눌리는 건 AK·KQ(K)와 AT(T)뿐이고, AJ·AQ·A9·A8s에겐 두 장 다 살아 있어요. 그래서 본전 폴드율도 A6s <strong>약 45.4%</strong>, KTs <strong>약 38.6%</strong>로 KTs가 훨씬 낮아요.</p>
+</details>
+<p><strong>문제 2.</strong> 이번엔 <strong>버튼</strong>이 아주 넓게 열었어요. <strong>22+, A2s+, A2o+, K2s+, K8o+, Q5s+, Q9o+, J7s+, J9o+, T7s+, T9o, 96s+, 86s+, 75s+, 64s+, 54s</strong>, 지우기 전 <strong>542콤보</strong>이고, 그중 A-x가 <strong>192콤보</strong>예요. 버튼은 <strong>77+, A9s+, ATo+, KQs</strong>로만 받아요(<strong>120콤보</strong>, 정해 둔 범위). 받는 범위의 절반 넘게가 A예요. Hero는 <strong>BB 13BB</strong>, A♥4♥와 Q♥J♥ 중 하나를 들었어요(리스틸하면 더 거는 돈 <strong>11.875BB</strong>, 받혔을 때 팟 <strong>27BB</strong>). "A로 받는 상대니 A 블로커가 일한다, A4s가 확실히 낫다"는 감이 들 수 있어요. A 블로커는 이 상대에게 얼마나 일할까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>거의 같아요.</strong> QJs <strong>약 +2.864BB</strong>, A4s <strong>약 +2.806BB</strong>로, 이 정도 차이는 승률을 몬테카를로로 잰 오차 안이라 어느 쪽이 낫다고 판정할 수 없어요. 중요한 건 "A4s가 확실히 낫다"가 틀렸다는 점, 즉 <strong>A 블로커가 덕을 거의 못 본다</strong>는 점이에요.</p>
+<p>A4s는 콜 콤보를 <strong>100콤보</strong>로, QJs(<strong>105콤보</strong>)보다 더 지워요. 그런데 접는 쪽도 A4s가 <strong>382콤보</strong>, QJs가 <strong>386콤보</strong>로 더 지워요. 버튼의 A-x 192콤보 중 <strong>124콤보</strong>가 열었다 접는 A(A2s~A8s, A2o~A9o)라, A♥가 접는 쪽에도 잔뜩 걸리거든요. 그래서 접는 비율은 A4s <strong>약 79.3%</strong>, QJs <strong>약 78.6%</strong>로 차이가 거의 없어요.</p>
+<p>블로커로 얻은 게 없으니, 받혔을 때 A4s가 받는 A 전부에게 눌리는 손해(<strong>약 33.9%</strong>, QJs는 <strong>약 35.7%</strong>)가 남은 작은 블로커 덕을 지워 버려요. "A로 받는다"만 보지 말고, 그 사람이 <strong>A로 얼마나 많이 접는지</strong>까지 세야 하는 장면이에요.</p>
+</details>
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>블로커의 값은 <strong>콜 쪽에서 지운 콤보와 접는 쪽에서 지운 콤보의 차이</strong>예요. 두 장이 지우는 콤보는 원래 수십 개뿐이라, 가장 좋은 A 블로커도 접는 비율을 몇 %p 올리는 데 그쳐요</li>
+<li>A가 지우는 콤보와 받혔을 때 나를 누르는 콤보는 <strong>같은 묶음(상대의 A-x)</strong>이에요. 블로커 덕과 지배 손해가 한 장에서 같이 나와요</li>
+<li>리스틸 이득에선 받혔을 때 승률이 블로커보다 무거워요. 접을 때 몫은 작은 팟 위의 몇 %p이고, 받혔을 때 몫은 큰 팟 위의 몇 %p예요</li>
+<li>깊어지면 본전 폴드율이 올라 A-x도 K-x도 같이 손해로 끌려 내려가요(깊이 몫). 좁아진 콜 범위가 접는 비율을 올려 둘을 다시 끌어올릴 때, 작은 키커의 A-x만 큰 A들에게 눌려 본전 위로 못 돌아와요(지배 몫)</li>
+</ul>
+</section><section class="sec end"><h2>정리하며</h2>
+<p>"A 들고 리쉬브가 편하다"는 15BB, A가 콜 쪽에 몰린 범위 앞에서 맞았어요. A3s는 콜 콤보를 가장 많이 지우고 접는 콤보를 가장 적게 지운 최고의 블로커였죠. 다만 그 차이는 콤보 열 개 남짓이었고, 받혔을 때 승률이 더 무거워서 이득은 QTs가 앞섰어요. 깊어지면 A8o가 큰 A들에게 눌려 폴드로 뒤집혔고, 페어로 받는 상대 앞에선 A3s가 꼴찌였어요.</p>
+<p>다음 글 M16에서는 오늘 무거웠던 <strong>받혔을 때 버티는 힘</strong>을 정면으로 봐요. 작은 페어와 수딧 브로드웨이 중 무엇이 리쉬브에 더 맞는지, 콜 범위의 모양으로 따져요.</p>
+<p><small>AI 작성 · 숫자는 계산 검증 · 가정 레인지·고정한 스택·상금 기준</small></p></section>
+</article>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="050_I19.html">SB 8BB, BB와 둘만 남았을 때: Q6o로 올인해도 될까?</a></li><li><a href="097_E01.html">블로커: 내 손의 카드가 상대 콤보를 어떻게 지울까?</a></li></ul><p class="l">이 글 다음에 볼 글</p><ul><li><a href="222_M50.html">마스터 마무리: 감 진단 시험</a></li></ul></aside><nav class="nav"><a class="prev" href="186_M14.html"><div class="l">← 이전 글</div><div class="t">짧은 스택 SB는 림프가 편하다</div></a><a class="next" href="188_M16.html"><div class="l">다음 글 →</div><div class="t">작은 페어보다 수딧 브로드웨이로 리쉬브</div></a></nav></main>
+</body>
+</html>

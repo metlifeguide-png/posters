@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>초반 블라인드 배틀: SB 리드에 BB 레이즈 · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge r">실전</span><span class="chip">토너</span><span class="n">실전 11번째 글 (전체 243편 중 153번째)</span></div><h1>초반 블라인드 배틀: SB 리드에 BB 레이즈</h1>
+<article>
+<p>안녕하세요. 대회 초반, 스택 100BB 레벨이에요. 앞 사람이 모두 접고 <strong>SB와 BB 둘만 남는 판</strong>, 흔히 블라인드 배틀이라고 부르는 장면이에요.</p>
+<p>블라인드 배틀은 다른 판과 두 가지가 달라요. SB는 BB 한 명만 상대하면 되니 <strong>넓게</strong> 열 수 있고, 프리플랍에 마지막이던 BB가 플랍부터는 <strong>SB보다 나중에</strong> 행동해요. 오늘은 이 두 가지가 BB의 결정 네 번을 어떻게 바꾸는지 한 판으로 따라가요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>넓게 거는 SB 벳에 BB가 레이즈할 때, <strong>알파와 '콜과 같아지는 폴드율'</strong>로 레이즈를 판단하고 <strong>크기</strong>까지 고르는 법</li>
+<li>플랍부터 <strong>나중에 행동하는 BB</strong>가 SB의 체크를 보고 턴·리버에 무엇을 고르는지</li>
+<li>SB가 <strong>올인으로 받아칠 때</strong>까지 넣으면 작은 레이즈가 왜 한 번 더 유리한지</li>
+</ul></div>
+<hr />
+<h2>오늘의 한 판</h2>
+<p><strong>Hero (BB · 스택 100BB)</strong> · 상대 (SB · 스택 100BB) · 블라인드 0.5/1, <strong>BB 앤티 1BB</strong></p>
+<p><img src="../카드/Kc.svg" width="48"> <img src="../카드/Tc.svg" width="48"></p>
+<h3>프리플랍</h3>
+<p>UTG부터 BTN까지 모두 폴드 → SB <strong>3BB 레이즈</strong> → Hero(BB) <strong>콜</strong>. Hero는 BB 1BB에 앤티 1BB를 이미 냈고, 2BB를 더 내서 이 판에 <strong>4BB</strong>를 넣었어요. 팟은 SB 3 + BB 3 + 앤티 1 = <strong>7BB</strong>, Hero 뒤에 남은 돈은 <strong>96BB</strong>예요.</p>
+<h3>플랍 · 팟 7BB</h3>
+<p><img src="../카드/Qd.svg" width="48"> <img src="../카드/9d.svg" width="48"> <img src="../카드/4c.svg" width="48"></p>
+<p>SB <strong>2.5BB 벳</strong> → <strong>Hero는 콜할까, 8BB로 레이즈할까, 12BB로 레이즈할까?</strong> Hero는 8BB로 레이즈했고 SB가 콜했어요. 팟 <strong>23BB</strong></p>
+<blockquote>
+<p>Hero는 페어가 없는 <strong>K 하이</strong>예요. 대신 J가 오면 9-T-J-Q-K 스트레이트인 <strong>거트샷</strong>, Q보다 높은 <strong>K 오버카드</strong>, 클럽 세 장의 <strong>백도어 플러시</strong>를 같이 들고 있어요.</p>
+</blockquote>
+<h3>턴 · 팟 23BB</h3>
+<p><img src="../카드/Qd.svg" width="48"> <img src="../카드/9d.svg" width="48"> <img src="../카드/4c.svg" width="48"> <img src="../카드/2c.svg" width="48"></p>
+<p>2♣로 Hero는 <strong>클럽 플러시 드로우</strong>까지 생겼어요. SB <strong>체크</strong> → <strong>Hero는 15BB를 걸까, 체크할까?</strong> Hero가 걸었고 SB가 콜했어요. 팟 <strong>53BB</strong></p>
+<h3>리버 · 팟 53BB</h3>
+<p><img src="../카드/Qd.svg" width="48"> <img src="../카드/9d.svg" width="48"> <img src="../카드/4c.svg" width="48"> <img src="../카드/2c.svg" width="48"> <img src="../카드/7s.svg" width="48"></p>
+<p>7♠. 플러시도 스트레이트도 빗나가 Hero는 다시 <strong>K 하이</strong>예요. SB <strong>체크</strong> → <strong>Hero는 35BB로 블러프할까, 체크로 쇼다운할까?</strong></p>
+<hr />
+<p class="concl"><strong>결론부터 말할게요. 프리플랍은 콜, 플랍은 12BB가 아니라 8BB 레이즈, 턴은 벳, 리버는 체크예요.</strong> 플랍은 넓게 건 SB가 레이즈에 절반 넘게 접어서, 턴은 콜을 받아도 드로우가 남아서 걸어요. 리버는 K 하이가 쇼다운에서 이기는 몫이 있어서 블러프의 기준이 올라가요.</p>
+<blockquote>
+<p>남은 베팅이 있어 실제 결과는 달라질 수 있어요. 플랍·턴은 <strong>폴드율과 기준 폴드율 비교</strong>로 판정하고, BB 금액은 기준을 구하는 계산용이에요.</p>
+</blockquote>
+<h2>오늘의 가정</h2>
+<ul>
+<li><strong>SB 오픈 레인지</strong>: 22+, A2s+, K2s+, Q4s+, J6s+, T6s+, 96s+, 85s+, 75s+, 64s+, 54s, A2o+, K8o+, Q9o+, J9o+, T9o, 98o(솔버 결과 아님). Hero 카드를 빼면 <strong>512콤보</strong>예요. SB는 플랍부터 포지션이 없어서, 이 시리즈의 기본 오픈보다 큰 <strong>3BB</strong>로 연다고 봤어요</li>
+<li><strong>SB 플랍 벳</strong>: 레인지 전체로 2.5BB를 걸어요. 블라인드 배틀에서는 SB가 플랍에 먼저 말하니, SB가 먼저 거는 벳을 흔히 <strong>'리드'</strong>라고도 불러요. 프리플랍 레이저의 벳이라 c-bet이기도 하고요</li>
+<li><strong>Hero 레이즈에 SB 대응</strong>: 9 페어 이상(셋·투페어 포함)과 TT·JJ·KK·AA, 다이아몬드 플러시 드로우, JT 양방향 드로우, K를 낀 거트샷(KJ·KT)은 콜. 나머지는 폴드. 크기가 8BB든 12BB든 <strong>같은 핸드가 접는다</strong>고 봐요. 다시 레이즈(올인)는 본문 계산에서 빼고, 질문 절에서 따로 봐요</li>
+<li><strong>턴</strong>: SB는 레인지 전체로 체크해요. Hero 벳에는 Q 페어 이상·TT·JJ·셋·투페어·플러시 드로우·JT로 콜하고, 9 페어와 거트샷은 접어요</li>
+<li><strong>리버</strong>: SB는 체크해요. Hero 벳에는 Q 페어 이상·TT·JJ·셋·투페어로 콜하고, 나머지는 접어요. 다시 레이즈는 없어요</li>
+<li>비교용으로 "콜(또는 체크)하면 리버까지 체크로 쇼다운한다"고 단순화해요(R01과 같아요)</li>
+</ul>
+<h2>1단계. 프리플랍: 넓은 SB 레인지 상대로 BB의 콜</h2>
+<p>Hero는 2BB를 더 내면 7BB 팟을 놓고 싸워요.</p>
+<blockquote>
+<p>필요 에퀴티 = 2 ÷ 7 = <strong>약 28.57%</strong></p>
+</blockquote>
+<p>가정한 SB 레인지 상대 K♣T♣의 에퀴티는 <strong>약 52.48%</strong>예요(몬테카를로). 기준을 넉넉히 넘어요. I13에서 본 BB 디펜스의 콜 하한은 상대가 넓게 열수록 내려가서, 오늘처럼 512콤보로 여는 SB 상대로는 BB가 지킬 핸드도 넓어져요.</p>
+<p>K♣T♣는 3벳도 할 수 있지만 오늘은 콜을 따라가요. 콜하면 <strong>플랍부터 Hero가 나중에 행동</strong>하고, 이 포지션이 뒤의 세 결정을 받쳐 줘요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>블라인드 배틀의 BB는 <strong>싸게 들어가서 플랍부터 포지션을 가진 쪽</strong>이고, SB는 넓게 열고 포지션 없이 치르는 쪽이에요. 이 비대칭이 오늘 판의 바탕이에요.</p>
+<h2>2단계. 플랍: 레이즈할까, 얼마나 크게 할까</h2>
+<h3>콜도 기준은 넘어요</h3>
+<p>SB가 7BB 팟에 2.5BB를 걸었어요. 콜하면 팟은 12BB예요.</p>
+<blockquote>
+<p>필요 에퀴티 = 2.5 ÷ 12 = <strong>약 20.83%</strong></p>
+</blockquote>
+<p>거트샷·오버카드·백도어 플러시로 이 기준은 넘어요. 그래서 질문은 "접을까"가 아니라 <strong>"콜이냐 레이즈냐, 레이즈라면 얼마냐"</strong>예요.</p>
+<h3>첫 번째 기준: 알파</h3>
+<p>레이즈가 순수 블러프라고 쳐 볼게요. Hero는 8BB를 걸어서 지금 팟 7BB와 SB 벳 2.5BB, 합쳐 9.5BB를 노려요(A08의 알파).</p>
+<blockquote>
+<p>8BB 레이즈 알파 = 8 ÷ (9.5 + 8) = <strong>약 45.71%</strong>
+12BB 레이즈 알파 = 12 ÷ (9.5 + 12) = <strong>약 55.81%</strong></p>
+</blockquote>
+<p>크기를 키우면 접어 줘야 하는 비율도 같이 올라가요(A20). 그럼 SB는 얼마나 접을까요?</p>
+<h3>SB는 얼마나 접나</h3>
+<p>SB는 플랍에 레인지 전체로 걸었어요. 그래서 이 벳 안에는 <strong>보드에 하나도 안 맞은 핸드</strong>가 그대로 들어 있어요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>SB 대응</th>
+<th>핸드</th>
+<th>콤보</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>콜</td>
+<td>셋·투페어, Q 페어, 9 페어, TT·JJ·KK·AA, 다이아몬드 플러시 드로우, JT, KJ·KT</td>
+<td>216</td>
+</tr>
+<tr>
+<td>폴드</td>
+<td>88~55·33·22, 4 페어(A4·K4s·64s·54s), 다이아몬드 없는 A 하이·K 하이(AK·AJ·AT·A8s 아래·K8s 아래·K8o), J8s·T8s(거트샷), 그 밖의 다이아몬드 없는 작은 수딧(J7s·87s·65s 등)</td>
+<td>234</td>
+</tr>
+</tbody>
+</table></div>
+<p>SB 오픈 512콤보에서 보드에 깔린 Q♦·9♦·4♣를 쥔 콤보를 빼면 450콤보가 남아요. 표는 이 450콤보를 나눈 거예요.</p>
+<blockquote>
+<p>SB 폴드율 = 234 ÷ 450 = <strong>52%</strong></p>
+</blockquote>
+<p><strong>빨리 세는 팁</strong>: 콜하는 건 네 묶음뿐이에요. <strong>9 페어 이상</strong>(TT·JJ·KK·AA와 셋·투페어 포함), <strong>다이아몬드 플러시 드로우</strong>, <strong>JT 양방향</strong>, <strong>K를 낀 거트샷(KJ·KT)</strong>. 그 밖은 페어가 있어도(88 아래 포켓페어·4 페어), 거트샷이 있어도(J8s·T8s) 접는다고 봤어요. 콜 묶음만 세고 450에서 빼면 빨라요.</p>
+<h3>크기 고르기: 같은 폴드를 더 싸게</h3>
+<p>순수 블러프 기준으로 보면 8BB는 45.71%를 넘고, 12BB는 55.81%에 못 미쳐요. 오늘 가정처럼 <strong>크기를 키워도 접는 핸드가 같다면</strong>, 큰 레이즈는 같은 폴드를 더 비싸게 사는 셈이에요.</p>
+<h3>두 번째 기준: 콜과 비교하기</h3>
+<p>그런데 Hero의 진짜 대안은 폴드가 아니라 <strong>콜</strong>이에요. Hero는 콜을 받아도 이길 길이 있으니까요. 그래서 R01 2단계의 <strong>체크 기준 본전 폴드율</strong>을 꺼내요. 여기서는 "레이즈가 콜과 같아지는 폴드율"이에요.</p>
+<p>생각하는 요령은 이래요. <strong>8BB 레이즈 = 2.5BB 콜 + 5.5BB 더 걸기</strong>예요. 콜할 2.5BB는 어느 쪽이든 같으니, 팟이 12BB인 상태에서 5.5BB를 더 거는 벳과 그냥 넘기는 것(콜)을 비교하면 돼요.</p>
+<ul>
+<li><strong>콜 몫</strong>: 콜하고 리버까지 체크로 가면, Hero는 SB 레인지 전체 상대 에퀴티만큼 가져가요. 41.42% × 12 = 약 4.97BB</li>
+<li><strong>접을 때 몫</strong>: SB가 접으면 12BB를 가져와요. 52% × 12 = 약 6.24BB</li>
+<li><strong>콜 받을 때 몫</strong>: 콜 레인지 상대 에퀴티는 약 33.27%예요. 33.27% × 23 = 약 7.65BB에서 더 건 5.5BB를 빼면 7.65 − 5.5 = 약 2.15BB, 이게 48%만큼 일어나서 48% × 2.15 = 약 1.03BB</li>
+<li><strong>레이즈 몫</strong>: 6.24 + 1.03 = 약 7.27BB</li>
+</ul>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>선택</th>
+<th>콜과 같아지는 폴드율</th>
+<th>Hero 몫(계산용)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>콜</td>
+<td>—</td>
+<td>약 4.97BB</td>
+</tr>
+<tr>
+<td>8BB 레이즈</td>
+<td>약 28.63%</td>
+<td>약 7.27BB</td>
+</tr>
+<tr>
+<td>12BB 레이즈</td>
+<td>약 37.17%</td>
+<td>약 6.63BB</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>SB 폴드율 52% &gt; 8BB 기준 약 28.63% → <strong>8BB 레이즈</strong></p>
+</blockquote>
+<!-- 그림: 알파(8BB 45.71%·12BB 55.81%)와 콜 기준(28.63%·37.17%) vs SB 폴드율 52% 막대 -->
+
+<h3>이게 무슨 뜻이냐면</h3>
+<p>알파는 "레이즈가 혼자서 본전이 되는 선", 콜 기준은 "레이즈가 콜보다 나아지는 선"이에요. Hero는 콜을 받아도 드로우가 있어서 콜 기준이 알파보다 훨씬 낮아요. 두 기준 모두에서 <strong>8BB가 12BB보다 유리</strong>해요. 오늘 SB는 작은 레이즈에도 절반 넘게 접으니까요.</p>
+<h2>3단계. 턴: 포지션을 가진 BB의 두 번째 벳</h2>
+<h3>SB가 넘긴 레인지</h3>
+<p>레이즈를 받아 준 SB 216콤보가 턴에 체크했어요. 블라인드 배틀에서 BB가 <strong>나중에 행동하는</strong> 덕분에, Hero는 이 체크를 보고 나서 정해요. 2♣는 Hero에게 클럽 플러시 드로우를 더해 줬어요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>SB 대응(15BB 벳에)</th>
+<th>핸드</th>
+<th>콤보</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>콜</td>
+<td>Q 페어 이상, TT·JJ, 셋·투페어, 플러시 드로우, JT</td>
+<td>142</td>
+</tr>
+<tr>
+<td>폴드</td>
+<td>플러시 드로우 없는 9 페어(A9·K9·J9·T9 등), KJ·KT 거트샷</td>
+<td>74</td>
+</tr>
+</tbody>
+</table></div>
+<h3>R07에서 본 방법으로 짧게</h3>
+<p>계산은 R07 턴과 같아요. 체크 기준 본전 폴드율을 SB 폴드율과 비교해요.</p>
+<blockquote>
+<p>SB 폴드율 = 74 ÷ 216 = <strong>약 34.26%</strong>
+체크와 같아지는 폴드율 <strong>약 17.71%</strong> &lt; 34.26% → <strong>벳</strong></p>
+</blockquote>
+<p>R07에서는 같은 비교에서 체크가 나왔어요. 오늘은 두 가지가 달라요. Hero가 콜을 받아도 에퀴티가 <strong>약 39.55%</strong>로 크고(플러시 드로우 + 거트샷 + K), SB 레인지에 두 번째 벳에 접을 <strong>9 페어</strong>가 남아 있어요. 에퀴티가 기준을 끌어내리고, 9 페어가 폴드율을 채워 줬어요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>플랍 레이즈로 한 번 걸렀어도, <strong>처음부터 넓었던 레인지</strong>에는 약한 페어가 남을 수 있어요. 같은 "턴에 걸까" 질문이라도, 내 에퀴티와 상대의 남은 약한 핸드에 따라 답이 갈려요.</p>
+<h2>4단계. 리버: K 하이로 블러프할까</h2>
+<h3>알파와 폴드율</h3>
+<p>7♠로 Hero는 K 하이가 됐어요. 35BB를 걸어 53BB 팟을 노리면 알파는 이래요.</p>
+<blockquote>
+<p>알파 = 35 ÷ (53 + 35) = <strong>약 39.77%</strong></p>
+</blockquote>
+<p>SB 리버 레인지 141콤보 중 35BB에 접는 건 49콤보예요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>SB 대응(35BB 벳에)</th>
+<th>핸드</th>
+<th>콤보</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>콜</td>
+<td>Q 페어 이상, TT·JJ·KK·AA, 셋, 9·7 투페어</td>
+<td>92</td>
+</tr>
+<tr>
+<td>폴드</td>
+<td>빗나간 다이아몬드 드로우, JT, 9·7·4·2 페어</td>
+<td>49</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>SB 폴드율 = 49 ÷ 141 = <strong>약 34.75%</strong></p>
+</blockquote>
+<p>순수 블러프로 봐도 이미 모자라요.</p>
+<h3>체크하면 바로 쇼다운: 포지션이 지켜 주는 몫</h3>
+<p>블라인드 배틀에서 Hero는 리버에도 <strong>마지막에 말하는 자리</strong>라, 체크하면 <strong>그 자리에서 바로 쇼다운</strong>이에요.</p>
+<p>쇼다운에서 K♣T♣가 이기는 상대도 있어요. 빗나간 다이아몬드 드로우 중 <strong>J·T·8·6 하이로 끝난 핸드</strong>(J♦8♦·T♦6♦·6♦5♦ 등)와 JT, K♦8♦처럼 <strong>키커가 T보다 낮은 K 하이</strong>예요(K♦T♦와는 비겨요). 반대로 <strong>A♦x♦처럼 A 하이로 빗나간 드로우와 K♦J♦</strong>는 Hero를 이겨요. 접는 49콤보에는 Hero가 이기던 핸드와 지던 핸드가 섞여 있어요.</p>
+<p>이걸 모으면 Hero는 SB 리버 레인지 전체 상대로 쇼다운에서 <strong>약 16.67%</strong>를 가져가요. 체크하면 53BB 팟에서 <strong>약 8.83BB</strong>가 Hero 몫이에요.</p>
+<h3>기준은 R08에서 본 대로 올라가요</h3>
+<p>체크에 몫이 있으면 블러프의 기준이 알파보다 올라가요. 이유는 R08 1단계에서 본 그대로예요. 접게 해서 버는 건 Hero를 이기던 핸드뿐이니까요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>기준</th>
+<th>필요한 폴드율</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>알파(쇼다운 가치 없다고 칠 때)</td>
+<td>약 39.77%</td>
+</tr>
+<tr>
+<td>체크 기준(쇼다운 가치 반영)</td>
+<td>약 49.81%</td>
+</tr>
+<tr>
+<td><strong>오늘 SB 폴드율</strong></td>
+<td><strong>약 34.75%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>SB 폴드율 약 34.75% &lt; 체크 기준 약 49.81% → <strong>체크</strong></p>
+</blockquote>
+<!-- 그림: 리버 알파 39.77% · 체크 기준 49.81% · SB 폴드율 34.75% 막대 -->
+
+<section class="sec why"><h2>왜 그럴까: 블라인드 배틀은 넓은 SB와 나중에 말하는 BB의 판이에요</h2>
+<h3>SB가 첫 레이즈에 절반 넘게 접는 이유</h3>
+<p>SB는 BB 한 명만 상대하니 전체 핸드의 <strong>약 38.61%</strong>(512콤보)로 열었고, 플랍에도 레인지 전체로 걸었어요. 그 벳 안에는 Q♦9♦4♣에서 <strong>아무것도 없는 A 하이·K 하이</strong>와 <strong>보드 아래 작은 페어</strong>가 그대로 들어 있어요.</p>
+<p>이 핸드들이 레이즈 한 번에 떨어져 나간 게 52%의 정체예요. R08에서는 c-bet이 상대 레인지를 거르는 걸 봤죠. 오늘은 거르는 쪽이 <strong>BB의 레이즈</strong>예요. 걸러진 뒤 Hero 에퀴티가 약 41.42%에서 약 33.27%로 떨어지니, 턴부터는 남은 216콤보로 새로 세요.</p>
+<h3>레이즈를 맞은 SB는 포지션 없이 두 스트리트를 치러요</h3>
+<p>레이즈에 콜한 SB는 턴과 리버에도 먼저 말해야 해요. 오늘 가정처럼 SB가 체크로 넘기면, <strong>마지막 결정은 매번 Hero가 SB의 체크를 본 뒤에</strong> 해요. 턴에는 그걸 보고 벳을 골랐고, 리버에는 체크로 바로 쇼다운을 골랐어요.</p>
+<p>자리가 반대였다면 이야기가 달라요. Hero가 먼저 말하는 쪽이라면 리버에 체크해도 SB의 벳을 맞을 수 있어서, K 하이의 쇼다운 몫을 그대로 가져간다고 보기 어려워요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>BB의 레이즈는 넓은 SB 레인지를 <strong>한 번에 걸러 내고</strong>, 남은 판은 <strong>포지션 가진 Hero가 마무리</strong>해요.</p>
+</section><section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. "레이즈는 크게 해야 접는다"</strong>
+오늘 가정에서는 8BB든 12BB든 같은 핸드가 접어요. 그러면 12BB는 알파 약 55.81%를 못 넘고, 콜과 비교해도 약 6.63BB로 8BB의 약 7.27BB보다 적어요. 대신 <strong>크기를 키웠을 때 새로 접는 핸드가 몇 콤보인지</strong> 세어 보고 정해요.</p></div><div class="mis-card"><p><strong>실수 2. "턴까지 걸었으니 리버도 마무리 블러프"</strong>
+턴 벳을 받쳐 준 건 콜을 받아도 남는 에퀴티 약 39.55%였어요. 리버에는 그게 없어요. 콜하는 92콤보는 전부 Hero를 이기는 핸드라, 콜을 받는 순간 35BB를 그대로 잃어요. 대신 스트리트마다 <strong>"콜을 받으면 나한테 뭐가 남나"</strong>를 새로 물어요.</p></div><div class="mis-card"><p><strong>실수 3. "BB는 포지션이 없는 자리"</strong>
+프리플랍만 보면 맞지만, 블라인드 배틀에서는 플랍부터 BB가 나중이에요. 오늘 턴 벳도, 리버 체크로 바로 쇼다운한 것도 이 포지션 덕분이에요. 대신 블라인드 배틀 BB에서는 <strong>플랍 이후 계획을 포지션을 가진 쪽으로</strong> 세워요.</p></div></section>
+<hr />
+<h2>"SB가 플랍 레이즈에 올인하면요?"</h2>
+<p>본문에서는 빼 두었지만, SB가 셋(QQ·99·44)과 투페어(Q9·Q4s) <strong>20콤보</strong>로 남은 돈을 다 민다고 해 볼게요. Hero가 더 낼 돈은 88BB, 콜하면 팟은 199BB예요.</p>
+<blockquote>
+<p>필요 에퀴티 = 88 ÷ 199 = <strong>약 44.22%</strong></p>
+</blockquote>
+<p>이 20콤보 상대 Hero 에퀴티는 <strong>약 18.17%</strong>라 접어요. 레이즈한 8BB를 놓고 나오는 거죠. 그래서 작은 레이즈가 한 번 더 좋아요. 올인을 맞아 접을 때 <strong>놓고 나오는 돈도 작으니까요.</strong></p>
+<h2>이 판이 달라지는 조건</h2>
+<ul>
+<li><strong>턴이 다이아몬드였다면</strong>: SB의 플러시 드로우가 완성돼서 같은 15BB 벳에 접을 핸드가 줄고, 콜 받을 때 Hero 에퀴티도 떨어져요. 턴 비교를 새로 해요</li>
+<li><strong>SB가 턴에 먼저 걸어왔다면</strong>: Hero는 벳을 고르는 쪽이 아니라 받는 쪽이 돼요. 질문이 "폴드율이 기준을 넘나"에서 "내 에퀴티가 필요 에퀴티를 넘나"로 바뀌어요</li>
+</ul>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>블라인드 배틀 BB에서 SB 벳을 받으면, 먼저 <strong>SB가 어떤 핸드까지 걸었는지</strong> 떠올리고 레이즈를 후보에 올려요</li>
+<li>레이즈를 고를 땐 <strong>콜 몫을 먼저 적어 두고</strong>, 작은 크기부터 레이즈 몫이 그걸 넘는지 봐요</li>
+<li>리버에 빗나가면 버튼을 누르기 전에 <strong>"체크하면 내가 이기는 핸드가 있나"</strong>를 한 번 물어요</li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>학습툴 팟오즈 계산기로 알파·필요 에퀴티를 확인할 수 있어요. 폴드율은 본문 표를 바탕으로 직접 세어요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 같은 플랍이에요. 그런데 이 SB는 플랍에 <strong>페어 이상이나 드로우(거트샷 포함)가 있을 때만</strong> 걸고, 아무것도 없는 핸드는 체크해요. 그래서 벳 레인지는 274콤보예요. 레이즈에 대한 대응은 본문과 같아서, 본문에서 콜하던 216콤보는 콜하고 나머지 58콤보(88~55·33·22, 4 페어, 다이아몬드 없는 J8s·T8s)는 접어요. 이번 Hero는 <strong>12BB로</strong> 레이즈하려고 해요. 계산에 쓸 에퀴티는 이래요.</p>
+<ul>
+<li>이 벳 레인지 274콤보 전체 상대 Hero 에퀴티: <strong>약 35.66%</strong></li>
+<li>콜하는 216콤보 상대 Hero 에퀴티: <strong>약 33.27%</strong>(본문과 같아요)</li>
+</ul>
+<p>12BB 레이즈? 콜?</p>
+<details>
+<summary>정답 보기</summary>
+<p>SB 폴드율은 58 ÷ 274 = <strong>약 21.17%</strong>예요. 이제 콜 몫과 레이즈 몫을 비교해요.</p>
+<ul>
+<li><strong>콜 몫</strong>: 35.66% × 12 = <strong>약 4.28BB</strong></li>
+<li><strong>레이즈 몫</strong>: 12BB 레이즈는 2.5BB 콜에 9.5BB를 더 거는 거예요. 접을 때 21.17% × 12 = 약 2.54BB. 콜 받을 때는 33.27% × 31 = 약 10.31BB에서 9.5BB를 빼면 약 0.81BB이고, 이게 78.83%만큼 일어나서 약 0.64BB. 합쳐서 <strong>약 3.18BB</strong></li>
+</ul>
+<blockquote>
+<p>레이즈 몫 약 3.18BB &lt; 콜 몫 약 4.28BB → <strong>콜</strong></p>
+</blockquote>
+<p>기준 폴드율로 보면 <strong>약 30.98%</strong>인데, 폴드율 약 21.17%가 한참 모자라요. 8BB였어도 기준 약 21.60%에 못 미쳐 콜 쪽이지만, 차이가 아주 작아요. Hero 핸드·보드가 본문과 같은데 답이 바뀐 건, 벳 안에 <strong>아무것도 없는 핸드가 빠졌기</strong> 때문이에요.</p>
+</details>
+<p><strong>문제 2.</strong> 리버로 돌아가요. 이 SB는 빗나간 <strong>JT로도 "설마 블러프겠지" 하고 35BB를 콜</strong>하는 사람이에요(나머지 대응은 본문과 같아요). 그러면 141콤보 중 접는 건 37콤보, 콜하는 건 104콤보예요. K♣T♣는 JT를 이기니까, 콜하는 104콤보 상대 Hero 에퀴티는 <strong>약 11.54%</strong>예요. 블러프? 체크?</p>
+<details>
+<summary>정답 보기</summary>
+<p>SB 폴드율은 37 ÷ 141 = <strong>약 26.24%</strong>예요.</p>
+<ul>
+<li><strong>체크 몫</strong>: 쇼다운 레인지가 본문과 같아서 <strong>약 8.83BB</strong> 그대로예요</li>
+<li><strong>벳 몫</strong>: 접을 때 26.24% × 53 = 약 13.91BB. 콜 받을 때는 11.54% × 123 = 약 14.19BB에서 35BB를 빼면 약 −20.81BB이고, 이게 73.76%만큼 일어나서 약 −15.35BB. 합쳐서 <strong>약 −1.44BB</strong></li>
+</ul>
+<blockquote>
+<p>벳 몫 약 −1.44BB &lt; 체크 몫 약 8.83BB → <strong>체크</strong></p>
+</blockquote>
+<p>JT가 콜해 주면 콜 받을 때 조금 돌려받아서, 기준 폴드율은 약 49.81%에서 <strong>약 40.16%</strong>로 내려가요. 하지만 JT는 원래 접어 주던 핸드라 폴드율이 약 34.75%에서 약 26.24%로 더 크게 떨어져요. JT는 <strong>체크해도 Hero가 이기던 핸드</strong>라, 콜을 받아 봐야 체크 몫을 넘지 못해요.</p>
+</details>
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>레이즈의 순수 블러프 기준은 <strong>레이즈 ÷ (지금 팟 + 레이즈)</strong>지만, 실제 대안이 콜이면 <strong>콜과 같아지는 폴드율</strong>이 진짜 기준이에요</li>
+<li>넓게 열고 넓게 거는 SB는 BB의 <strong>첫 레이즈에 크게 걸러지고</strong>, 그 뒤 레인지는 새로 세야 해요</li>
+<li>같은 핸드가 접는다면 <strong>작은 레이즈</strong>가 더 남고, 올인을 맞았을 때 놓고 나올 돈도 작아요</li>
+<li>블라인드 배틀 BB는 플랍부터 <strong>나중에 말해서</strong>, SB의 체크를 본 뒤 벳과 쇼다운을 고를 수 있어요</li>
+</ul>
+</section><section class="sec end"><h2>정리하며</h2>
+<p>오늘은 대회 초반 블라인드 배틀에서 BB가 K♣T♣로 콜하고, 넓게 건 SB 리드에 레이즈한 판을 리버까지 따라갔어요. 플랍은 SB 폴드율 52%가 8BB 레이즈의 두 기준을 다 넘어서 작게 레이즈했고, 턴은 SB의 체크를 보고 콜을 받아도 드로우가 남아 한 번 더 걸었어요. 리버는 마지막에 말하는 자리라 체크로 바로 쇼다운해서 K 하이의 몫을 지켰어요.</p>
+<p>다음 글 R12부터는 <strong>대회 중반</strong>으로 넘어가요. 스택이 오늘보다 얕아진 상태에서 HJ 오픈에 BB가 콜하고, 앤티 팟에서 <strong>c-bet 한 판</strong>을 치러요. 오늘은 BB가 SB의 벳에 반격했다면, 다음은 얕아진 스택에서 c-bet을 고르는 쪽을 봐요.</p>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 가정 레인지 기준(솔버 결과 아님) · 토너 BB 앤티 1BB · 남은 베팅이 있어 BB 금액은 계산용</small></p></section>
+</article>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="044_I13.html">버튼 오픈에 BB 디펜스: K7로 콜해도 될 만큼 팟오즈가 좋을까?</a></li></ul></aside><nav class="nav"><a class="prev" href="152_R10.html"><div class="l">← 이전 글</div><div class="t">초반 4벳 팟 QQ: 프리플랍에 끝내나 플랍을 보나</div></a><a class="next" href="154_R12.html"><div class="l">다음 글 →</div><div class="t">중반 50BB: HJ 오픈 BB 콜, 앤티 팟에서 c-bet 한 판</div></a></nav></main>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>초반 c-bet 미스 뒤 턴에서 손을 떼는 판 · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge r">실전</span><span class="chip">토너</span><span class="n">실전 8번째 글 (전체 243편 중 150번째)</span></div><h1>초반 c-bet 미스 뒤 턴에서 손을 떼는 판</h1>
+<article>
+<p>안녕하세요. 대회 초반, 스택 100BB 레벨이에요. 오픈하고 플랍을 놓쳤지만 c-bet을 했고, 상대가 콜했어요. 그리고 턴. <strong>한 번 더 걸까, 여기서 멈출까?</strong></p>
+<p>플랍 c-bet이 맞는 선택이었다면, 그 기세로 턴까지 걸고 싶어지죠. 그런데 그 두 번째 벳이 <strong>조용히 칩을 새게 하는 자리</strong>가 될 수 있어요. 오늘은 플랍 c-bet 계산은 짧게 넘기고, <strong>턴에서 멈추는 판단</strong>을 처음부터 끝까지 따라가요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>플랍 c-bet에 <strong>콜한 레인지는 걸러진 레인지</strong>라서, 턴 폴드율을 새로 세야 한다는 것</li>
+<li>체크와 같아지는 폴드율이 <strong>알파보다 올라가기도, 내려가기도</strong> 하는 이유</li>
+<li>멈추기로 했으면 <strong>체크 뒤 상대 벳에 깔끔하게 손을 떼는</strong> 기준</li>
+</ul></div>
+<hr />
+<h2>오늘의 한 판</h2>
+<p><strong>Hero (HJ · 스택 100BB)</strong> · 상대 (BTN · 스택 100BB) · 블라인드 0.5/1, <strong>BB 앤티 1BB</strong></p>
+<p><img src="../카드/Kc.svg" width="48"> <img src="../카드/Qc.svg" width="48"></p>
+<h3>프리플랍</h3>
+<p>Hero(HJ) <strong>2.2BB 오픈</strong> → BTN 콜 → SB·BB 폴드. BB가 낸 앤티 1BB와 블라인드는 주인 없이 팟에 남아요.</p>
+<blockquote>
+<p>팟 = SB 0.5 + BB 1 + 앤티 1 + 2.2 + 2.2 = <strong>6.9BB</strong></p>
+</blockquote>
+<p>이번 Hero는 BTN보다 먼저 행동해요. <strong>포지션 없이</strong> 치르는 판이에요.</p>
+<h3>플랍 · 팟 6.9BB</h3>
+<p><img src="../카드/8h.svg" width="48"> <img src="../카드/5d.svg" width="48"> <img src="../카드/4s.svg" width="48"></p>
+<p>Hero <strong>2.3BB c-bet</strong> → BTN 콜. 팟 6.9 + 2.3 + 2.3 = <strong>11.5BB</strong></p>
+<blockquote>
+<p>8♥ 5♦ 4♠는 낮고 서로 가까운 카드들이에요. Hero는 페어가 없는 <strong>K 하이</strong>이고, K와 Q 두 장이 보드보다 높은 <strong>오버카드</strong>예요.</p>
+</blockquote>
+<h3>턴 · 팟 11.5BB</h3>
+<p><img src="../카드/8h.svg" width="48"> <img src="../카드/5d.svg" width="48"> <img src="../카드/4s.svg" width="48"> <img src="../카드/Js.svg" width="48"></p>
+<p>J♠. <strong>Hero는 7.5BB를 다시 걸까, 체크할까?</strong> Hero는 체크했고, BTN이 <strong>7.5BB</strong>를 걸었어요. <strong>이번엔 콜? 폴드?</strong></p>
+<hr />
+<p class="concl"><strong>결론부터 말할게요. 오늘 가정한 BTN이라면 플랍 c-bet은 맞고, 턴은 체크 뒤 폴드예요.</strong> 같은 K♣Q♣인데 답이 바뀐 건 Hero 핸드 때문이 아니라 <strong>BTN 레인지가 바뀌어서</strong>예요. 플랍에서 접을 핸드는 이미 접었고, 턴에 남은 건 <strong>전부 페어 이상</strong>이에요.</p>
+<blockquote>
+<p>남은 베팅이 있어 실제 결과는 달라질 수 있어요. 그래서 BB 금액은 기준을 구하는 계산용으로만 쓰고, 판정은 <strong>폴드율과 기준 폴드율, 에퀴티와 필요 에퀴티 비교</strong>로 해요.</p>
+</blockquote>
+<h2>오늘의 가정</h2>
+<ul>
+<li><strong>BTN 레인지</strong>: HJ 오픈에 콜할 만한 포켓페어·수딧 A·수딧 커넥터·브로드웨이로 가정해요(솔버 결과 아님). 프리플랍에 3벳했을 AA·KK·QQ는 뺐어요</li>
+<li><strong>BTN 대응</strong>: Hero 벳에는 콜 아니면 폴드(레이즈 없음). Hero가 체크하면 BTN은 턴 레인지 전부로 건다고 단순화해요</li>
+<li><strong>기준 계산</strong>: 콜을 받은 뒤, 그리고 체크 몫을 구할 때는 남은 카드를 양쪽 다 체크로 쇼다운한다고 봐요. 체크 뒤 포기하는 경우의 기준은 3단계에서 따로 봐요</li>
+</ul>
+<h2>1단계. 플랍 c-bet: R01에서 본 방법 그대로</h2>
+<p>플랍 판단은 R01에서 본 방법 그대로예요. <strong>상대 폴드율이 체크와 같아지는 폴드율을 넘는지</strong>만 보면 돼요. 그래서 여기서는 숫자만 짧게 확인하고, 그 기준이 왜 그 자리에 있는지에 시간을 쓸게요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>BTN 대응</th>
+<th>핸드</th>
+<th>콤보</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>콜</td>
+<td>JJ~44, A8s·K8s·T8s·98s·87s·86s(8 페어), 76s(스트레이트), 65s(5 페어+거트샷), A5s·A4s·54s(페어 이상)</td>
+<td>71</td>
+</tr>
+<tr>
+<td>폴드</td>
+<td>KQ·KJs·QJs·AJ·ATs·KTs·QTs·JTs·AK·T9s·J9s·Q9s(보드에 안 맞은 하이카드)</td>
+<td>68</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>BTN 폴드율 = 68 ÷ 139 = <strong>약 48.9%</strong>
+체크와 같아지는 폴드율 <strong>약 34.2%</strong> → 48.9%가 넘어서 <strong>c-bet</strong></p>
+</blockquote>
+<h3>기준이 알파보다 높은 이유</h3>
+<p>2.3BB를 순수 블러프로 보면 알파는 2.3 ÷ (6.9 + 2.3) = <strong>25%</strong>예요. 그런데 진짜 기준은 약 34.2%로 더 높아요. 이유는 <strong>체크가 공짜가 아니라 몫이 있는 선택</strong>이기 때문이에요.</p>
+<p>Hero가 체크해서 쇼다운까지 가면, BTN 전체 레인지 상대 에퀴티 <strong>약 31.5%</strong>만큼 팟을 가져가요.</p>
+<blockquote>
+<p>체크 몫 = 6.9 × 31.5% = <strong>약 2.17BB</strong></p>
+</blockquote>
+<p>벳은 0이 아니라 이 2.17BB를 넘어야 해요. 그래서 기준이 알파보다 올라가요.</p>
+<h3>접게 해서 버는 건 '지던 핸드'뿐이에요</h3>
+<p>폴드 칸 68콤보를 Hero 쪽에서 다시 나눠 보면 그림이 더 선명해져요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>접는 핸드</th>
+<th>지금 Hero와 비교</th>
+<th>콤보</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AK·AJ·ATs</td>
+<td>Hero가 지던 핸드(A 하이)</td>
+<td>32</td>
+</tr>
+<tr>
+<td>KJs·QJs·KTs·QTs·JTs·T9s·J9s·Q9s</td>
+<td>Hero가 이기던 핸드</td>
+<td>27</td>
+</tr>
+<tr>
+<td>KQ</td>
+<td>비기던 핸드</td>
+<td>9</td>
+</tr>
+</tbody>
+</table></div>
+<p>이기던 27콤보는 체크해도 쇼다운에서 Hero가 가져갈 핸드예요. 이 핸드를 접게 하면 <strong>어차피 받을 돈을 벳으로 받는 것</strong>뿐이라 더 버는 게 거의 없어요. c-bet이 진짜로 버는 건 <strong>A 하이처럼 Hero가 지던 핸드를 접게 할 때</strong>예요.</p>
+<p>이게 무슨 뜻이냐면, 쇼다운 몫이 있는 핸드일수록 블러프 기준이 알파보다 올라간다는 거예요. 오늘 플랍은 BTN이 하이카드를 많이 버려서 그 높아진 기준도 넘었어요.</p>
+<h2>2단계. 턴: 콜한 레인지는 다른 레인지예요</h2>
+<h3>무엇이 걸러졌나</h3>
+<p>플랍 폴드 칸의 하이카드 68콤보는 이제 없어요. 남은 건 콜 칸 71콤보예요. 여기에 J♠가 깔려 JJ가 6콤보에서 3콤보로 줄었고, 턴 레인지는 <strong>68콤보</strong>가 됐어요.</p>
+<p>이 68콤보는 하나도 빠짐없이 <strong>페어 이상</strong>이에요. 포켓페어, 8 페어, 5·4 페어, 투페어, 스트레이트까지요. 지금 K 하이인 Hero가 이기고 있는 핸드는 <strong>하나도 없어요.</strong></p>
+<h3>J♠가 BTN에게 준 것</h3>
+<p>J♠는 Hero에게는 아무것도 주지 않았어요. K나 Q가 아니니까요. 반대로 BTN 쪽에는 몇 가지를 줬어요.</p>
+<ul>
+<li>JJ는 <strong>셋</strong>이 됐어요</li>
+<li>7♠6♠은 이미 스트레이트인데, 4♠·J♠로 <strong>스페이드 플러시 드로우</strong>까지 붙었어요</li>
+<li>TT·99는 J가 오버카드로 왔지만, 여전히 <strong>Hero보다 높은 페어</strong>예요</li>
+</ul>
+<h3>다시 센 폴드율</h3>
+<p>턴에 Hero가 7.5BB(팟의 약 65.2%)를 걸면 누가 접을까요?</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>BTN 대응</th>
+<th>핸드</th>
+<th>콤보</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>콜</td>
+<td>JJ·88·55·44(셋), TT·99, 8 페어(A8s·K8s·T8s·98s·87s·86s), 76s(스트레이트), A5s(5 페어), 54s(투페어)</td>
+<td>50</td>
+</tr>
+<tr>
+<td>폴드</td>
+<td>77·66(거트샷 붙은 포켓페어), 65s(5 페어+거트샷), A4s(4 페어)</td>
+<td>18</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>BTN 폴드율 = 18 ÷ 68 = <strong>약 26.5%</strong></p>
+</blockquote>
+<p>플랍의 약 48.9%가 턴에 약 26.5%로 떨어졌어요. 같은 BTN, 같은 벳 크기 감각인데 <strong>접을 핸드가 이미 빠져나간 레인지</strong>라서 그래요.</p>
+<!-- 그림: 플랍 폴드율 48.9% vs 기준 34.2%, 턴 폴드율 26.5% vs 기준 38.4% 막대 -->
+
+<h2>3단계. 턴 기준: 이번엔 알파 근처로 내려와요</h2>
+<h3>세 개의 기준</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>기준</th>
+<th>폴드율</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>알파(콜 받으면 늘 짐)</td>
+<td>약 39.5%</td>
+</tr>
+<tr>
+<td>체크와 같아지는 폴드율(체크하면 쇼다운까지)</td>
+<td>약 38.4%</td>
+</tr>
+<tr>
+<td>본전 폴드율(체크하면 이 팟을 포기)</td>
+<td>약 32.0%</td>
+</tr>
+<tr>
+<td><strong>BTN 폴드율</strong></td>
+<td><strong>약 26.5%</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>알파는 7.5 ÷ (11.5 + 7.5) = <strong>약 39.5%</strong>예요. 플랍에서는 체크 기준이 알파보다 한참 위였는데, 턴에서는 알파보다 <strong>살짝 아래</strong>예요. 왜 그럴까요?</p>
+<h3>두 힘이 기준을 밀고 당겨요</h3>
+<p>A21에서 본 두 힘이 여기서도 움직여요. 기준을 <strong>올리는 힘</strong>은 체크 몫이에요. 턴에서 체크하면 Hero는 전체 레인지 상대 에퀴티 <strong>약 9.3%</strong>만큼만 가져가요.</p>
+<blockquote>
+<p>체크 몫 = 11.5 × 9.3% = <strong>약 1.07BB</strong></p>
+</blockquote>
+<p>플랍의 2.17BB보다 훨씬 작아요. 지금 이기는 핸드가 없으니 쇼다운 몫이 거의 없는 거죠.</p>
+<p>기준을 <strong>내리는 힘</strong>은 콜을 받았을 때 에퀴티예요. 콜 레인지 상대 Hero 에퀴티는 <strong>약 7.9%</strong>라, 콜을 받아도 아주 가끔은 K나 Q로 뒤집어요. 두 힘이 다 작으니 기준은 알파 근처에 머물러요. 이 벳은 사실상 <strong>순수 블러프</strong>라는 뜻이에요.</p>
+<h3>어느 기준이든 모자라요</h3>
+<p>오늘 이야기에서 Hero가 체크하면 BTN이 걸고, Hero는 접어요. 그럼 체크 몫은 1.07BB가 아니라 0에 가까워져요. 그때의 기준이 본전 폴드율 <strong>약 32.0%</strong>예요.</p>
+<blockquote>
+<p>BTN 폴드율 약 26.5% &lt; 본전 약 32.0% &lt; 체크 기준 약 38.4% → <strong>체크</strong></p>
+</blockquote>
+<p>체크 뒤 쇼다운으로 가든, 체크 뒤 포기하든 BTN 폴드율이 모자라요. 그래서 기준을 무엇으로 잡든 결론은 같아요.</p>
+<h3>몫으로 비교하면</h3>
+<p>벳 전체 몫은 <strong>접을 때 몫과 콜 받을 때 몫을 더한 것</strong>이에요.</p>
+<blockquote>
+<p>벳 전체 몫 = 접을 때 3.04 + 콜 받을 때 (−3.98) = <strong>약 −0.94BB</strong></p>
+</blockquote>
+<p>콜 받을 때 몫이 음수인 건, 레인지의 4분의 3 가까이가 콜해 오고 그때마다 7.5BB 중 대부분을 잃기 때문이에요. 벳은 약 −0.94BB, 체크는 약 1.07BB예요. 체크가 나아요.</p>
+<h2>4단계. 체크 뒤 BTN 벳: 깔끔하게 손 떼기</h2>
+<p>Hero가 체크하자 BTN이 7.5BB를 걸었어요. 이제 Hero는 받는 쪽이에요.</p>
+<blockquote>
+<p>필요 에퀴티 = 7.5 ÷ 26.5 = <strong>약 28.3%</strong></p>
+</blockquote>
+<p>BTN이 턴 레인지 전부로 건다고 보면, Hero 에퀴티는 <strong>약 9.3%</strong>예요.</p>
+<h3>Hero의 아웃츠가 하는 일</h3>
+<p>Hero가 지금 이기는 핸드는 없어요. 그러니 K나 Q로 <strong>뒤집는 것</strong>만 바랄 수 있어요. 그런데 뒤집을 수 있는 상대와 없는 상대가 갈려요.</p>
+<ul>
+<li><strong>K·Q가 와도 소용없는 상대</strong>: JJ·88·55·44(셋), 76s(스트레이트), 54s(투페어) — 이 18콤보 상대로는 Hero 에퀴티가 0%예요</li>
+<li><strong>K·Q로 뒤집을 수 있는 상대</strong>: TT·99·77·66, 8 페어, 65s·A5s·A4s — Hero보다 높지만 K 페어나 Q 페어보다는 낮은 핸드들이에요. 다만 K8s는 K가 오면 투페어가 돼서 Q만 아웃츠예요</li>
+</ul>
+<p>뒤집을 수 있는 상대도 리버 한 장에 맞혀야 해요. 그래서 전체로 모으면 약 9.3%예요.</p>
+<blockquote>
+<p>Hero 에퀴티 약 9.3% &lt; 필요 에퀴티 약 28.3% → <strong>폴드</strong></p>
+</blockquote>
+<h3>체크는 손 떼기까지 한 세트예요</h3>
+<p>오늘 턴 체크는 "약하게 보여서 상대를 유인하는 체크"가 아니에요. <strong>"이 판에 더 넣지 않겠다"는 체크</strong>예요. 그러니 BTN이 걸면 미련 없이 접는 것까지 한 번에 정해 두는 게 좋아요.</p>
+<section class="sec why"><h2>왜 그럴까: c-bet은 거름망이에요</h2>
+<h3>첫 벳이 바닥을 걸러 내요</h3>
+<p>R02 턴에서는 받는 쪽에서 "벳을 이어 갈수록 상대 레인지가 단단해진다"를 봤죠. 오늘은 같은 일을 <strong>거는 쪽</strong>에서 봐요. c-bet 한 번은 상대 레인지에서 <strong>보드에 아무것도 없는 핸드</strong>를 걸러 내요. 오늘은 그게 하이카드 68콤보였어요. 걸러진 뒤 남은 레인지는 처음 레인지보다 <strong>훨씬 단단해요.</strong></p>
+<p>두 번째 벳이 통하려면, 걸러진 뒤에도 <strong>이번 벳에 접을 핸드</strong>가 충분히 남아 있어야 해요. 오늘 남은 건 페어 이상뿐이라 그런 핸드가 18콤보밖에 없었어요.</p>
+<h3>체크 기준이 움직이는 방향</h3>
+<p>플랍에서는 Hero의 K 하이가 BTN 레인지 일부를 이기고 있었어요. 그래서 체크에도 몫이 있었고, 기준이 알파보다 올라갔죠. 턴에서는 이기는 핸드가 사라져서 체크 몫이 쪼그라들었고, 기준이 알파 근처로 내려왔어요.</p>
+<p>이게 무슨 뜻이냐면, <strong>기준 폴드율도 스트리트마다 새로 구하는 숫자</strong>라는 거예요. 폴드율만 새로 세고 기준은 플랍 것을 그대로 쓰면 비교가 어긋나요.</p>
+<h3>포지션 없이 거는 배럴은 다음 고민까지 사 와요</h3>
+<p>Hero는 HJ라 BTN보다 먼저 행동해요. 턴에 걸었다가 콜을 받으면 리버에서도 먼저 결정해야 해요. 오늘 계산은 그 뒤를 체크 쇼다운으로 단순화했지만, 실전에서는 <strong>리버에 한 번 더 고민할 자리</strong>가 생길 수 있어요.</p>
+</section><section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. "플랍에 걸었으니 턴에도 걸어야 이야기가 맞는다"</strong>
+이야기를 이어 가려고 턴까지 거는 경우예요. 그런데 이야기는 상대가 <strong>아직 접을 핸드를 들고 있을 때만</strong> 돈이 돼요. 오늘 턴 폴드율은 약 26.5%로, 가장 낮은 기준인 약 32.0%에도 못 미쳤어요. 대신 "플랍에서 무엇이 걸러졌나"부터 떠올려요.</p></div><div class="mis-card"><p><strong>실수 2. "K나 Q 6장이 있으니 콜할 만하다"</strong>
+체크 뒤 BTN 벳에 오버카드를 믿고 따라가는 경우예요. 하지만 BTN 레인지 68콤보 중 18콤보는 K나 Q가 와도 Hero가 지는 핸드예요. 아웃츠가 <strong>정말 이기는 카드인지</strong> 빼고 나면 에퀴티는 약 9.3%예요. 대신 "이 카드가 오면 누구를 이기나"를 핸드 이름으로 확인해요.</p></div><div class="mis-card"><p><strong>실수 3. "플랍에 넣은 2.3BB가 아까워서" 본전 생각</strong>
+이미 넣은 돈을 되찾으려고 턴에 한 번 더 걸거나 콜하는 경우예요. 그런데 그 2.3BB는 이미 팟의 일부라, 턴 결정에 들어가지 않아요. 턴에서 비교한 건 <strong>벳 약 −0.94BB 대 체크 약 1.07BB</strong>, 앞으로의 돈뿐이었어요. 대신 "지금부터 넣을 돈"만 놓고 정해요.</p></div></section>
+<hr />
+<h2>"체크하면 약해 보이니까, BTN이 블러프로 걸 수도 있잖아요?"</h2>
+<p>좋은 질문이에요. 상대 블러프를 잡으려면 Hero 핸드가 <strong>그 블러프보다는 강해야</strong> 해요. 그런 핸드를 블러프캐처라고 불러요.</p>
+<p>오늘 BTN의 턴 레인지는 전부 페어 이상이에요. BTN이 77이나 65s로 건다면 BTN 쪽에선 "약한 핸드로 거는 벳"일 수 있지만, 그 핸드도 지금 Hero의 K 하이를 이기고 있어요. Hero는 <strong>잡을 블러프가 없는 핸드</strong>인 거죠.</p>
+<p>그래서 오늘 체크-폴드는 겁이 나서 하는 폴드가 아니에요. 상대 레인지에 Hero가 이기는 핸드가 실제로 있는지를 세어 보고 나온 폴드예요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<ol>
+<li>턴 카드를 보면 내 핸드보다 <strong>"상대가 플랍에서 무엇을 버리고 왔나"</strong>를 먼저 떠올려요</li>
+<li>체크를 고를 때 <strong>"상대가 걸면 접는다"까지 그 자리에서 정해</strong> 두고 체크해요</li>
+<li>플랍에 넣은 돈은 이미 팟의 것이에요. <strong>본전 생각은 접고</strong> 앞으로의 돈만 봐요</li>
+</ol></section>
+<hr />
+<h2>연습 문제</h2>
+<blockquote>
+<p>학습툴 에퀴티 계산기의 <strong>[콜 수익]</strong> 칸에 지금 팟(상대 벳 포함)과 콜 금액을 넣으면 필요 에퀴티를 확인할 수 있어요. 폴드율과 기준은 위 방법대로 직접 세어요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 같은 판인데 턴이 J♠가 아니라 <strong>A♠</strong>예요. Hero에게는 여전히 아무것도 안 맞았어요. 이 BTN은 A가 깔리면 <strong>77·66·65s와 8 페어(K8s·T8s·98s·87s·86s)를 내려놓고</strong>, 나머지는 콜해요. 그래서 콜 40콤보, 폴드 29콤보예요. 7.5BB를 다시 걸까요, 체크할까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p>BTN 폴드율은 29 ÷ 69 = <strong>약 42.0%</strong>예요. 이 턴의 체크와 같아지는 폴드율은 <strong>약 39.6%</strong>라서 폴드율이 기준을 넘어요 → <strong>벳</strong>.
+몫으로 보면 접을 때 약 4.83BB를 얻고, 콜 받을 때 약 3.41BB를 잃어서 벳 전체 몫은 <strong>약 1.43BB</strong>예요. 체크 몫 <strong>약 1.00BB</strong>보다 커요.
+Hero 핸드는 J♠ 턴과 똑같이 K 하이예요. 바뀐 건 <strong>턴 카드가 BTN 콜 레인지 중 몇 콤보를 '버티기 애매한 핸드'로 만들었나</strong>예요. 다만 기준과 차이가 크지 않아서, BTN이 조금만 덜 접어도 다시 체크 쪽이 돼요.</p>
+</details>
+<p><strong>문제 2.</strong> 다시 J♠ 턴이에요. Hero가 체크하자 BTN이 이번엔 <strong>3.8BB로 작게</strong> 걸어요. 이 BTN은 셋·투페어·스트레이트(JJ·88·55·44·76s·54s)는 크게 걸고, 작게 거는 건 <strong>나머지 50콤보</strong>뿐이라고 가정해요. 이번엔 콜할까요?</p>
+<details>
+<summary>정답 보기</summary>
+<blockquote>
+<p>필요 에퀴티 = 3.8 ÷ 19.1 = <strong>약 19.9%</strong></p>
+</blockquote>
+<p>이 50콤보는 K8s(Q만 통함)를 빼면 모두 K나 Q가 오면 Hero가 뒤집는 핸드예요. 그래도 리버 한 장에 맞혀야 해서 Hero 에퀴티는 <strong>약 12.7%</strong>예요. 필요 에퀴티 약 19.9%에 못 미쳐요 → <strong>폴드</strong>.
+아웃츠 중 일부는 <strong>더러운 카드</strong>예요(스페이드 수딧 콤보에는 K♠·Q♠가 플러시를 줘요). 그걸 빼고 보더라도 한 장에 맞힐 확률이 팟 오즈에 모자라면 콜할 수 없어요. 벳이 작아졌다고 따라가기 전에 <strong>이기는 카드가 몇 장인지</strong>부터 세요.</p>
+</details>
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>c-bet에 콜한 레인지는 <strong>바닥이 걸러진 레인지</strong>예요. 턴 폴드율은 플랍 숫자를 빌려 오지 말고 새로 세요</li>
+<li>체크와 같아지는 폴드율은 <strong>체크 몫이 크면 알파보다 올라가고</strong>, 이기는 핸드가 사라지면 알파 근처로 내려와요</li>
+<li>블러프로 버는 돈은 <strong>원래 지던 핸드를 접게 할 때</strong> 나와요. 이기던 핸드를 접게 하는 건 쇼다운 몫을 미리 받는 것뿐이에요</li>
+<li>지금 이기는 핸드가 없고 아웃츠도 깨끗하지 않으면, 체크와 그 뒤의 폴드는 <strong>하나의 결정</strong>이에요</li>
+</ul>
+</section><section class="sec end"><h2>정리하며</h2>
+<p>오늘은 대회 초반 HJ에서 K♣Q♣로 오픈하고, 플랍 c-bet이 콜을 받은 뒤 턴에서 멈추는 판을 따라갔어요.</p>
+<p>플랍은 BTN 폴드율 약 48.9%가 체크 기준 약 34.2%를 넘어 c-bet이었어요. 턴은 하이카드가 걸러져 폴드율이 약 26.5%로 떨어졌고, 어떤 기준에도 못 미쳐 체크했어요. 체크 뒤 BTN 벳에는 Hero 에퀴티 약 9.3%가 필요 에퀴티 약 28.3%에 못 미쳐 폴드했어요.</p>
+<p>다음 글 R09에서는 <strong>초반 리버 오버벳을 받는 블러프캐처</strong> 판을 다뤄요. 오늘은 잡을 블러프가 없어서 손을 뗐다면, 다음은 상대의 큰 벳 앞에서 <strong>블러프를 잡을 수 있는 핸드</strong>로 버틸지 정하는 쪽이에요.</p>
+<hr />
+<p><small>AI 작성 · 숫자는 계산 검증 · 가정 레인지 기준(솔버 결과 아님) · 토너 BB 앤티 1BB · 남은 베팅이 있어 BB 금액은 계산용</small></p></section>
+</article>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="084_A21.html">턴 더블배럴: 6♥5♥ 드로우로 한 번 더 걸까, 체크할까?</a></li></ul></aside><nav class="nav"><a class="prev" href="149_R07.html"><div class="l">← 이전 글</div><div class="t">초반 수딧 커넥터 콜, 리버 스트레이트 밸류 사이즈</div></a><a class="next" href="151_R09.html"><div class="l">다음 글 →</div><div class="t">초반 리버 오버벳을 받는 블러프캐처</div></a></nav></main>
+</body>
+</html>
