@@ -2152,11 +2152,11 @@ const PET_FISHING={
   B.raf=requestAnimationFrame(ts=>this.loop(g,B,ts));},
  loop(g,B,ts){if(g._fs!==B||B.st!=='reel')return;const dt=B.last?Math.min(.05,(ts-B.last)/1000):.016;B.last=ts;
   // 물고기: 목표 지점을 정해 이리저리 (등급이 높을수록 빠르고 자주 바꿈)
-  // 11/02 너무 어려움 → 한 번에 움직이는 거리 제한(일반 ±20% ~ 전설 ±42%) · 크게 움직인 뒤엔 0.6초 쉼 · 목표 바꾸는 횟수 줄임
-  B.rest=Math.max(0,(B.rest||0)-dt);if(!B.rest&&Math.random()<dt*(.8+B.dif*.9)){const R=[0,.2,.25,.35,.42][B.rar||1],nt=Math.max(.04,Math.min(.96,B.fx+(Math.random()*2-1)*R));if(Math.abs(nt-B.fx)>R*.6)B.rest=.6;B.ft=nt;}B.fv+=(B.ft-B.fx)*dt*(6+B.dif*8);B.fv*=Math.pow(.2,dt);B.fx=Math.max(.02,Math.min(.98,B.fx+B.fv*dt*2.2));
+  // 11/02 너무 어려움 → 한 번에 움직이는 거리 제한 · 크게 움직인 뒤엔 0.45초 쉼 (같은 날 저녁: 너무 쉬워 살짝 올림 · 봇 기준 잡는 비율 100/96/43/9%)
+  B.rest=Math.max(0,(B.rest||0)-dt);if(!B.rest&&Math.random()<dt*(1+B.dif)){const R=[0,.28,.46,.36,.42][B.rar||1],nt=Math.max(.04,Math.min(.96,B.fx+(Math.random()*2-1)*R));if(Math.abs(nt-B.fx)>R*.6)B.rest=.45;B.ft=nt;}B.fv+=(B.ft-B.fx)*dt*(6+B.dif*8);B.fv*=Math.pow(.2,dt);B.fx=Math.max(.02,Math.min(.98,B.fx+B.fv*dt*2.2));
   // 초록 칸: 누르면 오른쪽 · 떼면 왼쪽 (관성)
   B.zv+=(B.hold?2.6:-2.2)*dt;B.zv*=Math.pow(.35,dt);B.zx+=B.zv*dt*1.6;if(B.zx<0){B.zx=0;B.zv=Math.abs(B.zv)*.3;}if(B.zx>1-B.zw){B.zx=1-B.zw;B.zv=-Math.abs(B.zv)*.3;}
-  const inside=B.fx>=B.zx&&B.fx<=B.zx+B.zw;B.prog+=(inside?.32:-.15*B.dif)*dt;/*11/02 놓쳤을 때 덜 깎임 (예전 .22)*/
+  const inside=B.fx>=B.zx&&B.fx<=B.zx+B.zw;B.prog+=(inside?.32:-.18*B.dif)*dt;/*11/02 놓쳤을 때 덜 깎임 (예전 .22)*/
   const z=document.getElementById('fszone'),f=document.getElementById('fsfish'),p=document.getElementById('fsprog');if(z){z.style.left=(B.zx*100)+'%';z.style.width=(B.zw*100)+'%';}if(f){f.style.left=(B.fx*100)+'%';f.style.filter=inside?'drop-shadow(0 0 4px #fff)':'';}if(p)p.style.width=Math.max(0,Math.min(100,B.prog*100))+'%';
   if(B.prog>=1){this.land(g);return;}if(B.prog<=0){B.st='idle';B.bx=null;B.msg='💦 줄이 풀렸어요… '+PET_FISH_RN[B.F[2]]+' 물고기가 도망갔어요';rr();return;}
   B.raf=requestAnimationFrame(t=>this.loop(g,B,t));},
