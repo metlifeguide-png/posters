@@ -11,6 +11,7 @@
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}
 body{min-height:100vh;overscroll-behavior:none}
+body.petfs .top{display:none!important}/* 11/02 홈 안 뚝섬펫: 맨 위 줄 없음 (p7.js petFs) */
 .top{position:sticky;top:0;z-index:5;background:var(--blue);color:#fff;display:flex;align-items:center;gap:8px;padding:8px 10px}
 .top button,.top a{background:rgba(255,255,255,.18);color:#fff;border:0;border-radius:9px;padding:6px 10px;font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap}
 .top .tt{flex:1;text-align:center;font-weight:800;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -771,6 +772,14 @@ function olView(g,v0){const o=g.ol;if(!o.tok)return olLobby(g);const S=OL_SIDE[g
  const bd=v0.call(g).replace(/<div class="g2b">[\s\S]*?<\/div>/,'').replace('👥 친구와','🌐 온라인');
  const lg=(o.log||[]).slice(-5).map(olE).join('<br>');
  return `<div class="card m" style="text-align:center;margin-bottom:8px">방 <b>${o.code}</b> · ${olE(o.gname||g.n)}${o.specs&&o.specs.length?' · 👀 '+o.specs.length:''}<br>${seats}${sc?'<br>'+sc:''}${pr?'<br>'+pr:''}<br><b>${line}</b></div>${bd}<div style="display:grid;gap:8px;margin-top:10px">${f}</div>${lg?`<div class="m" style="margin-top:10px;font-size:12px;opacity:.75;line-height:1.6">${lg}</div>`:''}`;}
+/* 11/02 펫 장면 위 고정: 카드를 이름줄 / 장면(고정) / 스탯 세 칸으로 나눠 붙여 보이게 · 장면은 화면 맨 위에 붙고 아래 메뉴만 스크롤 (PC·태블릿·휴대폰 같게) */
+const PET_STK_CSS='<style>.card.pstk1{border-bottom:0;border-bottom-left-radius:0;border-bottom-right-radius:0;margin-bottom:0;padding-bottom:0!important}'+
+ '.card.pstk{position:sticky;top:0;z-index:4;border-top:0;border-bottom:0;border-radius:0;margin:0;padding:0 10px 4px}'+
+ '.card.pstk2{border-top:0;border-top-left-radius:0;border-top-right-radius:0;padding:0 10px 10px}'+
+ 'body:not(.petfs) .card.pstk{top:var(--ptop,0px)}'+
+ '.petad{display:flex;flex-direction:column;gap:8px;margin:12px 0 4px}.petad button{position:relative;display:block;width:100%;border:0;padding:0;border-radius:14px;overflow:hidden;cursor:pointer;background:#14233a;color:#fff;text-align:left;font-family:inherit}'+
+ '.petad img{display:block;width:100%;height:auto;max-height:220px;object-fit:cover}.petad .tx{padding:14px 16px;display:flex;flex-direction:column;gap:3px}.petad small{font-size:11px;font-weight:900;opacity:.8}.petad b{font-size:16px}.petad .tx span{font-size:13px;color:#f1d38a}'+
+ '.petad .cap{position:absolute;left:0;right:0;bottom:0;padding:10px 14px;background:linear-gradient(transparent,#000a);display:flex;flex-direction:column}.petad .cap span{font-size:12.5px}</style>';
 // ===================== 🃏 원카드 · 🀄 세븐훌라 (AI 대전) =====================
 (function(){const s=document.createElement('style');s.textContent=`
 .cgt{background:radial-gradient(ellipse at center,#2a7a4e,#1b5a39);border-radius:16px;padding:12px 8px;color:#fff;margin-bottom:8px;box-shadow:inset 0 0 0 3px rgba(255,255,255,.08)}
@@ -1826,7 +1835,7 @@ function newGame(){const g=CUR;if(!g)return;if(g.stop)g.stop();SWH=null;clearInt
  else if(g.go&&g.lv&&g.go.length>=1)g.go(g.lv);
  else g.start();
  scrollTo(0,0);toast('🔄 새 게임');}
-function render(){const hsh=location.hash.slice(1);if(CUR&&CUR.stop)CUR.stop();SWH=null;clearInterval(clock.iv);
+function render(){const hsh=location.hash.slice(1);if(CUR&&CUR.stop)CUR.stop();SWH=null;clearInterval(clock.iv);petFs(/^g=pet(&|$)/.test(hsh));
  const back=$('backBtn');
  if(hsh.startsWith('g=')){const key=hsh.slice(2).split('&')[0];const g=G.find(x=>x.k===key);if(g&&g.stub){location.replace(g.stub+location.search+location.hash);return;}
   if(window.DAILY&&DAILY.k!==key)dailyEnd();
@@ -1839,6 +1848,15 @@ function render(){const hsh=location.hash.slice(1);if(CUR&&CUR.stop)CUR.stop();S
  if(hsh==='daily'){gvisit('게임·오늘의 문제');setTitle('📅 오늘의 문제');back.style.display='';show(dailyView());loadDaily();return;}
  if(hsh==='event'){gvisit('게임·커피이벤트');setTitle('☕ 커피이벤트');back.style.display='';MIS_AT=0;show(eventView());return;}
  render0();if(window.top===window.self)gvisit('게임 목록');else{presPage('게임 목록');back.style.display='';}/* 홈 안에서는 목록 화면에도 '목록'(홈으로) 버튼: 휴대폰은 홈의 위·아래 줄이 숨어 있음 */if(NICK&&!ME)loadMe(()=>{if(!CUR&&!location.hash.slice(1))render0();});}
+/* 11/02 뚝섬펫(홈 안에서 열 때): 맨 위 '🐣 뚝섬펫' 줄 숨기고, 홈에도 알려서 홈 위 줄·배너도 숨김 → 펫 장면이 화면 맨 위에 고정, 아래 메뉴만 스크롤 (배너는 펫 화면 맨 아래로) · PC·태블릿·휴대폰 같게 */
+function petFs(on){on=!!on&&window.top!==window.self;if(document.body.classList.contains('petfs')===on&&petFs.sent)return;petFs.sent=1;document.body.classList.toggle('petfs',on);{const T=document.querySelector('.top');document.documentElement.style.setProperty('--ptop',(!on&&T&&getComputedStyle(T).position==='sticky'?T.offsetHeight:0)+'px');}try{parent.postMessage({t:'ttuk-pet',on:on},'*');}catch(e){}}
+/* 펫 화면 맨 아래 배너: 홈(같은 주소)의 배너 목록을 그대로 가져와 그림 배너로 · 누르면 홈에서 원래 배너처럼 열림 */
+function petAdHTML(){try{const P=parent;if(P===window||typeof P.heroSlides!=='function')return '';const L=P.heroSlides();petAdGo.L=L;if(!L.length)return '';const e=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  return '<div class="petad">'+L.map((x,i)=>{if(x.k==='ad'){const a=x.a;if(a.img||a.img_pc){if(P.hadHit)P.hadHit(a,'v');return '<button type="button" onclick="petAdGo('+i+')" style="background:'+e(a.bg||'#14233a')+'" aria-label="'+e(a.title)+'"><img src="ads/'+e(a.img||a.img_pc)+'.jpg" alt="'+e(a.title)+'" onerror="this.remove()"></button>';}
+     return '<button type="button" onclick="petAdGo('+i+')" class="tx" style="background:linear-gradient(120deg,'+e(a.bg||'#14233a')+',#0d203b)"><small>'+(a.go==='menu'?'안내':'광고')+'</small><b>'+e(a.title)+'</b>'+(a.sub?'<span>'+e(a.sub)+'</span>':'')+'</button>';}
+    if(x.k==='bday')return '<button type="button" onclick="petAdGo('+i+')" class="tx" style="background:linear-gradient(120deg,#ff7aa8,#ffb84d)"><small>HAPPY BIRTHDAY</small><b>🎂 '+e(x.n.join(', '))+'님 생일 축하해요!</b></button>';
+    return '<button type="button" onclick="petAdGo('+i+')"><img src="'+e(x.img)+'" alt="뚝섬유원지">'+(x.t||x.s?'<span class="cap">'+(x.t?'<b>'+x.t+'</b>':'')+(x.s?'<span>'+x.s+'</span>':'')+'</span>':'')+'</button>';}).join('')+'</div>';}catch(e){return '';}}
+function petAdGo(i){try{const P=parent,x=(petAdGo.L||[])[i];if(!x)return;if(x.k==='ad')P.hadGo(x.a);else if(x.k==='bday')P.bdShare(x.n);else if(x.k==='meet')P.go('meet');else P.heroLink();}catch(e){}}
 addEventListener('hashchange',render);addEventListener('hashchange',abarSync);
 if(window.top!==window.self){$('homeBtn').style.display='none';}   // 홈 안에서 열렸으면 홈 버튼 숨김 (위의 ← 뒤로로 닫기)
 render();abarSync();</script>
