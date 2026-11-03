@@ -1540,7 +1540,7 @@ const PET_DOT_K=1,PET_DOT_ROOM_K=.72;   // 방 장면에선 배경 대비 작게
 const PET_DOT_ROW={idle:['a',0,3.2],walk:['a',1,.9],eat:['a',2,1.4],sleep:['a',3,3.6],kick:['b',0,.8],sing:['b',1,1.2],joy:['b',2,1],bath:['b',3,1.6],sit:['c',0,2.4],lie:['c',1,3.2],look:['c',2,2.8],sniff:['c',3,1.6]};
 const PET_DOT_C={0:1,1:1,2:1,3:1,4:1,5:1,6:1,7:1,8:1,9:1,10:1,11:1,12:1,13:1,14:1,15:1,16:1,17:1,18:1,19:1,20:1,21:1,22:1,23:1,24:1,25:1,26:1,27:1,28:1,29:1,30:1,31:1,32:1,33:1,34:1,35:1,36:1};   // 세 번째 시트(앉기·엎드리기·두리번·킁킁)가 있는 종 (tools/pet_dot_sheetc.py 가 채움) · 없으면 아래 대신 줄
 const PET_DOT_CFB={sit:'idle',lie:'idle',look:'idle',sniff:'idle'},PET_DOT_FSP={};   // 대신 줄 · 진화갈래 키 → 종 번호(_c 는 종 시트를 씀)
-function petDotRowOf(id,act){const R=PET_DOT_ROW[act];if(!R||R[0]!=='c')return act;const sp=String(id).startsWith('fm_')?PET_DOT_FSP[String(id).slice(3)]:id;return PET_DOT_C[sp]?act:PET_DOT_CFB[act];}
+function petDotRowOf(id,act){const R=PET_DOT_ROW[act];if(!R||R[0]!=='c')return act;if(String(id).startsWith('fm_'))return PET_DOT_CFB[act];return PET_DOT_C[id]?act:PET_DOT_CFB[act];}   // 11/03 진화갈래는 _c 시트가 없어 종 시트(다른 색)를 쓰던 것 → 앉기·두리번 때 색이 바뀜(파랗게 등) · 갈래 시트의 평소 줄로
 function petDotOn(){return true;}   // 11/01 37종 끝 → 전환 버튼 없앰, 늘 도트(시트 없는 종만 기존 그림)
 function petDotToggle(){try{localStorage.setItem('petDot',petDotOn()?'0':'1');}catch(e){}if(typeof rr==='function')rr();}
 function petDotHas(v){return !!(v&&PET_DOT[v.sp]&&v.stage!=='알'&&petDotOn());}
@@ -2378,7 +2378,16 @@ const PET_HIDE={
 const PET_PAT_Z=[['head','머리',.18,.42],['back','등',.42,.62],['belly','배',.62,.86]];
 const PET_STROKE={
  open(g,v){const z=[0,1,2].sort(()=>Math.random()-.5);g._pt={love:0,ang:0,fav:z[0],bad:z[1],on:0,lx:null,ly:0,lt:0,acc:0,favT:0,found:0,sulk:0,rough:0,t0:Date.now(),tm:[],row:'idle',hint:0};rr();
-  this.T(g,g._pt,()=>this.hint(g),4500);},
+  this.T(g,g._pt,()=>this.hint(g),4500);this.mask(g,g._pt,v);},
+ // 11/03 펫 그림마다 몸 위치가 달라 머리·등·배가 어긋남 → 도트 시트 첫 칸의 실제 그림(불투명 픽셀)으로 몸 영역을 재서 부위를 나눔 (못 읽으면 예전 고정 비율)
+ mask(g,B,v){if(typeof petDotHas!=='function'||!petDotHas(v))return;const im=new Image();im.crossOrigin='anonymous';
+  im.onload=()=>{if(g._pt!==B)return;try{const N=24,c=document.createElement('canvas');c.width=c.height=N;const x=c.getContext('2d');x.drawImage(im,0,0,im.width/4,im.height/4,0,0,N,N);
+   const d=x.getImageData(0,0,N,N).data,m=[];let t=N,b=-1;for(let j=0;j<N;j++)for(let i=0;i<N;i++){const on=d[(j*N+i)*4+3]>60;m.push(on);if(on){t=Math.min(t,j);b=Math.max(b,j);}}
+   if(b-t>=4)B.mk={N,m,t,b};}catch(e){}};im.src=petDotSrc(petDotId(v),'a');},
+ // 손 위치(fx,fy: 0~1) → 부위 번호 (몸 밖이면 -1)
+ zone(B,fx,fy){const K=B.mk;if(!K)return fx>.2&&fx<.8?PET_PAT_Z.findIndex(z=>fy>=z[2]&&fy<z[3]):-1;
+  const gx=Math.floor(fx*K.N),gy=Math.floor(fy*K.N);let hit=false;for(let j=gy-1;j<=gy+1&&!hit;j++)for(let i=gx-1;i<=gx+1;i++)if(i>=0&&j>=0&&i<K.N&&j<K.N&&K.m[j*K.N+i]){hit=true;break;}
+  if(!hit)return -1;const r=(gy-K.t)/Math.max(1,K.b-K.t);return r<.36?0:r<.66?1:2;},
  quit(g){const B=g._pt;if(B)B.tm.forEach(clearTimeout);g._pt=null;rr();},
  T(g,B,f,ms){B.tm.push(setTimeout(()=>{if(g._pt===B)f();},ms));},
  // 오래 못 찾으면 펫이 힌트를 줌
@@ -2390,10 +2399,11 @@ const PET_STROKE={
  up(g){const B=g._pt;if(B){B.on=0;B.lx=null;}},
  move(g,e){const B=g._pt;if(!B)return;const box=document.getElementById('ptbox'),dot=document.getElementById('ptdot');if(!box||!dot)return;
   const r=box.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,hand=document.getElementById('pthand');if(hand){hand.style.left=x+'px';hand.style.top=y+'px';hand.style.opacity=B.on?'1':'.5';}
+  {const R0=dot.getBoundingClientRect(),z0=this.zone(B,(e.clientX-R0.left)/R0.width,(e.clientY-R0.top)/R0.height),zl=document.getElementById('ptzl');if(zl){zl.style.left=x+'px';zl.style.top=(y+20)+'px';zl.textContent=z0>=0?PET_PAT_Z[z0][1]:'';zl.style.opacity=z0>=0?'1':'0';}}
   if(!B.on||B.sulk>Date.now()||B.love>=100)return;const now=performance.now();
   if(B.lx!=null){const d=Math.hypot(x-B.lx,y-B.ly),dt=Math.max(1,now-B.lt),sp=d/dt;
    const R=dot.getBoundingClientRect(),fx=(e.clientX-R.left)/R.width,fy=(e.clientY-R.top)/R.height;
-   const zi=fx>.2&&fx<.8?PET_PAT_Z.findIndex(z=>fy>=z[2]&&fy<z[3]):-1;
+   const zi=this.zone(B,fx,fy);
    if(d>0&&zi>=0){B.acc+=d;
     if(sp>1.5){B.ang+=d/14;B.rough++;if(B.acc>60){B.acc=0;this.fx(box,x,y-24,'💢',18);this.say('살살~ 아파요!','#d33');}this.row(B,'look');}
     else if(zi===B.bad){B.ang+=d/22;B.love+=d/90;if(B.acc>70){B.acc=0;this.fx(box,x,y-24,'💢',16);this.say(PET_PAT_Z[zi][1]+'는 싫어…','#d33');}this.row(B,'look');B.favT=0;}
@@ -2418,6 +2428,7 @@ const PET_STROKE={
    '<div style="display:flex;align-items:center;gap:5px">💢<div style="flex:1;height:5px;background:#0004;border-radius:9px;overflow:hidden"><div id="ptang" style="height:100%;width:'+Math.min(100,B.ang)+'%;background:#ff7043"></div></div></div></div>'+
    '<div style="position:absolute;left:0;right:0;top:44px;text-align:center;z-index:5;font-size:11.5px;font-weight:800;color:'+(night?'#fff':'#333')+';text-shadow:0 0 3px '+(night?'#000':'#fff')+';pointer-events:none">✋ 살살 쓰다듬어요 · 오늘 좋아하는 곳을 찾아봐요 (머리·등·배)</div>'+
    '<div id="pthand" style="position:absolute;left:50%;top:60%;font-size:34px;transform:translate(-50%,-60%);pointer-events:none;z-index:4;opacity:0">✋</div>'+
+   '<div id="ptzl" style="position:absolute;transform:translateX(-50%);pointer-events:none;z-index:4;opacity:0;font-size:11px;font-weight:900;background:#fffd;color:#333;border-radius:8px;padding:0 6px"></div>'+
    (B.stars?'<div style="position:absolute;inset:0;z-index:8;display:flex;align-items:center;justify-content:center;background:#0005"><div style="background:#fff;border-radius:16px;padding:12px 18px;text-align:center;color:#222"><div style="font-size:34px">😻</div><b>'+esc(v.name||'펫')+' 완전 행복해요!</b><div style="font-size:22px;margin-top:4px">'+'⭐'.repeat(B.stars)+'</div><div style="font-size:11.5px;opacity:.7">'+B.secs.toFixed(1)+'초 · 좋아하는 곳: '+PET_PAT_Z[B.fav][1]+'</div></div></div>':'')+
    '<button class="btn" style="position:absolute;right:8px;bottom:8px;z-index:7;padding:3px 10px;font-size:12px" onpointerdown="event.stopPropagation()" onclick="PET_STROKE.quit(CUR)">그만하기</button></div>';}
 };
