@@ -1667,7 +1667,9 @@ function petDotActHTML(v,a,size,cls,tint,bg){const row=a[1]==='roam'?'idle':a[1]
  return '<div class="pdot-act pa-'+(mv||'stay')+'" style="--s:'+size+'px;--rx:'+rx+'px;--d:'+d+'s;width:'+size+'px;height:'+size+'px"><div class="pa-in">'+body+(mv==='roam'?'':props)+'</div></div>';}
 // 11/01 미니게임에서 이미 그려진 도트 칸의 줄만 바꿈 (걷기↔먹기 등 · data-sp 에 종/갈래 id)
 function petDotSetRow(el,act){act=petDotRowOf(el.dataset.sp,act);const R=PET_DOT_ROW[act]||PET_DOT_ROW.idle,s=parseFloat(el.style.getPropertyValue('--s'))||100;
- el.style.backgroundImage='url('+petDotSrc(el.dataset.sp,R[0])+')';el.style.backgroundPositionY=(-R[1]*s)+'px';el.style.setProperty('--t',R[2]+'s');el.className='pdot pdot-'+act;}
+ const u='url('+petDotSrc(el.dataset.sp,R[0])+')',y=(-R[1]*s)+'px';el.style.backgroundImage=u;el.style.backgroundPositionY=y;el.style.setProperty('--t',R[2]+'s');el.className='pdot pdot-'+act;
+ // 11/04 진화갈래 색 덧칠 막도 같은 줄로 (안 바꾸면 예전 줄 모양으로 남아 몸 옆에 파란 색이 삐져나옴)
+ const ti=el.querySelector('.pdot-tint');if(ti){ti.style.webkitMaskImage=ti.style.maskImage=u;ti.style.webkitMaskPositionY=y;ti.style.setProperty('--y',y);}}
 // 11/01 미니게임 상자(첫 isolation:isolate 칸) 맨 뒤에 도트 배경을 깔아줌 · 도트 펫일 때만 · 글자는 흰 테두리로 잘 보이게
 function petMiniScene(html,bg,night,v){if(!v||!petDotHas(v)||!PET_DOT_BG[bg||'default'])return html;if(typeof petExperienceStyle==='function')petExperienceStyle();const i=html.indexOf('isolation:isolate');if(i<0)return html;const j=html.indexOf('>',i);if(j<0)return html;
  return html.slice(0,j+1)+petDotBg(bg,night)+'<style>.pw-dot-bg~[id$="msg"]{text-shadow:0 0 3px '+(night?'#000':'#fff')+',0 0 6px '+(night?'#000':'#fff')+'}</style>'+html.slice(j+1);}
