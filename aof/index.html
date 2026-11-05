@@ -84,7 +84,7 @@ details.more summary{cursor:pointer;color:var(--accent);font-weight:600}
 .tend{margin-top:6px;width:100%;border:1px solid var(--line);border-radius:8px;padding:4px 0;font-size:12px;background:var(--surface);color:var(--muted);cursor:pointer;font-family:inherit}
 .tend.t1{background:#e6eefc;color:#1d4fa8;border-color:#b9cdf3;font-weight:700}
 .tend.t2{background:#fbe3dc;color:#b33a1f;border-color:#f1b9a8;font-weight:700}
-@media (prefers-color-scheme: dark){.tend.t1{background:#17294a;color:#9cc2ff;border-color:#2a4a80}.tend.t2{background:#3d1f18;color:#ffab95;border-color:#6b3326}}
+@media (prefers-color-scheme: dark) and (min-width:99999px){.tend.t1{background:#17294a;color:#9cc2ff;border-color:#2a4a80}.tend.t2{background:#3d1f18;color:#ffab95;border-color:#6b3326}}
 
 .modebar{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0 4px}
 .modebar button{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:12px;padding:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit}
@@ -233,7 +233,17 @@ body.mtttab .modebar~#mttTab:not(script):not(style){display:block!important}
 #mttTab .mrow input[type=number]{border:1px solid var(--line);border-radius:8px;padding:4px;background:var(--surface);color:var(--text);font-family:inherit}
 #mttTab .mnote{font-size:12.5px;color:var(--muted);line-height:1.65;margin-top:10px}
 #mttTab .mnote p{margin:4px 0}
+/* 11/06 디자인 통일 dsunify (DESIGN.md): 홈과 같은 색 — 남색 바탕 · 흰 카드 · 고른 것 금색 · Pretendard (차트 안 올인·레이즈 색은 그대로). 이 블록만 지우면 예전 모양 */
+:root{--bg:#0b1426;--surface:#ffffff;--surface2:#f2f4f7;--text:#141b2b;--muted:#667085;--line:#e3e7ee;--accent:#2457c5;--accent-soft:#e9effb;--cell:#f2f4f7;--dim:#f6f7f9;--gold:#9a7420;--gold-soft:#fbf4e4}
+body{font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.012em;color:#eef2f8;background:radial-gradient(90% 520px at 50% -80px,rgba(80,125,210,.30),rgba(80,125,210,.07) 55%,transparent 75%) no-repeat,var(--bg)}
+h1{color:#eef2f8;font-weight:800}header .sub{color:#9aa8c2}
+.panel{color:var(--text)}
+.opt.on{background:#e6bc68;color:#241a05;border-color:#e6bc68}
+.opt{border-radius:11px}
+:root{--push:#d9482b;--push-soft:#fbe3dc;--raise:#0f7a4f;--raise-soft:#b9dccb;--call:#1d6fd6;--flat:#7a52c7;--vil:#7a52c7;--vil-soft:#efe8fb}
+.chip.on,.ranks button.on{background:#e6bc68;color:#241a05;border-color:#e6bc68}
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 </head>
 <body class="easy">
 <div class="wrap">
@@ -872,7 +882,7 @@ function snapApply(res){
 window.addEventListener('load',()=>{
   const b=document.createElement('button'), f=document.createElement('input');
   const SNAPT='📸 스샷으로 채우기 (스샷만으로 분석가능해요)'; b.type='button'; b.textContent=SNAPT;
-  b.style.cssText='display:inline-block;vertical-align:middle;margin:6px 0 6px 12px;padding:12px 18px;border-radius:12px;border:0;background:#2f7d5b;color:#fff;font-size:15px;font-weight:700;line-height:1.3;cursor:pointer;max-width:100%';
+  b.style.cssText='display:inline-block;vertical-align:middle;margin:6px 0 6px 12px;padding:12px 18px;border-radius:12px;border:0;background:#e6bc68;color:#241a05;font-size:15px;font-weight:700;line-height:1.3;cursor:pointer;max-width:100%';
   f.type='file'; f.accept='image/*'; f.style.display='none'; f.multiple=true;
   b.onclick=()=>f.click();
   const run=async(file)=>{
@@ -2150,13 +2160,13 @@ setInterval(()=>{
   if(tok()){if(o){o.remove();document.documentElement.style.overflow='';}return;}
   if(o||!document.body)return;
   o=document.createElement('div');o.id='lockMem';
-  o.style.cssText='position:fixed;inset:0;z-index:99990;background:#f3efe4;display:flex;align-items:center;justify-content:center;padding:20px;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#26303d';
+  o.style.cssText='position:fixed;inset:0;z-index:99990;background:#0b1426;display:flex;align-items:center;justify-content:center;padding:20px;font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#141b2b';
   var b='display:block;width:100%;border:0;border-radius:11px;padding:12px;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px;color:#fff';
-  o.innerHTML='<div style="max-width:340px;width:100%;text-align:center;background:#fbf9f3;border:1.5px solid #e2dccb;border-radius:16px;padding:22px 18px">'
+  o.innerHTML='<div style="max-width:340px;width:100%;text-align:center;background:#fff;border:1px solid #e3e7ee;border-radius:16px;padding:22px 18px">'
    +'<div style="font-size:40px">🔒</div><div style="font-weight:900;font-size:18px;margin:6px 0">'+NAME+'은(는) 회원 전용이에요</div>'
-   +'<div style="font-size:13.5px;color:#6b6f76;line-height:1.6;margin-bottom:10px">'+DESC+'<br>뚝섬 회원은 무료예요. 로그인하면 바로 열려요.</div>'
-   +'<button id="lkL" style="'+b+';background:#1f5fae">로그인 · 회원가입 하러 가기</button>'
-   +'<button id="lkH" style="'+b+';background:#8a8f98">← 홈으로</button></div>';
+   +'<div style="font-size:13.5px;color:#667085;line-height:1.6;margin-bottom:10px">'+DESC+'<br>뚝섬 회원은 무료예요. 로그인하면 바로 열려요.</div>'
+   +'<button id="lkL" style="'+b+';background:#2457c5">로그인 · 회원가입 하러 가기</button>'
+   +'<button id="lkH" style="'+b+';background:#f2f4f7;color:#141b2b">← 홈으로</button></div>';
   document.body.appendChild(o);document.documentElement.style.overflow='hidden';
   document.getElementById('lkL').onclick=function(){goTop(hub('#me'));};
   document.getElementById('lkH').onclick=home;}
