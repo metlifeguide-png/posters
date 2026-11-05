@@ -1537,10 +1537,12 @@ function petBackgroundPreview(v,key){
  */
 const PET_DOT={0:1,1:1,2:1,3:1,4:1,5:1,6:1,7:1,8:1,9:1,10:1,11:1,12:1,13:1,14:1,15:1,16:1,17:1,18:1,19:1,20:1,21:1,22:1,23:1,24:1,25:1,26:1,27:1,28:1,29:1,30:1,31:1,32:1,33:1,34:1,35:1,36:1};
 const PET_DOT_K=1,PET_DOT_ROOM_K=.72;   // 방 장면에선 배경 대비 작게(배경에 녹아들게)   // 11/01 도트 펫 크기 = petArtSize × 이 값 (1.3 은 어른이 방을 너무 가려서 줄임)
-const PET_DOT_ROW={idle:['a',0,3.2],walk:['a',1,.9],eat:['a',2,1.4],sleep:['a',3,3.6],kick:['b',0,.8],sing:['b',1,1.2],joy:['b',2,1],bath:['b',3,1.6],sit:['c',0,2.4],lie:['c',1,3.2],look:['c',2,2.8],sniff:['c',3,1.6]};
+const PET_DOT_ROW={idle:['a',0,3.2],walk:['a',1,.9],eat:['a',2,1.4],sleep:['a',3,3.6],kick:['b',0,.8],sing:['b',1,1.2],joy:['b',2,1],bath:['b',3,1.6],sit:['c',0,2.4],lie:['c',1,3.2],look:['c',2,2.8],sniff:['c',3,1.6],fwait:['d',0,2.4],fcast:['d',1,.6],ffight:['d',2,.5],fcatch:['d',3,1]};
+const PET_DOT_D={2:1};   // 11/06 낚시 시트(_d: 대 쥐고 기다리기·던지기·버티기·잡았다)가 있는 종 · 없으면 앉기 + 코드로 그린 낚싯대
+const PET_DOT_DTIP={fwait:[.88,.37],fcast:[.9,.35],ffight:[.92,.38],fcatch:[.89,.31]};   // 칸 안 낚싯대 끝 (가로·세로 비율) → 줄을 여기서 시작
 const PET_DOT_C={0:1,1:1,2:1,3:1,4:1,5:1,6:1,7:1,8:1,9:1,10:1,11:1,12:1,13:1,14:1,15:1,16:1,17:1,18:1,19:1,20:1,21:1,22:1,23:1,24:1,25:1,26:1,27:1,28:1,29:1,30:1,31:1,32:1,33:1,34:1,35:1,36:1};   // 세 번째 시트(앉기·엎드리기·두리번·킁킁)가 있는 종 (tools/pet_dot_sheetc.py 가 채움) · 없으면 아래 대신 줄
 const PET_DOT_CFB={sit:'idle',lie:'idle',look:'idle',sniff:'idle'},PET_DOT_FSP={};   // 대신 줄 · 진화갈래 키 → 종 번호(_c 는 종 시트를 씀)
-function petDotRowOf(id,act){const R=PET_DOT_ROW[act];if(!R||R[0]!=='c')return act;if(String(id).startsWith('fm_'))return PET_DOT_CFB[act];return PET_DOT_C[id]?act:PET_DOT_CFB[act];}   // 11/03 진화갈래는 _c 시트가 없어 종 시트(다른 색)를 쓰던 것 → 앉기·두리번 때 색이 바뀜(파랗게 등) · 갈래 시트의 평소 줄로
+function petDotRowOf(id,act){const R=PET_DOT_ROW[act];if(R&&R[0]==='d')return PET_DOT_D[id]?act:petDotRowOf(id,'sit');if(!R||R[0]!=='c')return act;if(String(id).startsWith('fm_'))return PET_DOT_CFB[act];return PET_DOT_C[id]?act:PET_DOT_CFB[act];}   // 11/03 진화갈래는 _c 시트가 없어 종 시트(다른 색)를 쓰던 것 → 앉기·두리번 때 색이 바뀜(파랗게 등) · 갈래 시트의 평소 줄로
 function petDotOn(){return true;}   // 11/01 37종 끝 → 전환 버튼 없앰, 늘 도트(시트 없는 종만 기존 그림)
 function petDotToggle(){try{localStorage.setItem('petDot',petDotOn()?'0':'1');}catch(e){}if(typeof rr==='function')rr();}
 function petDotHas(v){return !!(v&&PET_DOT[v.sp]&&v.stage!=='알'&&petDotOn());}
@@ -1569,6 +1571,9 @@ function petDotFormKey(v){return v&&(v.formKey||(v.final&&v.final.form))||'';}
 function petDotFormOn(v){const k=petDotFormKey(v);return k&&PET_DOT_FORM[k]&&(v.done||/^(어른|노인|완전체)$/.test(v.stage||''))?k:'';}   // 전용 모습은 어른부터
 function petDotId(v){const k=petDotFormOn(v);if(k)PET_DOT_FSP[k]=v.sp;return k?'fm_'+k:v.sp;}
 function petDotSrc(sp,sh){const f=String(sp).startsWith('fm_'),p='/blog/pet-assets/dot/'+(f&&sh==='c'?'sp'+PET_DOT_FSP[String(sp).slice(3)]:f?sp:'sp'+sp)+'_'+sh+'.webp';return (typeof API==='string'&&API?API.replace(/\/$/,''):'')+p;}
+function petLineSrc(){return (typeof API==='string'&&API?API.replace(/\/$/,''):'')+'/blog/pet-assets/dot/ico/lineage.webp';}
+// 11/06 👑 혈통 왕관 (1대 동·2대 은·3대 금·4대 이상 무지개 날개) — GPT 혈통 시트 1줄
+function petLineIco(n,px){n=Math.max(1,Math.min(4,n|0));return '<span title="전설 혈통 '+n+'대" style="display:inline-block;vertical-align:-3px;width:'+px+'px;height:'+px+'px;background:url('+petLineSrc()+') no-repeat;background-size:400% 400%;background-position:'+((n-1)*100/3).toFixed(2)+'% 0%"></span>';}
 let _petDotCss=0;
 function petDotStyle(){if(_petDotCss||typeof document==='undefined')return;_petDotCss=1;const s=document.createElement('style');s.textContent=
  '.pdi{display:inline-block;width:1.15em;height:1.15em;vertical-align:-.2em;background-size:400% 400%;background-repeat:no-repeat;line-height:1}'+
@@ -1595,6 +1600,9 @@ function petDotStyle(){if(_petDotCss||typeof document==='undefined')return;_petD
  '.pg1{animation:pg1 2.4s ease-in-out infinite}@keyframes pg1{0%,100%{filter:drop-shadow(0 0 2px #8fe8ff)}50%{filter:drop-shadow(0 0 7px #8fe8ff) drop-shadow(0 0 2px #fff)}}'+
  '.pg2{animation:pg2 2.2s ease-in-out infinite}@keyframes pg2{0%,100%{filter:drop-shadow(0 0 3px #ffd23c)}50%{filter:drop-shadow(0 0 9px #ffd23c) drop-shadow(0 0 3px #fff6c8)}}'+
  '.pg3{animation:pg3 3s linear infinite}@keyframes pg3{0%{filter:drop-shadow(0 0 6px #ff6fd8)}33%{filter:drop-shadow(0 0 7px #ffd23c)}66%{filter:drop-shadow(0 0 7px #5fd3ff)}100%{filter:drop-shadow(0 0 6px #ff6fd8)}}'+
+ /* 11/06 등급 펫 발밑 빛 고리 (GPT 혈통 시트 2줄: 스페셜 하늘·영웅 금·전설 분홍) · 숨쉬듯 */
+ '.pst-lift.pg1,.pst-lift.pg2,.pst-lift.pg3{position:relative}.pst-lift.pg1::before,.pst-lift.pg2::before,.pst-lift.pg3::before{content:"";position:absolute;left:-6%;right:-6%;bottom:-9%;height:30%;z-index:-1;pointer-events:none;background:url('+petLineSrc()+') no-repeat;background-size:400% 400%;animation:phalo 2.4s ease-in-out infinite}'+
+ '.pst-lift.pg1::before{background-position:0% 33.33%}.pst-lift.pg2::before{background-position:33.33% 33.33%}.pst-lift.pg3::before{background-position:66.67% 33.33%}@keyframes phalo{50%{transform:scale(1.08);opacity:.75}}'+
  '.pdot-shadow{position:absolute;left:50%;bottom:2px;height:10px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(#0006,#0000 70%);pointer-events:none;z-index:0}.pa-ripple{position:absolute;left:8%;right:8%;height:12px;border:2px solid #ffffffd0;border-radius:50%;border-top-color:transparent;pointer-events:none;animation:pripple 1.6s ease-in-out infinite}@keyframes pripple{50%{transform:scaleX(1.12);opacity:.6}}.pa-water{position:absolute;left:-14%;right:-14%;bottom:-4%;height:40%;z-index:2;border-radius:45% 45% 8px 8px/14px 14px 8px 8px;background:linear-gradient(#7fd0ffd9,#2f8ae0e6);box-shadow:inset 0 3px 0 #ffffffb0;pointer-events:none;animation:pwave 1.6s ease-in-out infinite}@keyframes pwave{50%{transform:translateY(2px) scaleX(1.03)}}'+
  '.pa-roll{animation:proll 2.4s ease-in-out infinite}@keyframes proll{0%,100%{transform:translateX(0) rotate(0)}50%{transform:translateX(calc(var(--s)*.35)) rotate(320deg)}}'+
  '.pa-wave{transform-origin:50% 100%;animation:pwavestick .7s ease-in-out infinite alternate}@keyframes pwavestick{from{transform:rotate(-24deg)}to{transform:rotate(24deg)}}'+
@@ -1998,7 +2006,7 @@ const PET_LIFE={
  shard(v,g){const F=v.formAll||[],wl=(g&&g.list&&g.list.wallet)||{},n=((v.inv&&v.inv.shard)||0)+(wl.shards||0);if(v.evoNext==null&&!F.length&&!v.legend)return '';const fl=v.flock,L=v.legend;
   // 💎 등급 진화(별조각 개수): 스페셜 🔮3 → 영웅 🔮7 → 전설 🔮10(전용 갈래) · 한 단계씩, 낸 만큼은 빼고
   const GR=v.grades||[],cg=v.grade||0,paid=[0,3,7,10][cg]||0,gc=['','#5fd3ff','#f2b33c','#ff6fd8'];
-  const lg=GR.length?'<div style="margin:6px 0;font-size:12px"><b>💎 등급 진화</b> · 지금: <b style="color:'+(gc[cg]||'#555')+'">'+(['일반','스페셜','영웅','전설'][cg])+'</b>'+(v.line?' · <b style="color:#c98a00">👑전설 혈통 '+v.line+'대</b> <span style="opacity:.7">(등급 별조각 ×'+(1+v.line*.5)+')</span>':'')+(v.lineNext>(v.line||0)?'<br>🌠 전설이 됐어요 → 다음 세대는 <b>👑'+v.lineNext+'대</b>로 태어나요':'')+'</div>'+GR.map(x=>{const done=cg>=x.g,next=x.g===cg+1,ok=x.conds.every(c=>c.ok),cost=x.cost-paid;
+  const lg=GR.length?'<div style="margin:6px 0;font-size:12px"><b>💎 등급 진화</b> · 지금: <b style="color:'+(gc[cg]||'#555')+'">'+(['일반','스페셜','영웅','전설'][cg])+'</b>'+(v.line?' · '+petLineIco(v.line,18)+'<b style="color:#c98a00">전설 혈통 '+v.line+'대</b> <span style="opacity:.7">(등급 별조각 ×'+(1+v.line*.5)+')</span>':'')+(v.lineNext>(v.line||0)?'<br>🌠 전설이 됐어요 → 다음 세대는 '+petLineIco(v.lineNext,18)+'<b>'+v.lineNext+'대</b>로 태어나요':'')+'</div>'+GR.map(x=>{const done=cg>=x.g,next=x.g===cg+1,ok=x.conds.every(c=>c.ok),cost=x.cost-paid;
     return '<div style="margin:4px 0;padding:6px 8px;border-radius:10px;border:2px solid '+(done?gc[x.g]:next?'#eee':'#f4f4f4')+';background:'+(done?'#fffdf2':'#fff')+';opacity:'+(done||next?1:.55)+';font-size:12px">'+
      '<b style="color:'+gc[x.g]+'">'+(['','✨','👑','🌠'][x.g])+' '+esc(x.name)+(x.g===3&&v.legend?' · '+esc(v.legend.name):'')+'</b> <span style="opacity:.7">🔮'+x.cost+'</span>'+(done?' ✅':'')+
      (done?'':'<br>'+x.conds.map(c=>(c.ok?'✅ ':'⬜ ')+esc(c.txt)).join('<br>'))+
@@ -2115,7 +2123,7 @@ const PET_FISHING={
   setTimeout(()=>this.anim(g),0);
   return '<div id="fsbox" onpointerdown="PET_FISHING.down(CUR,event)" onpointerup="PET_FISHING.up(CUR)" onpointercancel="PET_FISHING.up(CUR)" onpointerleave="PET_FISHING.up(CUR)" style="position:relative;height:240px;border-radius:16px;overflow:hidden;isolation:isolate;touch-action:none;user-select:none;-webkit-user-select:none;background:#0f1a33">'+petWorldScene(S.k,this.night(),v.seed)+
    '<style>@keyframes fsbob{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-38%)}}@keyframes fsnib{0%,100%{transform:translate(-50%,-50%)}40%{transform:translate(-50%,-10%)}}@keyframes fsbite{0%,100%{transform:translate(-50%,-50%)}30%{transform:translate(-50%,40%)}}@keyframes fsrip{from{transform:translate(-50%,-50%) scale(.3);opacity:.9}to{transform:translate(-50%,-50%) scale(1.6);opacity:0}}@keyframes fsbang{0%{transform:translate(-50%,0) scale(.4)}60%{transform:translate(-50%,-6px) scale(1.25)}100%{transform:translate(-50%,0) scale(1)}}</style>'+
-   '<div id="fspet" style="position:absolute;left:6%;bottom:14px;width:'+size+'px;height:'+size+'px;z-index:3">'+(petDotHas(v)?petDotHTML(petDotId(v),'sit',size,'').replace('class="pdot','id="fsdot" data-sp="'+petDotId(v)+'" class="pdot'):'')+'</div>'+
+   '<div id="fspet" style="position:absolute;left:6%;bottom:14px;width:'+size+'px;height:'+size+'px;z-index:3">'+(petDotHas(v)?petDotHTML(petDotId(v),(B.dsh=typeof PET_DOT_D!=='undefined'&&!!PET_DOT_D[petDotId(v)])?'fwait':'sit',size,'').replace('class="pdot','id="fsdot" data-sp="'+petDotId(v)+'" class="pdot'):'')+'</div>'+
    // 11/06 낚싯대를 펫이 앞발로 쥠: 손잡이(코르크)·릴·휘는 대·줄 — 펫보다 앞(z 4)에 그려서 쥔 것처럼 · 움직임은 anim()
    '<svg id="fsline" style="position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none"><path id="fsstr" stroke="#ffffffd8" stroke-width="1.3" fill="none"/><path id="fsrod2" stroke="#2b1a10" stroke-width="5.5" stroke-linecap="round" fill="none"/><path id="fsrod" stroke="#c0863f" stroke-width="3" stroke-linecap="round" fill="none"/><path id="fsgrip" stroke="#3a2416" stroke-width="7" stroke-linecap="round" fill="none"/><circle id="fsreel" r="4.5" fill="#d9dde6" stroke="#2b1a10" stroke-width="1.5"/><circle id="fspaw" r="5" fill="#fff4e6" stroke="#2b1a10" stroke-width="1.5"/><circle id="fspaw2" r="5" fill="#fff4e6" stroke="#2b1a10" stroke-width="1.5"/></svg>'+
    '<div id="fsbob" style="position:absolute;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff 22%,#ff3b3b 26%);box-shadow:0 2px 0 #0005;z-index:5;display:none"></div><div id="fsrip" style="position:absolute;width:40px;height:12px;border:2px solid #ffffffb0;border-radius:50%;z-index:4;display:none"></div>'+
@@ -2139,7 +2147,13 @@ const PET_FISHING={
   const r=a*Math.PI/180,tx=hx+Math.cos(r)*L,ty=hy-Math.sin(r)*L,cx=(hx+tx)/2+Math.sin(r)*L*bend,cy=(hy+ty)/2+Math.cos(r)*L*bend;
   return {hx,hy,tx:tx+(cx-(hx+tx)/2)*.9,ty:ty+(cy-(hy+ty)/2)*.9,cx,cy,bx:hx-Math.cos(r)*ps*.13,by:hy+Math.sin(r)*ps*.13,rx:hx+Math.cos(r)*ps*.05,ry:hy-Math.sin(r)*ps*.05,px,pr,ct,ra:r};},
  draw(g){const B=g._fs,G=this.geo();if(!B||!G)return;const rod=document.getElementById('fsrod'),str=document.getElementById('fsstr'),bob=document.getElementById('fsbob'),rip=document.getElementById('fsrip');if(!rod)return;
-  const t=performance.now()/1000,R=this.rod(G,B,t),d='M'+R.hx+' '+R.hy+' Q'+R.cx+' '+R.cy+' '+R.tx+' '+R.ty;rod.setAttribute('d',d);
+  const t=performance.now()/1000,R=this.rod(G,B,t);
+  if(B.dsh){// 11/06 낚시 시트가 있는 종: 그림 속 낚싯대 · 상태마다 줄(기다리기/던지기/버티기) 바꾸고 줄은 그림 속 대 끝에서
+   const row=B.st==='wait'&&R.ct<.6?'fcast':B.st==='bite'||B.st==='reel'?'ffight':'fwait',dt=document.getElementById('fsdot');
+   if(dt&&dt.dataset.row!==row){const Q=PET_DOT_ROW[row];dt.dataset.row=row;dt.style.backgroundPositionY=(-Q[1]*G.ps)+'px';dt.style.setProperty('--t',Q[2]+'s');}
+   ['fsrod','fsrod2','fsgrip','fsreel','fspaw','fspaw2'].forEach(k=>{const e=document.getElementById(k);if(e)e.style.display='none';});
+   const tp=PET_DOT_DTIP[row];R.tx=G.W*.06+R.px+G.ps*tp[0];R.ty=G.H-14-G.ps+G.ps*tp[1];R.pr=0;}
+  const d='M'+R.hx+' '+R.hy+' Q'+R.cx+' '+R.cy+' '+R.tx+' '+R.ty;rod.setAttribute('d',d);
   const o=document.getElementById('fsrod2');if(o)o.setAttribute('d',d);const gp=document.getElementById('fsgrip');if(gp)gp.setAttribute('d','M'+R.bx+' '+R.by+' L'+R.hx+' '+R.hy);
   const rl=document.getElementById('fsreel');if(rl){rl.setAttribute('cx',R.rx);rl.setAttribute('cy',R.ry+5);rl.style.transformOrigin=R.rx+'px '+(R.ry+5)+'px';rl.style.transform=B.st==='reel'&&B.hold?'rotate('+(t*900%360)+'deg)':'';}
   const pw=document.getElementById('fspaw'),pw2=document.getElementById('fspaw2');if(pw){pw.setAttribute('cx',R.bx*.35+R.hx*.65);pw.setAttribute('cy',R.by*.35+R.hy*.65);}if(pw2){pw2.setAttribute('cx',R.rx*.4+R.hx*.6+Math.cos(R.ra)*G.ps*.07);pw2.setAttribute('cy',R.ry*.4+R.hy*.6-Math.sin(R.ra)*G.ps*.07);}
