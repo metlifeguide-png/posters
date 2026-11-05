@@ -1998,7 +1998,7 @@ const PET_LIFE={
  shard(v,g){const F=v.formAll||[],wl=(g&&g.list&&g.list.wallet)||{},n=((v.inv&&v.inv.shard)||0)+(wl.shards||0);if(v.evoNext==null&&!F.length&&!v.legend)return '';const fl=v.flock,L=v.legend;
   // 💎 등급 진화(별조각 개수): 스페셜 🔮3 → 영웅 🔮7 → 전설 🔮10(전용 갈래) · 한 단계씩, 낸 만큼은 빼고
   const GR=v.grades||[],cg=v.grade||0,paid=[0,3,7,10][cg]||0,gc=['','#5fd3ff','#f2b33c','#ff6fd8'];
-  const lg=GR.length?'<div style="margin:6px 0;font-size:12px"><b>💎 등급 진화</b> · 지금: <b style="color:'+(gc[cg]||'#555')+'">'+(['일반','스페셜','영웅','전설'][cg])+'</b></div>'+GR.map(x=>{const done=cg>=x.g,next=x.g===cg+1,ok=x.conds.every(c=>c.ok),cost=x.cost-paid;
+  const lg=GR.length?'<div style="margin:6px 0;font-size:12px"><b>💎 등급 진화</b> · 지금: <b style="color:'+(gc[cg]||'#555')+'">'+(['일반','스페셜','영웅','전설'][cg])+'</b>'+(v.line?' · <b style="color:#c98a00">👑전설 혈통 '+v.line+'대</b> <span style="opacity:.7">(등급 별조각 ×'+(1+v.line*.5)+')</span>':'')+(v.lineNext>(v.line||0)?'<br>🌠 전설이 됐어요 → 다음 세대는 <b>👑'+v.lineNext+'대</b>로 태어나요':'')+'</div>'+GR.map(x=>{const done=cg>=x.g,next=x.g===cg+1,ok=x.conds.every(c=>c.ok),cost=x.cost-paid;
     return '<div style="margin:4px 0;padding:6px 8px;border-radius:10px;border:2px solid '+(done?gc[x.g]:next?'#eee':'#f4f4f4')+';background:'+(done?'#fffdf2':'#fff')+';opacity:'+(done||next?1:.55)+';font-size:12px">'+
      '<b style="color:'+gc[x.g]+'">'+(['','✨','👑','🌠'][x.g])+' '+esc(x.name)+(x.g===3&&v.legend?' · '+esc(v.legend.name):'')+'</b> <span style="opacity:.7">🔮'+x.cost+'</span>'+(done?' ✅':'')+
      (done?'':'<br>'+x.conds.map(c=>(c.ok?'✅ ':'⬜ ')+esc(c.txt)).join('<br>'))+
