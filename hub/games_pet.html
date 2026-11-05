@@ -1538,7 +1538,8 @@ function petBackgroundPreview(v,key){
 const PET_DOT={0:1,1:1,2:1,3:1,4:1,5:1,6:1,7:1,8:1,9:1,10:1,11:1,12:1,13:1,14:1,15:1,16:1,17:1,18:1,19:1,20:1,21:1,22:1,23:1,24:1,25:1,26:1,27:1,28:1,29:1,30:1,31:1,32:1,33:1,34:1,35:1,36:1};
 const PET_DOT_K=1,PET_DOT_ROOM_K=.72;   // 방 장면에선 배경 대비 작게(배경에 녹아들게)   // 11/01 도트 펫 크기 = petArtSize × 이 값 (1.3 은 어른이 방을 너무 가려서 줄임)
 const PET_DOT_ROW={idle:['a',0,3.2],walk:['a',1,.9],eat:['a',2,1.4],sleep:['a',3,3.6],kick:['b',0,.8],sing:['b',1,1.2],joy:['b',2,1],bath:['b',3,1.6],sit:['c',0,2.4],lie:['c',1,3.2],look:['c',2,2.8],sniff:['c',3,1.6],fwait:['d',0,2.4],fcast:['d',1,.6],ffight:['d',2,.5],fcatch:['d',3,1]};
-const PET_DOT_D={2:1};   // 11/06 낚시 시트(_d: 대 쥐고 기다리기·던지기·버티기·잡았다)가 있는 종 · 없으면 앉기 + 코드로 그린 낚싯대
+const PET_DOT_D={2:1};
+const PET_DOT_DTIPS={2:{fwait:[0.888,0.373],fcast:[0.897,0.37],ffight:[0.925,0.39],fcatch:[0.9,0.205]}};   // 종마다 낚싯대 끝 (tools/pet_dot_fishtip.py 가 채움) · 없으면 PET_DOT_DTIP   // 11/06 낚시 시트(_d: 대 쥐고 기다리기·던지기·버티기·잡았다)가 있는 종 · 없으면 앉기 + 코드로 그린 낚싯대
 const PET_DOT_DTIP={fwait:[.88,.37],fcast:[.9,.35],ffight:[.92,.38],fcatch:[.89,.31]};   // 칸 안 낚싯대 끝 (가로·세로 비율) → 줄을 여기서 시작
 const PET_DOT_C={0:1,1:1,2:1,3:1,4:1,5:1,6:1,7:1,8:1,9:1,10:1,11:1,12:1,13:1,14:1,15:1,16:1,17:1,18:1,19:1,20:1,21:1,22:1,23:1,24:1,25:1,26:1,27:1,28:1,29:1,30:1,31:1,32:1,33:1,34:1,35:1,36:1};   // 세 번째 시트(앉기·엎드리기·두리번·킁킁)가 있는 종 (tools/pet_dot_sheetc.py 가 채움) · 없으면 아래 대신 줄
 const PET_DOT_CFB={sit:'idle',lie:'idle',look:'idle',sniff:'idle'},PET_DOT_FSP={};   // 대신 줄 · 진화갈래 키 → 종 번호(_c 는 종 시트를 씀)
@@ -2123,7 +2124,7 @@ const PET_FISHING={
   setTimeout(()=>this.anim(g),0);
   return '<div id="fsbox" onpointerdown="PET_FISHING.down(CUR,event)" onpointerup="PET_FISHING.up(CUR)" onpointercancel="PET_FISHING.up(CUR)" onpointerleave="PET_FISHING.up(CUR)" style="position:relative;height:240px;border-radius:16px;overflow:hidden;isolation:isolate;touch-action:none;user-select:none;-webkit-user-select:none;background:#0f1a33">'+petWorldScene(S.k,this.night(),v.seed)+
    '<style>@keyframes fsbob{0%,100%{transform:translate(-50%,-50%)}50%{transform:translate(-50%,-38%)}}@keyframes fsnib{0%,100%{transform:translate(-50%,-50%)}40%{transform:translate(-50%,-10%)}}@keyframes fsbite{0%,100%{transform:translate(-50%,-50%)}30%{transform:translate(-50%,40%)}}@keyframes fsrip{from{transform:translate(-50%,-50%) scale(.3);opacity:.9}to{transform:translate(-50%,-50%) scale(1.6);opacity:0}}@keyframes fsbang{0%{transform:translate(-50%,0) scale(.4)}60%{transform:translate(-50%,-6px) scale(1.25)}100%{transform:translate(-50%,0) scale(1)}}</style>'+
-   '<div id="fspet" style="position:absolute;left:6%;bottom:14px;width:'+size+'px;height:'+size+'px;z-index:3">'+(petDotHas(v)?petDotHTML(petDotId(v),(B.dsh=typeof PET_DOT_D!=='undefined'&&!!PET_DOT_D[petDotId(v)])?'fwait':'sit',size,'').replace('class="pdot','id="fsdot" data-sp="'+petDotId(v)+'" class="pdot'):'')+'</div>'+
+   '<div id="fspet" style="position:absolute;left:6%;bottom:'+(reel?64:14)+'px;width:'+size+'px;height:'+size+'px;z-index:3">'+(petDotHas(v)?petDotHTML(petDotId(v),(B.dsh=typeof PET_DOT_D!=='undefined'&&!!PET_DOT_D[petDotId(v)])?'fwait':'sit',size,'').replace('class="pdot','id="fsdot" data-sp="'+petDotId(v)+'" class="pdot'):'')+'</div>'+
    // 11/06 낚싯대를 펫이 앞발로 쥠: 손잡이(코르크)·릴·휘는 대·줄 — 펫보다 앞(z 4)에 그려서 쥔 것처럼 · 움직임은 anim()
    '<svg id="fsline" style="position:absolute;inset:0;width:100%;height:100%;z-index:4;pointer-events:none"><path id="fsstr" stroke="#ffffffd8" stroke-width="1.3" fill="none"/><path id="fsrod2" stroke="#2b1a10" stroke-width="5.5" stroke-linecap="round" fill="none"/><path id="fsrod" stroke="#c0863f" stroke-width="3" stroke-linecap="round" fill="none"/><path id="fsgrip" stroke="#3a2416" stroke-width="7" stroke-linecap="round" fill="none"/><circle id="fsreel" r="4.5" fill="#d9dde6" stroke="#2b1a10" stroke-width="1.5"/><circle id="fspaw" r="5" fill="#fff4e6" stroke="#2b1a10" stroke-width="1.5"/><circle id="fspaw2" r="5" fill="#fff4e6" stroke="#2b1a10" stroke-width="1.5"/></svg>'+
    '<div id="fsbob" style="position:absolute;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#fff 22%,#ff3b3b 26%);box-shadow:0 2px 0 #0005;z-index:5;display:none"></div><div id="fsrip" style="position:absolute;width:40px;height:12px;border:2px solid #ffffffb0;border-radius:50%;z-index:4;display:none"></div>'+
@@ -2136,10 +2137,10 @@ const PET_FISHING={
    '</div>';},
  back(g){const B=g._fs;B.tm.forEach(clearTimeout);B.tm=[];if(B.raf)cancelAnimationFrame(B.raf);B.st='spot';rr();this.loadDex(g);},
  geo(){const box=document.getElementById('fsbox'),pet=document.getElementById('fspet');if(!box||!pet)return null;const W=box.clientWidth,H=box.clientHeight,B=CUR&&CUR._fs,S=PET_FISH_SPOTS.find(x=>x.k===(B&&B.spot))||PET_FISH_SPOTS[0];
-  const sc=Math.max(W/960,H/608),wl=H-(1-S.wf)*608*sc,ps=pet.clientWidth,tipX=W*.06+ps*1.05,tipY=H-14-ps*1.05;return {W,H,wl,tipX,tipY,ps};},
+  const sc=Math.max(W/960,H/608),wl=H-(1-S.wf)*608*sc,ps=pet.clientWidth,pb=B&&B.st==='reel'?64:14,tipX=W*.06+ps*1.05,tipY=H-pb-ps*1.05;return {W,H,wl,tipX,tipY,ps,pb};},
  // 11/06 낚시 모션: 상태마다 대 각도·휨·펫 몸짓을 매 프레임 계산 (던지기: 뒤로 젖혔다 앞으로 휘두름 → 찌가 포물선으로 날아감 · 입질: 대 끝이 쿡 · 감기: 대가 물고기 쪽으로 휘고 펫이 뒤로 버팀)
  anim(g){const B=g._fs;if(!B)return;if(B.araf)cancelAnimationFrame(B.araf);const f=()=>{if(g._fs!==B||!document.getElementById('fsbox')||!['idle','wait','bite','reel'].includes(B.st)){B.araf=0;return;}this.draw(g);B.araf=requestAnimationFrame(f);};B.araf=requestAnimationFrame(f);},
- rod(G,B,t){const ps=G.ps,hx=G.W*.06+ps*.56,hy=G.H-14-ps*.2,L=ps*1.3,ct=B.ct?t-B.ct:9,hold=B.hold?1:0;let a=62+Math.sin(t*1.6)*2,bend=.04,px=0,pr=0;
+ rod(G,B,t){const ps=G.ps,hx=G.W*.06+ps*.56,hy=G.H-G.pb-ps*.2,L=ps*1.3,ct=B.ct?t-B.ct:9,hold=B.hold?1:0;let a=62+Math.sin(t*1.6)*2,bend=.04,px=0,pr=0;
   if(B.st==='wait'&&ct<.75){if(ct<.3){a=62+(ct/.3)*45;pr=-5*(ct/.3);px=-3*(ct/.3);}else{const k=Math.min(1,(ct-.3)/.18);a=107-k*75;pr=-5+k*11;px=-3+k*7;bend=.12*(1-k);}}
   else if(B.st==='wait'){a=38+Math.sin(t*1.3)*1.5-(B.nib?7:0);bend=B.nib?.1:.05;pr=2;}
   else if(B.st==='bite'){a=27+Math.sin(t*34)*4;bend=.16;pr=5+Math.sin(t*34)*2;px=3;}
@@ -2152,7 +2153,7 @@ const PET_FISHING={
    const row=B.st==='wait'&&R.ct<.6?'fcast':B.st==='bite'||B.st==='reel'?'ffight':'fwait',dt=document.getElementById('fsdot');
    if(dt&&dt.dataset.row!==row){const Q=PET_DOT_ROW[row];dt.dataset.row=row;dt.style.backgroundPositionY=(-Q[1]*G.ps)+'px';dt.style.setProperty('--t',Q[2]+'s');}
    ['fsrod','fsrod2','fsgrip','fsreel','fspaw','fspaw2'].forEach(k=>{const e=document.getElementById(k);if(e)e.style.display='none';});
-   const tp=PET_DOT_DTIP[row];R.tx=G.W*.06+R.px+G.ps*tp[0];R.ty=G.H-14-G.ps+G.ps*tp[1];R.pr=0;}
+   const tp=((typeof PET_DOT_DTIPS!=='undefined'&&PET_DOT_DTIPS[dt&&dt.dataset.sp])||{})[row]||PET_DOT_DTIP[row];R.tx=G.W*.06+R.px+G.ps*tp[0];R.ty=G.H-G.pb-G.ps+G.ps*tp[1];R.pr=0;}
   const d='M'+R.hx+' '+R.hy+' Q'+R.cx+' '+R.cy+' '+R.tx+' '+R.ty;rod.setAttribute('d',d);
   const o=document.getElementById('fsrod2');if(o)o.setAttribute('d',d);const gp=document.getElementById('fsgrip');if(gp)gp.setAttribute('d','M'+R.bx+' '+R.by+' L'+R.hx+' '+R.hy);
   const rl=document.getElementById('fsreel');if(rl){rl.setAttribute('cx',R.rx);rl.setAttribute('cy',R.ry+5);rl.style.transformOrigin=R.rx+'px '+(R.ry+5)+'px';rl.style.transform=B.st==='reel'&&B.hold?'rotate('+(t*900%360)+'deg)':'';}
@@ -2200,7 +2201,7 @@ const PET_FISHING={
   return '<div style="border-radius:16px;padding:14px;background:#0f1a33;display:flex;flex-direction:column;align-items:center">'+
    '<div style="width:min(260px,90%);border:3px solid '+c+';border-radius:14px;background:#0b1226;overflow:hidden;box-shadow:0 0 18px '+c+'88;animation:pdropin .4s ease-out both">'+
    '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 10px;background:'+c+';color:#111;font-weight:900;font-size:13px"><span>'+PET_FISH_RN[F[2]]+'</span><span style="font-size:11px;background:#0003;border-radius:8px;padding:1px 6px">'+esc((PET_FISH_SPOTS.find(S=>S.k===g._fs.spot)||{}).n||'')+'</span></div>'+
-   '<div style="position:relative;height:130px;display:flex;align-items:center;justify-content:center;background:radial-gradient('+c+'44,transparent 70%)">'+petFishIco(F,96)+(C.isNew?'<span style="position:absolute;left:8px;top:8px;background:#ff3b6b;color:#fff;font-size:11px;font-weight:900;border-radius:8px;padding:1px 6px">NEW</span>':'')+(no>0?'<span style="position:absolute;bottom:6px;font-size:10px;color:#fff8">No.'+no+'</span>':'')+'</div>'+
+   '<div style="position:relative;height:130px;display:flex;align-items:center;justify-content:center;background:radial-gradient('+c+'44,transparent 70%)">'+petFishIco(F,96)+(petDotHas(v)?'<span style="position:absolute;left:2px;bottom:0;pointer-events:none">'+petDotHTML(petDotId(v),(typeof PET_DOT_D!=='undefined'&&PET_DOT_D[petDotId(v)])?'fcatch':'joy',62,'')+'</span>':'')/*11/06 잡은 펫이 대를 들고 기뻐함*/+(C.isNew?'<span style="position:absolute;left:8px;top:8px;background:#ff3b6b;color:#fff;font-size:11px;font-weight:900;border-radius:8px;padding:1px 6px">NEW</span>':'')+(no>0?'<span style="position:absolute;bottom:6px;font-size:10px;color:#fff8">No.'+no+'</span>':'')+'</div>'+
    '<div style="padding:8px 12px 12px;color:#fff;text-align:center"><div style="font-size:18px;font-weight:900">'+esc(F[1])+'</div><div style="font-size:14px;font-weight:800;margin:2px 0">'+C.cm+'cm'+(C.best?' <span style="font-size:11px;background:#ffd23c;color:#111;border-radius:6px;padding:0 5px">최고 기록</span>':'')+'</div>'+
    '<div style="font-size:11.5px;opacity:.75;line-height:1.4">'+esc(F[9])+'</div></div></div>'+
    (C.reward?'<div style="color:#fff;font-size:12px;margin-top:8px;text-align:center">'+esc(C.reward)+'</div>':'')+
