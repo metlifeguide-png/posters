@@ -70,8 +70,26 @@ input.q{width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius
 .crn{display:inline-block;letter-spacing:-1px;margin-right:4px;white-space:nowrap}
 @keyframes lvbs{50%{transform:scale(1.14);filter:brightness(1.35) drop-shadow(0 0 8px #ffd54a)}}
 .lvnm5{font-weight:900;background:linear-gradient(90deg,#c98a10,#f6c344,#c98a10);-webkit-background-clip:text;background-clip:text;color:transparent}
-
+/* 11/06 디자인 통일 dsunify (DESIGN.md): 홈과 같은 색 — 남색 바탕 · 흰 카드 · 고른 것 금색 · 글꼴 Pretendard. 이 블록만 지우면 예전 베이지 모양 */
+:root{--paper:#0b1426;--paper2:#ffffff;--line:#e3e7ee;--ink:#141b2b;--sub:#667085;--blue:#2457c5;--blue2:#e9effb;--green:#2f9a55;--brown:#1a2945;--red:#e5484d;--chalk:#eef2f8;--mist:#9aa8c2;--hair:rgba(255,255,255,.08);--brass:#e6bc68;--brass2:#f3d597}
+html,body{font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.012em}
+body{color:var(--chalk);background:radial-gradient(90% 520px at 50% -80px,rgba(80,125,210,.30),rgba(80,125,210,.07) 55%,transparent 75%) no-repeat,var(--paper)}
+.top{background:rgba(11,20,38,.92);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:1px solid var(--hair)}
+.top button,.top a{background:var(--hair);color:var(--chalk);border-radius:11px;font-weight:600}
+.top #newBtn{background:var(--brass);color:#241a05}
+.card,.tile{background:var(--paper2);border:1px solid var(--line);border-radius:16px;color:var(--ink)}
+.m{color:var(--mist)} .card .m,.tile .m{color:var(--sub)}
+.sec{color:var(--brass2)}
+.gst{color:var(--mist)} .gst b,.gst a{color:var(--brass2)}
+.btn{border-radius:11px;font-weight:700;font-family:inherit}
+.btn.b2{border:1px solid var(--hair);color:var(--chalk)}
+.tabs button{border:1px solid var(--line);font-weight:600;font-family:inherit}
+.tabs button.on{background:var(--brass);border-color:var(--brass);color:#241a05}
+.lbl{color:var(--mist)} .card .lbl{color:var(--sub)}
+#lockMem{background:#121e35!important;color:var(--mist)!important;border-bottom:1px solid var(--hair)!important}
+#lockMem b{color:var(--chalk)}
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <meta name="description" content="실제 파이널 테이블 핸드에서 프로가 내린 결정을 1번부터 차례로 맞혀 보고 내 선택과 비교하는 홀덤 공부. 틀린 문제는 복습 노트에 모아요.">
 <link rel="canonical" href="https://xn--bc2b73r.kr/hub/study_pro.html">
 <meta property="og:type" content="website">
