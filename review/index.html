@@ -52,7 +52,16 @@ label.f{display:block;font-size:12px;color:var(--sub)}label.f input{margin-top:3
 .ranks .on{background:var(--text);color:var(--card)}
 .suits{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}.suits button{border:1px solid var(--line);border-radius:9px;padding:10px 0;font-size:22px;background:var(--card)}
 .suits .r{color:var(--red)}button:disabled{opacity:.25;cursor:default}
-</style></head><body><div class="wrap">
+/* 11/06 디자인 통일 dsunify (DESIGN.md): 홈과 같은 색 — 남색 바탕 · 흰 카드 · 고른 것 금색 · Pretendard. 이 블록만 지우면 예전 모양 */
+:root{--bg:#0b1426;--card:#fff;--text:#141b2b;--sub:#667085;--line:#e3e7ee;--cell:#f2f4f7;--accent:#2457c5;--hl:#fbf4e4;--hlt:#6b4e12;--red:#e5484d}
+body{font-family:"Pretendard Variable",Pretendard,system-ui,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.012em;color:#eef2f8;background:radial-gradient(90% 520px at 50% -80px,rgba(80,125,210,.30),rgba(80,125,210,.07) 55%,transparent 75%) no-repeat,var(--bg)}
+h1{color:#eef2f8;font-size:22px;font-weight:800}.lead{color:#9aa8c2}
+.panel{color:var(--text)}
+.chip.on{background:#e6bc68;color:#241a05;border-color:#e6bc68}
+.big,.chip,.b{border-radius:11px}.chip{border-radius:999px}
+.b{color:var(--text)}.b.go{color:#fff}
+</style><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+</head><body><div class="wrap">
 <div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h1>✍️ 핸드리뷰 작성</h1><button class="b" id="newReview">✍️ 새로 쓰기</button></div>
 <p class="lead">빨간 <span class="req">필수</span>만 채우면 돼요 · 쓰던 내용은 이 기기에 자동 저장돼요</p>
 <p class="lead" style="margin-top:-6px">대회명 자동검색은 지금 내용이 많아 3초정도 소요됩니다.</p>
@@ -521,13 +530,13 @@ const MTOK=(()=>{try{return localStorage.getItem("mtok")||"";}catch(e){return ""
   if(tok()){if(o){o.remove();document.documentElement.style.overflow='';}return;}
   if(o||!document.body)return;
   o=document.createElement('div');o.id='lockMem';
-  o.style.cssText='position:fixed;inset:0;z-index:99990;background:#f3efe4;display:flex;align-items:center;justify-content:center;padding:20px;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#26303d';
+  o.style.cssText='position:fixed;inset:0;z-index:99990;background:#0b1426;display:flex;align-items:center;justify-content:center;padding:20px;font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#141b2b';
   var b='display:block;width:100%;border:0;border-radius:11px;padding:12px;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px;color:#fff';
-  o.innerHTML='<div style="max-width:340px;width:100%;text-align:center;background:#fbf9f3;border:1.5px solid #e2dccb;border-radius:16px;padding:22px 18px">'
+  o.innerHTML='<div style="max-width:340px;width:100%;text-align:center;background:#fff;border:1px solid #e3e7ee;border-radius:16px;padding:22px 18px">'
    +'<div style="font-size:40px">🔒</div><div style="font-weight:900;font-size:18px;margin:6px 0">'+NAME+'은(는) 회원 전용이에요</div>'
-   +'<div style="font-size:13.5px;color:#6b6f76;line-height:1.6;margin-bottom:10px">'+DESC+'<br>뚝섬 회원은 무료예요. 로그인하면 바로 열려요.</div>'
-   +'<button id="lkL" style="'+b+';background:#1f5fae">로그인 · 회원가입 하러 가기</button>'
-   +'<button id="lkH" style="'+b+';background:#8a8f98">← 홈으로</button></div>';
+   +'<div style="font-size:13.5px;color:#667085;line-height:1.6;margin-bottom:10px">'+DESC+'<br>뚝섬 회원은 무료예요. 로그인하면 바로 열려요.</div>'
+   +'<button id="lkL" style="'+b+';background:#2457c5">로그인 · 회원가입 하러 가기</button>'
+   +'<button id="lkH" style="'+b+';background:#f2f4f7;color:#141b2b">← 홈으로</button></div>';
   document.body.appendChild(o);document.documentElement.style.overflow='hidden';
   document.getElementById('lkL').onclick=function(){goTop(hub('#me'));};
   document.getElementById('lkH').onclick=home;}
