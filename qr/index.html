@@ -62,7 +62,16 @@ input[type=text],input[type=number],select{background:var(--pn);border:1px solid
 .pubh{margin:6px 0 2px;font-size:14px}.pubh b{color:var(--tx)}.vl{font-size:13.5px;margin:0 0 8px;color:var(--mu);line-height:1.6}.pubadd{font-size:13px;padding:6px 12px;margin:2px 0 4px}
 .rv{margin-top:8px;border-top:1px solid var(--ln);padding-top:8px}.rv .rr{padding:6px 0;border-bottom:1px solid var(--ln);font-size:15px}.rv .rr:last-child{border:0}.rv .rr b{display:inline-block;min-width:38px;color:var(--ac)}.rv .eq{font-weight:700;color:var(--gd)}.rv .nt{font-size:13px;color:var(--mu)}
 [hidden]{display:none!important}
-</style><meta name="description" content="홀덤 실전 핸드를 폰으로 빠르게 기록하고 다시 보는 무료 복기 도구. 아이디·비밀번호만으로 내 기록을 저장하고 핸드리뷰로 질문할 수 있어요.">
+/* 11/06 디자인 통일 dsunify (DESIGN.md): 바탕은 홈과 같은 남색, 칸은 흰색(밝게)·남색 카드(어둡게) · 강조 파랑·금색 · Pretendard. 이 블록만 지우면 예전 모양 */
+:root{--bg:#f2f4f7;--pn:#fff;--ln:#e3e7ee;--tx:#141b2b;--mu:#667085;--ac:#2457c5;--gd:#9a7420;--rd:#e5484d;--bl:#2457c5;--page:#0b1426}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121e35;--pn:#1a2945;--ln:#2a3a5c;--tx:#eef2f8;--mu:#9aa8c2;--ac:#5b8def;--gd:#e6bc68;--rd:#ff6b6b;--bl:#7aa5f5}}
+:root[data-theme="dark"]{--bg:#121e35;--pn:#1a2945;--ln:#2a3a5c;--tx:#eef2f8;--mu:#9aa8c2;--ac:#5b8def;--gd:#e6bc68;--rd:#ff6b6b;--bl:#7aa5f5}
+body{font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;letter-spacing:-.012em;background:radial-gradient(90% 520px at 50% -80px,rgba(80,125,210,.30),rgba(80,125,210,.07) 55%,transparent 75%) no-repeat,var(--page);background-color:var(--page)}
+main>section{color:#eef2f8}.pn,.tc{color:var(--tx)}
+main>section>.mu,main>section>.top .mu{color:#9aa8c2}
+.pn,.tc{border-radius:16px}
+</style><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<meta name="description" content="홀덤 실전 핸드를 폰으로 빠르게 기록하고 다시 보는 무료 복기 도구. 아이디·비밀번호만으로 내 기록을 저장하고 핸드리뷰로 질문할 수 있어요.">
 <link rel="canonical" href="https://xn--bc2b73r.kr/qr/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="빠른 핸드 기록 · 홀덤 핸드 복기 메모 무료 | 뚝섬">
