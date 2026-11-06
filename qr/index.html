@@ -68,7 +68,7 @@ input[type=text],input[type=number],select{background:var(--pn);border:1px solid
 :root[data-theme="dark"]{--bg:#121e35;--pn:#1a2945;--ln:#2a3a5c;--tx:#eef2f8;--mu:#9aa8c2;--ac:#5b8def;--gd:#e6bc68;--rd:#ff6b6b;--bl:#7aa5f5}
 body{font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;letter-spacing:-.012em;background:radial-gradient(90% 520px at 50% -80px,rgba(80,125,210,.30),rgba(80,125,210,.07) 55%,transparent 75%) no-repeat,var(--page);background-color:var(--page)}
 main>section{color:#eef2f8}.pn,.tc{color:var(--tx)}
-main>section>.mu,main>section>.top .mu{color:#9aa8c2}
+main>section>.mu,main>section>.top .mu,main>section .ln b{color:#9aa8c2}
 .pn,.tc{border-radius:16px}
 </style><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <meta name="description" content="홀덤 실전 핸드를 폰으로 빠르게 기록하고 다시 보는 무료 복기 도구. 아이디·비밀번호만으로 내 기록을 저장하고 핸드리뷰로 질문할 수 있어요.">
@@ -693,8 +693,8 @@ function memGate(){if(document.getElementById("memGate"))return;const w=document
 /*guesthand2*/function qrGuest(){GUEST=1;U={login:'비회원',token:''};D={tours:[]};T=null;
   $('#auth').hidden=true;$('#who').textContent='비회원 (저장 안 됨)';
   const b=document.createElement('div');b.id='gBn';
-  b.style.cssText='position:sticky;top:0;z-index:60;background:#fff4d6;color:#6b4a00;border-bottom:1px solid #e0c36a;padding:8px 12px;font-size:13px;line-height:1.5;display:flex;gap:8px;align-items:center;justify-content:space-between';
-  b.innerHTML='<span>👤 비회원 모드 · 기능은 그대로 쓸 수 있지만 <b>기록은 저장되지 않아요</b></span><a href="../hub/" target="_top" style="flex-shrink:0;background:#1f5fae;color:#fff;text-decoration:none;border-radius:8px;padding:6px 10px;font-weight:800;font-size:12.5px">가입·로그인하면 저장돼요</a>';
+  b.style.cssText='position:sticky;top:0;z-index:60;background:#121e35;color:#eef2f8;border-bottom:1px solid rgba(255,255,255,.08);padding:8px 12px;font-size:13px;line-height:1.5;display:flex;gap:8px;align-items:center;justify-content:space-between';
+  b.innerHTML='<span>👤 비회원 모드 · 기능은 그대로 쓸 수 있지만 <b>기록은 저장되지 않아요</b></span><a href="../hub/" target="_top" style="flex-shrink:0;background:#e6bc68;color:#241a05;text-decoration:none;border-radius:11px;padding:6px 10px;font-weight:800;font-size:12.5px">가입·로그인하면 저장돼요</a>';
   document.body.insertBefore(b,document.body.firstChild);
   addEventListener('beforeunload',e=>{if(GUEST&&D.tours.some(t=>t.hands.length)){e.preventDefault();e.returnValue=''}});
   home()}
