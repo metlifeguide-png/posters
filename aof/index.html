@@ -235,6 +235,21 @@ body.mtttab .modebar~#mttTab:not(script):not(style){display:block!important}
 #mttTab .mrow input[type=number]{border:1px solid var(--line);border-radius:8px;padding:4px;background:var(--surface);color:var(--text);font-family:inherit}
 #mttTab .mnote{font-size:12.5px;color:var(--muted);line-height:1.65;margin-top:10px}
 #mttTab .mnote p{margin:4px 0}
+/*cashtab*/ body.cashtab .modebar~*:not(#cashTab):not(script):not(style){display:none!important}
+body.cashtab .modebar~#cashTab:not(script):not(style){display:block!important}
+#mCash{grid-column:1/-1}
+#cashTab .mrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:7px 0}
+#cashTab .mlab{width:58px;flex:none;font-size:13px;color:var(--muted);font-weight:600}
+#cashTab .mlab.me{color:var(--text);font-weight:800}
+#cashTab .mrow .chips{flex:1}
+#cashTab .msum{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:6px;margin:12px 0 8px;font-size:14px;line-height:1.5}
+#cashTab .msum b{font-size:20px}
+#cashTab .msum .tt b{font-size:14px}
+#cashTab .c.p{background:var(--push);color:#fff}
+#cashTab .c.k{background:var(--call);color:#fff}
+#cashTab .mnote{font-size:12.5px;color:var(--muted);line-height:1.65;margin-top:10px}
+#cashTab .mnote p{margin:4px 0}
+#cashTab .csel{min-height:20px;margin-top:8px;font-size:14px;font-weight:700}
 /* 11/06 디자인 통일 dsunify (DESIGN.md): 홈과 같은 색 — 남색 바탕 · 흰 카드 · 고른 것 금색 · Pretendard (차트 안 올인·레이즈 색은 그대로). 이 블록만 지우면 예전 모양 */
 :root{--bg:#0b1426;--surface:#ffffff;--surface2:#f2f4f7;--text:#141b2b;--muted:#667085;--line:#e3e7ee;--accent:#2457c5;--accent-soft:#e9effb;--cell:#f2f4f7;--dim:#f6f7f9;--gold:#9a7420;--gold-soft:#fbf4e4}
 body{font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.012em;color:#eef2f8;background:radial-gradient(90% 520px at 50% -80px,rgba(80,125,210,.30),rgba(80,125,210,.07) 55%,transparent 75%) no-repeat,var(--bg)}
@@ -253,9 +268,10 @@ h1{color:#eef2f8;font-weight:800}header .sub{color:#9aa8c2}
   <h1>♠ 새틀 프리플랍 차트</h1>
   <div class="sub">게임과 레지 마감 전·후를 고르고 인원·스택을 넣으면 <b>티켓 안정권 스택</b>, <b>지금 스택에 맞는 전략</b>, <b>상황별 올인·콜 차트</b>를 계산해요.</div>
 </header>
-<div class="modebar"><button type="button" id="mEasy" data-ui="easy">⚡ 이지 모드 (실전)</button><button type="button" id="mPro" data-ui="pro">🔍 세부 모드</button><button type="button" id="mSnap" data-ui="snap">📸 스샷 차트</button><button type="button" id="mMtt">📊 MTT 차트</button></div>
+<div class="modebar"><button type="button" id="mEasy" data-ui="easy">⚡ 이지 모드 (실전)</button><button type="button" id="mPro" data-ui="pro">🔍 세부 모드</button><button type="button" id="mSnap" data-ui="snap">📸 스샷 차트</button><button type="button" id="mMtt">📊 MTT 차트</button><button type="button" id="mCash">🎯 캐시 올폴 차트</button></div>
 <div class="panel" id="snapTab" style="display:none"></div>
 <div class="panel" id="mttTab" style="display:none"></div>
+<div class="panel" id="cashTab" style="display:none"></div>
 
 <div class="panel easy-only" id="easy">
   <div class="chips" id="ezGames"></div>
@@ -2453,6 +2469,106 @@ onmessage=e=>{const m=e.data;
   window.mttChart=function(q){const D=CACHE[q.n+"_"+q.cond+"_"+q.ante]; if(!D) return null; const e=D.st[String(q.st)]; if(!e) return null;
     const x=q.caller?e.c[q.pos]&&e.c[q.pos][q.caller]:e.p[q.pos]; if(!x) return null; const bits=unhex(x[0]);
     return {pct:x[1],hands:[...Array(169).keys()].map(k=>({name:hn(k),on:bits[k]==="1"}))};};
+})();
+</script>
+<script>/*cashtab*/
+(function(){
+  // 🎯 캐시 올인앤폴드 차트: 2~4명 · 자리별 10/20/30BB · 노앤티 0.5/1BB
+  //   프리플랍솔버/cash_aof 로 푼 결과(templates/aof_mtt/cash_{인원}_{자리별 스택}.json)를 MTT 차트처럼 회원에게만 받음
+  //   파일 안 nodes[앞사람 행동 'F'·'S' 줄] = [전체 패 중 %, [패 169개의 올인·콜 비율 0~100]]
+  const POS={2:["SB","BB"],3:["BTN","SB","BB"],4:["CO","BTN","SB","BB"]};
+  const STS=[10,20,30];
+  const R="AKQJT98765432";
+  const hn=k=>{const r=Math.floor(k/13),c=k%13;return r===c?R[r]+R[c]:(r<c?R[r]+R[c]+"s":R[c]+R[r]+"o");};
+  const getData=k=>{let t="";try{t=localStorage.getItem("mtok")||"";}catch(e){}
+    return fetch((SNAP_API||"")+"/api/study/aofmtt",{method:"POST",headers:{"Content-Type":"application/json","ngrok-skip-browser-warning":"1"},body:JSON.stringify({token:t,name:k})})
+      .then(r=>{if(!r.ok)throw new Error(r.status);return r.json();})
+      .then(j=>{if(j&&j.ok===false)throw {msg:j.msg||""};return j;});};
+  const S={n:3,st:{2:[10,10],3:[10,10,10],4:[10,10,10,10]},me:"BTN",pv:{}};
+  try{const o=JSON.parse(localStorage.getItem("aofcash1")||"{}");
+    if(POS[o.n])S.n=o.n;
+    for(const n of [2,3,4]) if(o.st&&Array.isArray(o.st[n])&&o.st[n].length===n&&o.st[n].every(x=>STS.includes(x))) S.st[n]=o.st[n];
+    if(o.me)S.me=o.me; if(o.pv&&typeof o.pv==="object")S.pv=o.pv;}catch(e){}
+  const CACHE={},LOADING={},ERR={};
+  const el=()=>document.getElementById("cashTab");
+  const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const cap=a=>{const s=[...a].sort((x,y)=>x-y),m=s[s.length-2];return a.map(x=>Math.min(x,m));};   // 가장 큰 스택은 둘째로 큰 스택까지만 걸림
+  function load(k){if(CACHE[k]||LOADING[k]||ERR[k])return;
+    LOADING[k]=1;ERR[k]=0;
+    getData(k).then(j=>{CACHE[k]=j;LOADING[k]=0;draw();}).catch(e=>{LOADING[k]=0;ERR[k]=(e&&e.msg)||1;draw();});}
+  function seg(key,items,cur,extra){return '<div class="chips">'+items.map(([v,t])=>'<button type="button" class="chip'+(String(v)===String(cur)?' on':'')+'" data-cash="'+key+'" data-v="'+esc(v)+'"'+(extra||'')+'>'+esc(t)+'</button>').join("")+'</div>';}
+  function setMe(p){S.me=p;S.pv={};const pos=POS[S.n];if(p==="BB")S.pv[pos[pos.length-2]]="S";}   // BB는 앞이 모두 폴드면 고를 게 없어서 SB 올인부터 보여 줌
+  function draw(){
+    const box=el(); if(!box||!document.body.classList.contains("cashtab")) return;
+    if(!POS[S.n])S.n=3;
+    const n=+S.n,pos=POS[n],st=S.st[n];
+    if(!pos.includes(S.me))setMe(pos[0]);
+    try{localStorage.setItem("aofcash1",JSON.stringify(S));}catch(e){}
+    const me=pos.indexOf(S.me);
+    let key="";const sh=[];for(let i=0;i<me;i++){const a=S.pv[pos[i]]==="S"?"S":"F";key+=a;if(a==="S")sh.push(i);}
+    const head='<div style="font-weight:800;font-size:16px">🎯 캐시 올폴 차트</div><div class="hint" style="margin:2px 0 6px"><b>올인과 폴드만 있는 캐시 게임</b>(노앤티 0.5/1BB)용 솔버 표예요. 자리마다 스택을 누르면 그 판에 맞는 내 올인·콜 패가 나와요.</div>';
+    let rows='<div class="mrow"><span class="mlab">인원</span>'+seg("n",[[2,"2명"],[3,"3명"],[4,"4명"]],n)+'</div>';
+    rows+='<div class="mrow"><span class="mlab">내 자리</span>'+seg("me",pos.map(p=>[p,p]),S.me)+'</div>';
+    pos.forEach((p,i)=>{rows+='<div class="mrow"><span class="mlab'+(i===me?' me':'')+'">'+p+' 스택</span>'+seg("st",STS.map(x=>[x,x+"BB"]),st[i],' data-i="'+i+'"')+'</div>';});
+    for(let i=0;i<me;i++) rows+='<div class="mrow"><span class="mlab">'+pos[i]+'</span>'+seg("pv",[["F","폴드"],["S","올인"]],S.pv[pos[i]]==="S"?"S":"F",' data-p="'+pos[i]+'"')+'</div>';
+    const note=(ex)=>'<div class="mnote">'+(ex||'')+
+      '<p>· 스택은 가까운 10·20·30BB로 고르세요(19.5BB → 20BB). 가장 큰 스택은 둘째로 큰 스택까지만 걸려서 그만큼으로 계산해요.</p>'+
+      '<p>· 콜도 스택 전부 올인으로 봤어요. 뒤에서 더 큰 스택이 또 콜하면 그 몫만큼 사이드 팟이 생겨요.</p>'+
+      '<p>· 레이크 5%(콜이 나온 판만, 상한 없음)를 넣고 자체 솔버로 풀었어요.</p></div>';
+    const fin=(body,ex)=>{box.innerHTML=head+rows+body+note(ex);};
+    const wait=t=>'<div class="hint" style="padding:20px 0;text-align:center">'+t+'</div>';
+    if(me===n-1&&!sh.length){fin('<div class="info" style="margin-top:10px">앞이 모두 폴드하면 BB가 그냥 이겨요. 위에서 올인한 자리를 눌러 주세요.</div>');return;}
+    const cst=cap(st),k="cash_"+n+"_"+cst.join("_"),D=CACHE[k];
+    if(!D){load(k);fin(ERR[k]?'<div class="info" style="margin-top:10px">'+(typeof ERR[k]==="string"?esc(ERR[k]):'차트를 못 불러왔어요.')+' <button type="button" class="chip" data-cash="retry">다시 시도</button></div>':wait("차트 불러오는 중…"));return;}
+    const nd=D.nodes&&D.nodes[key];
+    if(!nd){fin('<div class="info" style="margin-top:10px">이 상황의 표가 없어요.</div>');return;}
+    const first=!sh.length,cls=first?"p":"k",word=first?"올인":"콜",cvar=first?"--push":"--call",V=nd[1];
+    let cells="";
+    for(let x=0;x<169;x++){const v=V[x];
+      if(v>=99) cells+='<div class="c '+cls+'" data-k="'+x+'">'+hn(x)+'</div>';
+      else if(v<=1) cells+='<div class="c" data-k="'+x+'">'+hn(x)+'</div>';
+      else cells+='<div class="c" data-k="'+x+'" style="background:linear-gradient(90deg,var('+cvar+') '+v+'%,var(--cell) '+v+'%);color:'+(v>=50?'#fff':'var(--text)')+'">'+hn(x)+'</div>';}
+    const title=first?(me===0?'<b>'+esc(S.me)+'</b> 첫 행동 → 올인':'앞 모두 폴드 → <b>'+esc(S.me)+'</b> 올인'):
+      sh.map(i=>'<b>'+pos[i]+'</b>').join("·")+' 올인 → <b>'+esc(S.me)+'</b> 콜';
+    const stTxt=pos.map((p,i)=>p+" "+st[i]).join(" · ");
+    const blind=me===n-1?1:(me===n-2?0.5:0);
+    const callAmt=first?0:Math.min(st[me],Math.max(...sh.map(i=>st[i])))-blind;
+    const capped=cst.join()!==st.join()?'<p>· 지금 판은 스택 '+pos.map((p,i)=>p+" "+cst[i]).join(" · ")+' 표와 같아요.</p>':'';
+    const body='<div class="msum"><span class="tt">'+n+'명 · '+esc(stTxt)+'BB<br>'+title+(first?'':' <span class="hint">(콜 금액 '+callAmt+'BB)</span>')+'</span><span>'+word+' <b>'+(+nd[0]).toFixed(1)+'%</b></span></div>'+
+      '<div class="chart">'+cells+'</div><div class="csel" id="cashSel"></div>'+
+      '<div class="legend"><span><i style="display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;background:var('+cvar+')"></i> '+word+'</span><span><i style="display:inline-block;width:11px;height:11px;border-radius:3px;vertical-align:-1px;background:var(--cell)"></i> 폴드</span><span>일부만 칠한 칸 = 그 비율로 섞기(눌러 보면 %)</span><span>오른쪽 위 = 수티드(s) · 왼쪽 아래 = 오프수트(o)</span></div>';
+    box._cash={V,word};
+    fin(body,capped);
+  }
+  function setMode(on){
+    document.body.classList.toggle("cashtab",on);
+    const b=document.getElementById("mCash"); if(b) b.classList.toggle("on",on);
+    try{sessionStorage.setItem("aofcashOn",on?"1":"");}catch(e){}
+    if(on){   // MTT 탭 끄기 (모드 버튼 강조 끄는 mttOn은 같이 씀)
+      document.body.classList.remove("mtttab");
+      const m=document.getElementById("mMtt"); if(m) m.classList.remove("on");
+      const mb=document.querySelector(".modebar"); if(mb) mb.classList.add("mttOn");
+      try{sessionStorage.setItem("aofmttOn","");}catch(e){}
+      window.scrollTo(0,0);draw();
+    }
+  }
+  document.addEventListener("click",e=>{
+    const t=e.target.closest&&e.target.closest("#mCash,#mMtt,.modebar [data-ui],#cashTab [data-cash],#cashTab .c[data-k]"); if(!t) return;
+    if(t.id==="mCash"){e.preventDefault();e.stopPropagation();setMode(true);return;}
+    if(t.id==="mMtt"||t.dataset.ui!=null){setMode(false);return;}
+    e.stopPropagation();
+    if(t.dataset.k!=null){const box=el(),c=box&&box._cash,o=document.getElementById("cashSel");
+      if(c&&o){const k=+t.dataset.k,v=c.V[k];o.textContent=hn(k)+" · "+(v>=99?c.word:(v<=1?"폴드":c.word+" "+v+"% · 폴드 "+(100-v)+"%"));}
+      return;}
+    const k=t.dataset.cash,v=t.dataset.v;
+    if(k==="retry"){Object.keys(ERR).forEach(x=>delete ERR[x]);}
+    else if(k==="n"){S.n=+v;setMe(POS[S.n][0]);}
+    else if(k==="me")setMe(v);
+    else if(k==="st")S.st[S.n][+t.dataset.i]=+v;
+    else if(k==="pv")S.pv[t.dataset.p]=v;
+    draw();
+  },true);
+  try{if(sessionStorage.getItem("aofcashOn")==="1"||/[#&]cash\b/.test(location.hash))setMode(true);}catch(e){}
 })();
 </script>
 <script>/*__land__*/(function(){try{if(window.top!==window.self||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;var v='',n='';try{v=localStorage.getItem('vid');if(!v){v=Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('vid',v);}n=localStorage.getItem('nick')||'';}catch(e){}var f=(new URLSearchParams(location.search).get('from')||'').slice(0,30),rf=document.referrer||'',own=false;try{own=!!rf&&new URL(rf).host===location.host;}catch(e){}var b={p:"\uc62c\uc778\ucc28\ud2b8",n:n,v:v};if(f||!own){b.l=1;b.from=f;b.rf=own?'':rf.slice(0,200);}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b),keepalive:true}).catch(function(){});}catch(e){}})();</script>
