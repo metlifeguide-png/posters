@@ -97,10 +97,19 @@ details[style*="background"]{color:var(--ink)}
 details[style*="background"] .m,.m[style*="background"]{color:var(--sub)}
 /* 11/06 펫 위 줄에서 고른 펫 = 금색 (초록 버튼 대신) */
 .btn.pettab-on{background:var(--brass);color:#241a05}
+/* 11/06 펫 먹이기·놀기·돌보기·상점: 누르기 쉽게 크게, 폭을 나눠 채움 */
+#petMenuTabs{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px;overflow:visible}
+#petMenuTabs button{min-width:0;min-height:48px;padding:8px 2px;font-size:clamp(12.5px,3.9vw,15px);border-radius:12px;white-space:nowrap}
 /* 11/06 초록 버튼(.btn.g) → 금색: 같이 놓인 파랑 버튼과 구분은 그대로 */
 .btn.g{background:var(--brass);color:#241a05}
 /* 11/06 흰 칸(바탕을 직접 적은 칸) 안 보조 글씨 · 상점 미리보기 버튼 */
 #app [style*="background:var(--paper2)"] .m{color:var(--sub)}
+/* 11/06 전체 검토: 흰 칸인데 글씨색을 안 적어 바탕 글씨(밝은색)를 물려받아 안 보이던 칸 (프로의 선택 핸드 기록 등) · 카드 자체가 .m 인 설명 · 노란 강조 칸 */
+.card.m{color:var(--sub)}
+.xst,.xcm .bb,.xq,.xa.key,.cgov>div,.cgres,.lvtm,.bjc th{color:var(--ink)}
+body .xq{background:var(--paper2);border:1px solid var(--line);border-left:4px solid var(--brass)}
+body .xq .sm{color:var(--sub)}
+body .xa.key{background:#f2f4f7;box-shadow:inset 3px 0 0 var(--brass)}
 #app button.pet-bg-peek{background:#f2f4f7!important;color:var(--sub)!important;border:1px solid var(--line)!important;border-radius:999px!important;padding:2px 8px!important;font-size:11px!important;vertical-align:middle;min-width:0!important;min-height:26px!important}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
@@ -146,13 +155,13 @@ function memOpen(mode){const o=document.getElementById('memM');if(o)o.remove();c
   const inp='display:block;width:100%;box-sizing:border-box;padding:10px 12px;border:1.5px solid #d8d2c2;border-radius:10px;font-size:16px;margin:3px 0 8px;scroll-margin-top:30px;background:#fff;color:#222';
   const lab='display:block;font-size:13px;font-weight:800;color:#333;text-align:left';
   const tab=on=>`flex:1;border:0;border-radius:10px;padding:10px;font-size:15px;font-weight:800;cursor:pointer;${on?'background:#1f5fae;color:#fff':'background:#ebe6da;color:#555'}`;
-  w.innerHTML=`<form id="memF" novalidate style="background:#fbf9f3;color:#222;border-radius:16px;padding:14px 16px;width:100%;max-width:360px;margin:2vh 0 45vh;box-shadow:0 8px 30px rgba(0,0,0,.3);font-family:inherit">
+  w.innerHTML=`<form id="memF" novalidate style="background:#fff;color:#222;border-radius:16px;padding:14px 16px;width:100%;max-width:360px;margin:2vh 0 45vh;box-shadow:0 8px 30px rgba(0,0,0,.3);font-family:inherit">
    <div style="display:flex;gap:6px;margin-bottom:14px"><button type="button" id="memT1" style="${tab(!reg)}">로그인</button><button type="button" id="memT2" style="${tab(reg)}">회원가입</button></div>
    ${reg?`<div style="font-size:13px;line-height:1.55;color:#1f6b3a;background:#ecfdf3;border:1px solid #b8e6c9;border-radius:10px;padding:9px 11px;text-align:left;margin-bottom:12px">✨ <b style="font-size:15px">가입 10초! 아이디 + 숫자 6자리 + 카톡 닉네임</b>만 적으면 끝<br>카톡 채팅방 닉네임으로 연동돼요 · 모든 기능 무료<br>🔒 이름 · 전화번호 · 이메일은 받지 않아요</div>`:''}
    <label style="${lab}" for="memL">아이디</label><input id="memL" style="${inp}" maxlength="16" autocomplete="username" autocapitalize="off" spellcheck="false" placeholder="2~16자 (한글·영문·숫자)" value="${esc(MEM.login||'')}">
    <label style="${lab}" for="memP">비밀번호 <span style="font-weight:600;color:#6b6f76">숫자 6자리</span></label><input id="memP" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" style="${inp};letter-spacing:6px" autocomplete="${reg?'new-password':'current-password'}" placeholder="••••••">
    ${reg?`<label style="${lab}" for="memN">카톡 닉네임 <span style="font-weight:600;color:#6b6f76">랭킹·참가 명단에 적히는 이름</span></label><input id="memN" style="${inp}" maxlength="20" placeholder="오픈채팅방 이름 그대로" value="${esc(NICK||'')}">
-   <div style="font-size:12.5px;line-height:1.5;color:#6b4e00;background:#fff4d6;border-radius:8px;padding:8px 10px;text-align:left;margin-bottom:10px">· 카톡방에서 쓰는 닉네임과 똑같이 적어야 참가·입상 기록과 연결돼요<br>· 비밀번호는 카톡·은행 비밀번호와 다른 숫자 6자리로</div>`:''}
+   <div style="font-size:12.5px;line-height:1.5;color:var(--sub);background:#f2f4f7;border-radius:8px;padding:8px 10px;text-align:left;margin-bottom:10px">· 카톡방에서 쓰는 닉네임과 똑같이 적어야 참가·입상 기록과 연결돼요<br>· 비밀번호는 카톡·은행 비밀번호와 다른 숫자 6자리로</div>`:''}
    <div id="memR" role="alert" style="min-height:18px;font-size:13.5px;color:#b42c2c;text-align:left;margin-bottom:8px"></div>
    <button type="submit" id="memS" style="width:100%;border:0;border-radius:11px;padding:13px;font-size:16px;font-weight:800;background:${reg?'#3a9d3f':'#1f5fae'};color:#fff;cursor:pointer">${reg?'가입하고 바로 로그인':'로그인'}</button>
    <button type="button" id="memX" style="width:100%;border:0;background:none;padding:12px;font-size:14px;color:#6b6f76;cursor:pointer">닫기</button>
@@ -1071,7 +1080,7 @@ function missionBox(L0){const L=L0||(MISSIONS||[]).filter(m=>m.state!=='끝'||m.
   ${m.game&&m.state==='진행 중'?`<button class="btn" style="padding:5px 12px;font-size:13.5px;margin-top:5px" onclick="location.hash='g=${m.game}'">도전하기</button>`:''}</div>`).join('')}</div>`;}
 // ☕ 커피이벤트 (운영진 미션) — 진행 중이면 불이 들어온 ON, 아니면 OFF
 function coffeeBox(full){loadMissions();const all=MISSIONS||[];const on=all.filter(m=>m.state==='진행 중'),soon=all.filter(m=>m.state==='예정');const lit=on.length>0;
- const lamp=`<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;font-weight:900;font-size:15px;${lit?'background:#1b5e20;color:#fff;box-shadow:0 0 14px #66bb6a':'background:#ddd;color:#888'}"><span style="width:11px;height:11px;border-radius:50%;${lit?'background:#b9f6ca;box-shadow:0 0 8px #b9f6ca;animation:cfblink 1.2s infinite':'background:#aaa'}"></span>${lit?'ON':'OFF'}</span>`;
+ const lamp=`<span style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;font-weight:900;font-size:15px;${lit?'background:var(--brass);color:#241a05':'background:var(--line);color:var(--sub)'}"><span style="width:11px;height:11px;border-radius:50%;${lit?'background:#241a05;animation:cfblink 1.2s infinite':'background:var(--sub)'}"></span>${lit?'ON':'OFF'}</span>`;
  const head=`<div style="display:flex;justify-content:space-between;align-items:center"><div style="font-size:22px;font-weight:900">☕ 커피이벤트</div>${lamp}</div>`;
  let body;
  if(!MISSIONS)body='<div class="m" style="margin-top:6px">불러오는 중…</div>';
