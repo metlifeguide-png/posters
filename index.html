@@ -15,7 +15,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <script>
 // 주소 뒤에 ?type= 이 없으면(= 뚝섬.kr 만 친 경우) 뚝섬유원지 홈으로 바로 이동
-(function(){try{if(!new URLSearchParams(location.search).get('type'))location.replace('hub/'+location.hash);}catch(e){}})();
+// 📥 (11/06 유입) 이동하면 어디서 왔는지(구글·네이버)와 ?from= 표시가 사라지므로 홈으로 넘겨 줌
+(function(){try{if(!new URLSearchParams(location.search).get('type')){try{sessionStorage.setItem('land_rf',document.referrer||'');}catch(e){}location.replace('hub/'+location.search+location.hash);}}catch(e){}})();
 </script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 <style>
