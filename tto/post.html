@@ -292,5 +292,6 @@ function wire(){const m=document.getElementById('main');
 get('/api/tto/post/spots').then(j=>{if(!j.ok||!Object.keys(j.spots||{}).length){main('<div class="e">아직 풀린 스팟이 없어요</div>');return;}SP=j.spots;load();})
   .catch(()=>main('<div class="e">서버에 연결이 안 돼요. 잠시 뒤 다시 열어 주세요</div>'));
 </script>
+<script>/*__land__*/(function(){try{if(window.top!==window.self||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;var v='',n='';try{v=localStorage.getItem('vid');if(!v){v=Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('vid',v);}n=localStorage.getItem('nick')||'';}catch(e){}var f=(new URLSearchParams(location.search).get('from')||'').slice(0,30),rf=document.referrer||'',own=false;try{own=!!rf&&new URL(rf).host===location.host;}catch(e){}var b={p:"\ub69d\ud2f0\uc624",n:n,v:v};if(f||!own){b.l=1;b.from=f;b.rf=own?'':rf.slice(0,200);}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b),keepalive:true}).catch(function(){});}catch(e){}})();</script>
 </body>
 </html>
