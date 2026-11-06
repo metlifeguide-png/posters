@@ -1,3 +1,4 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css");
 :root{--bg:#f6f7f5;--card:#fff;--ink:#1d2321;--sub:#5d6763;--line:#e3e7e4;--felt:#0f5c43;--felt2:#13784f;
 --b:#2f8f4e;--i:#2f6fd0;--a:#d9822b;--e:#7a4cc2;--p:#b8323c;--r:#0e8a8a;--m:#34508a;--tip:#eef6f1;--shadow:0 1px 2px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.05)}
 @media (prefers-color-scheme:dark){:root{--bg:#121614;--card:#1b211e;--ink:#e6ebe8;--sub:#9aa5a0;--line:#2c3430;--tip:#1d2a24;
@@ -84,3 +85,13 @@ article .fig img{width:100%;max-width:560px;height:auto;margin:0;border-radius:1
 .more h2{font-size:18px;margin:12px 0 4px}.more .l{font-size:13px;color:var(--sub);margin:10px 0 2px;font-weight:700}
 .more ul{margin:0;padding-left:20px}.more li{margin:4px 0;line-height:1.5}
 @media (max-width:560px){body{font-size:16px}article{padding:18px 15px;border-radius:12px}h1{font-size:23px}.hero h1{font-size:24px}.nav{grid-template-columns:1fr}.nav .next{grid-column:1}}
+/* 11/06 디자인 통일 dsunify (DESIGN.md): 홈과 같은 색 — 남색 바탕 · 흰 카드 · 강조 파랑 · Pretendard. 이 블록만 지우면 예전 초록 모양 */
+:root,:root:not(.x){--bg:#0b1426;--card:#fff;--ink:#141b2b;--sub:#667085;--line:#e3e7ee;--felt:#1a2945;--felt2:#2457c5;--tip:#f2f4f7;--shadow:none;--mark:#fbe7b8;--key:#f2f4f7;--why:#e9effb;--warn:#fdf0ef;--whyline:#2457c5}
+@media (prefers-color-scheme:dark){:root,:root:not(.x){--bg:#0b1426;--card:#fff;--ink:#141b2b;--sub:#667085;--line:#e3e7ee;--tip:#f2f4f7;--mark:#fbe7b8;--key:#f2f4f7;--why:#e9effb;--warn:#fdf0ef;--whyline:#2457c5}}
+body{font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.012em;color:#eef2f8;background:radial-gradient(90% 520px at 50% -80px,rgba(80,125,210,.30),rgba(80,125,210,.07) 55%,transparent 75%) no-repeat,var(--bg)}
+article,.nav a,.list a,.more,details{color:var(--ink)}
+.wrap>h1,.lv h2{color:#eef2f8}.meta .n,.lv .d,.wrap>small{color:#9aa8c2}
+.top{background:#121e35;border-bottom:1px solid rgba(255,255,255,.08)}
+.hero{background:#1a2945;border:1px solid rgba(255,255,255,.08)}
+a{color:#2457c5}
+details{background:var(--tip)}
