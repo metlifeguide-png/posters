@@ -2194,7 +2194,11 @@ put();setInterval(put,1000);
 (function(){
   // 단계 3개: 레지마감 전 = 미리 계산한 칩 기준 표(templates/aof_mtt/{인원}_chip_{앤티}.json, MTT차트만들기.js)
   //           레지마감 후(ITM 전) · ITM 후 = 넣은 남은 인원·입상 인원으로 이 자리에서 ICM 계산(전용 워커, 차트 하나에 1~몇 초)
-  const BASE=/\/aof$/.test(location.pathname)?"aof/mtt/":"mtt/";   // 깃허브: /aof/mtt/… · 서버: /aof → /aof/mtt/…
+  // 🔒 11/06 데이터는 공개 파일이 아니라 회원 확인 후 서버에서 (study.py /api/study/aofmtt)
+  const getData=k=>{let t="";try{t=localStorage.getItem("mtok")||"";}catch(e){}
+    return fetch((SNAP_API||"")+"/api/study/aofmtt",{method:"POST",headers:{"Content-Type":"application/json","ngrok-skip-browser-warning":"1"},body:JSON.stringify({token:t,name:k})})
+      .then(r=>{if(!r.ok)throw new Error(r.status);return r.json();})
+      .then(j=>{if(j&&j.ok===false)throw {msg:j.msg||""};return j;});};
   const R="AKQJT98765432";
   const hn=k=>{const r=Math.floor(k/13),c=k%13;return r===c?R[r]+R[c]:(r<c?R[r]+R[c]+"s":R[c]+R[r]+"o");};
   const unhex=h=>{let s="";for(const ch of h)s+=parseInt(ch,16).toString(2).padStart(4,"0");return s.slice(0,169);};
@@ -2215,8 +2219,8 @@ put();setInterval(put,1000);
   const esc=t=>String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
   function load(k){if(CACHE[k]||LOADING[k]||ERR[k])return;   // 실패하면 '다시 시도'를 누를 때까지 다시 안 받음
     LOADING[k]=1;ERR[k]=0;
-    fetch(BASE+k+".json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw new Error(r.status);return r.json();})
-      .then(j=>{CACHE[k]=j;LOADING[k]=0;draw();}).catch(()=>{LOADING[k]=0;ERR[k]=1;draw();});}
+    getData(k)
+      .then(j=>{CACHE[k]=j;LOADING[k]=0;draw();}).catch(e=>{LOADING[k]=0;ERR[k]=(e&&e.msg)||1;draw();});}
   function seg(key,items,cur){return '<div class="chips">'+items.map(([v,t])=>'<button type="button" class="chip'+(String(v)===String(cur)?' on':'')+'" data-mtt="'+key+'" data-v="'+esc(v)+'">'+esc(t)+'</button>').join("")+'</div>';}
 
   // ===== 이 자리 계산용 워커: 엔진(ENGINE_SRC) + 리셔브 계산(MTT차트만들기.js와 같은 방식) =====
@@ -2296,7 +2300,7 @@ onmessage=e=>{const m=e.data;
   // 솔버 v4 오픈 범위(프리플랍솔버 v4 '앞 모두 폴드 → 오픈'): aof_mtt/v4_open.json (v4오픈추출.py)
   let V4=null,V4L=0,V4E=0;
   function v4(){ if(V4||V4L||V4E) return V4; V4L=1;
-    fetch(BASE+"v4_open.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw 0;return r.json();}).then(j=>{V4=j;V4L=0;draw();}).catch(()=>{V4L=0;V4E=1;draw();}); return null; }
+    getData("v4_open").then(j=>{V4=j;V4L=0;draw();}).catch(()=>{V4L=0;V4E=1;draw();}); return null; }
   function v4Range(n,ante,St,o){ const T=V4&&V4.open[n+"_"+ante]; if(!T) return null;
     const want=St<=17?15:(St<=22?20:25);
     const c=Object.keys(T).map(Number).filter(x=>T[x][o]).sort((a,b)=>Math.abs(a-want)-Math.abs(b-want)||b-a);
@@ -2378,7 +2382,7 @@ onmessage=e=>{const m=e.data;
     if(hu) extra='<p>📌 2명(헤즈업): 남은 상금 차이가 칩에 정비례해서 ICM이 칩 기준과 같아요. 레지마감 전·후·ITM 모두 이 표로 보세요.</p>';
     if(S.stage==="pre"||hu){
       const k=n+"_chip_"+S.ante, D=CACHE[k];
-      if(!D){ load(k); fin(ERR[k]?'<div class="info">차트를 못 불러왔어요. <button type="button" class="chip" data-mtt="retry">다시 시도</button></div>':wait("차트 불러오는 중…"),stageNote); return; }
+      if(!D){ load(k); fin(ERR[k]?'<div class="info">'+(typeof ERR[k]==="string"?esc(ERR[k]):'차트를 못 불러왔어요.')+' <button type="button" class="chip" data-mtt="retry">다시 시도</button></div>':wait("차트 불러오는 중…"),stageNote); return; }
       const ch=D.st[String(S.st)];
       if(S.view==="push"){const c=ch.p[S.pos];bits=unhex(c[0]);pct=c[1];}
       else if(S.view==="call"){const c=ch.c[S.vs][S.pos];bits=unhex(c[0]);pct=c[1];}
