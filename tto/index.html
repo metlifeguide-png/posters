@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>뚝티오 · 프리플랍 차트</title>
+<title>프리플랍 GTO 차트</title>
+<meta name="description" content="상황별 프리플랍 GTO 차트 무료 뷰어. 포지션·스택·앞 액션을 고르면 핸드별 오픈·콜·3벳 빈도를 볼 수 있어요.">
+<link rel="canonical" href="https://xn--bc2b73r.kr/tto/">
 <style>
 :root{--bg:#f4f6f9;--card:#fff;--ink:#1d2433;--sub:#6b7486;--line:#e3e7ee;--blue:#2f6fde;
   --cF:#aab3c1;--cC:#3fa45b;--cX:#3fa45b;--cL:#8fbf3a;--cR:#e8803a;--cJ:#a8282f;--cN:#f1f3f6;--cR1:#f2b25c;--cR3:#d4562c}
@@ -121,12 +123,21 @@ h1{font-size:19px;margin:2px 0 2px;font-weight:900}
 .hand .hb{display:flex;height:12px;border-radius:6px;overflow:hidden;margin-top:8px;background:var(--cN)}
 .legend{display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--sub);margin-top:8px}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+/* 11/06 디자인 통일 dsunify (DESIGN.md): 홈과 같은 색 — 남색 바탕 · 흰 카드 · 고른 것 금색 · Pretendard (차트 액션 색은 그대로). 이 블록만 지우면 예전 모양 */
+:root{--bg:#0b1426;--card:#fff;--ink:#141b2b;--sub:#667085;--line:#e3e7ee;--blue:#2457c5}
+html,body{font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.012em}
+body{color:#eef2f8;background:radial-gradient(90% 520px at 50% -80px,rgba(80,125,210,.30),rgba(80,125,210,.07) 55%,transparent 75%) no-repeat,var(--bg)}
+h1{color:#eef2f8;font-size:22px;font-weight:800}.lead{color:#9aa8c2}
+.card{color:var(--ink);border-radius:16px}
+.chips button.on,.stk button.on,.view button.on{background:#e6bc68;color:#241a05;border-color:#e6bc68}
+.setbar button,.bin button{background:var(--blue);border-radius:11px}
 </style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 </head>
 <body>
 <div class="wrap">
-  <h1>📊 뚝티오 · 솔버</h1>
-  <div class="lead">뚝섬 솔버로 푼 MTT 전략이에요. 위 자리 카드에서 행동을 누르며 따라가세요. 지나간 자리의 다른 행동을 누르면 거기서부터 다시 볼 수 있어요. 두 사람이 남아 <b>콜로 플랍에 가는 줄</b>이 풀려 있으면 <span class="badge">플랍 솔버</span>로 바로 이어져요.</div>
+  <h1>📊 프리플랍 GTO</h1>
+  <div class="lead">GTO 솔버로 푼 MTT 프리플랍 전략이에요. 위 자리 카드에서 행동을 누르며 따라가세요. 지나간 자리의 다른 행동을 누르면 거기서부터 다시 볼 수 있어요. 두 사람이 남아 <b>콜로 플랍에 가는 줄</b>이 풀려 있으면 <span class="badge">플랍 솔버</span>로 바로 이어져요.</div>
   <div class="card setbar"><div class="sum" id="sum">불러오는 중…</div><button type="button" id="setBtn">⚙ 바꾸기</button></div>
   <div class="modal" id="modal" hidden><div class="mbox"><div class="mh"><span id="mT"></span><button type="button" id="mX" aria-label="닫기">✕</button></div><div id="mB"></div></div></div>
   <div id="setBox" hidden><div class="mgrid"><div>
