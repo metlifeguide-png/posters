@@ -159,5 +159,6 @@ addEventListener('touchend',e=>{if(!tOk)return;const t=e.changedTouches[0],dx=t.
 addEventListener('keydown',e=>{if(!cur||e.target.closest('select'))return;const L=BY[cur.등급],i=L.indexOf(cur);
   if(e.key==='ArrowRight'&&L[i+1])go(L[i+1].f);if(e.key==='ArrowLeft'&&L[i-1])go(L[i-1].f);if(e.key==='Escape')closeSheet();});
 </script>
+<script>/*__land__*/(function(){try{if(window.top!==window.self||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;var v='',n='';try{v=localStorage.getItem('vid');if(!v){v=Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('vid',v);}n=localStorage.getItem('nick')||'';}catch(e){}var f=(new URLSearchParams(location.search).get('from')||'').slice(0,30),rf=document.referrer||'',own=false;try{own=!!rf&&new URL(rf).host===location.host;}catch(e){}var b={p:"\ube14\ub85c\uadf8",n:n,v:v};if(f||!own){b.l=1;b.from=f;b.rf=own?'':rf.slice(0,200);}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b),keepalive:true}).catch(function(){});}catch(e){}})();</script>
 </body>
 </html>
