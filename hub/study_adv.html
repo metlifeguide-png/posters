@@ -88,6 +88,13 @@ body{color:var(--chalk);background:radial-gradient(90% 520px at 50% -80px,rgba(8
 .lbl{color:var(--mist)} .card .lbl{color:var(--sub)}
 #lockMem{background:#121e35!important;color:var(--mist)!important;border-bottom:1px solid var(--hair)!important}
 #lockMem b{color:var(--chalk)}
+/* 11/07 펫 키우는 장면: 이름·장면·수치 칸이 한 장으로 이어지게 (안쪽 여백이 카드 밖으로 빠져 남색 틈이 보였음) · 카드 밖 밝은 칸의 글씨가 안 보이던 것 */
+.card.pstk1,.card.pstk2{display:flow-root}
+/* 11/07 카드 밖 밝은 칸(소원·목표·진화 징후 등) 글씨: 예전엔 바탕 글씨가 검정이라 색을 안 적어 둔 칸들 → 밝은 바탕이면 진한 글씨 (글씨색을 직접 적은 칸·버튼은 그대로) */
+#app :not(button):not(a)[style*="background:#f"],#app :not(button):not(a)[style*="background:#e"],#app :not(button):not(a)[style*="background:#d"]{color:var(--ink)}
+#app [style*="background:#f"] .m,#app [style*="background:#e"] .m,#app [style*="background:#d"] .m{color:var(--sub)}
+details[style*="background"]{color:var(--ink)}
+details[style*="background"] .m,.m[style*="background"]{color:var(--sub)}
 </style>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <meta name="description" content="SPR·베팅 사이즈·올인 라인을 레벨 1~4로 익히는 팟 지오메트리, 앞 액션 3종류에서 올인/콜/폴드를 고르는 새틀 AOF(올인 오어 폴드) 연습.">
