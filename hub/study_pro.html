@@ -439,7 +439,14 @@ function handView(p,k){const H=HS(p),h=H[k],A=ANS(),my=A[KEY(p,k)];
 
 G.push({k:'prochoice',cat:'홀덤',e:'🎬',n:'프로의 선택',d:'파이널 테이블 실전 결정 · 1번부터 차례로 풀고 프로와 비교 · 📒 복습 노트',
  // mode: play(안 푼 첫 번호부터 차례로) · note(📒 복습 노트 = 예전 목록 화면) · rev(복습 노트에서 연 문제)
- start(){P_ERR='';this.mode='play';this.cur=null;this.hi=0;this.picked=null;rr();pcsPull();},
+ start(){P_ERR='';this.mode='play';this.cur=null;this.hi=0;this.picked=null;this.lockNo=0;const m=location.hash.match(/&no=(\d+)/);if(m)this.goNo(+m[1]);else rr();pcsPull();},
+ // 🔗 11/06 글에서 특정 문제로 바로 오기: #g=prochoice&no=번호 · 맛보기면 바로, 회원이면 서버에서 받아서, 비회원이면 가입 안내
+ goNo(n){const M=pMeta(),it=M&&M.items.find(x=>x[1]===n),s=SEQ().find(x=>x.no===n),id=it?it[0]:(s?s.p.id:'');
+  if(!id){rr();return;}
+  const go=()=>{const p=byId(id);if(!p){rr();return;}if(DONE(p,ANS())){this.open(id);return;}this.mode='play';this.cur=id;this.hi=0;this.picked=null;rr();scrollTo(0,0);};
+  if(byId(id)){go();return;}
+  if(!pMem()){this.lockNo=n;rr();const t=setInterval(()=>{if(!this.lockNo||CUR!==this){clearInterval(t);return;}if(pMem()){clearInterval(t);rr();}},800);return;}   // 잠금 화면에서 로그인하면 바로 그 문제로
+  rr();pcsPost('/api/study/pro',{token:MEM.tok,ids:[id]}).then(r=>{if(r&&r.ok)(r.posts||[]).forEach(p=>{if(p&&p.id&&!byId(p.id))PRO_POSTS.push(p);});go();}).catch(()=>go());},
  stop(){},
  note(w){this.mode='note';this.cur=null;this.wf=w?1:0;rr();scrollTo(0,0);pcsPull();},
  next(){this.mode='play';this.cur=null;this.hi=0;this.picked=null;rr();scrollTo(0,0);},
@@ -469,6 +476,8 @@ G.push({k:'prochoice',cat:'홀덤',e:'🎬',n:'프로의 선택',d:'파이널 �
     :`<div class="card m" style="text-align:center;margin-top:10px;line-height:1.6">🎉 지금 있는 문제를 다 풀었어요<br>새 문제가 올라오면 다음 번호로 이어서 풀 수 있어요</div>`;}
   return o+`<button class="btn full gr" style="margin-top:8px" onclick="CUR.note(0)">📒 복습 노트</button>`;},
  view(){const A0=ANS();pEnsure();
+  if(this.lockNo){if(pMem()){const n=this.lockNo;this.lockNo=0;setTimeout(()=>this.goNo(n),0);return '<div class="card m" style="text-align:center">문제 불러오는 중…</div>';}
+   return CSS+`<div class="gst"><span>🎬 프로의 선택 · <b>문제 ${this.lockNo}</b></span></div><div class="card" style="text-align:center;line-height:1.7"><div class="t">🔒 이 핸드는 회원 문제예요</div><div class="m">가입하면 프로의 실제 선택과 해설까지 볼 수 있어요</div></div>${proCta()}<button class="btn full gr" style="margin-top:8px" onclick="CUR.lockNo=0;rr()">맛보기 문제 먼저 풀기</button>`;}
   if(this.mode==='note')return this.menu();
   if(this.mode!=='rev'){const c=this.cur&&byId(this.cur);   // play: 안 푼 첫 번호 (방금 고른 문제는 해설을 보도록 그대로)
    if(!c||(DONE(c,A0)&&this.picked!==c.id)){const nx=NEXT(A0);this.cur=nx?nx.id:null;this.hi=0;
