@@ -58,6 +58,9 @@ body{background:var(--bg)}
 .sheet li.done button .tt{color:var(--sub)}
 /* 11/06 dsunify: 위 줄은 흰 칸이라 글씨 진하게 · 바탕 위 설명은 옅은 남색 */
 .rb{color:var(--ink)}.home .sub{color:#9aa8c2}
+/* 11/07 글 칸은 흰 카드: 글씨가 진한 색이라 카드가 없으면 남색 바탕에 묻힘 */
+.page article{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 20px}
+@media (max-width:560px){.page{padding:14px 10px 24px}.page>.meta,.page>h1{margin-left:6px;margin-right:6px}.page article{padding:16px 14px;border-radius:12px}}
 </style>
 </head>
 <body>
