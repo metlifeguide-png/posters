@@ -27,7 +27,7 @@ body{background:var(--bg)}
 .lvc .tx{flex:1;min-width:0}.lvc .nm{font-weight:700;font-size:16.5px}.lvc .ds{color:var(--sub);font-size:13px;line-height:1.45;margin-top:2px}
 .lvc .pb{height:5px;border-radius:3px;background:var(--line);margin-top:8px;overflow:hidden}.lvc .pb i{display:block;height:100%;background:var(--felt2)}
 .lvc .ct{font-size:12.5px;color:var(--sub);white-space:nowrap}
-.bg-b{background:var(--b)}.bg-i{background:var(--i)}.bg-a{background:var(--a)}.bg-e{background:var(--e)}.bg-p{background:var(--p)}.bg-r{background:var(--r)}.bg-m{background:var(--m)}
+.bg-w{background:var(--w)}.bg-b{background:var(--b)}.bg-i{background:var(--i)}.bg-a{background:var(--a)}.bg-e{background:var(--e)}.bg-p{background:var(--p)}.bg-r{background:var(--r)}.bg-m{background:var(--m)}
 /* 읽기 */
 .page{max-width:720px;margin:0 auto;padding:18px 18px 30px}
 .page .meta{margin:0 0 2px}
@@ -66,7 +66,7 @@ body{background:var(--bg)}
 <div class="dim" id="dim"></div>
 <div class="sheet" id="sheet"><div class="grab"></div><div class="hd"><b id="shT"></b><span id="shS"></span><select id="shL" aria-label="등급 바꾸기"></select></div><ol id="shList"></ol></div>
 <script>
-const LV=[['초급','b','룰·핸드 랭킹·포지션·팟오즈 기초'],['중급','i','아웃츠·에퀴티·레인지 콤보·푸시/폴드'],['상급','a','알파·MDF·블러프 비율·c-bet·3벳·SPR'],['고급','e','블로커·밸런스·ICM·헤즈업 솔버'],['프로','p','익스플로잇·사이징·멀티웨이·토너 운영'],['실전','r','한 판을 처음부터 끝까지 따라가는 응용'],['마스터','m','대회 입상자를 위한 토너·ICM·포스트플랍 심화']];
+const LV=[['WSOP 실전','w','WSOP 파이널 핸드로 먼저 판단하기'],['초급','b','룰·핸드 랭킹·포지션·팟오즈 기초'],['중급','i','아웃츠·에퀴티·레인지 콤보·푸시/폴드'],['상급','a','알파·MDF·블러프 비율·c-bet·3벳·SPR'],['고급','e','블로커·밸런스·ICM·헤즈업 솔버'],['프로','p','익스플로잇·사이징·멀티웨이·토너 운영'],['실전','r','한 판을 처음부터 끝까지 따라가는 응용'],['마스터','m','대회 입상자를 위한 토너·ICM·포스트플랍 심화']];
 const $=id=>document.getElementById(id);
 const LS={get(k,d){try{const v=localStorage.getItem('tt_'+k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem('tt_'+k,JSON.stringify(v));}catch(e){}}};
 let ALL=[],BY={},done=LS.get('done',{}),cur=null,fs=LS.get('fs',17),saveT=0;
