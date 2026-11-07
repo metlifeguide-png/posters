@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>홀덤 에퀴티 계산기 · 승률 계산 무료 (최대 6인) | 뚝섬유원지</title>
+<meta name="description" content="내 카드와 보드, 상대 카드를 고르면 홀덤 승률을 바로 계산해요. 최대 6인까지, 상대 카드를 모르면 랜덤 핸드와 비교하고, 팟오즈로 콜 수익까지 확인하세요.">
+<link rel="canonical" href="https://xn--bc2b73r.kr/calc/equity.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="홀덤 에퀴티 계산기 · 승률 계산 무료 (최대 6인) | 뚝섬유원지">
+<meta property="og:description" content="내 카드와 보드, 상대 카드를 고르면 홀덤 승률을 바로 계산해요. 최대 6인까지, 상대 카드를 모르면 랜덤 핸드와 비교하고, 팟오즈로 콜 수익까지 확인하세요.">
+<meta property="og:url" content="https://xn--bc2b73r.kr/calc/equity.html">
+<meta property="og:image" content="https://xn--bc2b73r.kr/hub/banner.jpg">
+<style>:root{--paper:#eef1f6;--paper2:#fff;--line:#e2e7ef;--ink:#1b2433;--sub:#66728a;--navy:#0d203b;--blue:#2457c5;--sh:0 1px 2px rgba(16,32,60,.05),0 6px 18px rgba(16,32,60,.05)}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.6 system-ui,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;-webkit-text-size-adjust:100%}.w{max-width:760px;margin:0 auto;padding:14px 16px 30px}.nav a{color:var(--blue);text-decoration:none;margin-right:12px;font-size:14px}h1{font-size:23px;line-height:1.3;color:var(--navy);margin:10px 0 2px}.sub{color:var(--sub);font-size:13px}h2{font-size:17px;color:var(--navy);margin:22px 0 6px}a{color:var(--blue)}.card{background:var(--paper2);border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin:10px 0;box-shadow:var(--sh)}.card .t{font-weight:800}.card.m{color:var(--sub);font-size:13px}label{display:block;font-size:12.5px;color:var(--sub);margin:0 0 3px 2px}.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}input.q{width:100%;padding:9px 12px;border:1.5px solid var(--line);border-radius:12px;background:#fff;font-size:14px}.doc{background:var(--paper2);border:1px solid var(--line);border-radius:16px;padding:4px 16px 14px;margin-top:14px;box-shadow:var(--sh)}.doc p,.doc li{font-size:14.5px}.doc ol,.doc ul{padding-left:20px}table{border-collapse:collapse;width:100%;font-size:14px}.doc th,.doc td{border-bottom:1px solid var(--line);padding:6px 4px;text-align:left}footer{margin:20px 0 6px;color:var(--sub);font-size:12px}</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "홀덤 에퀴티(승률) 계산기", "description": "내 카드와 보드, 상대 카드를 고르면 홀덤 승률을 바로 계산해요. 최대 6인까지, 상대 카드를 모르면 랜덤 핸드와 비교하고, 팟오즈로 콜 수익까지 확인하세요.", "url": "https://xn--bc2b73r.kr/calc/equity.html", "applicationCategory": "UtilitiesApplication", "operatingSystem": "All", "inLanguage": "ko", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}</script>
+</head>
+<body><div class="w">
+<div class="nav"><a href="./">🧮 계산기 모음</a><a href="https://xn--bc2b73r.kr/hub/">🏝 뚝섬유원지</a></div>
+<h1>홀덤 에퀴티(승률) 계산기</h1>
+<div class="sub">카드를 눌러 고르면 바로 계산돼요 · 무료 · 가입 없이 사용</div>
+<div id="calc"></div>
+<noscript><p class="sub">계산기를 쓰려면 자바스크립트를 켜 주세요.</p></noscript>
+<div class="doc"><h2>에퀴티란?</h2>
+<p>에퀴티는 지금 카드 그대로 끝까지 갔을 때 내가 팟에서 가져갈 몫이에요. 승률에 무승부 몫을 나눠 더한 값입니다. 프리플랍에서 쇼다운까지 어느 시점이든 계산할 수 있어요.</p>
+<h2>사용법</h2>
+<ol><li>내 카드 2장을 고릅니다.</li><li>보드가 깔렸다면 플랍·턴·리버 카드를 넣습니다.</li><li>상대 인원을 정하고, 아는 카드가 있으면 넣습니다. 비우면 랜덤 핸드와 비교해요.</li><li>팟과 콜 금액을 넣으면 필요 승률과 콜 기대값이 나옵니다.</li></ol>
+<h2>자주 보는 승률 예시</h2>
+<table><tr><th>내 카드</th><th>상대 카드</th><th>시점</th><th>내 승률</th></tr>
+<tr><td>A♠ A♥</td><td>K♠ K♥</td><td>프리플랍</td><td>약 82%</td></tr>
+<tr><td>A♠ K♦</td><td>Q♥ Q♣</td><td>프리플랍</td><td>약 43%</td></tr>
+<tr><td>A♠ K♠</td><td>7♦ 7♣</td><td>프리플랍</td><td>약 48%</td></tr>
+<tr><td>A♥ K♥</td><td>Q♠ Q♦</td><td>플랍 9♥ 5♥ 2♣</td><td>약 55%</td></tr></table>
+<p class="sub">이 계산기로 낸 값이에요. 프리플랍은 시뮬레이션이라 조금씩 달라질 수 있어요.</p>
+<h2>콜해도 될까? 필요 승률 공식</h2>
+<p>필요 승률 = 콜할 금액 ÷ (지금 팟 + 콜할 금액). 예를 들어 상대 베팅을 포함한 팟이 12이고 콜이 6이면 6 ÷ 18 = 33.3%예요. 내 승률이 이보다 높으면 칩 기준으로 이득입니다. 토너먼트의 상금 구조(ICM)와 바운티는 반영하지 않아요.</p>
+<h2>함께 읽기</h2><ul>
+<li><a href="https://xn--bc2b73r.kr/blog/글/035_I05.html">에퀴티란? 두 핸드를 붙여 보면 보이는 내 몫</a></li>
+<li><a href="https://xn--bc2b73r.kr/blog/글/006_B06.html">팟오즈 처음 배우기</a></li>
+<li><a href="https://xn--bc2b73r.kr/blog/글/037_I06.html">핸드 대 레인지 에퀴티</a></li></ul>
+<h2>다른 계산기</h2><p class="nav"><a href="overlay.html">오버레이 계산기</a><a href="hangame-satellite.html">한게임 새새틀 이득 계산기</a></p></div>
+<footer>참고용 계산이에요. <a href="https://xn--bc2b73r.kr/hub/">뚝섬유원지 홀덤 커뮤니티</a></footer>
+</div>
+<script>const API="https://211-233-211-164.sslip.io";function head(){return ''}
+/*eqxpage*/
+const EQX={g:{h:[],b:[],o0:[],o1:[],o2:[],o3:[],o4:[]},act:'h',n:1,r:null};
+const EQXR='23456789TJQKA',EQXS='shdc',EQXSY={s:'♠',h:'♥',d:'♦',c:'♣'};
+function eqxTop(m){const y=(m<<1)|((m>>12)&1);for(let t=13;t>=4;t--)if(((y>>(t-4))&31)===31)return t-1;return -1}
+function eqxPack(m,n){let v=0,c=0;for(let r=12;r>=0&&c<n;r--)if((m>>r)&1){v=v*16+r;c++}return v}
+function eqxEv7(a){
+ const rc=[0,0,0,0,0,0,0,0,0,0,0,0,0],sc=[0,0,0,0],sm=[0,0,0,0];let m=0;
+ for(let i=0;i<7;i++){const r=a[i]>>2,s=a[i]&3;rc[r]++;sc[s]++;sm[s]|=1<<r;m|=1<<r}
+ let fl=-1;for(let s=0;s<4;s++)if(sc[s]>=5){fl=s;const t=eqxTop(sm[s]);if(t>=0)return 8*1048576+t}
+ let q=-1;const t3=[],p2=[];
+ for(let r=12;r>=0;r--){const c=rc[r];if(c===4)q=r;else if(c===3)t3.push(r);else if(c===2)p2.push(r)}
+ if(q>=0){let k=-1;for(let r=12;r>=0;r--)if(r!==q&&rc[r]){k=r;break}return 7*1048576+q*16+k}
+ if(t3.length&&(t3.length>1||p2.length)){const p=Math.max(t3.length>1?t3[1]:-1,p2.length?p2[0]:-1);return 6*1048576+t3[0]*16+p}
+ if(fl>=0)return 5*1048576+eqxPack(sm[fl],5);
+ const st=eqxTop(m);if(st>=0)return 4*1048576+st;
+ if(t3.length){let v=t3[0],n=0;for(let r=12;r>=0&&n<2;r--)if(r!==t3[0]&&rc[r]){v=v*16+r;n++}return 3*1048576+v}
+ if(p2.length>=2){let k=-1;for(let r=12;r>=0;r--)if(r!==p2[0]&&r!==p2[1]&&rc[r]){k=r;break}return 2*1048576+p2[0]*256+p2[1]*16+k}
+ if(p2.length===1){let v=p2[0],n=0;for(let r=12;r>=0&&n<3;r--)if(r!==p2[0]&&rc[r]){v=v*16+r;n++}return 1*1048576+v}
+ return eqxPack(m,5)}
+// hands: [[c,c], [c,c] 또는 null(랜덤 핸드), ...] · board: 0·3·4·5장
+function eqxRun(hands,board){
+ const used=new Set(board);hands.forEach(h=>{if(h)h.forEach(c=>used.add(c))});
+ const deck=[];for(let c=0;c<52;c++)if(!used.has(c))deck.push(c);
+ const n=hands.length,need=5-board.length,rn=hands.filter(x=>!x).length;
+ const eq=new Float64Array(n),w=new Float64Array(n),t=new Float64Array(n);
+ const sv=hands.map(h=>[h?h[0]:0,h?h[1]:0,0,0,0,0,0]),bd=board.concat([0,0,0,0,0]).slice(0,5);let tot=0;
+ const fin=()=>{let best=-1,cnt=0;const sc=[];
+  for(let i=0;i<n;i++){const a=sv[i];for(let j=0;j<5;j++)a[2+j]=bd[j];const s=eqxEv7(a);sc.push(s);if(s>best){best=s;cnt=1}else if(s===best)cnt++}
+  for(let i=0;i<n;i++)if(sc[i]===best){eq[i]+=1/cnt;if(cnt===1)w[i]++;else t[i]++}
+  tot++};
+ let exact=false;
+ if(rn===0&&need<=2){exact=true;const rec=(s,k)=>{if(k===need){fin();return}for(let i=s;i<deck.length;i++){bd[5-need+k]=deck[i];rec(i+1,k+1)}};rec(0,0)}
+ else{for(let it=0;it<30000;it++){
+   const m=2*rn+need;
+   for(let k=0;k<m;k++){const j=k+Math.floor(Math.random()*(deck.length-k));const x=deck[k];deck[k]=deck[j];deck[j]=x}
+   let p=0;for(let i=0;i<n;i++)if(!hands[i]){sv[i][0]=deck[p++];sv[i][1]=deck[p++]}
+   for(let k=0;k<need;k++)bd[5-need+k]=deck[p++];
+   fin()}}
+ return{eq:Array.from(eq,x=>x/tot),w:Array.from(w,x=>x/tot),t:Array.from(t,x=>x/tot),exact:exact,tot:tot}}
+function eqxTxt(c){const r=EQXR[c>>2];return (r==='T'?'10':r)+EQXSY[EQXS[c&3]]}
+function eqxMax(k){return k==='h'?2:k==='b'?5:2}
+function eqxUsed(){const u=new Set();for(const k in EQX.g)EQX.g[k].forEach(c=>u.add(c));return u}
+function eqxLabel(k){return k==='h'?'내 카드':k==='b'?'보드':'상대 '+(+k.slice(1)+1)}
+function eqxCalc(){
+ const g=EQX.g,h=g.h,b=g.b;
+ if(h.length!==2)return{msg:'내 카드 2장을 골라 주세요'};
+ if([0,3,4,5].indexOf(b.length)<0)return{msg:'보드는 0장(프리플랍)·3장(플랍)·4장(턴)·5장(리버)로 맞춰 주세요 (지금 '+b.length+'장)'};
+ const hands=[h.slice()],cards=[eqxTxt(h[0])+' '+eqxTxt(h[1])];
+ for(let i=0;i<EQX.n;i++){const o=g['o'+i];
+  if(o.length===1)return{msg:'상대 '+(i+1)+'의 카드를 2장 고르거나, 비워서 랜덤 핸드로 두세요'};
+  hands.push(o.length===2?o.slice():null);cards.push(o.length===2?eqxTxt(o[0])+' '+eqxTxt(o[1]):'')}
+ const q=eqxRun(hands,b.slice());q.cards=cards;q.rnd=hands.some((x,i)=>i>0&&!x);q.bn=b.length;return q}
+function eqxChip(c,k,i){const s=EQXS[c&3],red=s==='h'||s==='d';
+ return '<span onclick="event.stopPropagation();eqxDel(\''+k+'\','+i+')" title="누르면 빼기" style="display:inline-block;min-width:36px;padding:5px 6px;margin-right:4px;border-radius:7px;background:#fff;border:1px solid #bbb;font-weight:800;font-size:15px;text-align:center;cursor:pointer;color:'+(red?'#d33':'#222')+'">'+eqxTxt(c)+'</span>'}
+function eqxRow(k){const a=EQX.g[k],on=EQX.act===k;let s='';
+ a.forEach((c,i)=>{s+=eqxChip(c,k,i)});
+ for(let i=a.length;i<eqxMax(k);i++)s+='<span style="display:inline-block;min-width:36px;padding:5px 6px;margin-right:4px;border-radius:7px;border:1px dashed #bbb;font-size:15px;text-align:center;color:transparent">·</span>';
+ return '<div onclick="eqxAct(\''+k+'\')" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px;margin:6px 0;border-radius:10px;border:2px solid '+(on?'#2563eb':'#ddd')+';background:'+(on?'rgba(37,99,235,.08)':'transparent')+';cursor:pointer"><b style="min-width:54px;font-size:13px">'+eqxLabel(k)+'</b><span>'+s+'</span>'+(k.charAt(0)==='o'&&!a.length?'<span style="font-size:11px;color:#888">비우면 랜덤 핸드</span>':'')+'</div>'}
+function eqxPicker(){const u=eqxUsed();let h='<div style="margin-top:8px">';
+ for(let si=0;si<4;si++){const s=EQXS[si],red=s==='h'||s==='d';
+  h+='<div style="display:grid;grid-template-columns:repeat(13,1fr);gap:2px;margin-bottom:2px">';
+  for(let r=12;r>=0;r--){const c=r*4+si,used=u.has(c);
+   h+='<button type="button" '+(used?'disabled ':'')+'onclick="eqxPick('+c+')" style="padding:7px 0;border-radius:6px;border:1px solid #ccc;background:#fff;font-size:12px;font-weight:700;line-height:1.15;cursor:pointer;color:'+(red?'#d33':'#222')+';opacity:'+(used?'.25':'1')+'">'+(EQXR[r]==='T'?'10':EQXR[r])+'<br>'+EQXSY[s]+'</button>'}
+  h+='</div>'}
+ return h+'</div>'}
+function eqxSel(){
+ let h='<div style="font-size:13px;margin-bottom:4px">상대 인원 ';
+ for(let n=1;n<=5;n++)h+='<button type="button" onclick="eqxSetN('+n+')" style="margin-right:4px;padding:4px 11px;border-radius:8px;border:1px solid #2563eb;font-size:13px;font-weight:700;cursor:pointer;'+(EQX.n===n?'background:#2563eb;color:#fff':'background:#fff;color:#2563eb')+'">'+n+'</button>';
+ h+='</div>'+eqxRow('h')+eqxRow('b');
+ for(let i=0;i<EQX.n;i++)h+=eqxRow('o'+i);
+ h+='<div style="font-size:12px;color:#888;margin:4px 0">칸을 누른 뒤 아래에서 카드를 고르세요 · 고른 카드를 누르면 빠져요</div>'+eqxPicker();
+ h+='<div style="margin-top:8px"><button type="button" onclick="eqxClear()" style="padding:6px 14px;border-radius:8px;border:1px solid #c33;background:#fff;color:#c33;font-weight:700;font-size:13px;cursor:pointer">🗑 전부 지우기</button></div>';
+ return h}
+function eqxResHTML(){const r=EQX.r;if(!r)return '';
+ if(r.msg)return '<div style="color:#888;font-size:13px;padding:4px 0">'+r.msg+'</div>';
+ const pc=x=>(x*100).toFixed(1)+'%',st=['프리플랍','','','플랍','턴','리버'][r.bn];
+ let h='<div style="font-weight:800;font-size:15px;margin-bottom:4px">🎯 에퀴티 · '+st+'</div>';
+ r.eq.forEach((e,i)=>{
+  h+='<div style="margin:8px 0"><div style="display:flex;justify-content:space-between;font-size:14px"><span>'+(i===0?'나 ':'상대 '+i+' ')+(r.cards[i]||'랜덤 핸드')+'</span><b>'+pc(e)+'</b></div>'
+   +'<div style="height:8px;border-radius:5px;background:#e5e5e5;overflow:hidden"><div style="width:'+(e*100).toFixed(1)+'%;height:100%;background:'+(i===0?'#2f7d5b':'#8a94a6')+'"></div></div>'
+   +'<div style="font-size:11px;color:#888">승 '+pc(r.w[i])+' · 무 '+pc(r.t[i])+'</div></div>'});
+ h+='<div style="font-size:12px;color:#888">'+(r.exact?'정확 계산 (남은 카드 경우를 전부 계산) · 무승부는 나눔':'시뮬레이션 3만 번 (오차 ±0.6%p 안팎) · 무승부는 나눔')+'</div>';
+ if(r.rnd)h+='<div style="font-size:12px;color:#888;margin-top:2px">랜덤 핸드는 베팅하고 들어온 실제 상대 범위보다 약해서, 내 승률이 더 높게 나와요</div>';
+ return h}
+function eqxPo(){const o=document.getElementById('eqx-poout');if(!o)return;
+ const p=document.getElementById('eqx-pot'),c=document.getElementById('eqx-call');if(!p||!c)return;
+ const pot=parseFloat(p.value),call=parseFloat(c.value),r=EQX.r;
+ if(!r||!r.eq){o.innerHTML='<span style="font-size:12px;color:#888">카드를 먼저 골라 승률을 계산하세요</span>';return}
+ if(!(pot>=0)||!(call>0)){o.innerHTML='<span style="font-size:12px;color:#888">팟과 콜 금액을 넣으면 필요 승률과 콜 수익이 나와요</span>';return}
+ const e=r.eq[0],need=call/(pot+call),ev=e*(pot+call)-call,f=x=>(Math.round(x*100)/100).toLocaleString();
+ o.innerHTML='필요 승률 <b>'+(need*100).toFixed(1)+'%</b> · 내 승률 <b>'+(e*100).toFixed(1)+'%</b><br>콜 기대값 <b style="color:'+(ev>=0?'#1a7a45':'#c33')+'">'+(ev>=0?'+':'')+f(ev)+'</b> '+(ev>=0?'(콜 이득)':'(콜 손해)')+'<div style="font-size:11px;color:#888;margin-top:2px">칩 기준 (ICM·바운티 제외) · 팟과 콜 금액은 같은 단위로 넣으세요</div>'}
+function eqxDraw(){const a=document.getElementById('eqx-sel'),b=document.getElementById('eqx-res');if(!a||!b)return;
+ a.innerHTML=eqxSel();EQX.r=eqxCalc();b.innerHTML=eqxResHTML();eqxPo()}
+function eqxPick(c){const k=EQX.act,a=EQX.g[k];if(a.length>=eqxMax(k)||eqxUsed().has(c))return;a.push(c);
+ if(k==='h'&&a.length===2)EQX.act='b';
+ else if(k.charAt(0)==='o'&&a.length===2&&+k.slice(1)+1<EQX.n)EQX.act='o'+(+k.slice(1)+1);
+ eqxDraw()}
+function eqxAct(k){EQX.act=k;eqxDraw()}
+function eqxDel(k,i){EQX.g[k].splice(i,1);EQX.act=k;eqxDraw()}
+function eqxSetN(n){EQX.n=n;for(let i=n;i<5;i++)EQX.g['o'+i]=[];if(/^o\d$/.test(EQX.act)&&+EQX.act.slice(1)>=n)EQX.act='h';eqxDraw()}
+function eqxClear(){for(const k in EQX.g)EQX.g[k]=[];EQX.act='h';eqxDraw()}
+function eqxPage(){EQX.r=eqxCalc();setTimeout(eqxPo,0);
+ return head('🎯 에퀴티 계산기','카드를 눌러 고르면 바로 승률 계산')
+  +eqxSnapBar()+'<div class="card"><div id="eqx-sel">'+eqxSel()+'</div></div>'
+  +'<div class="card"><div id="eqx-res">'+eqxResHTML()+'</div></div>'
+  +'<div class="card"><div class="t" style="margin-bottom:6px">📞 콜 수익 (선택)</div><div class="g2"><div><label>지금 팟 (상대 베팅 포함)</label><input class="q" type="number" inputmode="decimal" id="eqx-pot" placeholder="예: 12" oninput="eqxPo()"></div><div><label>콜할 금액</label><input class="q" type="number" inputmode="decimal" id="eqx-call" placeholder="예: 6" oninput="eqxPo()"></div></div><div id="eqx-poout" style="margin-top:8px"></div></div>'
+  +'<div class="card m">상대 카드를 비우면 랜덤 핸드와 비교해요. 상금 구조(ICM)·바운티는 반영하지 않는 칩 기준 승률이에요.</div>'}
+/*eqxsnap*/ // 📸 스샷으로 채우기 (aof와 같은 /api/snap/read 사용 · 홈의 전역 API 주소)
+function eqxSnapBar(){return '<div class="card"><button type="button" id="eqx-snapb" onclick="document.getElementById(\'eqx-snapf\').click()" style="padding:11px 16px;border-radius:12px;border:0;background:var(--blue);color:#fff;font-size:15px;font-weight:700;cursor:pointer">📸 스샷으로 채우기</button><input type="file" id="eqx-snapf" accept="image/*" style="display:none" onchange="eqxSnapRun(this)"><div style="font-size:12px;color:#888;margin-top:6px">포커 앱 테이블 스샷을 올리면 내 카드·보드·보이는 상대 카드를 채워요 (잘못 읽을 수 있으니 확인하세요)</div></div>'}
+function eqxCardIdx(c){c=String(c||'').replace(/^10/,'T');if(c.length!==2)return -1;const r=EQXR.indexOf(c.charAt(0).toUpperCase()),s=EQXS.indexOf(c.charAt(1).toLowerCase());return (r<0||s<0)?-1:r*4+s}
+function eqxSnapFill(j){
+ if(!j||typeof j!=='object')return '읽기 결과가 비었어요';
+ const hc=(j.hero_cards||[]).map(eqxCardIdx);
+ if(hc.length!==2||hc.some(x=>x<0)||hc[0]===hc[1])return '내 카드를 못 읽었어요. 스샷에 내 카드가 보이는지 확인해 주세요';
+ const used=new Set(hc),notes=[],bl=j.board||[],bd=[];
+ bl.forEach(c=>{const x=eqxCardIdx(c);if(x>=0&&!used.has(x)){used.add(x);bd.push(x)}});
+ if(bd.length!==bl.length)notes.push('보드 카드 중 못 읽었거나 겹친 카드가 있어요. 보드를 확인해 주세요');
+ else if([0,3,4,5].indexOf(bd.length)<0)notes.push('보드가 '+bd.length+'장으로 읽혔어요. 확인해 주세요');
+ const opp=[];
+ (j.seats||[]).forEach((s,i)=>{if(i>0&&s&&!s.out&&Array.isArray(s.cards)&&s.cards.length===2){const c=s.cards.map(eqxCardIdx);
+  if(c.every(x=>x>=0)&&c[0]!==c[1]&&!used.has(c[0])&&!used.has(c[1])){used.add(c[0]);used.add(c[1]);opp.push(c)}}});
+ if(opp.length>5)notes.push('상대 카드가 '+opp.length+'명 보이지만 5명까지만 채웠어요');
+ if(!opp.length)notes.push('상대 카드가 안 보여서 상대 1명(랜덤 핸드)으로 뒀어요. 인원·카드는 직접 바꿀 수 있어요');
+ for(const k in EQX.g)EQX.g[k]=[];
+ EQX.g.h=hc.slice();EQX.g.b=bd.slice(0,5);
+ EQX.n=Math.min(5,Math.max(1,opp.length));
+ opp.slice(0,5).forEach((c,i)=>{EQX.g['o'+i]=c});
+ EQX.act='b';eqxDraw();
+ return notes.join('\n')}
+async function eqxSnapRun(inp){const file=inp.files&&inp.files[0];inp.value='';if(!file)return;
+ if(typeof API==='undefined'||!API){alert('서버 주소를 못 찾았어요. 새로고침 후 다시 해 주세요');return}
+ if(!/^image\//.test(file.type)){alert('이미지 파일만 올릴 수 있어요');return}
+ const b=document.getElementById('eqx-snapb'),T0='📸 스샷으로 채우기';if(b)b.textContent='읽는 중…';
+ try{
+  const b64=await new Promise((ok,ng)=>{const fr=new FileReader();fr.onload=()=>ok(String(fr.result).split(',')[1]);fr.onerror=ng;fr.readAsDataURL(file)});
+  const resp=await fetch(API+'/api/snap/read',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({imgs:[{mime:file.type||'image/jpeg',b64:b64}]})});
+  const j=await resp.json();
+  if(j&&j.err){alert(j.err)}else{const m=eqxSnapFill(j);if(m)alert(m)}
+ }catch(e){alert('스샷 읽기 실패: 잠시 뒤 다시 해 주세요')}
+ const b2=document.getElementById('eqx-snapb');if(b2)b2.textContent=T0}
+
+document.getElementById('calc').innerHTML=eqxPage();
+</script>
+<script>/*__land__*/(function(){try{if(window.top!==window.self||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;var v='',n='';try{v=localStorage.getItem('vid');if(!v){v=Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('vid',v);}n=localStorage.getItem('nick')||'';}catch(e){}var f=(new URLSearchParams(location.search).get('from')||'').slice(0,30),rf=document.referrer||'',own=false;try{own=!!rf&&new URL(rf).host===location.host;}catch(e){}var b={p:"\uacc4\uc0b0\uae30",n:n,v:v};if(f||!own){b.l=1;b.from=f;b.rf=own?'':rf.slice(0,200);}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b),keepalive:true}).catch(function(){});}catch(e){}})();</script>
+</body>
+</html>
