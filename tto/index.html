@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>프리플랍 GTO 차트</title>
+<title>프리플랍 GTO 차트 무료 · 포지션·스택별 오픈·3벳 | 뚝섬유원지</title>
 <meta name="description" content="상황별 프리플랍 GTO 차트 무료 뷰어. 포지션·스택·앞 액션을 고르면 핸드별 오픈·콜·3벳 빈도를 볼 수 있어요.">
 <link rel="canonical" href="https://xn--bc2b73r.kr/tto/">
 <style>
@@ -177,10 +177,10 @@ function drawSel(){
   if(!ss.includes(S.st))S.st=ss.reduce((a,b)=>Math.abs(b-S.st)<Math.abs(a-S.st)?b:a,ss[0]);
   chips('cS',ss.map(s=>[s,s+'BB'+(hasPost(S.m,S.n,s)?'<small>플랍 솔버</small>':'')]),S.st,v=>{S.st=+v;closeModal();pick();});
   document.getElementById('icmNote').textContent=S.m==='ft'?'· ICM 파이널: 테이블에 남은 사람이 전부, 모두 같은 스택 · 상금은 1등 20% 기준 표준표':S.m==='bubble'?'· ICM 버블: 19명 남고 18명 입상(다른 테이블도 같은 스택) · 한 명만 더 떨어지면 입상':'';}
-function hasPost(m,n,st){return m==='ante'&&+n===8&&+st===100&&Object.values(SPX).some(x=>+x.n===8&&+x.st===100&&x.nb>0);}
+function hasPost(m,n,st){return m==='ante'&&Object.values(SPX).some(x=>+x.n===+n&&+x.st===+st&&x.nb>0);}
 function drawSum(){const el=document.getElementById('sum');if(!el)return;const mm=(MODES.find(x=>x[0]===S.m)||[])[1]||'';
-  const cfg=S.m==='ante'&&+S.n===8&&+S.st===100;
-  const why=hasPost(S.m,S.n,S.st)?' · 콜로 끝나는 줄은 플랍·턴·리버까지':cfg?(POSTST==='fail'||!API?' · 플랍 솔버: 서버에 연결이 안 돼요':POSTST==='loading'?' · 플랍 솔버 확인 중…':' · 플랍 솔버: 서버에 아직 데이터가 없어요'):' · 플랍 이후는 지금 8명 · 100BB · 토너먼트(BB앤티)에서만 볼 수 있어요';
+  const cfg=S.m==='ante'&&(+S.n===9||(+S.n===8&&+S.st===100));
+  const why=hasPost(S.m,S.n,S.st)?' · 콜로 끝나는 줄은 플랍·턴·리버까지':cfg?(POSTST==='fail'||!API?' · 플랍 솔버: 서버에 연결이 안 돼요':POSTST==='loading'?' · 플랍 솔버 확인 중…':' · 플랍 솔버: 서버에 아직 데이터가 없어요'):' · 플랍 이후는 지금 토너먼트(BB앤티) 8명 100BB · 9명에서만 볼 수 있어요';
   el.innerHTML=`${esc(mm)} · ${S.m==='ft'?'남은 ':''}${S.n}명 · ${S.st}BB${hasPost(S.m,S.n,S.st)?'<span class="badge">플랍 솔버</span>':''}<small>${S.m==='ft'||S.m==='bubble'?'ICM':'칩 EV'} · 프리플랍 오픈 2.3BB${why}</small>`;}
 function openSet(){const box=document.getElementById('setBox');openModal('솔루션 고르기','',el=>{el.appendChild(box);box.hidden=false;});}
 document.getElementById('setBtn').onclick=openSet;
@@ -315,12 +315,12 @@ function pcard(c,sm){if(!c)return '<span class="pc sm ghost">?</span>';const s=c
 function pcards(b,sm){return String(b||'').split(',').filter(Boolean).map(c=>pcard(c,sm)).join('');}
 const pkey=a=>a.length?a.join('>'):'root';
 const bbx=ch=>r1(ch/10);
-// 프리플랍 줄 → 풀린 플랍 스팟 이름 (8인 100BB 앤티 · 오픈→콜 / 오픈→3벳→콜)
-function postSpotFor(h,p){if(!DATA)return null;const M=DATA.meta;if(M.icm||+M.n!==8||+M.st!==100||!(+M.ante))return null;
+// 프리플랍 줄 → 풀린 플랍 스팟 이름 (토너먼트 앤티 · 풀린 인원·스택만 · 오픈→콜 / 오픈→3벳→콜)
+function postSpotFor(h,p){if(!DATA)return null;const M=DATA.meta;if(M.icm||!(+M.ante))return null;
   const st=(h?h.split(' → '):[]).map(spl).filter(x=>!/폴드/.test(x[1]));st.push([p,'콜']);let ty=null,op,ca;
   if(st.length===2&&st[0][1]==='오픈'&&st[1][1]==='콜'){ty='SRP';op=st[0][0];ca=st[1][0];}
   else if(st.length===3&&st[0][1]==='오픈'&&st[1][1]==='3벳'&&st[2][1]==='콜'&&st[2][0]===st[0][0]){ty='3BP';op=st[0][0];ca=st[1][0];}
-  if(!ty)return null;for(const [k,m] of Object.entries(SPX))if(m.type===ty&&m.op===op&&m.ca===ca&&+m.n===8&&+m.st===100&&m.nb>0)return k;return null;}
+  if(!ty)return null;for(const [k,m] of Object.entries(SPX))if(m.type===ty&&m.op===op&&m.ca===ca&&+m.n===+M.n&&+m.st===+M.st&&m.nb>0)return k;return null;}
 function enterPost(h,p,spot,board){PF={spot,pre:{h,p},P:{f:[],t:null,tp:[],r:null,rp:[]},D:null,TN:null,RN:null};VIEW='mix';HSEL=null;
   main('<div class="e">플랍 불러오는 중…</div>');loadBoard(board||LS.get('board')||'');}
 function loadBoard(b){const pf=PF;api('/api/tto/post/board?spot='+encodeURIComponent(pf.spot)+'&board='+encodeURIComponent(b)).then(j=>{
