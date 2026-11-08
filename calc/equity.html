@@ -112,12 +112,12 @@ function eqxSel(){
  h+='</div>'+eqxRow('h')+eqxRow('b');
  for(let i=0;i<EQX.n;i++)h+=eqxRow('o'+i);
  h+='<div style="font-size:12px;color:#888;margin:4px 0">칸을 누른 뒤 아래에서 카드를 고르세요 · 고른 카드를 누르면 빠져요</div>'+eqxPicker();
- h+='<div style="margin-top:8px"><button type="button" onclick="eqxClear()" style="padding:6px 14px;border-radius:8px;border:1px solid #c33;background:#fff;color:#c33;font-weight:700;font-size:13px;cursor:pointer">🗑 전부 지우기</button></div>';
+ h+='<div style="margin-top:8px"><button type="button" onclick="eqxClear()" style="padding:6px 14px;border-radius:8px;border:1px solid #c33;background:#fff;color:#c33;font-weight:700;font-size:13px;cursor:pointer">전부 지우기</button></div>';
  return h}
 function eqxResHTML(){const r=EQX.r;if(!r)return '';
  if(r.msg)return '<div style="color:#888;font-size:13px;padding:4px 0">'+r.msg+'</div>';
  const pc=x=>(x*100).toFixed(1)+'%',st=['프리플랍','','','플랍','턴','리버'][r.bn];
- let h='<div style="font-weight:800;font-size:15px;margin-bottom:4px">🎯 에퀴티 · '+st+'</div>';
+ let h='<div style="font-weight:800;font-size:15px;margin-bottom:4px">에퀴티 · '+st+'</div>';
  r.eq.forEach((e,i)=>{
   h+='<div style="margin:8px 0"><div style="display:flex;justify-content:space-between;font-size:14px"><span>'+(i===0?'나 ':'상대 '+i+' ')+(r.cards[i]||'랜덤 핸드')+'</span><b>'+pc(e)+'</b></div>'
    +'<div style="height:8px;border-radius:5px;background:#e5e5e5;overflow:hidden"><div style="width:'+(e*100).toFixed(1)+'%;height:100%;background:'+(i===0?'#2f7d5b':'#8a94a6')+'"></div></div>'
@@ -143,13 +143,13 @@ function eqxDel(k,i){EQX.g[k].splice(i,1);EQX.act=k;eqxDraw()}
 function eqxSetN(n){EQX.n=n;for(let i=n;i<5;i++)EQX.g['o'+i]=[];if(/^o\d$/.test(EQX.act)&&+EQX.act.slice(1)>=n)EQX.act='h';eqxDraw()}
 function eqxClear(){for(const k in EQX.g)EQX.g[k]=[];EQX.act='h';eqxDraw()}
 function eqxPage(){EQX.r=eqxCalc();setTimeout(eqxPo,0);
- return head('🎯 에퀴티 계산기','카드를 눌러 고르면 바로 승률 계산')
+ return head('에퀴티 계산기','카드를 눌러 고르면 바로 승률 계산')
   +eqxSnapBar()+'<div class="card"><div id="eqx-sel">'+eqxSel()+'</div></div>'
   +'<div class="card"><div id="eqx-res">'+eqxResHTML()+'</div></div>'
-  +'<div class="card"><div class="t" style="margin-bottom:6px">📞 콜 수익 (선택)</div><div class="g2"><div><label>지금 팟 (상대 베팅 포함)</label><input class="q" type="number" inputmode="decimal" id="eqx-pot" placeholder="예: 12" oninput="eqxPo()"></div><div><label>콜할 금액</label><input class="q" type="number" inputmode="decimal" id="eqx-call" placeholder="예: 6" oninput="eqxPo()"></div></div><div id="eqx-poout" style="margin-top:8px"></div></div>'
+  +'<div class="card"><div class="t" style="margin-bottom:6px">콜 수익 (선택)</div><div class="g2"><div><label>지금 팟 (상대 베팅 포함)</label><input class="q" type="number" inputmode="decimal" id="eqx-pot" placeholder="예: 12" oninput="eqxPo()"></div><div><label>콜할 금액</label><input class="q" type="number" inputmode="decimal" id="eqx-call" placeholder="예: 6" oninput="eqxPo()"></div></div><div id="eqx-poout" style="margin-top:8px"></div></div>'
   +'<div class="card m">상대 카드를 비우면 랜덤 핸드와 비교해요. 상금 구조(ICM)·바운티는 반영하지 않는 칩 기준 승률이에요.</div>'}
 /*eqxsnap*/ // 📸 스샷으로 채우기 (aof와 같은 /api/snap/read 사용 · 홈의 전역 API 주소)
-function eqxSnapBar(){return '<div class="card"><button type="button" id="eqx-snapb" onclick="document.getElementById(\'eqx-snapf\').click()" style="padding:11px 16px;border-radius:12px;border:0;background:var(--blue);color:#fff;font-size:15px;font-weight:700;cursor:pointer">📸 스샷으로 채우기</button><input type="file" id="eqx-snapf" accept="image/*" style="display:none" onchange="eqxSnapRun(this)"><div style="font-size:12px;color:#888;margin-top:6px">포커 앱 테이블 스샷을 올리면 내 카드·보드·보이는 상대 카드를 채워요 (잘못 읽을 수 있으니 확인하세요)</div></div>'}
+function eqxSnapBar(){return '<div class="card"><button type="button" id="eqx-snapb" onclick="document.getElementById(\'eqx-snapf\').click()" style="padding:11px 16px;border-radius:12px;border:0;background:var(--blue);color:#fff;font-size:15px;font-weight:700;cursor:pointer">스샷으로 채우기</button><input type="file" id="eqx-snapf" accept="image/*" style="display:none" onchange="eqxSnapRun(this)"><div style="font-size:12px;color:#888;margin-top:6px">포커 앱 테이블 스샷을 올리면 내 카드·보드·보이는 상대 카드를 채워요 (잘못 읽을 수 있으니 확인하세요)</div></div>'}
 function eqxCardIdx(c){c=String(c||'').replace(/^10/,'T');if(c.length!==2)return -1;const r=EQXR.indexOf(c.charAt(0).toUpperCase()),s=EQXS.indexOf(c.charAt(1).toLowerCase());return (r<0||s<0)?-1:r*4+s}
 function eqxSnapFill(j){
  if(!j||typeof j!=='object')return '읽기 결과가 비었어요';
@@ -173,7 +173,7 @@ function eqxSnapFill(j){
 async function eqxSnapRun(inp){const file=inp.files&&inp.files[0];inp.value='';if(!file)return;
  if(typeof API==='undefined'||!API){alert('서버 주소를 못 찾았어요. 새로고침 후 다시 해 주세요');return}
  if(!/^image\//.test(file.type)){alert('이미지 파일만 올릴 수 있어요');return}
- const b=document.getElementById('eqx-snapb'),T0='📸 스샷으로 채우기';if(b)b.textContent='읽는 중…';
+ const b=document.getElementById('eqx-snapb'),T0='스샷으로 채우기';if(b)b.textContent='읽는 중…';
  try{
   const b64=await new Promise((ok,ng)=>{const fr=new FileReader();fr.onload=()=>ok(String(fr.result).split(',')[1]);fr.onerror=ng;fr.readAsDataURL(file)});
   const resp=await fetch(API+'/api/snap/read',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({imgs:[{mime:file.type||'image/jpeg',b64:b64}]})});
