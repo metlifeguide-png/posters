@@ -100,7 +100,7 @@ function go(f){location.hash=f?encodeURIComponent(f):'';}
 
 function home(){
   cur=null;closeSheet();$('prog').style.width='0';
-  $('bar').innerHTML=`<button onclick="exitApp()" aria-label="나가기">←</button><span class="ttl">📚 홀덤이론</span><button class="fs" style="visibility:hidden">가</button>`;
+  $('bar').innerHTML=`<button onclick="exitApp()" aria-label="나가기">←</button><span class="ttl">홀덤이론</span><button class="fs" style="visibility:hidden">가</button>`;
   const last=LS.get('last',null),li=last&&ALL.find(x=>x.f===last.f);
   const nDone=n=>BY[n].filter(x=>done[x.f]).length;
   $('view').innerHTML=`<div class="home"><h1>어디부터 읽을까요?</h1><p class="sub">초급부터 순서대로 읽으면 앞 장에서 배운 계산을 이어서 써요.</p>
