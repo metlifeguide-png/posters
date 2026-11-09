@@ -88,7 +88,7 @@ main>section>.mu,main>section>.top .mu,main>section .ln b{color:#9aa8c2}
 <p id="am" class="red" style="min-height:22px"></p>
 </section>
 <section id="home" hidden>
-<div class="top"><span class="mu">👤 <b id="who"></b></span><button class="btn" id="lo" style="font-size:13px;padding:6px 10px">로그아웃</button></div>
+<div class="top"><span class="mu"><b id="who"></b></span><button class="btn" id="lo" style="font-size:13px;padding:6px 10px">로그아웃</button></div>
 <h1>핸드 기록</h1>
 <p class="mu">대회 이름을 적고 들어가면, 그 안에서 적는 핸드는 이 대회에만 모아서 관리됩니다.</p>
 <input type="text" id="tn" placeholder="대회 이름 (예: 피망 새틀 10/6)" autocomplete="off">
@@ -97,7 +97,7 @@ main>section>.mu,main>section>.top .mu,main>section .ln b{color:#9aa8c2}
 </section>
 <section id="app" hidden>
 <div class="top"><div class="row"><button class="btn" id="back" style="padding:10px 18px;font-size:22px">←</button><div><h2 id="tt"></h2><span class="mu">새 핸드</span></div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><button class="btn" id="fresh" style="font-size:13px;padding:7px 12px">↺ 새로쓰기</button><span class="mu" id="sst" style="font-size:12px">자동 저장</span></div></div>
-<div class="seg"><button class="btn on" id="tb0">✍️ 기록</button><button class="btn" id="tb1">🔍 복기</button></div>
+<div class="seg"><button class="btn on" id="tb0">기록</button><button class="btn" id="tb1">복기</button></div>
 <div id="rec"><div class="pn ses"><div><label>테이블</label><select id="mx"><option value="9">9max</option><option value="8">8max</option><option value="7">7max</option><option value="6">6max</option><option value="5">5max</option><option value="4">4max</option><option value="3">3max</option><option value="2">2max (헤즈업)</option></select></div>
 <div><label>앤티 방식</label><select id="an"><option value="bb">BB앤티</option><option value="all">올앤티</option><option value="none">앤티 없음</option></select></div></div>
 <div class="pn blw" id="blw"><div class="blh"><b>blind</b><select id="blsel" class="blsel"></select></div>
@@ -349,7 +349,7 @@ function vlDraw(){const e=$('#vl');if(!e||!R)return;const sh=Object.entries(R.sh
 function tab(n){TAB=n;const r=$('#rec'),v=$('#rev');if(!r||!v)return;r.hidden=n!==0;v.hidden=n!==1;
  $('#tb0').classList.toggle('on',n===0);$('#tb1').classList.toggle('on',n===1);if(n===1&&T)hands();sync();window.scrollTo(0,0)}
 function revToggle(b,h){const hc=b.closest('.hc');let d=hc.querySelector('.rv');
- if(d){d.remove();b.textContent='🔍 스트리트별 보기';return}
+ if(d){d.remove();b.textContent='스트리트별 보기';return}
  d=document.createElement('div');d.className='rv';d.innerHTML='<span class="nt">계산 중…</span>';hc.appendChild(d);b.textContent='▲ 접기';
  setTimeout(()=>{try{d.innerHTML=revView(h)}catch(e){d.innerHTML='<span class="nt">계산 중 오류: '+esc(e.message)+'</span>'}},30)}
 function revView(h){   // 저장한 핸드를 다시 보여 주고, 스트리트 시작 시점의 내 승률을 계산 (상대 카드를 다 알 때만)
@@ -432,7 +432,7 @@ function cp(t){const ok=()=>toast('복사됨');function fb(){const a=document.cr
 /* ---------- 화면 ---------- */
 function home(){flush();T=null;$('#app').hidden=true;$('#home').hidden=false;sync();
  const l=[...D.tours].sort((a,b)=>b.ts-a.ts);$('#tlh').hidden=!l.length;
- $('#tl').innerHTML=l.map(t=>`<div class="tc" data-id="${t.id}"><b style="flex:1;min-width:0;overflow-wrap:anywhere">${esc(t.name)}</b><span class="mu" style="white-space:nowrap">${t.hands.length}핸드</span><span style="display:flex;gap:4px;flex-shrink:0"><button class="btn" data-a="ren" style="font-size:13px;padding:6px 9px" aria-label="대회 이름 수정">✏️ 수정</button><button class="btn" data-a="del" style="font-size:13px;padding:6px 9px" aria-label="대회 삭제">🗑 삭제</button></span></div>`).join('')}
+ $('#tl').innerHTML=l.map(t=>`<div class="tc" data-id="${t.id}"><b style="flex:1;min-width:0;overflow-wrap:anywhere">${esc(t.name)}</b><span class="mu" style="white-space:nowrap">${t.hands.length}핸드</span><span style="display:flex;gap:4px;flex-shrink:0"><button class="btn" data-a="ren" style="font-size:13px;padding:6px 9px" aria-label="대회 이름 수정">수정</button><button class="btn" data-a="del" style="font-size:13px;padding:6px 9px" aria-label="대회 삭제">삭제</button></span></div>`).join('')}
 function conv(L,bb){L={...L};['stack','pre','flop','turn','river'].forEach(k=>{if(L[k])L[k]=L[k].split(',').map(x=>x.replace(/^(\s*\S+\s+)(\d+(?:\.\d+)?)(bb)?/i,(m,a,n)=>a+f(n*bb))).join(',')});return L}
 function enter(t){if(t.S.v!==2){if(t.S.bb>0&&t.form)t.form=conv(norm(t.form),t.S.bb);t.S.v=2}try{if(window.top===window&&!(history.state&&history.state.qr==='app'))history.pushState({qr:'app'},'')}catch(e){}T=t;ed=null;$('#home').hidden=true;$('#app').hidden=false;kOn=false;sync();$('#tt').textContent=t.name;ses();setL(t.form||{});aK='card';tab(0);upd();hands();window.scrollTo(0,0)}
 function bparse(S){const n=(S.blind||'').match(/\d+(?:\.\d+)?/g)||[];S.sb=+n[0]||0;S.bb=+n[1]||0;S.at=+n[2]||0}
@@ -494,7 +494,7 @@ function kpCards(str,need,used){   // 카드 줄 상태 → {en:[키], msg} · �
  const n=cards(m[1]).length,r=m[2]&&m[2].toUpperCase();
  if(r)return{en:KST.filter(x=>!used.has(r+SY[x])),msg:`<span class="st">${r}</span>의 무늬를 고르세요 (♠♥♦♣)`};
  if(n<need)return{en:KRK.filter(x=>KST.some(y=>!used.has(x+SY[y]))),msg:`${need>1?(n+1)+'번째 ':''}카드 숫자/문자를 누르세요 (A K Q J T 9~2)`};
- return{en:[],done:true,msg:'✅ 다 적었어요'}}
+ return{en:[],done:true,msg:'✓ 다 적었어요'}}
 function kpTurn(k0,items){   // 액션 칸 k0 에서 items(이미 적은 액션들) 다음이 누구 차례인지 · {next, tc(콜 금액), cur, done, over}
  const n=+T.S.max||9,tbl=P9.slice(9-n),S=T.S,sb=+S.sb||0,bb=+S.bb||0,at=+S.at||0;
  const st={};(el('stack').value||'').split(',').forEach(t=>{const m=t.trim().match(/^(\S+)\s+([\d.]+)/),p=m&&pos(m[1]);if(p&&tbl.includes(p))st[p]=+m[2]});
@@ -532,10 +532,10 @@ function kpState(){
  const seat=stP.length?stP:tbl;   // 스택을 적은 자리만 (안 적었으면 테이블 전체)
  const items=b.split(','),last=items.pop().replace(/^\s+/,''),prev=items.map(x=>x.trim()).filter(Boolean);
  const pm=last.match(/^(\S+)(\s+)?(.*)$/),P=pm&&pos(pm[1]),rest=pm?(pm[3]||'').trim():'';
- const bad={en,msg:'<span class="bad">⚠ 형식이 맞지 않아요.</span> ⌫로 지우고 다시 눌러 주세요'};
- const wantPos=(list,msg)=>{add(list.map(kpLab));return{en,msg:list.length?msg:'✅ 더 적을 자리가 없어요 → ↵ 다음 줄'}};
+ const bad={en,msg:'<span class="bad">형식이 맞지 않아요.</span> ⌫로 지우고 다시 눌러 주세요'};
+ const wantPos=(list,msg)=>{add(list.map(kpLab));return{en,msg:list.length?msg:'✓ 더 적을 자리가 없어요 → ↵ 다음 줄'}};
  if(pm&&(!posOK(P)||!pm[2])&&!(BK.includes(k0)))return bad;   // 포지션 자리에 이상한 글자
- if(BK.includes(k0)){const need=k0==='flopb'?3:1,c=kpCards(b,need,kpUsed(k0,b));if(!c)return bad;add(c.en);return{en,msg:c.done?'✅ 다 적었어요 → ↵ 다음 줄':c.msg}}
+ if(BK.includes(k0)){const need=k0==='flopb'?3:1,c=kpCards(b,need,kpUsed(k0,b));if(!c)return bad;add(c.en);return{en,msg:c.done?'✓ 다 적었어요 → ↵ 다음 줄':c.msg}}
  if(k0==='stack'){const wp=kpWritten(tbl);
   const used=prev.map(x=>pos(x.split(/\s+/)[0])).filter(Boolean);
   if(!pm)return wantPos(wp.filter(p=>!used.includes(p)),prev.length?'다음 <span class="st">포지션</span>을 누르세요 (다 적었으면 ↵)':'① <span class="st">포지션</span>을 누르세요');
@@ -546,18 +546,18 @@ function kpState(){
  if(k0==='card'){
   if(!pm)return wantPos(seat,'① 내 <span class="st">포지션</span>을 누르세요');
   if(prev.length)return bad;
-  const c=kpCards(rest,2,kpUsed(k0,b));if(!c)return bad;add(c.en);return{en,msg:c.done?'✅ 다 적었어요 → ↵ 다음 줄':'② 내 카드: '+c.msg}}
+  const c=kpCards(rest,2,kpUsed(k0,b));if(!c)return bad;add(c.en);return{en,msg:c.done?'✓ 다 적었어요 → ↵ 다음 줄':'② 내 카드: '+c.msg}}
  if(k0==='show'){
   const hp=pos((el('card').value.trim().split(/\s+/)[0])||''),used=prev.map(x=>pos(x.split(/\s+/)[0])).filter(Boolean).concat(vInputs().filter(i=>i!==e).map(i=>pos((i.value.trim().split(/\s+/)[0])||'')).filter(Boolean));
   const cand=seat.filter(p=>p!==hp&&!used.includes(p)&&p!==P);
   if(!pm)return wantPos(cand,prev.length?'다른 상대 카드도 알면 <span class="st">포지션</span> · 모르면 비우고 ↵':'① 카드를 아는 상대 <span class="st">포지션</span> (모르면 비우고 ↵)');
   const c=kpCards(rest,2,kpUsed(k0,b));if(!c)return bad;add(c.en);if(c.done||!rest)add(cand.map(kpLab));
-  return{en,msg:c.done?'✅ 다른 상대 카드도 알면 <span class="st">포지션</span> · 아니면 ↵':`② ${pm[1]} 카드: `+(rest?'':'모르면 다음 <span class="st">포지션</span>/↵ · ')+c.msg}}
- if(KACT.includes(k0)){   /*kpturn*/ // 🔁 차례대로: 프리 UTG→BB · 플랍부터 SB→BTN (stack 칸에 적은 사람만 · 폴드·올인한 사람 빼고)
+  return{en,msg:c.done?'✓ 다른 상대 카드도 알면 <span class="st">포지션</span> · 아니면 ↵':`② ${pm[1]} 카드: `+(rest?'':'모르면 다음 <span class="st">포지션</span>/↵ · ')+c.msg}}
+ if(KACT.includes(k0)){   /*kpturn*/ // 차례대로: 프리 UTG→BB · 플랍부터 SB→BTN (stack 칸에 적은 사람만 · 폴드·올인한 사람 빼고)
   const lastDone=pm&&rest&&/^(\d+(\.\d*)?|f|x|c|jam)\s*\??$/i.test(rest);
   const TN=kpTurn(k0,lastDone?[...prev,last]:prev);
-  if(TN.over)return{en,msg:'✅ 핸드가 이미 끝났어요 (한 명만 남음) → ↵'};
-  if(!pm){if(TN.done)return{en,msg:'✅ 이 스트리트 액션이 끝났어요 → ↵ 다음 줄'};
+  if(TN.over)return{en,msg:'✓ 핸드가 이미 끝났어요 (한 명만 남음) → ↵'};
+  if(!pm){if(TN.done)return{en,msg:'✓ 이 스트리트 액션이 끝났어요 → ↵ 다음 줄'};
    if(k0==='pre'){/*prefree*/add(TN.al.map(kpLab));return{en,msg:'<span class="st">포지션</span>을 고르세요 (프리플랍은 순서 상관없이 아무 자리나)'}}add([kpLab(TN.next)]);return{en,msg:`${prev.length?'다음 차례':'① 첫 액션'}: <span class="st">${kpLab(TN.next)}</span>${TN.tc>0?` (콜 ${f(TN.tc)})`:''}`}}
   if(!rest){const T0=kpTurn(k0,prev);
    if(T0.over||T0.done||(k0==='pre'?!T0.al.includes(P):T0.next!==P))return bad;   // 차례가 아닌 자리
@@ -565,7 +565,7 @@ function kpState(){
    return{en,msg:`② <span class="st">${pm[1]}</span> 액션: f 폴드 · ${T0.tc>0?'c 콜('+f(T0.tc)+')':'x 체크'} · jam 올인 · 또는 ${T0.cur>0?'레이즈 총액':'벳 금액'}(칩)`}}
   const r2=rest.replace(/\s*\?$/,''),q=rest!==r2;
   const fin=TN.done||TN.over,nx=fin?[]:k0==='pre'?TN.al.map(kpLab):[kpLab(TN.next)];
-  const nmsg=fin?'✅ 이 스트리트 액션이 끝났어요 → ↵ 다음 줄':(k0==='pre'?'다음 <span class="st">포지션</span>을 고르세요 (순서 상관없이)':`다음 차례 <span class="st">${kpLab(TN.next)}</span>`);
+  const nmsg=fin?'✓ 이 스트리트 액션이 끝났어요 → ↵ 다음 줄':(k0==='pre'?'다음 <span class="st">포지션</span>을 고르세요 (순서 상관없이)':`다음 차례 <span class="st">${kpLab(TN.next)}</span>`);
   if(/^\d+(\.\d*)?$/.test(r2)){if(!q){add(KD09);en.add('00');if(!r2.includes('.'))en.add('.');en.add('?')}add(nx);return{en,msg:q?nmsg:'금액을 더 누르거나 · 고민한 자리면 ? · '+nmsg}}
   if(/^(f|x|c|jam)$/i.test(r2)){if(!q)en.add('?');add(nx);return{en,msg:(q?'':'고민한 자리면 ? · ')+nmsg}}
   return bad}
@@ -590,7 +590,7 @@ function kOk(k){if(!R)return true;
 function kFirst(){for(const k of KC){if(k==='show')continue;if(R&&R.dim&&R.dim[k])continue;if(!kOk(k))return k}return 'stack'}
 function kLocked(k){if(!R||k==='stack'||k==='memo')return false;const i=KC.indexOf(k);if(i<0)return false;for(let j=0;j<i;j++){const q=KC[j];if(R.dim&&R.dim[q])continue;if(!kOk(q))return true}return false}
 function upd(){R=sim(getL(),T.S);kpPos();vlDraw();
- $('#pa').innerHTML=(R.rows.length?R.rows.map(r=>`<div class="r"><b>${r.s}</b>${r.board?cH(cards(r.board))+' ':''}${esc(r.t)} · 팟 ${f(r.pot*R.u)}${r.rq}</div>`).join(''):'<span class="mu">입력하면 여기에 해석이 나옵니다</span>')+R.W.map(w=>`<div class="w">⚠ ${esc(w)}</div>`).join('');
+ $('#pa').innerHTML=(R.rows.length?R.rows.map(r=>`<div class="r"><b>${r.s}</b>${r.board?cH(cards(r.board))+' ':''}${esc(r.t)} · 팟 ${f(r.pot*R.u)}${r.rq}</div>`).join(''):'<span class="mu">입력하면 여기에 해석이 나옵니다</span>')+R.W.map(w=>`<div class="w">${esc(w)}</div>`).join('');
  document.querySelectorAll('.ln').forEach(n=>{n.classList.toggle('dim',!!R.dim[n.dataset.k]);const lk=kLocked(n.dataset.k);n.classList.toggle('lock',lk);const i=n.querySelector('input');if(i)i.readOnly=lk});
  if(kLocked(aK)){const was=document.activeElement===el(aK);aK=kFirst();if(was)el(aK).focus()}mark()}
 function next(){const i=K.indexOf(aK);let j=i+1;while(j<K.length-1&&R.dim[K[j]])j++;aK=K[Math.min(j,K.length-1)];el(aK).focus();mark()}
@@ -626,13 +626,13 @@ function kp(){const B=(k,c='')=>`<button class="${c}" data-k="${k}">${k}</button
  {let t1=null,t2=null;const stop=()=>{clearTimeout(t1);clearInterval(t2);t1=t2=null};
   $('#kp').addEventListener('pointerdown',e=>{const b=e.target.closest('button');if(!b||b.dataset.k!=='⌫')return;e.preventDefault();stop();key('⌫');t1=setTimeout(()=>{t2=setInterval(()=>{const x=el(aK);if(!x||!x.value){stop();return}key('⌫')},55)},350)});
   ['pointerup','pointercancel','pointerleave'].forEach(n=>$('#kp').addEventListener(n,stop));addEventListener('blur',stop)}}
-function hands(){const H=T.hands;$('#tb1').textContent='🔍 복기 ('+H.length+')';$('#hh').textContent=`저장한 핸드 (${H.length})`;
+function hands(){const H=T.hands;$('#tb1').textContent='복기 ('+H.length+')';$('#hh').textContent=`저장한 핸드 (${H.length})`;
  $('#hands').innerHTML=H.length?H.map(h=>{const Q=sim(h.L,h.S),miss=!Q.hp||!Object.keys(Q.st).length||h.d,qs=Q.q.length;
   return `<div class="hc" data-id="${h.id}"><div class="t">${Q.hp||'?'} vs ${Q.vil.join(', ')||'?'} ${h.S.blind?'· '+esc(h.S.blind):''}</div>
   <div class="cds">${cH(Q.hc)} ${Q.board.length?'· '+cH(Q.board):''}</div>
   <div class="mu">${Q.es!=null?'유효 스택 '+f(Q.es*Q.u)+' ('+f(Q.es)+'bb)':''} ${qs?`<span class="tag">고민: ${Q.q.join('·')}</span>`:''}${miss?'<span class="tag">입력 누락</span>':''}</div>
   ${h.L.memo?`<div class="mu">${esc(h.L.memo)}</div>`:''}
-  <div class="bt"><button class="btn" data-a="eq">🔍 스트리트별 보기</button><button class="btn" data-a="gto">GTO Wizard 복사</button><button class="btn" data-a="cl">Claude 복기용 복사</button><button class="btn" data-a="rv">✍️ 리뷰 작성</button><button class="btn" data-a="ed">${h.d?'이어서 쓰기':'수정'}</button><button class="btn" data-a="del">삭제</button></div></div>`}).join(''):'<p class="mu">아직 저장한 핸드가 없습니다. 위에서 기록하고 [저장]을 눌러 보세요.</p>'}
+  <div class="bt"><button class="btn" data-a="eq">스트리트별 보기</button><button class="btn" data-a="gto">GTO Wizard 복사</button><button class="btn" data-a="cl">Claude 복기용 복사</button><button class="btn" data-a="rv">리뷰 작성</button><button class="btn" data-a="ed">${h.d?'이어서 쓰기':'수정'}</button><button class="btn" data-a="del">삭제</button></div></div>`}).join(''):'<p class="mu">아직 저장한 핸드가 없습니다. 위에서 기록하고 [저장]을 눌러 보세요.</p>'}
 function saveH(d){const L=getL();if(!K.some(k=>L[k].trim())){toast('입력된 내용이 없습니다');return}
  const old=ed&&T.hands.find(h=>h.id===ed),h={id:ed||'h'+Date.now(),hid:old?old.hid:String(Date.now()).slice(-9)+Math.floor(Math.random()*90+10),ts:old?old.ts:Date.now(),L,S:{...T.S},d};
  if(old)T.hands[T.hands.indexOf(old)]=h;else T.hands.unshift(h);
@@ -688,13 +688,13 @@ async function qrMember(){$('#auth').hidden=true;
 // 👤 빠른복기는 뚝섬 회원만 (홈 오른쪽 위 로그인을 같이 씀 · 서버 quickrec.py가 mtok 확인)
 function memGate(){if(document.getElementById("memGate"))return;const w=document.createElement("div");w.id="memGate";
  w.style.cssText="position:fixed;inset:0;z-index:99999;background:rgba(20,24,30,.72);display:flex;align-items:center;justify-content:center;padding:18px";
- w.innerHTML='<div style="background:#fff;color:#222;border-radius:16px;padding:22px 18px;max-width:340px;width:100%;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.35)"><div style="font-size:30px">🔒</div><div style="font-weight:900;font-size:17px;margin:6px 0">로그인 후 이용해 주세요</div><div style="font-size:13.5px;color:#555;line-height:1.6;margin-bottom:14px">핸드 기록은 뚝섬 회원 아이디로 바로 쓸 수 있어요.<br>뚝섬 홈 오른쪽 위에서 로그인(회원가입)한 뒤 다시 열어주세요.</div><a href="../hub/" target="_top" style="display:block;background:#1f5fae;color:#fff;text-decoration:none;border-radius:11px;padding:12px;font-weight:800">뚝섬 홈으로 가기</a><button type="button" onclick="location.reload()" style="margin-top:8px;width:100%;border:0;background:none;padding:10px;color:#666;font-size:14px">로그인했어요 · 다시 열기</button></div>';
+ w.innerHTML='<div style="background:#fff;color:#222;border-radius:16px;padding:22px 18px;max-width:340px;width:100%;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.35)"><div><svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="#2457c5" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/></svg></div><div style="font-weight:900;font-size:17px;margin:6px 0">로그인 후 이용해 주세요</div><div style="font-size:13.5px;color:#555;line-height:1.6;margin-bottom:14px">핸드 기록은 뚝섬 회원 아이디로 바로 쓸 수 있어요.<br>뚝섬 홈 오른쪽 위에서 로그인(회원가입)한 뒤 다시 열어주세요.</div><a href="../hub/" target="_top" style="display:block;background:#1f5fae;color:#fff;text-decoration:none;border-radius:11px;padding:12px;font-weight:800">뚝섬 홈으로 가기</a><button type="button" onclick="location.reload()" style="margin-top:8px;width:100%;border:0;background:none;padding:10px;color:#666;font-size:14px">로그인했어요 · 다시 열기</button></div>';
  document.body.appendChild(w);}
 /*guesthand2*/function qrGuest(){GUEST=1;U={login:'비회원',token:''};D={tours:[]};T=null;
   $('#auth').hidden=true;$('#who').textContent='비회원 (저장 안 됨)';
   const b=document.createElement('div');b.id='gBn';
   b.style.cssText='position:sticky;top:0;z-index:60;background:#121e35;color:#eef2f8;border-bottom:1px solid rgba(255,255,255,.08);padding:8px 12px;font-size:13px;line-height:1.5;display:flex;gap:8px;align-items:center;justify-content:space-between';
-  b.innerHTML='<span>👤 비회원 모드 · 기능은 그대로 쓸 수 있지만 <b>기록은 저장되지 않아요</b></span><a href="../hub/" target="_top" style="flex-shrink:0;background:#e6bc68;color:#241a05;text-decoration:none;border-radius:11px;padding:6px 10px;font-weight:800;font-size:12.5px">가입·로그인하면 저장돼요</a>';
+  b.innerHTML='<span>비회원 모드 · 기능은 그대로 쓸 수 있지만 <b>기록은 저장되지 않아요</b></span><a href="../hub/" target="_top" style="flex-shrink:0;background:#e6bc68;color:#241a05;text-decoration:none;border-radius:11px;padding:6px 10px;font-weight:800;font-size:12.5px">가입·로그인하면 저장돼요</a>';
   document.body.insertBefore(b,document.body.firstChild);
   addEventListener('beforeunload',e=>{if(GUEST&&D.tours.some(t=>t.hands.length)){e.preventDefault();e.returnValue=''}});
   home()}
