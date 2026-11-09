@@ -64,12 +64,12 @@ h1{color:#eef2f8;font-size:22px;font-weight:800}.lead{color:#9aa8c2}
 .b{color:var(--text)}.b.go{color:#fff}
 </style><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 </head><body><div class="wrap">
-<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h1>✍️ 핸드리뷰 작성</h1><button class="b" id="newReview">✍️ 새로 쓰기</button></div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h1>핸드리뷰 작성</h1><button class="b" id="newReview">새로 쓰기</button></div>
 <p class="lead">빨간 <span class="req">필수</span>만 채우면 돼요 · 쓰던 내용은 이 기기에 자동 저장돼요</p>
 <p class="lead" style="margin-top:-6px">대회명 자동검색은 지금 내용이 많아 3초정도 소요됩니다.</p>
 
 <div class="panel"><h2>① 대회</h2>
- <div style="position:relative"><input id="tsearch" placeholder="🔍 대회 검색 (예: 피망, 뉴스톤, WPL)" autocomplete="off"><div id="tres"></div></div>
+ <div style="position:relative"><input id="tsearch" placeholder="대회 검색 (예: 피망, 뉴스톤, WPL)" autocomplete="off"><div id="tres"></div></div>
  <div class="note" style="margin-bottom:6px">검색에 없으면 아래에 직접 입력하세요</div>
  <div class="g2"><label class="f">대회명 <span class="req">필수</span><input id="tname" placeholder="예: WPL 부산 메인"></label><label class="f">바이인<input id="tbuy" placeholder="예: 20만"></label></div>
  <div class="k">블라인드 (칩) <span class="req">필수</span> <small>SB만 넣으면 BB·앤티 자동</small></div>
@@ -120,7 +120,7 @@ h1{color:#eef2f8;font-size:22px;font-weight:800}.lead{color:#9aa8c2}
  <div class="prev" id="prev"></div>
  <div class="warn" id="missing"></div>
  <button class="big" id="submit">제출하기</button><div id="submitMsg"></div>
- <button class="b" id="copy" style="margin-top:8px;width:100%">📋 요약 텍스트 복사</button>
+ <button class="b" id="copy" style="margin-top:8px;width:100%">요약 텍스트 복사</button>
  <button class="b" id="clearAll" style="margin-top:8px;width:100%;color:var(--sub)">처음부터 다시 쓰기</button>
 </div>
 </div>
@@ -407,7 +407,7 @@ function drawPreview(){
   const miss=[]; if(!S.tname.trim())miss.push("대회명"); if(!BB())miss.push("블라인드"); if(S.parts.length<2)miss.push("참여자");
   if(!S.parts.every(i=>num(S.stacks[i])>0))miss.push("스택"); if(!S.cards.h0||!S.cards.h1)miss.push("내 핸드");
   if(!S.acts.length)miss.push("액션"); if(!S.q.trim())miss.push("질문"); if(!S.nick.trim())miss.push("닉네임");
-  $("missing").textContent=miss.length?"아직 필요한 것: "+miss.join(", "):"✅ 필수 항목이 다 채워졌어요";
+  $("missing").textContent=miss.length?"아직 필요한 것: "+miss.join(", "):"✓ 필수 항목이 다 채워졌어요";
 }
 
 // ---------- 카드 고르기 ----------
@@ -456,7 +456,7 @@ document.addEventListener("click",e=>{ const t=e.target.closest("button"); if(!t
   else if(t.id==="resetAct"){ S.acts=[]; S.sd={}; }
   else if(d.sdm){ const [i,m]=d.sdm.split(":"); S.sd[i]={m}; if(m!=="show"){ S.cards["s"+i+"_0"]=""; S.cards["s"+i+"_1"]=""; } }
   else if(d.res){ S.sd.res=d.res; }
-  else if(t.id==="copy"){ const txt=summary(); (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>{t.textContent="✅ 복사됐어요";setTimeout(()=>t.textContent="📋 요약 텍스트 복사",1500);}).catch(()=>{}); return; }
+  else if(t.id==="copy"){ const txt=summary(); (navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>{t.textContent="✓ 복사됐어요";setTimeout(()=>t.textContent="요약 텍스트 복사",1500);}).catch(()=>{}); return; }
   else if(t.id==="clearAll"){ newReview(true); return; }
   else return;
   render();
@@ -472,17 +472,17 @@ document.addEventListener("click",e=>{ const b=e.target.closest("[data-ev]"); if
   if(!e.target.closest("#tres")&&e.target.id!=="tsearch") $("tres").style.display="none"; });
 // ---------- 제출 ----------
 $("submit").addEventListener("click",async()=>{
-  const miss=$("missing").textContent; if(!miss.startsWith("✅")){ $("submitMsg").innerHTML=`<div class="warn">${miss}</div>`; return; }
+  const miss=$("missing").textContent; if(!miss.startsWith("✓")){ $("submitMsg").innerHTML=`<div class="warn">${miss}</div>`; return; }
   const btn=$("submit"); btn.disabled=true; btn.textContent="보내는 중…";
   try{ const r=await fetch(API+"/api/review",{method:"POST",headers:{"Content-Type":"application/json","ngrok-skip-browser-warning":"true"},
       body:JSON.stringify({token:MTOK,nick:S.nick.trim(),public:S.pub,tournament:S.tname,summary:summary(),data:S,hand:handData()})});
     const j=await r.json().catch(()=>({}));
     if(!r.ok) throw new Error(j.detail||("HTTP "+r.status));
-    $("submitMsg").innerHTML=`<div class="done">✅ 리뷰 <b>#${j.id}</b> 접수됐어요. 답변이 달리면 뚝섬방에서 <b>@${S.nick}</b> 로 알려드려요.</div>`;
+    $("submitMsg").innerHTML=`<div class="done">✓ 리뷰 <b>#${j.id}</b> 접수됐어요. 답변이 달리면 뚝섬방에서 <b>@${S.nick}</b> 로 알려드려요.</div>`;
     btn.textContent="제출 완료";
     try{ /*gstudy3*/if(localStorage.getItem("mtok")) localStorage.setItem("hr_draft_v1",JSON.stringify(Object.assign(blank(),{nick:S.nick}))); }catch(e){}
     _noSave=true;
-    $("submitMsg").innerHTML+=`<button class="b" style="margin-top:8px;width:100%" onclick="_noSave=false;newReview(false)">✍️ 다른 리뷰 새로 쓰기</button>`;
+    $("submitMsg").innerHTML+=`<button class="b" style="margin-top:8px;width:100%" onclick="_noSave=false;newReview(false)">다른 리뷰 새로 쓰기</button>`;
   }catch(err){ btn.disabled=false; btn.textContent="다시 제출하기";
     $("submitMsg").innerHTML=`<div class="warn">제출 실패: ${String(err.message||err).includes("fetch")?"서버에 연결할 수 없어요. PC 서버가 꺼져 있을 수 있어요 (쓴 내용은 저장돼 있어요)":err.message}</div>`; }
 });
@@ -514,7 +514,7 @@ render();
    let k=0; while(k<d.exp.length&&got[k]===d.exp[k]) k++;
    if(k<S.acts.length){ S.acts=S.acts.slice(0,k); msg=`<br>액션은 ${k}개까지만 옮겼어요 (순서가 안 맞는 곳부터). ④ 액션에서 이어서 넣어 주세요.`; } }
  render();
- document.querySelector(".lead").insertAdjacentHTML("afterend",`<div class="done" style="margin:-4px 0 12px">📥 빠른복기 핸드를 불러왔어요. ⑥ 질문을 확인하고 제출하면 돼요${S.q?" (메모를 질문 칸에 넣어 뒀어요)":""}.${msg}</div>`);
+ document.querySelector(".lead").insertAdjacentHTML("afterend",`<div class="done" style="margin:-4px 0 12px">빠른복기 핸드를 불러왔어요. ⑥ 질문을 확인하고 제출하면 돼요${S.q?" (메모를 질문 칸에 넣어 뒀어요)":""}.${msg}</div>`);
 })();
 // 👤 뚝섬 회원 로그인(홈 오른쪽 위에서 한 로그인)을 같이 씀 · 닉네임은 회원 카톡 닉네임으로 고정 (서버 members.py)
 const MTOK=(()=>{try{return localStorage.getItem("mtok")||"";}catch(e){return "";}})(),MNICK=(()=>{try{return localStorage.getItem("mnick")||"";}catch(e){return "";}})();
@@ -535,7 +535,7 @@ const MTOK=(()=>{try{return localStorage.getItem("mtok")||"";}catch(e){return ""
   o.style.cssText='position:fixed;inset:0;z-index:99990;background:#0b1426;display:flex;align-items:center;justify-content:center;padding:20px;font-family:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#141b2b';
   var b='display:block;width:100%;border:0;border-radius:11px;padding:12px;font-size:15px;font-weight:800;cursor:pointer;margin-top:8px;color:#fff';
   o.innerHTML='<div style="max-width:340px;width:100%;text-align:center;background:#fff;border:1px solid #e3e7ee;border-radius:16px;padding:22px 18px">'
-   +'<div style="font-size:40px">🔒</div><div style="font-weight:900;font-size:18px;margin:6px 0">'+NAME+'은(는) 회원 전용이에요</div>'
+   +'<div><svg viewBox="0 0 24 24" width="42" height="42" fill="none" stroke="#2457c5" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="1.5"/><path d="M8 11V7.5a4 4 0 0 1 8 0V11"/></svg></div><div style="font-weight:900;font-size:18px;margin:6px 0">'+NAME+'은(는) 회원 전용이에요</div>'
    +'<div style="font-size:13.5px;color:#667085;line-height:1.6;margin-bottom:10px">'+DESC+'<br>뚝섬 회원은 무료예요. 로그인하면 바로 열려요.</div>'
    +'<button id="lkL" style="'+b+';background:#2457c5">로그인 · 회원가입 하러 가기</button>'
    +'<button id="lkH" style="'+b+';background:#f2f4f7;color:#141b2b">← 홈으로</button></div>';
