@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>헤즈업 3벳 팟 한 판 (헤즈업 기준) · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+<meta name="description" content="헤즈업에서 BB로 K♠K♦를 받았어요. SB가 열었고, 당연히 3벳했어요. SB가 콜해서 플랍이 T♠4♥2♦로 깔렸어요. 말이 먼저인 Hero는 작게 쳐야 할까요, 크게 쳐야 할까요? 오늘 판은 100BB 헤즈업, 빅앤티 기준이에요. 앞 글 R49에서 리버의 크기를…">
+<link rel="canonical" href="https://xn--bc2b73r.kr/blog/%EA%B8%80/271_R50.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="헤즈업 3벳 팟 한 판 (헤즈업 기준) · 뚝섬 홀덤학습">
+<meta property="og:description" content="헤즈업에서 BB로 K♠K♦를 받았어요. SB가 열었고, 당연히 3벳했어요. SB가 콜해서 플랍이 T♠4♥2♦로 깔렸어요. 말이 먼저인 Hero는 작게 쳐야 할까요, 크게 쳐야 할까요? 오늘 판은 100BB 헤즈업, 빅앤티 기준이에요. 앞 글 R49에서 리버의 크기를…">
+<meta property="og:url" content="https://xn--bc2b73r.kr/blog/%EA%B8%80/271_R50.html">
+<meta property="og:image" content="https://xn--bc2b73r.kr/hub/banner.jpg">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge r">실전</span><span class="chip">토너</span><span class="n">실전 50번째 글 (전체 272편 중 251번째)</span></div><h1>헤즈업 3벳 팟 한 판 (헤즈업 기준)</h1>
+<article>
+<p>헤즈업에서 BB로 K♠K♦를 받았어요. SB가 열었고, 당연히 3벳했어요. SB가 콜해서 플랍이 T♠4♥2♦로 깔렸어요. 말이 먼저인 Hero는 작게 쳐야 할까요, 크게 쳐야 할까요?</p>
+<p>오늘 판은 <strong>100BB 헤즈업, 빅앤티</strong> 기준이에요. 앞 글 R49에서 리버의 크기를 콤보로 셌다면, 오늘은 <strong>3벳 팟의 플랍</strong>에서 크기가 핸드별로 어떻게 갈리는지 봐요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>3벳 팟에서 <strong>작은 벳과 큰 벳</strong>이 핸드별로 어떻게 섞이는지 표로 읽는 법</li>
+<li>큰 벳의 <strong>알파</strong>와 상대 폴드 빈도를 맞대는 법</li>
+<li>3벳 팟의 낮은 SPR이 다음 결정을 어떻게 바꾸는지</li>
+</ul></div>
+<hr />
+<h2>오늘의 한 판</h2>
+<p><strong>Hero (BB · 스택 100BB)</strong> · 상대 (SB=BTN · 스택 100BB) · 블라인드 0.5/1, <strong>빅앤티 1BB</strong>(Hero가 냄) · 헤즈업</p>
+<p><img src="../카드/Ks.svg" width="48"> <img src="../카드/Kd.svg" width="48"></p>
+<h3>프리플랍</h3>
+<p>SB <strong>2.5BB 오픈</strong> → Hero <strong>9BB 3벳</strong> → SB <strong>콜</strong>. 팟 <strong>19BB</strong></p>
+<h3>플랍 · 팟 19BB</h3>
+<p><img src="../카드/Ts.svg" width="48"> <img src="../카드/4h.svg" width="48"> <img src="../카드/2d.svg" width="48"></p>
+<p><strong>Hero가 먼저 말해요.</strong> Hero <strong>14.3BB 벳</strong>(팟 33.3BB) → SB <strong>폴드</strong></p>
+<p>Hero가 팟 <strong>19BB</strong>를 가져왔어요. SB의 카드는 볼 수 없었어요.</p>
+<hr />
+<p class="concl"><strong>결론부터 말할게요.</strong> DB에서 KK는 체크가 거의 없고, 6.3BB <strong>47%</strong>, 14.3BB <strong>53%</strong>로 섞어요. 오늘은 큰 쪽을 골랐어요. 14.3BB의 알파는 <strong>약 42.94%</strong>이고 SB의 전체 폴드는 <strong>56.20%</strong>라서, 이 빈도에서는 순수 블러프도 기준을 넘어요. 다만 알파는 블러프의 기준이고, KK에게는 콜하는 쪽에 더 약한 핸드가 남는지가 더 중요해요.</p>
+<blockquote>
+<p>남은 베팅이 있어 실제 결과는 달라질 수 있어요. 플랍 빈도는 헤즈업 솔버 DB 값이고, 프리플랍은 근사 모델 값이에요. 6맥스·풀링 빈도가 아니에요.</p>
+</blockquote>
+<h2>오늘의 가정</h2>
+<ul>
+<li>프리플랍: 헤즈업 근사 모델(100BB)</li>
+<li>플랍: 헤즈업 솔버 DB <code>3BP100A</code>(BB 3벳 9BB · SB 콜, 빅앤티, 보드 T♠4♥2♦)</li>
+<li>3벳 팟의 턴·리버는 DB에 없어요. 그 뒤는 숫자 없이 방향만 말해요</li>
+<li>솔버가 왜 섞는지는 DB에 값이 없어요. "왜"는 조건부로 읽어요</li>
+</ul>
+<h2>1단계. 프리플랍: KK의 값</h2>
+<p>BB가 SB의 2.5BB 오픈을 받을 때 100BB 근사 모델에서 KK는 <strong>레이즈 100%</strong>예요. 값으로 보면 콜 <strong>약 1.27BB</strong>, 레이즈 <strong>약 5.01BB</strong>로 차이가 커요. 오늘은 3벳을 9BB로 했어요.</p>
+<p>SB가 콜하면 팟은 <strong>19BB</strong>(두 사람의 9BB와 앤티 1BB), 남은 스택은 <strong>90BB</strong>예요.</p>
+<blockquote>
+<p>플랍 SPR = 90 ÷ 19 = <strong>약 4.74</strong></p>
+</blockquote>
+<p>R46의 싱글 레이즈 팟은 SPR이 16.08이었어요. 3벳 팟은 <strong>벌써 세 배 넘게 낮은 깊이</strong>에서 시작해요. 그래서 플랍 벳 크기에 따라 턴·리버의 부담이 크게 달라져요.</p>
+<h2>2단계. 플랍 T♠4♥2♦: 크기가 어떻게 갈리나</h2>
+<p>오늘 플랍은 낮고 흩어진 보드예요. BB의 전체 대응은 이래요.</p>
+<blockquote>
+<p>체크 <strong>0.50%</strong>, 6.3BB 벳 <strong>44.50%</strong>, 14.3BB 벳 <strong>54.90%</strong></p>
+</blockquote>
+<p>이 보드의 3벳 팟에서 BB는 거의 체크하지 않아요. 크기만 고르는 자리예요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>핸드</th>
+<th>체크</th>
+<th>6.3BB</th>
+<th>14.3BB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AA</td>
+<td>1%</td>
+<td>75%</td>
+<td>24%</td>
+</tr>
+<tr>
+<td>KK</td>
+<td>0%</td>
+<td>47%</td>
+<td>53%</td>
+</tr>
+<tr>
+<td>QQ</td>
+<td>0%</td>
+<td>33%</td>
+<td>66%</td>
+</tr>
+<tr>
+<td>JJ</td>
+<td>0%</td>
+<td>3%</td>
+<td>96%</td>
+</tr>
+<tr>
+<td>TT (셋)</td>
+<td>2%</td>
+<td>96%</td>
+<td>2%</td>
+</tr>
+<tr>
+<td>99</td>
+<td>1%</td>
+<td>69%</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>AKs</td>
+<td>1%</td>
+<td>48%</td>
+<td>51%</td>
+</tr>
+<tr>
+<td>AKo</td>
+<td>1%</td>
+<td>60%</td>
+<td>39%</td>
+</tr>
+<tr>
+<td>KTs (탑페어)</td>
+<td>0%</td>
+<td>28%</td>
+<td>72%</td>
+</tr>
+</tbody>
+</table></div>
+<h3>표에서 보이는 것</h3>
+<p>JJ는 <strong>96%</strong>가 큰 벳인데 TT(셋)는 <strong>96%</strong>가 작은 벳이에요. 강한 셋이 작게 치고, 그 바로 밑 오버페어가 크게 치는 모양이에요. "강할수록 크게"라는 단순한 공식이 안 맞는 걸 보여 줘요. AA 쪽도 작은 벳이 더 많아요.</p>
+<p>왜 이렇게 섞는지는 DB에 없어요. 그래서 "같이 보이는 차이"로 읽어요. 실전에 표를 못 들고 가면 이 보드의 모양만 기억해요. 셋과 AA는 작은 쪽, JJ·QQ·탑페어는 큰 쪽이 많았어요.</p>
+<h3>KK의 47대 53</h3>
+<p>Hero의 KK는 거의 반반이에요. 어느 쪽을 골라도 큰 틀에서는 벗어나지 않아요. 오늘은 큰 쪽을 골랐어요.</p>
+<h2>3단계. 큰 벳의 가격</h2>
+<p>Hero가 <strong>14.3BB</strong>를 걸면 팟은 19BB에서 33.3BB가 돼요. 먼저 이 크기로 치는 레인지 전체, 특히 블러프 쪽의 가격을 볼게요. KK의 판정 기준은 아니에요. 콜을 받으면 다 진다고 칠 때 필요한 폴드율은 이래요.</p>
+<blockquote>
+<p>알파 = 14.3 ÷ 33.3 = <strong>약 42.94%</strong></p>
+</blockquote>
+<p>SB의 대응을 볼게요.</p>
+<blockquote>
+<p>SB: 콜 <strong>36.70%</strong>, 레이즈(올인) <strong>7.10%</strong>, 폴드 <strong>56.20%</strong></p>
+</blockquote>
+<p>폴드 <strong>56.20%</strong>가 알파 <strong>약 42.94%</strong>를 넘어요. 순수 블러프라면 이 평균 폴드로 본전을 넘는다는 뜻이에요. KK는 밸류로 치는 핸드라서 보는 곳이 달라요. 콜하는 쪽에 더 약한 핸드가 얼마나 남는지를 표로 봐요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>SB 핸드</th>
+<th>콜</th>
+<th>레이즈</th>
+<th>폴드</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ATs (탑페어)</td>
+<td>31%</td>
+<td>69%</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>KTs (탑페어)</td>
+<td>98%</td>
+<td>2%</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>A5s</td>
+<td>60%</td>
+<td>40%</td>
+<td>1%</td>
+</tr>
+<tr>
+<td>KQs</td>
+<td>92%</td>
+<td>0%</td>
+<td>8%</td>
+</tr>
+<tr>
+<td>Q9s</td>
+<td>30%</td>
+<td>0%</td>
+<td>70%</td>
+</tr>
+</tbody>
+</table></div>
+<p>KTs <strong>98%</strong>, KQs <strong>92%</strong>처럼 KK보다 약한 핸드가 콜로 남아 있어요. KK가 값을 받는 쪽이죠. KQs가 콜이 많은 건 오버카드로 맞힐 여지가 있다고 <strong>읽을 수 있어요.</strong> 반면 같은 탑페어인데 ATs는 <strong>69%</strong>가 올인, KTs는 <strong>2%</strong>뿐이에요. 왜 이렇게 다른지는 DB가 말해 주지 않아요.</p>
+<h3>작은 벳이었다면</h3>
+<p>같은 플랍에서 6.3BB를 쳤다면 SB의 대응은 콜 <strong>50.80%</strong>, 레이즈 <strong>8.30%</strong>(두 크기 합), 폴드 <strong>40.90%</strong>예요. 폴드는 줄어드는 대신 콜이 많아져요. 작은 벳은 넓게 콜을 받는 크기로, 큰 벳은 폴드를 많이 받는 크기로 <strong>보여요.</strong></p>
+<h2>4단계. 다음 결정을 미리 생각하기</h2>
+<p>14.3BB에 콜을 받으면 팟은 <strong>47.6BB</strong>, Hero 남은 돈은 <strong>75.7BB</strong>예요. 6.3BB에 콜을 받으면 팟은 <strong>31.6BB</strong>, 남은 돈은 <strong>83.7BB</strong>예요.</p>
+<blockquote>
+<p>콜 뒤 SPR (14.3BB) = 75.7 ÷ 47.6 = <strong>약 1.59</strong>
+콜 뒤 SPR (6.3BB) = 83.7 ÷ 31.6 = <strong>약 2.65</strong></p>
+</blockquote>
+<p>14.3BB 쪽은 벳 한 번이면 스택이 대부분 들어가는 깊이예요. KK는 큰 벳을 택하는 순간, 콜을 받으면 턴에 스택을 거의 다 넣는 쪽으로 기울 수 있어요. 6.3BB 쪽은 턴에 크기를 한 번 더 고를 여유가 남아요. A나 Q가 떨어지면 작게 넘기거나 체크로 쇼다운을 노릴 수 있고, 안전한 카드면 그때 더 넣을 수 있어요. 3벳 팟의 턴 값은 없어서 방향만 말해요. 그래서 3벳 팟의 플랍 크기에 따라 <strong>턴의 부담까지 같이 달라져요.</strong></p>
+<h3>SB가 올인으로 올라오면</h3>
+<p>14.3BB에 SB가 남은 스택을 밀면 Hero는 <strong>75.7BB</strong>를 더 내야 하고 최종 팟은 <strong>199BB</strong>예요.</p>
+<blockquote>
+<p>KK의 콜 필요 에퀴티 = 75.7 ÷ 199 = <strong>약 38.04%</strong></p>
+</blockquote>
+<p>DB에서 이 올인에 BB 전체는 콜 <strong>46.90%</strong>, 폴드 <strong>53.10%</strong>이고 KK는 콜 <strong>100%</strong>예요. 이 DB의 SB 범위에서 KK를 이기는 핸드는 44 셋뿐인데, 44는 14.3BB에 콜 <strong>100%</strong>라 올인으로 오지 않아요. 올인 쪽에 많은 핸드는 ATo <strong>97%</strong>, ATs <strong>69%</strong>, T9s <strong>52%</strong>, A5s <strong>40%</strong>로 모두 KK보다 약해요. 왜 이런 모양인지는 DB에 없어요. KK는 올인까지 미리 값을 매겨 둘 핸드예요.</p>
+<h3>보드가 바뀌면</h3>
+<p>오늘 표는 T♠4♥2♦ 한 곳의 값이에요. 같은 3벳 팟이어도 A♠8♥5♦에서 KK는 체크 <strong>5%</strong>, 6.3BB <strong>94%</strong>, 14.3BB <strong>0%</strong>예요. 오늘 53%로 치던 큰 벳이 이 보드에서는 나오지 않아요. A가 깔리고 8·5도 바뀐 보드라 이유를 하나로 말할 수는 없지만, <strong>같이 보이는 차이</strong>로는 충분히 커요. 표는 그 보드에서만 읽어요.</p>
+<h2>5단계. 결과: 플랍에서 끝났어요</h2>
+<p>SB가 접어 Hero가 팟 <strong>19BB</strong>를 가져왔어요. SB의 핸드는 알 수 없어요. 이 크기가 틀에서 벗어나지 않았다는 건 47대 53에서 확인해요. 폴드를 받은 결과가 14.3BB를 고른 이유는 아니에요.</p>
+<section class="sec why"><h2>왜 그럴까: 표에서 읽을 수 있는 데까지</h2>
+<h3>표에서 알 수 있는 것까지</h3>
+<p>T♠4♥2♦ 3벳 팟에서 체크가 0.50%뿐이라는 건 이 노드에서 벳이 기본이라는 뜻으로 <strong>읽을 수 있어요.</strong> 왜 그런지는 표가 말해 주지 않아요. 보드 한 곳, 크기 두 개의 표라서 오늘 표의 값을 다른 보드에 그대로 쓰지 않아요.</p>
+<h3>오버페어만 떼어 보면</h3>
+<p>표에서 오버페어만 골라 큰 벳 빈도를 보면 JJ <strong>96%</strong>, QQ <strong>66%</strong>, KK <strong>53%</strong>, AA <strong>24%</strong>예요. 높아질수록 큰 벳이 줄어요. 왜 이런 모양인지는 DB에 없어요. 다만 "강할수록 크게"가 이 표에서는 거꾸로라는 건 확인돼요.</p>
+</section><section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. "강할수록 크게"</strong>
+오늘 TT는 96%가 작은 벳이고 JJ는 96%가 큰 벳이에요. 대신 핸드별로 큰 쪽을 표에서 찾아요.</p></div><div class="mis-card"><p><strong>실수 2. "알파를 넘었으니 무조건 이득"</strong>
+알파는 블러프의 기준이에요. KK의 문제는 콜과 올인을 받을 때예요. 대신 밸류 핸드는 콜·올인을 받은 뒤부터 그려 봐요.</p></div><div class="mis-card"><p><strong>실수 3. "SPR은 턴에 생각한다"</strong>
+콜 뒤 SPR 약 1.59는 플랍 크기를 고를 때 이미 정해져요. 대신 벳 전에 콜 받은 뒤의 깊이를 먼저 세요.</p></div></section><h2>"KK를 프리플랍에 더 크게 3벳하면 어떻게 돼요?"</h2>
+<p>3벳을 키우면 팟이 커지고 SPR이 더 낮아져요. 근사 모델은 정해진 크기만 다뤄서 크기별 비교는 할 수 없어요. 오늘 글의 숫자는 9BB 3벳에서만 맞아요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<blockquote>
+<p>3벳 팟에서는 플랍을 보자마자 "어느 크기가 내 쪽인가"를 물어요.
+복기할 때 내가 고른 크기가 표의 큰 쪽이었는지 확인해요.
+큰 벳을 치기 전에 콜 받은 다음 장을 먼저 그려 봐요.</p>
+</blockquote>
+</section><h2>연습 문제</h2>
+<blockquote>
+<p>학습툴 팟오즈 계산기로 필요 에퀴티를 확인할 수 있어요. 빈도는 문제에 준 값을 써요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 팟 19BB, 남은 스택 90BB예요. Hero가 콜 받은 뒤 SPR을 <strong>2</strong>로 만들고 싶어요. 플랍 벳은 몇 BB면 될까요?</p>
+<details>
+<summary>정답 보기</summary>
+<blockquote>
+<p>벳을 b라 하면 콜 뒤 팟은 19 + 2b, 남은 돈은 90 − b
+남은 돈이 콜 뒤 팟의 2배가 되는 b를 찾으면 <strong>10.4BB</strong>
+그때 콜 뒤 팟은 <strong>39.8BB</strong>, 남은 돈은 <strong>79.6BB</strong>
+콜 뒤 SPR = 79.6 ÷ 39.8 = <strong>2</strong></p>
+</blockquote>
+<p>벳 크기는 콜 뒤 팟을 벳의 두 배만큼 늘리고 남은 돈은 벳만큼 줄여요. 그래서 크기를 조금만 키워도 SPR이 빠르게 내려가요. 오늘의 6.3BB와 14.3BB 사이에 있는 크기예요.</p>
+</details>
+<p><strong>문제 2.</strong> SB가 Q♣9♣처럼 페어가 없는 핸드로 에퀴티 <strong>25.00%</strong>를 가졌고, 콜하면 뒤 베팅 없이 쇼다운까지 간다고 해 볼게요. BB의 6.3BB 벳과 14.3BB 벳에 각각 콜할 수 있을까요?</p>
+<details>
+<summary>정답 보기</summary>
+<blockquote>
+<p>6.3BB: 콜 필요 에퀴티 = 6.3 ÷ 31.6 = <strong>약 19.94%</strong> → <strong>콜</strong>
+14.3BB: 콜 필요 에퀴티 = 14.3 ÷ 47.6 = <strong>약 30.04%</strong> → <strong>폴드</strong></p>
+</blockquote>
+<p>같은 핸드가 크기 하나로 답이 뒤집혀요. DB에서 Q9s가 큰 벳에 폴드 70%로 나오는 것과 같은 방향이에요.</p>
+</details>
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>이 보드의 3벳 팟에서 BB는 플랍에 거의 벳하고, 크기를 핸드별로 고르는 것으로 보여요</li>
+<li>핸드가 강하다고 항상 큰 벳은 아니에요. 표에서 큰 쪽을 찾아요</li>
+<li>콜 뒤 SPR을 먼저 세면 플랍 크기가 턴까지 무엇을 정하는지 보여요</li>
+<li>알파는 블러프의 기준이에요. 밸류 핸드는 콜·올인을 받을 때를 먼저 그려요</li>
+</ul>
+</section><section class="sec end"><h2>정리하며</h2>
+<p>오늘은 100BB 헤즈업에서 K♠K♦로 3벳 팟 플랍 T♠4♥2♦에 14.3BB를 쳤어요. DB에서 KK는 작은 벳과 큰 벳을 거의 반반 섞었고, 콜 뒤 SPR과 올인을 받을 때를 먼저 그려 봤어요. SB가 접어서 플랍에서 끝났어요.</p>
+<p>다음 글 R51은 <strong>실전 토너 마무리 시험</strong>이에요. 시리즈 뒷부분에서 쓴 기준을 새 장면에 적용해 봐요.</p>
+<hr />
+<p><small>AI 작성 · 헤즈업 솔버 DB 기준(플랍), 프리플랍은 근사 모델(6맥스 아님)</small></p></section>
+</article>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="079_A16.html">3벳 팟의 SPR: 왜 플랍부터 큰 결정이 올까?</a></li><li><a href="115_E18.html">헤즈업 프리플랍: 스택 깊이가 바뀌면 SB 첫 행동은 어떻게 달라질까? (헤즈업 기준)</a></li></ul><p class="l">이 글 다음에 볼 글</p><ul><li><a href="272_R51.html">실전 토너 마무리 시험</a></li></ul></aside><nav class="nav"><a class="prev" href="270_R49.html"><div class="l">← 이전 글</div><div class="t">헤즈업 리버 오버벳 한 판 (헤즈업 기준)</div></a><a class="next" href="272_R51.html"><div class="l">다음 글 →</div><div class="t">실전 토너 마무리 시험</div></a></nav></main>
+<script>/*__land__*/(function(){try{if(window.top!==window.self||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;var v='',n='';try{v=localStorage.getItem('vid');if(!v){v=Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('vid',v);}n=localStorage.getItem('nick')||'';}catch(e){}var f=(new URLSearchParams(location.search).get('from')||'').slice(0,30),rf=document.referrer||'',own=false;try{own=!!rf&&new URL(rf).host===location.host;}catch(e){}var b={p:"\ube14\ub85c\uadf8",n:n,v:v};if(f||!own){b.l=1;b.from=f;b.rf=own?'':rf.slice(0,200);}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b),keepalive:true}).catch(function(){});}catch(e){}})();</script>
+</body>
+</html>

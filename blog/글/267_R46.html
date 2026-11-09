@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>헤즈업 SB 오픈부터 리버까지 (헤즈업 기준) · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+<meta name="description" content="드디어 둘만 남았어요. 헤즈업에서는 내가 SB일 때 버튼도 같이 쥐어요. 프리플랍에 먼저 열고, 플랍 이후에는 마지막에 말해요. K♣Q♦로 한 판을 끝까지 따라가면서, 솔버가 각 스트리트에서 무엇을 하는지 볼게요. 오늘 판은 100BB 헤즈업, 빅앤티 기준이에요.…">
+<link rel="canonical" href="https://xn--bc2b73r.kr/blog/%EA%B8%80/267_R46.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="헤즈업 SB 오픈부터 리버까지 (헤즈업 기준) · 뚝섬 홀덤학습">
+<meta property="og:description" content="드디어 둘만 남았어요. 헤즈업에서는 내가 SB일 때 버튼도 같이 쥐어요. 프리플랍에 먼저 열고, 플랍 이후에는 마지막에 말해요. K♣Q♦로 한 판을 끝까지 따라가면서, 솔버가 각 스트리트에서 무엇을 하는지 볼게요. 오늘 판은 100BB 헤즈업, 빅앤티 기준이에요.…">
+<meta property="og:url" content="https://xn--bc2b73r.kr/blog/%EA%B8%80/267_R46.html">
+<meta property="og:image" content="https://xn--bc2b73r.kr/hub/banner.jpg">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge r">실전</span><span class="chip">토너</span><span class="n">실전 46번째 글 (전체 272편 중 247번째)</span></div><h1>헤즈업 SB 오픈부터 리버까지 (헤즈업 기준)</h1>
+<article>
+<p>드디어 둘만 남았어요. 헤즈업에서는 내가 SB일 때 버튼도 같이 쥐어요. 프리플랍에 먼저 열고, 플랍 이후에는 마지막에 말해요. K♣Q♦로 한 판을 끝까지 따라가면서, 솔버가 각 스트리트에서 무엇을 하는지 볼게요.</p>
+<p>오늘 판은 <strong>100BB 헤즈업, 빅앤티</strong> 기준이에요. 프리플랍은 헤즈업 근사 모델, 플랍·턴은 헤즈업 솔버 DB의 값을 쓰고, 리버는 DB에 없어서 가정 레인지로 계산해요. E18에서 본 헤즈업 프리플랍을 포스트플랍까지 이어 봐요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>솔버 빈도표를 <strong>"이 핸드는 몇 %로 무엇을 하나"</strong>로 읽는 법</li>
+<li>플랍과 턴에서 같은 핸드의 행동이 어떻게 달라지는지</li>
+<li>DB가 끝나는 리버에서 <strong>더 나쁜 핸드의 콜 콤보</strong>로 씬밸류를 세는 법</li>
+</ul></div>
+<hr />
+<h2>오늘의 한 판</h2>
+<p><strong>Hero (SB=BTN · 스택 100BB)</strong> · 상대 (BB · 스택 100BB) · 블라인드 0.5/1, <strong>빅앤티 1BB</strong>(BB가 냄) · 헤즈업</p>
+<p><img src="../카드/Kc.svg" width="48"> <img src="../카드/Qd.svg" width="48"></p>
+<h3>프리플랍</h3>
+<p>Hero <strong>2.5BB 오픈</strong> → BB <strong>콜</strong>. 팟 <strong>6BB</strong></p>
+<h3>플랍 · 팟 6BB</h3>
+<p><img src="../카드/Qs.svg" width="48"> <img src="../카드/7s.svg" width="48"> <img src="../카드/3h.svg" width="48"></p>
+<p>BB <strong>체크</strong> → Hero <strong>2BB 벳</strong> → BB <strong>콜</strong>. 팟 <strong>10BB</strong></p>
+<h3>턴 · 팟 10BB</h3>
+<p><img src="../카드/5d.svg" width="48"></p>
+<p>BB <strong>체크</strong> → Hero <strong>7.5BB 벳</strong> → BB <strong>콜</strong>. 팟 <strong>25BB</strong></p>
+<h3>리버 · 팟 25BB</h3>
+<p><img src="../카드/2c.svg" width="48"></p>
+<p>BB <strong>체크</strong> → Hero <strong>12BB 벳</strong> → BB <strong>콜</strong>(J♠7♦). Hero의 Q 페어가 7 페어를 이겨 <strong>49BB</strong> 팟을 가져왔어요.</p>
+<hr />
+<p class="concl"><strong>결론부터 말할게요.</strong> K♣Q♦로 세 스트리트 모두 벳이에요. 프리플랍은 KQo 레이즈 <strong>100%</strong>(근사 모델), 플랍은 2BB 벳이 <strong>65%</strong>로 가장 많고, 턴은 턴 카드 평균으로 벳 <strong>86%</strong>예요. 리버는 DB가 없어서 콤보로 세면 벳이 체크보다 <strong>약 6.87BB</strong> 더 벌어요. 다만 이 값은 BB가 7 페어까지 콜한다고 본 가정 위의 숫자예요.</p>
+<blockquote>
+<p>남은 베팅이 있어 실제 결과는 달라질 수 있어요. 플랍·턴 빈도는 헤즈업 솔버 DB 값, 프리플랍은 근사 모델 값이에요. 6맥스·풀링 빈도가 아니에요.</p>
+</blockquote>
+<h2>오늘의 가정</h2>
+<ul>
+<li>프리플랍: 헤즈업 근사 모델(100BB). 플랍·턴: 헤즈업 솔버 DB <code>SRP100A</code>(BTN 2.5 오픈 · BB 콜, 빅앤티, 보드 Q♠7♠3♥). 턴은 턴 카드들을 평균한 값이에요</li>
+<li>리버 범위: DB에 없어서 플랍·턴에 콜 빈도 <strong>50% 이상</strong>인 클래스만 남겨 <strong>180콤보</strong>로 잡았어요(가정)</li>
+<li>리버 BB 대응: Hero를 이기는 핸드 <strong>18콤보</strong>는 콜, Q 페어·7 페어 등 더 약한 페어 <strong>121콤보</strong>는 콜, 나머지 <strong>41콤보</strong>는 폴드로 봐요(레이즈 없음)</li>
+<li>솔버가 섞어 치는 이유는 DB에 행동별 값이 없어요. 아래 "왜"는 조건부로 읽어요</li>
+</ul>
+<h2>1단계. 프리플랍: 얼마나 여나</h2>
+<p>헤즈업 SB는 대부분 들어가요. 100BB 근사 모델에서 전체 빈도는 레이즈 <strong>약 67.02%</strong>, 림프 <strong>약 32.98%</strong>, 폴드 0이에요.</p>
+<p>KQo는 <strong>레이즈 100%</strong>예요. 값을 보면 레이즈 <strong>약 1.70BB</strong>, 림프 <strong>약 1.68BB</strong>로 차이가 작아요. 그러니 "반드시 레이즈"라는 뜻이 아니라, 이 모델에서는 레이즈가 근소하게 앞선다는 뜻이에요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>헤즈업 프리플랍은 <strong>접을지 말지</strong>보다 <strong>어떤 크기로 들어갈지</strong>의 문제예요. 그 차이가 작을 때가 많아요.</p>
+<h2>2단계. 플랍: K♣Q♦는 몇 %로 치나</h2>
+<p>Q♠7♠3♥에서 BB는 대부분 체크해요(체크 <strong>84.30%</strong>). Hero는 탑페어 K 키커예요.</p>
+<blockquote>
+<p>Hero 쪽 전체: 체크 <strong>24.80%</strong>, 2BB 벳 <strong>53.30%</strong>, 4.5BB 벳 <strong>22.00%</strong>
+KQo: 체크 <strong>6%</strong>, 2BB 벳 <strong>65%</strong>, 4.5BB 벳 <strong>29%</strong></p>
+</blockquote>
+<p>체크는 거의 없고, 작은 벳이 가장 많아요. 팟 6BB에 2BB는 팟의 <strong>약 33.33%</strong>예요.</p>
+<h3>다른 핸드와 비교</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>핸드</th>
+<th>체크</th>
+<th>2BB</th>
+<th>4.5BB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>KQo</td>
+<td>6%</td>
+<td>65%</td>
+<td>29%</td>
+</tr>
+<tr>
+<td>AQo</td>
+<td>2%</td>
+<td>66%</td>
+<td>32%</td>
+</tr>
+<tr>
+<td>QJs</td>
+<td>0%</td>
+<td>58%</td>
+<td>42%</td>
+</tr>
+<tr>
+<td>66</td>
+<td>80%</td>
+<td>20%</td>
+<td>0%</td>
+</tr>
+</tbody>
+</table></div>
+<p>같은 Q 페어 계열은 비슷하게 치고, 페어가 작은 66은 체크가 많아요. <strong>핸드 세기가 비슷하면 행동 빈도도 비슷</strong>하게 보여요. 왜 그렇게 섞는지까지 DB가 말해 주지는 않아서, 여기서는 "같이 보이는 차이"로만 읽어요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>빈도표는 "반드시 이렇게"가 아니에요. KQo가 65%라는 건, 이 자리의 KQo를 100번 받으면 65번쯤 2BB를 친다는 뜻이에요. 실전에서는 <strong>큰 쪽이 무엇인지</strong>를 먼저 기억해요.</p>
+<h2>3단계. BB는 2BB를 어떻게 받나</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>행동</th>
+<th>전체 빈도</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>폴드</td>
+<td>34.10%</td>
+</tr>
+<tr>
+<td>콜</td>
+<td>55.40%</td>
+</tr>
+<tr>
+<td>레이즈</td>
+<td>10.50%</td>
+</tr>
+</tbody>
+</table></div>
+<p>핸드별로 보면 차이가 커요. QJs는 레이즈가 많고, JTs는 콜이 거의 전부예요. 같은 BB 범위 안에서도 핸드마다 하는 일이 달라요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>핸드</th>
+<th>폴드</th>
+<th>콜</th>
+<th>레이즈(12BB)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>QJs</td>
+<td>0%</td>
+<td>38%</td>
+<td>62%</td>
+</tr>
+<tr>
+<td>T9s</td>
+<td>20%</td>
+<td>64%</td>
+<td>16%</td>
+</tr>
+<tr>
+<td>JTs</td>
+<td>0%</td>
+<td>96%</td>
+<td>4%</td>
+</tr>
+</tbody>
+</table></div>
+<p>Hero의 2BB에 BB가 절반 넘게 콜해요. 작은 벳에는 약한 핸드까지 콜로 남을 수 있다는 뜻이에요. BB는 콜했어요.</p>
+<h3>레이즈 10.50%를 어떻게 받아들이나</h3>
+<p>BB가 12BB로 레이즈하는 일도 있어요. K♣Q♦는 그때 다시 결정을 해야 하는 핸드죠. 탑페어라고 무조건 받을 수는 없고, 레이즈 범위에 무엇이 들어 있는지를 봐야 해요. DB에는 그다음 노드도 있지만, 오늘 글은 콜로 이어진 줄만 따라가요.</p>
+<h2>4단계. 턴 5♦: 다시 벳</h2>
+<p>턴 값은 턴 카드들을 평균한 값이에요.</p>
+<blockquote>
+<p>BB: 체크 <strong>83.30%</strong>, 7.5BB 벳 <strong>16.70%</strong>
+Hero(KQo): 체크 <strong>14%</strong>, 7.5BB 벳 <strong>86%</strong></p>
+</blockquote>
+<p>플랍에서 KQo의 벳 합계는 <strong>94%</strong>(2BB 65% + 4.5BB 29%)였어요. 턴은 벳 <strong>86%</strong>로 조금 줄었어요. 플랍은 크기가 두 가지, 턴은 사실상 한 가지라 크기별로 비교할 수는 없고, 두 스트리트 모두 체크보다 벳이 훨씬 많다는 정도로 읽어요. 오늘 턴 5♦는 64를 완성하는 카드라 BB가 평균보다 강해지는 쪽일 수 있어요.</p>
+<p>BB는 7.5BB를 받으면 폴드 <strong>43.10%</strong>, 콜 <strong>56.30%</strong>예요. 핸드별로는 QJs가 콜 <strong>93%</strong>, T9s가 폴드 <strong>55%</strong>, JTs가 폴드 <strong>48%</strong>예요. 페어가 없는 약한 핸드가 접기 시작하는 게 보여요.</p>
+<h3>턴 크기가 왜 커 보이나</h3>
+<p>플랍의 2BB는 팟의 약 33.33%였고, 턴의 7.5BB는 팟 10BB의 3/4이에요. 오늘 DB의 턴 선택지가 그렇게 짜여 있어서, 이 비율만으로 이유를 말하기는 어려워요. 크기는 스트리트마다 그 자리의 숫자를 따로 봐요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>같은 Q 페어가 플랍과 턴에서 모두 벳이 많다고 해서, 이유까지 빈도표에 적혀 있는 건 아니에요. <strong>큰 쪽이 벳이다</strong>까지만 읽어요.</p>
+<h2>5단계. 리버: DB가 없는 곳에서 콤보로 세기</h2>
+<p>리버 2♣. BB가 체크했고, DB는 여기서 끝나요. 가정 레인지 <strong>180콤보</strong>로 씬밸류를 세요. R19에서 본 씬밸류 세기예요.</p>
+<blockquote>
+<p>Hero를 이기는 핸드 <strong>18콤보</strong> (Q5·Q2 투페어, 75s 투페어, A4s 스트레이트)
+Hero에게 지면서 콜할 핸드 <strong>121콤보</strong> (Q 약한 키커, 7 페어)
+폴드 <strong>41콤보</strong></p>
+</blockquote>
+<p>벳이 12BB면 콜 받는 쪽만 놓고 볼 때 Hero가 이기는 비율은 <strong>약 87.05%</strong>예요. 체크와 비교한 이익은 이렇게 나와요.</p>
+<blockquote>
+<p>체크보다 벳이 더 버는 돈 = (121 − 18) ÷ 180 × 12 = <strong>약 6.87BB</strong></p>
+</blockquote>
+<h3>가정이 바뀌면</h3>
+<p>7 페어가 안 콜하고 Q 페어(약한 키커)만 <strong>40콤보</strong> 콜한다면요?</p>
+<blockquote>
+<p>체크보다 벳이 더 버는 돈 = (40 − 18) ÷ 180 × 12 = <strong>약 1.47BB</strong></p>
+</blockquote>
+<p>값은 줄어도 여전히 플러스예요. 콜하는 쪽의 조합 수가 줄면 이 값이 얼마나 빨리 작아지는지 보이죠.</p>
+<h3>필터가 빠뜨린 핸드</h3>
+<p>오늘 180콤보는 콜 빈도 50% 이상인 클래스만 남긴 범위예요. AQ, QJs(BB 콜 38%로 탈락), 턴 5♦로 완성된 64 스트레이트, 일부 투페어·셋은 이 필터로 빠졌어요. 그 핸드들도 실제로는 섞여 들어오니, 위 인용칸의 18콤보는 <strong>Hero를 이기는 쪽을 적게 잡은 값</strong>이에요. 여유는 그만큼 위 값보다 작아요.</p>
+<h3>12BB의 필요 에퀴티</h3>
+<p>팟 25BB에 12BB면 BB의 콜 필요 에퀴티는 <strong>약 24.49%</strong>예요. DB에는 리버 크기가 없어서 다른 크기를 값으로 비교하지는 않았어요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>씬밸류의 판단은 "더 나쁜 핸드가 몇 콤보 콜하나"와 "더 좋은 핸드가 몇 콤보인가"의 싸움이에요. 리버 DB가 없어도 이건 셀 수 있어요.</p>
+<h2>6단계. 결과</h2>
+<p>BB는 J♠7♦로 콜했고, 위 인용칸의 '지면서 콜할 핸드'에 들어 있던 핸드예요. Hero가 팟 <strong>49BB</strong>를 가져왔어요. 판정의 근거는 BB 핸드가 아니라 121콤보 대 18콤보였어요.</p>
+<h2>왜 그렇게 보일까: 스트리트마다 달라지는 범위</h2>
+<h3>플랍의 작은 벳</h3>
+<p>플랍에서는 BB 범위가 넓어요. 작은 벳은 많은 핸드에게 받게 하는 크기로 <strong>보여요.</strong> 왜 그런지는 DB에 없으니, 이 빈도표에서 그렇게 보인다는 정도로만 읽어요.</p>
+<h3>턴의 벳</h3>
+<p>플랍을 콜한 BB의 범위는 플랍보다 좁아졌어요. 그 범위를 상대로 Q 페어가 앞서는 판이 많다면 턴에도 벳이 많이 나올 수 있어요. KQo의 86%가 그렇게 <strong>보이는</strong> 부분이에요.</p>
+<h3>리버에서 벳이 맞는 조건</h3>
+<p>이 가정에서 벳의 값은 위 식의 두 숫자로 정해져요. 어느 쪽이 더 큰 판인지를 리버에서 세어 보는 거예요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>헤즈업 한 판은 스트리트마다 <strong>상대 범위가 달라 보이는 이야기</strong>로 읽을 수 있어요. 빈도표는 그 변화가 어떻게 나타나는지만 보여 줘요.</p>
+<section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. "65%면 항상 2BB를 쳐야 한다"</strong>
+빈도는 섞는다는 뜻이에요. KQo는 4.5BB도 29% 치고, 체크도 6% 있어요. 대신 가장 큰 쪽을 기본으로 삼고 나머지는 섞어요.</p></div><div class="mis-card"><p><strong>실수 2. "턴에도 같은 크기로 친다"</strong>
+DB에서 턴 크기는 팟 10BB에 7.5BB, 3/4 팟이에요. 플랍의 1/3 팟과 달라요. 대신 스트리트마다 그 자리의 크기를 봐요.</p></div><div class="mis-card"><p><strong>실수 3. "리버 DB가 없으니 체크"</strong>
+DB가 없어도 씬밸류는 콤보로 셀 수 있어요. 이 가정에서 Hero를 이기는 건 18콤보예요. 대신 더 나쁜 핸드의 콜 콤보부터 세요.</p></div></section><h2>"SB에서 KQs는 왜 림프가 많나요?"</h2>
+<p>100BB 근사 모델에서 KQs는 림프가 <strong>100%</strong>로 나와요. 값은 림프 <strong>약 1.94BB</strong>, 레이즈 <strong>약 1.89BB</strong>예요. 근사 모델은 플랍 이후를 단순화해서 값 차이가 작은 핸드를 한쪽으로 몰 수 있어요. 빈도 하나로 "KQs는 림프"라고 외우기보다, 두 행동의 값이 비슷한 핸드는 어느 쪽이든 크게 틀리지 않는다고 읽는 게 안전해요.</p>
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<blockquote>
+<p>표를 보기 전에 "이 표의 가정이 뭔가"부터 확인해요.
+결과가 좋았던 판일수록 판정의 근거를 다시 적어요.
+둘만 남아도 상대 범위를 좁혀 가는 일은 똑같아요.</p>
+</blockquote>
+</section><h2>연습 문제</h2>
+<blockquote>
+<p>학습툴 팟오즈 계산기로 필요 에퀴티를 확인할 수 있어요. 빈도는 문제에 준 값을 써요.</p>
+</blockquote>
+<p><strong>문제 1.</strong> 리버까지 본문과 같은데, 필터로 빠졌던 핸드를 넣어 BB 범위가 <strong>210개 조합</strong>이 됐어요. Hero를 이기는 핸드는 <strong>48개 조합</strong>이고, 더 약한 핸드가 콜하는 건 약한 Q <strong>40콤보</strong>뿐이에요. 12BB 벳이 체크보다 얼마나 더 벌까요?</p>
+<details>
+<summary>정답 보기</summary>
+<blockquote>
+<p>체크보다 벳이 더 버는 돈 = (40 − 48) ÷ 210 × 12 = <strong>약 −0.46BB</strong></p>
+</blockquote>
+<p>마이너스예요. 답이 <strong>체크</strong>로 뒤집혀요. Hero를 이기는 쪽이 늘어나면 같은 Q 페어로도 벳의 값이 사라져요. 오늘 본문의 +는 그 가정에 기대고 있어요.</p>
+</details>
+<p><strong>문제 2.</strong> 턴에서 Hero가 7.5BB를 블러프로 친다면, 팟 10BB에서 BB가 몇 %를 접어야 본전일까요? DB의 BB 폴드 빈도 <strong>43.10%</strong>(턴 카드 평균)와 맞대 보세요.</p>
+<details>
+<summary>정답 보기</summary>
+<blockquote>
+<p>알파 = 7.5 ÷ 17.5 = <strong>약 42.86%</strong></p>
+</blockquote>
+<p>43.10%가 약 42.86%보다 조금 높아요. 순수 블러프도 거의 본전이에요. 이 차이는 너무 작아서 "블러프가 이득"이라고 말하기 어렵고, 턴 카드 평균이라 5♦처럼 특정 카드에서는 쉽게 뒤집힐 수 있어요.</p>
+</details>
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>헤즈업 SB는 대부분 들어가고, 레이즈와 림프의 값 차이가 작을 때가 많아요</li>
+<li>솔버 빈도는 "얼마나 자주"의 정보이고, 이유를 단정하지 않아요</li>
+<li>같은 핸드도 스트리트마다 벳 빈도가 달라요</li>
+<li>리버처럼 DB가 없는 곳에서는 더 나쁜 콜 콤보와 더 좋은 콤보로 씬밸류를 세요</li>
+</ul>
+</section><section class="sec end"><h2>정리하며</h2>
+<p>오늘은 100BB 헤즈업에서 K♣Q♦로 SB 오픈, 플랍 2BB, 턴 7.5BB, 리버 12BB까지 벳했어요. 빈도표로 스트리트마다 큰 쪽을 읽고, 리버는 콤보로 세어 벳을 골랐어요.</p>
+<p>다음 글 R47에서는 <strong>BB 쪽</strong>으로 자리를 옮겨, 체크레이즈를 어떻게 섞는지를 봐요.</p>
+<hr />
+<p><small>AI 작성 · 헤즈업 솔버 DB 기준(6맥스 아님) · 리버는 가정 레인지</small></p></section>
+</article>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="115_E18.html">헤즈업 프리플랍: 스택 깊이가 바뀌면 SB 첫 행동은 어떻게 달라질까? (헤즈업 기준)</a></li></ul><p class="l">이 글 다음에 볼 글</p><ul><li><a href="272_R51.html">실전 토너 마무리 시험</a></li></ul></aside><nav class="nav"><a class="prev" href="266_R45.html"><div class="l">← 이전 글</div><div class="t">파이널 3인: 블라인드 배틀 한 판 (ICM은 원리만)</div></a><a class="next" href="268_R47.html"><div class="l">다음 글 →</div><div class="t">헤즈업 BB 디펜스 뒤 체크레이즈 (헤즈업 기준)</div></a></nav></main>
+<script>/*__land__*/(function(){try{if(window.top!==window.self||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;var v='',n='';try{v=localStorage.getItem('vid');if(!v){v=Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('vid',v);}n=localStorage.getItem('nick')||'';}catch(e){}var f=(new URLSearchParams(location.search).get('from')||'').slice(0,30),rf=document.referrer||'',own=false;try{own=!!rf&&new URL(rf).host===location.host;}catch(e){}var b={p:"\ube14\ub85c\uadf8",n:n,v:v};if(f||!own){b.l=1;b.from=f;b.rf=own?'':rf.slice(0,200);}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b),keepalive:true}).catch(function(){});}catch(e){}})();</script>
+</body>
+</html>

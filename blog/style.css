@@ -20,7 +20,7 @@ h1{font-size:27px;line-height:1.35;letter-spacing:-.5px;margin:10px 0 18px}
 h2{font-size:21px;letter-spacing:-.3px;margin:38px 0 12px;padding-top:6px}
 h3{font-size:18px;margin:26px 0 8px}
 article{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px 22px;box-shadow:var(--shadow)}
-article p,article li{word-break:keep-all}
+article p,article li{word-break:keep-all;overflow-wrap:break-word}
 article img{width:52px;height:auto;vertical-align:middle;margin:2px 3px;border-radius:6px;box-shadow:0 1px 4px rgba(0,0,0,.18);background:#fff}
 hr{border:0;border-top:1px dashed var(--line);margin:30px 0}
 blockquote{margin:14px 0;padding:12px 16px;background:var(--tip);border-left:4px solid var(--felt2);border-radius:0 10px 10px 0}
