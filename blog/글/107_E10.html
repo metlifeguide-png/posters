@@ -15,10 +15,10 @@
 </head>
 <body>
 <header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
-<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">토너</span><span class="n">고급 11번째 글 (전체 272편 중 116번째)</span></div><h1>ICM 기초: 토너먼트에서 칩 1개의 가치는 왜 같지 않을까?</h1>
+<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">토너</span><span class="n">고급 11번째 글 (전체 285편 중 116번째)</span></div><h1>ICM 기초: 토너먼트에서 칩 1개의 가치는 왜 같지 않을까?</h1>
 <article>
-<p>안녕하세요. I17에서 푸시/폴드를 <strong>칩 기준</strong>으로 계산했죠. 칩 기준은 "칩을 딸수록 그만큼 좋다"고 봐요. 칩 1000개를 따면 1000개만큼, 잃으면 1000개만큼이요.</p>
-<p>그런데 토너먼트에서 우리가 실제로 받는 건 칩이 아니라 <strong>상금</strong>이에요. 칩을 상금으로 바꾸는 순간, 같은 1000칩이라도 누가 들고 있느냐에 따라 값이 달라져요. 오늘은 그걸 직접 계산하는 <strong>ICM</strong>을 처음부터 해 볼게요.</p>
+<p>I17에서 푸시/폴드를 <strong>칩 기준</strong>으로 계산했죠. 칩 기준은 "칩을 딸수록 그만큼 좋다"고 봐요. 칩 1000개를 따면 1000개만큼, 잃으면 1000개만큼이요.</p>
+<p>그런데 토너먼트에서 우리가 실제로 받는 건 칩이 아니라 <strong>상금</strong>이에요. 칩을 상금으로 바꾸는 순간, 같은 1000칩이라도 누가 들고 있느냐에 따라 값이 달라져요. 그걸 직접 계산하는 <strong>ICM</strong>을 처음부터 해 볼게요.</p>
 <div class="learn"><p class="h">이 글에서 배울 것</p><ul>
 <li><strong>ICM</strong>으로 등수 확률과 기대 상금을 손으로 직접 구하는 법</li>
 <li>이 조건에서 스택이 클수록 <strong>칩 1개가 올려 주는 상금이 줄어드는</strong> 이유</li>
@@ -31,7 +31,7 @@
 <p>등수 확률은 이렇게 구해요. <strong>칩 비율대로 1등을 뽑고</strong>, 그 사람을 뺀 나머지 중에서 <strong>다시 칩 비율대로 2등을 뽑고</strong>, 이렇게 끝까지 가요. 뚝섬 AOF 차트 엔진이 쓰는 것과 같은 모형이에요.</p>
 <h3>비유: 천장과 바닥이 있는 저금통</h3>
 <p>ICM의 상금은 <strong>천장과 바닥이 있는 저금통</strong>과 같아요. 칩을 아무리 많이 모아도 1등 상금(천장)보다 더 받을 수는 없어요. 그리고 오늘 조건(남은 3명 모두 입상)에서는 칩이 아무리 적어도 3등 상금(바닥)은 받아요.</p>
-<p>이게 무슨 뜻이냐면, 칩이 늘수록 <strong>천장에 가까워져서</strong> 칩이 올려 줄 수 있는 상금이 점점 줄어요. 바닥은 칩이 0이어도 받는 몫이라, 칩의 값을 따질 때는 <strong>빼고</strong> 봐요(3단계). 결국 칩과 상금이 <strong>같은 비율로 움직이지 않는</strong> 거예요.</p>
+<p>칩이 늘수록 <strong>천장에 가까워져서</strong> 칩이 올려 줄 수 있는 상금이 점점 줄어요. 바닥은 칩이 0이어도 받는 몫이라, 칩의 값을 따질 때는 <strong>빼고</strong> 봐요(3단계). 결국 칩과 상금이 <strong>같은 비율로 움직이지 않는</strong> 거예요.</p>
 <h2>2단계. 오늘의 장면 (조건 고정)</h2>
 <ul>
 <li>3명 남음, 상금은 1등 <strong>50</strong>, 2등 <strong>30</strong>, 3등 <strong>20</strong>(상금 합계 100, 예시 단위)</li>
@@ -193,8 +193,8 @@
 B와 C가 싸우는 동안 A는 아무것도 안 했는데, 기대 상금이 38.39에서 이기든 지든 올라갔어요(40 또는 38.89). 토너먼트에서는 <strong>남이 칩을 주고받는 것만으로</strong> 내 몫이 바뀌어요. 그러니 다른 사람이 탈락할 수 있는 판을 앞두고는, 내가 싸우지 않는 것 자체에도 값이 있다는 걸 떠올려요.</p></div></section>
 <hr />
 <h2>"그럼 ICM에서는 동전 던지기를 다 피해야 해요?"</h2>
-<p>좋은 질문이에요. 승률이 딱 50%면 이 조건에서는 피하는 쪽이 맞아요. 하지만 승률이 충분히 높거나, 상대가 접을 가능성(폴드 에퀴티, I18)이 있으면 달라져요.</p>
-<p>ICM은 "피해라"가 아니라 <strong>"더 이길 때만 들어가라"</strong>에 가까워요. 칩 기준과 ICM의 필요 에퀴티를 한 판에서 비교하는 건 E11에서, 그 차이(리스크 프리미엄)는 E12에서 다뤄요.</p>
+<p>승률이 딱 50%면 이 조건에서는 피하는 쪽이 맞아요. 하지만 승률이 충분히 높거나, 상대가 접을 가능성(폴드 에퀴티, I18)이 있으면 달라져요.</p>
+<p>ICM은 <strong>"더 이길 때만 들어가라"</strong>에 가까워요. 칩 기준과 ICM의 필요 에퀴티를 한 판에서 비교하는 건 E11에서, 그 차이(리스크 프리미엄)는 E12에서 다뤄요.</p>
 <h2>숫자가 뒤집히는 지점</h2>
 <p>기준은 <strong>2등 이하에도 상금이 있는지</strong>예요. 상금이 <strong>1등에게만 100</strong> 있다면, B의 기대 상금은 칩 비율 그대로 <strong>30</strong>이에요. 같은 동전 던지기에서 이기면 <strong>50</strong>, 지면 <strong>10</strong>이라 평균 30, ICM 손해가 사라져요. 상금이 아래 등수로 나뉠수록 곡선이 더 휘어요.</p>
 <section class="sec tip"><h2>선생님의 한마디</h2>
@@ -225,19 +225,19 @@ B와 C가 싸우는 동안 A는 아무것도 안 했는데, 기대 상금이 38.
 <section class="sec key"><h2>핵심 정리</h2>
 <ul>
 <li><strong>ICM</strong> = 칩 비율로 등수를 차례로 뽑아 구한 등수 확률 × 등수 상금의 합</li>
-<li>상금이 여러 등수로 나뉘면 칩과 상금은 <strong>직선이 아니라 휘어진 곡선</strong>이에요</li>
+<li>상금이 여러 등수로 나뉘면 칩과 상금은 <strong>휘어진 곡선</strong>이에요</li>
 <li>이 조건에서는 스택이 클수록 <strong>칩 1000개가 사 주는 상금이 줄어요</strong>(A 3.68 &lt; B 4.25 &lt; C 4.43)</li>
 <li>그래서 칩 기준으로 본전인 50% 대결은 <strong>ICM으로 손해</strong>이고, 그 몫은 구경하던 사람에게 가요</li>
 </ul>
 </section><section class="sec end"><h2>정리하며</h2>
-<p>오늘은 3명이 남은 토너먼트에서 B의 등수 확률을 손으로 구해 기대 상금 32.75를 만들었어요.</p>
+<p>3명이 남은 토너먼트에서 B의 등수 확률을 손으로 구해 기대 상금 32.75를 만들었어요.</p>
 <p>세 사람의 기대 상금을 칩 1000개당으로 바꿔 보니, 스택이 클수록 칩 하나의 값이 작았어요. 그래서 B가 C와 50% 동전 던지기를 하면, 따는 2000칩은 7.25를 올리고 잃는 2000칩은 약 8.08을 깎아 평균이 손해였죠.</p>
 <p>오늘 하나만 가져가면 돼요. 토너먼트 후반에는 <strong>칩이 아니라 상금으로</strong> 생각하고, 이기는 몫과 지는 몫을 따로 보세요.</p>
 <p>다음 글 E11에서는 이 원리를 <strong>버블 한 판</strong>에 써요. 칩 기준으로는 콜인데 ICM으로는 폴드가 되는 장면을, 두 필요 에퀴티를 나란히 놓고 계산해요.</p>
 <hr />
 <p><small>AI 작성 · 숫자는 계산 검증 (ICM: 칩 비율로 등수를 차례로 뽑는 방식, 뚝섬 AOF 차트 엔진과 같은 모형 — 이 예시는 엔진과 소수 셋째 자리까지 같은 값 확인, 도구/사이트/확인결과.md) · 상금·스택은 예시로 고정한 값 · 블라인드·앤티 없음, 승률 50% 가정 · 이 판에서 탈락한 사람은 3등 상금(한 명 탈락이라 실제 규정과 같음) · 이번 한 번의 결정 기준</small></p></section>
 </article>
-<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="048_I17.html">푸시/폴드 기초: 짧은 스택은 왜 올인 아니면 폴드로 생각할까?</a></li></ul><p class="l">이 글 다음에 볼 글</p><ul><li><a href="108_E11.html">버블 한 판: 칩 기준으로는 콜인데 ICM으로는 폴드일까?</a></li><li><a href="114_E17.html">새틀라이트 버블: 시드권 4장, 5명 남았을 때 큰 스택은 얼마나 조심해야 할까?</a></li><li><a href="121_E24.html">딜 계산: 3명 남았을 때 ICM 딜과 칩촙은 얼마나 다를까?</a></li></ul></aside><nav class="nav"><a class="prev" href="106_E09.html"><div class="l">← 이전 글</div><div class="t">리버 폴라라이즈 vs 머지: 벳 레인지의 &quot;모양&quot;은 무엇이 다를까?</div></a><a class="next" href="108_E11.html"><div class="l">다음 글 →</div><div class="t">버블 한 판: 칩 기준으로는 콜인데 ICM으로는 폴드일까?</div></a></nav></main>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="048_I17.html">푸시/폴드 기초: 숏스택은 왜 올인 아니면 폴드로 생각할까?</a></li></ul><p class="l">이 글 다음에 볼 글</p><ul><li><a href="108_E11.html">버블 한 판: 칩 기준으로는 콜인데 ICM으로는 폴드일까?</a></li><li><a href="114_E17.html">새틀라이트 버블: 시드권 4장, 5명 남았을 때 큰 스택은 얼마나 조심해야 할까?</a></li><li><a href="121_E24.html">딜 계산: 3명 남았을 때 ICM 딜과 칩촙은 얼마나 다를까?</a></li></ul></aside><nav class="nav"><a class="prev" href="106_E09.html"><div class="l">← 이전 글</div><div class="t">리버 폴라라이즈 vs 머지: 벳 레인지의 &quot;모양&quot;은 무엇이 다를까?</div></a><a class="next" href="108_E11.html"><div class="l">다음 글 →</div><div class="t">버블 한 판: 칩 기준으로는 콜인데 ICM으로는 폴드일까?</div></a></nav></main>
 <script>/*__land__*/(function(){try{if(window.top!==window.self||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;var v='',n='';try{v=localStorage.getItem('vid');if(!v){v=Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('vid',v);}n=localStorage.getItem('nick')||'';}catch(e){}var f=(new URLSearchParams(location.search).get('from')||'').slice(0,30),rf=document.referrer||'',own=false;try{own=!!rf&&new URL(rf).host===location.host;}catch(e){}var b={p:"\ube14\ub85c\uadf8",n:n,v:v};if(f||!own){b.l=1;b.from=f;b.rf=own?'':rf.slice(0,200);}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b),keepalive:true}).catch(function(){});}catch(e){}})();</script>
 </body>
 </html>

@@ -5,19 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>보드 텍스처: 드라이·웻·모노톤에서 솔버의 c-bet은 어떻게 달라질까? (헤즈업 기준) · 뚝섬 홀덤학습</title>
 <link rel="stylesheet" href="../style.css">
-<meta name="description" content="E26에서 솔버 표를 &quot;전체 빈도 → 사이즈 → 핸드별&quot; 순서로 읽었죠. 오늘은 조건은 그대로 두고 보드 모양만 바꿔 볼 거예요. 같은 BTN, 같은 레인지인데 보드가 바뀌면 c-bet이 확 달라져요. &quot;K 하이 드라이니까 작게&quot;, &quot;이어진 보드니까 크게&quot; 같은 말을…">
+<meta name="description" content="E26에서 솔버 표를 &quot;전체 빈도 → 사이즈 → 핸드별&quot; 순서로 읽었죠. 조건은 그대로 두고 보드 모양만 바꿔 볼 거예요. 같은 BTN, 같은 레인지인데 보드가 바뀌면 c-bet이 확 달라져요. &quot;K 하이 드라이니까 작게&quot;, &quot;이어진 보드니까 크게&quot; 같은 말을 들어…">
 <link rel="canonical" href="https://xn--bc2b73r.kr/blog/%EA%B8%80/101_E04.html">
 <meta property="og:type" content="article">
 <meta property="og:title" content="보드 텍스처: 드라이·웻·모노톤에서 솔버의 c-bet은 어떻게 달라질까? (헤즈업 기준) · 뚝섬 홀덤학습">
-<meta property="og:description" content="E26에서 솔버 표를 &quot;전체 빈도 → 사이즈 → 핸드별&quot; 순서로 읽었죠. 오늘은 조건은 그대로 두고 보드 모양만 바꿔 볼 거예요. 같은 BTN, 같은 레인지인데 보드가 바뀌면 c-bet이 확 달라져요. &quot;K 하이 드라이니까 작게&quot;, &quot;이어진 보드니까 크게&quot; 같은 말을…">
+<meta property="og:description" content="E26에서 솔버 표를 &quot;전체 빈도 → 사이즈 → 핸드별&quot; 순서로 읽었죠. 조건은 그대로 두고 보드 모양만 바꿔 볼 거예요. 같은 BTN, 같은 레인지인데 보드가 바뀌면 c-bet이 확 달라져요. &quot;K 하이 드라이니까 작게&quot;, &quot;이어진 보드니까 크게&quot; 같은 말을 들어…">
 <meta property="og:url" content="https://xn--bc2b73r.kr/blog/%EA%B8%80/101_E04.html">
 <meta property="og:image" content="https://xn--bc2b73r.kr/hub/banner.jpg">
 </head>
 <body>
 <header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
-<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">개념</span><span class="n">고급 5번째 글 (전체 272편 중 110번째)</span></div><h1>보드 텍스처: 드라이·웻·모노톤에서 솔버의 c-bet은 어떻게 달라질까? (헤즈업 기준)</h1>
+<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">개념</span><span class="n">고급 5번째 글 (전체 285편 중 110번째)</span></div><h1>보드 텍스처: 드라이·웻·모노톤에서 솔버의 c-bet은 어떻게 달라질까? (헤즈업 기준)</h1>
 <article>
-<p>안녕하세요. E26에서 솔버 표를 "전체 빈도 → 사이즈 → 핸드별" 순서로 읽었죠. 오늘은 조건은 그대로 두고 <strong>보드 모양만</strong> 바꿔 볼 거예요.</p>
+<p>E26에서 솔버 표를 "전체 빈도 → 사이즈 → 핸드별" 순서로 읽었죠. 조건은 그대로 두고 <strong>보드 모양만</strong> 바꿔 볼 거예요.</p>
 <p>같은 BTN, 같은 레인지인데 보드가 바뀌면 c-bet이 확 달라져요. "K 하이 드라이니까 작게", "이어진 보드니까 크게" 같은 말을 들어 봤다면, 오늘은 그 말이 <strong>왜 나오는지</strong>를 솔버 숫자와 레인지 구성으로 따져 봐요.</p>
 <div class="learn"><p class="h">이 글에서 배울 것</p><ul>
 <li>드라이·웻·모노톤이 무엇이고, 보드를 보자마자 <strong>무늬·연결·높이</strong> 세 가지를 세는 법</li>
@@ -28,7 +28,7 @@
 <h2>오늘의 조건</h2>
 <p>E26과 같아요. 헤즈업 100BB·빅앤티, BTN <strong>2.5BB 오픈</strong> → BB 콜, 플랍 팟 6BB예요. 숫자는 모두 <strong>BB가 체크한 뒤 BTN 차례</strong>라는 한 지점(노드)의 값이에요. 이때 BTN의 벳이 <strong>c-bet</strong>(프리플랍에 레이즈한 쪽이 플랍에서 이어서 하는 벳)이에요.</p>
 <h3>레인지를 한 번 더 떠올리기</h3>
-<p>프리플랍 레인지는 헤즈업 프리플랍 솔버의 <strong>빈도</strong> 그대로예요. 예를 들어 레인지에 "QTs:0.02"라고 적혀 있으면 QTs를 2%만 그 행동으로 한다는 뜻이에요.</p>
+<p>프리플랍 레인지는 헤즈업 프리플랍 솔버의 <strong>빈도</strong> 그대로예요. 예를 들어 레인지에 "QTs:0.02"라고 적혀 있으면 QTs를 2%만 그 행동으로 해요.</p>
 <ul>
 <li><strong>BB 콜 레인지</strong>: BB는 44 이상 포켓페어 전부, <strong>수트 A 전부</strong>, KQ·KJ 같은 핸드를 3벳으로 보내요. 그래서 콜 레인지의 포켓페어는 33·22뿐이고, A는 A5o~A2o뿐이에요. 대신 <strong>Q·J·T가 들어간 수트 핸드, 중간·낮은 커넥터</strong>가 많이 남아 있어요</li>
 <li><strong>BTN 오픈 레인지</strong>: AA·KK·QQ와 높은 카드 핸드가 많아요. 이 모델에서는 JJ·KQs·AJs를 림프하고 AKo도 일부만 오픈해요</li>
@@ -153,7 +153,7 @@
 <h3>모노톤: 개수는 BB, 꼭대기는 BTN</h3>
 <p>K♠ 9♠ 4♠에서 플러시 이상은 BB <strong>약 4.7%</strong>, BTN <strong>약 3.3%</strong>로 <strong>BB가 더 많아요.</strong> BB의 Q·J·T 수트 핸드와 낮은 수트 커넥터가 스페이드 두 장일 때 플러시가 되거든요. (K♠가 보드에 있어서 BB의 K 수트 핸드는 스페이드 플러시가 될 수 없어요.)</p>
 <p>그런데 BB 레인지에는 수트 A가 하나도 없어요. 그래서 BB의 플러시는 <strong>가장 높아야 Q 하이</strong>이고, <strong>A 하이 넛 플러시는 전부 BTN 쪽</strong>이에요. A♠ 한 장을 든 넛 플러시 드로우도 BTN 쪽에 더 많아요.</p>
-<p>이게 무슨 뜻이냐면, 강한 핸드를 볼 때는 <strong>개수</strong>와 <strong>꼭대기가 누구 것인지</strong>를 따로 봐야 한다는 거예요. 이 차이는 다음 글 E05에서 개념으로 정리해요.</p>
+<p>강한 핸드를 볼 때는 <strong>개수</strong>와 <strong>꼭대기가 누구 것인지</strong>를 따로 봐야 해요. 이 차이는 다음 글 E05에서 개념으로 정리해요.</p>
 <hr />
 <h2>4단계. 핸드별로 보면</h2>
 <p>핸드별 값은 그 핸드 클래스(예: KQo 전체 콤보)의 <strong>평균</strong>이라, 콤보마다 행동이 갈린 것일 수도 있어요.</p>
@@ -325,7 +325,7 @@
 </tbody>
 </table></div>
 <p>AA에는 A♠가 든 콤보(넛 플러시 드로우)와 아닌 콤보가 섞여 있어요. AKs는 K♠가 보드에 있어 스페이드가 없는 탑페어예요.</p>
-<p>이게 무슨 뜻이냐면, 플러시가 많은 BB도 레인지 대부분은 <strong>아직 플러시가 아니고</strong>, 스페이드 한 장을 든 드로우도 섞여 있다는 거예요. 그래서 BTN의 탑페어·오버페어는 <strong>다음 스페이드가 오기 전에</strong> 크게 값을 받으려 하고, QQ·88처럼 애매한 페어는 체크로 쉬어요.</p>
+<p>플러시가 많은 BB도 레인지 대부분은 <strong>아직 플러시가 아니고</strong>, 스페이드 한 장을 든 드로우도 섞여 있어요. 그래서 BTN의 탑페어·오버페어는 <strong>다음 스페이드가 오기 전에</strong> 크게 값을 받으려 하고, QQ·88처럼 애매한 페어는 체크로 쉬어요.</p>
 <hr />
 <section class="sec why"><h2>왜 그럴까: 보드는 "얼마나 많이"와 "얼마나 세게"를 바꿔요</h2>
 <h3>드라이에서는 왜 "작게" 칠까</h3>
@@ -350,7 +350,7 @@
 "모노톤에서 플러시는 BB가 더 많으니 BTN은 약하다"고 보는 거예요. 개수는 BB가 많지만 A 하이 넛 플러시와 넛 드로우는 BTN에만 있었고, BTN은 AA로 크게 벳했어요. 대신 <strong>몇 개인지와 함께 가장 센 핸드가 누구 것인지</strong>를 봐요.</p></div></section>
 <hr />
 <h2>"체크한 BTN 핸드는 포기한 건가요?"</h2>
-<p>좋은 질문이에요. 아니에요. 모노톤에서 QQ·88은 체크가 절반을 넘었지만, 예를 들어 QQ는 BB의 9 페어·4 페어와 맞은 게 없는 핸드를 여전히 이겨요. 이 핸드들은 벳해서 키우기보다 <strong>쇼다운까지 싸게 가는 쪽</strong>을 고른 거예요. 체크 레인지에 이런 핸드가 남아 있어야 BB도 마음 놓고 공격하지 못해요(E21에서 다뤄요).</p>
+<p>아니에요. 모노톤에서 QQ·88은 체크가 절반을 넘었지만, 예를 들어 QQ는 BB의 9 페어·4 페어와 맞은 게 없는 핸드를 여전히 이겨요. 이 핸드들은 벳해서 키우기보다 <strong>쇼다운까지 싸게 가는 쪽</strong>을 고른 거예요. 체크 레인지에 이런 핸드가 남아 있어야 BB도 마음 놓고 공격하지 못해요(E21에서 다뤄요).</p>
 <h2>숫자가 뒤집히는 지점</h2>
 <p>무늬·연결만으로는 정해지지 않아요. 같은 조건에서 A♠ 3♥ 2♦는 세 장이 다섯 칸 안인데도 BTN 체크가 <strong>약 7.4%</strong>뿐이고, J♠ 8♥ 4♦는 무늬도 연결도 없는데 체크가 <strong>약 28.6%</strong>예요(두 보드는 E06에서 다뤄요). 기준은 <strong>BB의 수트·이어진·중간 카드 핸드가 이 보드에 얼마나 맞느냐</strong>이고, 높은 카드가 있으면 그만큼 BTN 쪽으로 기울어요.</p>
 <section class="sec tip"><h2>선생님의 한마디</h2>
@@ -386,7 +386,7 @@ J♠ T♥ 9♦에서 BTN이 지키던 마지막 강점(중간 세기 핸드의 �
 <li>드라이 높은 카드 보드는 지킬 것이 적어 <strong>작게 넓게</strong>, 웻·모노톤은 약한 핸드가 체크로 빠져 <strong>체크가 늘고 사이즈가 커져요</strong>(웻은 센 핸드+드로우, 모노톤은 위쪽 원 페어의 보호)</li>
 </ul>
 </section><section class="sec end"><h2>정리하며</h2>
-<p>오늘은 같은 BTN 레인지로 세 가지 보드의 솔버 표를 나란히 봤어요.</p>
+<p>같은 BTN 레인지로 세 가지 보드의 솔버 표를 나란히 봤어요.</p>
 <p>먼저 보드에서 무늬·연결·높이를 세고, 두 레인지가 그 보드에 얼마나 많이·얼마나 세게 맞는지 계산기로 따졌어요. BB 레인지를 살려 주는 보드일수록 BTN은 약한 핸드를 체크로 돌리고, 남은 벳은 크게 쳤죠. 실전에서는 보드를 보자마자 <strong>"이 보드는 누구 레인지를 살려 주나"</strong>를 한 줄로 말해 보는 것부터 시작하면 돼요.</p>
 <p>다음 글 E05에서는 오늘 "개수"와 "꼭대기"로 나눠 본 것을 두 개념으로 정리해요. 레인지 전체의 평균 세기와 가장 강한 핸드의 양이 <strong>서로 다른 말</strong>이라는 걸 다뤄요.</p>
 <hr />

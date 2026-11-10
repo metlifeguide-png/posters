@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>솔버는 어떻게 답을 찾을까: 가위바위보로 손으로 돌리는 CFR · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+<meta name="description" content="M77 끝에서 &quot;평균을 내면 멈춘다&quot;고 했어요. 오늘은 그 말을 뜯어봐요. 솔버가 답을 찾는 방식을 가위바위보로 손계산하고, 그다음 AKQ 나무로 옮겨요. 원리를 알면 솔버 화면을 읽는 눈이 달라져요. 왜 숫자가 조금씩 흔들리는지, 왜 반복 횟수를 말하는지, 무엇을…">
+<link rel="canonical" href="https://xn--bc2b73r.kr/blog/%EA%B8%80/280_M78.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="솔버는 어떻게 답을 찾을까: 가위바위보로 손으로 돌리는 CFR · 뚝섬 홀덤학습">
+<meta property="og:description" content="M77 끝에서 &quot;평균을 내면 멈춘다&quot;고 했어요. 오늘은 그 말을 뜯어봐요. 솔버가 답을 찾는 방식을 가위바위보로 손계산하고, 그다음 AKQ 나무로 옮겨요. 원리를 알면 솔버 화면을 읽는 눈이 달라져요. 왜 숫자가 조금씩 흔들리는지, 왜 반복 횟수를 말하는지, 무엇을…">
+<meta property="og:url" content="https://xn--bc2b73r.kr/blog/%EA%B8%80/280_M78.html">
+<meta property="og:image" content="https://xn--bc2b73r.kr/hub/banner.jpg">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge m">마스터</span><span class="chip">개념</span><span class="n">마스터 78번째 글 (전체 285편 중 280번째)</span></div><h1>솔버는 어떻게 답을 찾을까: 가위바위보로 손으로 돌리는 CFR</h1>
+<article>
+<p>안녕하세요. M77 끝에서 "평균을 내면 멈춘다"고 했어요. 오늘은 그 말을 뜯어봐요. 솔버가 답을 찾는 방식을 가위바위보로 손계산하고, 그다음 AKQ 나무로 옮겨요.</p>
+<p>원리를 알면 솔버 화면을 읽는 눈이 달라져요. 왜 숫자가 조금씩 흔들리는지, 왜 반복 횟수를 말하는지, 무엇을 입력하면 답이 달라지는지가 한 번에 나와요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>지난 판을 돌아보는 <strong>후회</strong>를 쌓아 다음 전략을 정하는 규칙</li>
+<li>현재 전략은 돌고 <strong>평균 전략이 멈추는</strong> 이유</li>
+<li>포커 나무에서 <strong>상대가 그 자리에 올 확률로 가중</strong>하는 이유</li>
+</ul></div>
+<hr />
+<h2>핵심 개념: 솔버는 답을 아는 프로그램이 아니라 후회를 세는 프로그램이에요</h2>
+<p>CFR은 Counterfactual Regret Minimization의 줄임말이에요. 우리말로 풀면 "그 자리에 왔다면 어땠을까를 따져 후회를 줄인다"예요. 규칙은 세 줄이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>차례</th>
+<th>하는 일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>이번 판의 전략으로 각 행동의 EV를 잰다</td>
+</tr>
+<tr>
+<td>2</td>
+<td>각 행동의 EV에서 이번 판 평균 EV를 뺀 값을 <strong>후회</strong>로 쌓는다</td>
+</tr>
+<tr>
+<td>3</td>
+<td>플러스 후회의 비율대로 다음 판 전략을 정한다(플러스 후회가 없으면 고르게)</td>
+</tr>
+</tbody>
+</table></div>
+<p>잘하는 사람도 헷갈리는 건 <strong>솔버 화면의 숫자가 "마지막에 도달한 전략"이라는 생각</strong>이에요. 화면에 나오는 건 수많은 판을 <strong>평균한 전략</strong>이에요. 마지막 판의 전략은 답과 전혀 달라 보일 수 있어요.</p>
+<hr />
+<section class="sec why"><h2>왜 그럴까: 손으로 여섯 판 돌리기</h2>
+<h3>장난감 게임 가정</h3>
+<p>M72의 비대칭 가위바위보를 그대로 써요. 바위가 가위를 이기면 1점, 보가 바위를 이기면 2점, 가위가 보를 이기면 3점이에요. 답은 바위 50%, 보 16.7%, 가위 33.3%였어요. 두 사람이 똑같은 규칙으로 동시에 움직인다고 놓아요. 그러면 두 사람의 전략이 늘 같아서 표 하나로 볼 수 있어요.</p>
+<h3>1단계. 후회란</h3>
+<p>첫 판은 세 수를 33.3%씩 내요. 상대도 33.3%씩이에요.</p>
+<blockquote>
+<p>바위 EV = −2 × 1/3 + 1 × 1/3 = −0.33</p>
+<p>보 EV = 2 × 1/3 − 3 × 1/3 = −0.33</p>
+<p>가위 EV = 3 × 1/3 − 1 × 1/3 = 0.67</p>
+</blockquote>
+<p>이번 판의 평균 EV는 0이에요. 후회는 "그 수를 냈다면 얼마나 더 벌었을까"라서 바위 −0.33, 보 −0.33, 가위 +0.67이 돼요. 쌓인 후회가 플러스인 건 가위뿐이니 다음 판은 가위 100%예요.</p>
+<h3>2단계. 후회 비율로 다음 전략</h3>
+<p>여섯 판을 돌려요. 표의 앞쪽은 이번 판의 전략, 뒤쪽은 그 판까지 쌓인 후회예요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>판</th>
+<th>바위</th>
+<th>보</th>
+<th>가위</th>
+<th>후회: 바위</th>
+<th>후회: 보</th>
+<th>후회: 가위</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>33.3%</td>
+<td>33.3%</td>
+<td>33.3%</td>
+<td>−0.33</td>
+<td>−0.33</td>
+<td>+0.67</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0%</td>
+<td>0%</td>
+<td>100%</td>
+<td>+0.67</td>
+<td>−3.33</td>
+<td>+0.67</td>
+</tr>
+<tr>
+<td>3</td>
+<td>50%</td>
+<td>0%</td>
+<td>50%</td>
+<td>+1.17</td>
+<td>−3.83</td>
+<td>+0.17</td>
+</tr>
+<tr>
+<td>4</td>
+<td>87.5%</td>
+<td>0%</td>
+<td>12.5%</td>
+<td>+1.29</td>
+<td>−2.46</td>
+<td>−0.71</td>
+</tr>
+<tr>
+<td>5</td>
+<td>100%</td>
+<td>0%</td>
+<td>0%</td>
+<td>+1.29</td>
+<td>−0.46</td>
+<td>−1.71</td>
+</tr>
+<tr>
+<td>6</td>
+<td>100%</td>
+<td>0%</td>
+<td>0%</td>
+<td>+1.29</td>
+<td>+1.54</td>
+<td>−2.71</td>
+</tr>
+</tbody>
+</table></div>
+<p>3판의 50%·50%는 앞줄의 +0.67과 +0.67을 비율로 나눈 거예요. 4판의 87.5%는 7/6 ÷ (7/6 + 1/6)이에요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>규칙은 단순한데 움직임은 거칠어요. 가위만 내면 바위 후회가 쌓이고, 바위만 내면 보 후회가 쌓여요. <strong>M72의 순환을 프로그램이 따라 돌고 있어요.</strong> 전략이 0%와 100%를 오가는 게 고장이 아니라 원래 모습이에요.</p>
+<h3>3단계. 현재 전략은 돌고 평균은 멈춰요</h3>
+<p>계속 돌려요. 이 표의 "틈"은 평균 전략을 상대로 최선 대응이 가져가는 점수로, 한 사람 몫이에요. 0이면 정답이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>반복</th>
+<th>그 판의 현재 전략(바위·보·가위)</th>
+<th>평균 전략</th>
+<th>틈</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10</td>
+<td>0·34·66</td>
+<td>42.4·28.3·29.2</td>
+<td>0.43점</td>
+</tr>
+<tr>
+<td>100</td>
+<td>0·0·100</td>
+<td>44.9·18.9·36.3</td>
+<td>0.12점</td>
+</tr>
+<tr>
+<td>1,000</td>
+<td>100·0·0</td>
+<td>49.5·15.7·34.8</td>
+<td>0.03점</td>
+</tr>
+<tr>
+<td>10,000</td>
+<td>0·30·70</td>
+<td>49.9·17·33.1</td>
+<td>0.01점</td>
+</tr>
+<tr>
+<td>100,000</td>
+<td>100·0·0</td>
+<td>49.9·16.6·33.5</td>
+<td>0.004점</td>
+</tr>
+</tbody>
+</table></div>
+<p>맨 끝 줄의 현재 전략은 바위 100%로 답과 전혀 달라요. 평균은 정답 50·16.7·33.3에 거의 왔어요. 반복이 백 배가 되면 틈이 10분의 1로 줄어요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>M77의 잼 오어 폴드는 규칙이 가상 플레이였고 게임도 달라서 열 배에 10분의 1로 줄었어요. 이 규칙이 보장하는 건 <strong>평균 후회의 상한이 반복의 제곱근에 반비례한다</strong>는 거예요. 반복이 백 배면 상한이 10분의 1이에요. 큰 나무에서는 상한이 정보 집합 수에도 비례해요. 그래서 "몇 번 돌렸나"가 정확도의 다른 이름이에요.</p>
+<h3>4단계. 왜 평균이 답이 될까</h3>
+<p>누적 후회를 반복 수로 나눈 <strong>평균 후회</strong>를 봐요. 평균 후회가 작다는 건 "어떤 한 수만 계속 냈어도 지금 평균보다 별로 더 못 벌었다"는 뜻이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>반복</th>
+<th>쌓인 최대 후회</th>
+<th>÷ 반복</th>
+<th>틈</th>
+<th>보장 상한</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10</td>
+<td>4.26</td>
+<td>0.43</td>
+<td>0.43</td>
+<td>3.29</td>
+</tr>
+<tr>
+<td>100</td>
+<td>11.74</td>
+<td>0.117</td>
+<td>0.12</td>
+<td>1.04</td>
+</tr>
+<tr>
+<td>1,000</td>
+<td>34.84</td>
+<td>0.035</td>
+<td>0.03</td>
+<td>0.33</td>
+</tr>
+<tr>
+<td>10,000</td>
+<td>103.96</td>
+<td>0.0104</td>
+<td>0.01</td>
+<td>0.104</td>
+</tr>
+<tr>
+<td>100,000</td>
+<td>352.72</td>
+<td>0.0035</td>
+<td>0.004</td>
+<td>0.033</td>
+</tr>
+</tbody>
+</table></div>
+<p>쌓인 후회는 반복이 열 배가 될 때 3배쯤 커지고, 그걸 반복 수로 나눈 값이 틈과 같아요. 이 판들의 평균 EV가 0이라서, 최선 한 수의 EV에서 0을 뺀 값이 곧 최대 평균 후회거든요. <strong>평균 후회가 줄어든다는 말이 곧 틈이 줄어든다는 말</strong>이에요.</p>
+<p>두 사람의 평균 후회가 각각 ε 이하면 양쪽 이득의 합(M71의 틈)은 2ε 이하, 한 사람 몫으로는 ε 이하예요. 이건 영합 게임에서 쓸 수 있는 말이고, 세 명이 되면 어떻게 되는지는 다음 글에서 이어져요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>솔버는 균형을 어디서 찾아오는 게 아니라 <strong>자기 자신과 두면서 후회를 줄이다 보니</strong> 균형 근처에 와 있는 거예요. 입력한 게임에 대해서만 맞는 답이라는 말도 여기서 나와요.</p>
+<h3>5단계. 나무로 넓히기: 왜 상대 도달 확률로 가중할까</h3>
+<p>가위바위보는 동시에 내지만 포커는 차례가 있어요. M73의 AKQ로 옮겨요. 두 사람이 A·K·Q 중 다른 카드를 한 장씩 받고 한쪽만 벳해요. 팟 12BB, 벳 6BB이고, 지운 행동을 빼면 결정은 Q의 블러프와 K의 콜 둘뿐이에요.</p>
+<p>K를 든 사람에게 상대는 A 또는 Q가 반반이에요. 상대가 A면 늘 벳이지만 Q면 블러프할 때만 벳해요. 그래서 K의 콜 값을 잴 때 <strong>상대가 그 자리에 올 확률</strong>을 곱해요.</p>
+<blockquote>
+<p>K 콜의 값 = 0.5 × (Q 블러프 × 18) + 0.5 × (−6)</p>
+</blockquote>
+<p>여기서 후회를 쌓을 때는 <strong>자기가 그 자리에 올 확률을 곱하지 않아요.</strong> "내가 이 자리에 왔다면 콜과 폴드 중 뭐가 나았을까"를 따지는 거라서요. 이게 카운터팩추얼(그랬다면)의 뜻이에요. 평균 전략을 낼 때는 반대로 자기 도달 확률을 곱해요. 1판에 플랍 콜 100%·리버 벳 100%, 2판에 플랍 콜 0%·리버 벳 0%라면 리버 평균 벳은 단순 평균 50%가 아니라 100%예요. AKQ는 결정이 한 번뿐이라 티가 안 날 뿐이에요.</p>
+<p>첫 세 판이에요. 시작은 Q 블러프 50%, K 콜 50%로 놓았어요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>판</th>
+<th>Q 블러프</th>
+<th>K 콜</th>
+<th>Q 블러프의 값</th>
+<th>K 콜의 값</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>50%</td>
+<td>50%</td>
+<td>−1.5BB</td>
+<td>+1.5BB</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0%</td>
+<td>100%</td>
+<td>−6BB</td>
+<td>−3BB</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0%</td>
+<td>25%</td>
+<td>+0.75BB</td>
+<td>−3BB</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>1판의 K 콜의 값 = 0.5 × (0.5 × 18) + 0.5 × (−6) = 1.5</p>
+<p>1판의 Q 블러프의 값 = 0.5 × (−6) + 0.5 × (12 − 18 × 0.5) = −1.5</p>
+</blockquote>
+<p>쌓인 후회는 Q가 블러프 −0.75·체크 +0.75에서 −6.75·+0.75로, K가 콜 +0.75·폴드 −0.75에서 +0.75·+2.25로 움직여요. 그래서 3판의 K 콜이 25%가 되고, 3판 뒤 K의 후회가 −1.5·+3이라 4판의 K 콜은 0%예요.</p>
+<p>평균 전략은 이렇게 움직여요. 답은 Q 블러프 33.3%, K 콜 33.3%예요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>반복</th>
+<th>평균 Q 블러프</th>
+<th>평균 K 콜</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10</td>
+<td>43%</td>
+<td>24.1%</td>
+</tr>
+<tr>
+<td>100</td>
+<td>28.9%</td>
+<td>30.6%</td>
+</tr>
+<tr>
+<td>1,000</td>
+<td>32.7%</td>
+<td>32%</td>
+</tr>
+<tr>
+<td>10,000</td>
+<td>33.7%</td>
+<td>33.6%</td>
+</tr>
+<tr>
+<td>100,000</td>
+<td>33.4%</td>
+<td>33.2%</td>
+</tr>
+</tbody>
+</table></div>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>실제 솔버는 이 일을 <strong>콤보마다, 노드마다</strong> 해요. K 칸 하나가 아니라 레인지에 든 콤보(플랍이면 1,176개 이하) 각각에 콜 후회와 폴드 후회가 있어요. 반복마다 나무 전체를 지나면서 상대의 도달 확률로 가중해서 후회를 쌓아요. 원리는 같고 칸만 많아요. M76에서 격자를 나눠 푼 것도 이 방법이에요.</p>
+<h3>6단계. 실제 솔버가 더 하는 일과 입력의 뜻</h3>
+<p>교과서 CFR에 이런 것들을 더해요. 제품마다 세부는 달라요(불확실).</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>더하는 것</th>
+<th>효과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>음수 후회를 0으로 자르기(CFR+)</td>
+<td>빠졌던 행동이 더 빨리 돌아옴</td>
+</tr>
+<tr>
+<td>뒤 판에 더 큰 가중치</td>
+<td>앞쪽 거친 판의 영향을 줄임</td>
+</tr>
+</tbody>
+</table></div>
+<p>음수를 자르면 2단계 표가 이렇게 바뀌어요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>판</th>
+<th>바위</th>
+<th>보</th>
+<th>가위</th>
+<th>쌓인 후회(바위·보·가위)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>33.3%</td>
+<td>33.3%</td>
+<td>33.3%</td>
+<td>0 · 0 · 0.67</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0%</td>
+<td>0%</td>
+<td>100%</td>
+<td>1 · 0 · 0.67</td>
+</tr>
+<tr>
+<td>3</td>
+<td>60%</td>
+<td>0%</td>
+<td>40%</td>
+<td>1.4 · 0 · 0.07</td>
+</tr>
+<tr>
+<td>4</td>
+<td>95.5%</td>
+<td>0%</td>
+<td>4.5%</td>
+<td>1.45 · 1.77 · 0</td>
+</tr>
+<tr>
+<td>5</td>
+<td>44.9%</td>
+<td>55.1%</td>
+<td>0%</td>
+<td>0.34 · 2.67 · 1.2</td>
+</tr>
+<tr>
+<td>6</td>
+<td>8.1%</td>
+<td>63.3%</td>
+<td>28.5%</td>
+<td>0 · 1.98 · 3.02</td>
+</tr>
+</tbody>
+</table></div>
+<p>보가 7판이 아니라 5판에 돌아와요. 이 가위바위보에서 재면 틈은 교과서가 100번 0.12·1만 번 0.0104, 음수 자르기가 0.07·0.0048, 거기에 뒤 판 가중까지 더하면 0.07·0.0025예요. 제품의 수치는 아니에요.</p>
+<p>여기에 <strong>입력</strong>이 두 가지 있어요. 벳 크기를 몇 개로 제한할지와 레인지를 어떻게 넣을지예요. 이 둘이 사용자의 책임이에요. <strong>나무에 없는 벳 크기는 솔버가 고려하지 못해요.</strong> 레인지를 잘못 넣으면 그 레인지에 대한 답을 정확히 찾아요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>"솔버가 그렇대"는 "<strong>그 입력에 대해</strong> 후회를 그만큼 줄였대"예요. 같은 스팟이라도 두 벳 크기로 푼 답과 세 벳 크기로 푼 답이 다를 수 있는 건 솔버가 틀려서가 아니라 게임이 달라서예요.</p></section>
+<hr />
+<h2>실제 핸드 예시: M73의 리버, BB의 블러프캐처</h2>
+<p>M73 장면의 다른 쪽을 봐요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>자리·스택</td>
+<td>BTN 대 BB(Hero), 유효 스택 100BB</td>
+</tr>
+<tr>
+<td>프리플랍</td>
+<td>BTN 2.5BB 오픈, SB 폴드, BB 콜 → 팟 5.5BB</td>
+</tr>
+<tr>
+<td>플랍 K♠ Q♦ J♣</td>
+<td>BB 체크, BTN 3.25BB, BB 콜 → 팟 12BB</td>
+</tr>
+<tr>
+<td>턴 5♥</td>
+<td>BB 체크, BTN 체크</td>
+</tr>
+<tr>
+<td>리버 A♥</td>
+<td>BB 체크, BTN 5BB, BB 결정</td>
+</tr>
+</tbody>
+</table></div>
+<p>Hero는 A♦K♣로 투페어예요. 이 보드의 T를 이길 수 없으니 M73 가정에서 <strong>블러프캐처</strong>예요. 이번 한 번의 결정 기준이고, 레인지는 M73의 <strong>AKQ 표에 맞춘 가정</strong>이에요.</p>
+<p>리버 5BB에 필요 에퀴티는 이래요.</p>
+<blockquote>
+<p>5 ÷ (12 + 2 × 5) = 0.227</p>
+</blockquote>
+<p>M73 공식의 답은 K 콜 41.2%, Q 블러프 29.4%예요. 솔버식으로 풀면 평균이 그리로 모여요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>반복</th>
+<th>평균 K 콜</th>
+<th>평균 Q 블러프</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>50%</td>
+<td>50%</td>
+</tr>
+<tr>
+<td>10</td>
+<td>45.2%</td>
+<td>50.7%</td>
+</tr>
+<tr>
+<td>100</td>
+<td>38.1%</td>
+<td>32%</td>
+</tr>
+<tr>
+<td>1,000</td>
+<td>41.4%</td>
+<td>31.1%</td>
+</tr>
+<tr>
+<td>10,000</td>
+<td>42.1%</td>
+<td>29.2%</td>
+</tr>
+<tr>
+<td>100,000</td>
+<td>41.1%</td>
+<td>29.3%</td>
+</tr>
+</tbody>
+</table></div>
+<p>Hero가 혼합을 어떻게 실행할까요? M72의 규칙을 써요. 카드 제거가 비슷한 콤보끼리면 무늬로 나눌 수 있지만 41.2%는 무늬로 딱 안 맞아요. <strong>시계 초침 25초까지면 콜</strong>로 정하면 약 41.7%예요. 이번엔 시계가 40초를 가리켜서 <strong>폴드</strong>해요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>Hero가 진짜 궁금한 건 "이 콤보가 콜인가"일 텐데, 표가 주는 답은 <strong>K 칸 전체의 비율</strong>이에요. BTN이 표대로 29.4%를 블러프하면 콜 EV가 0이라 어느 쪽을 골라도 지금 판의 EV는 같아요. 41.2%를 지키는 일은 상대 블러프의 EV를 0으로 묶어 두는 일이에요.</p>
+<p>반복을 늘려도 한 칸의 숫자는 왔다 갔다 해요. 평균 K 콜과 정답의 차이예요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>반복</th>
+<th>100</th>
+<th>300</th>
+<th>1,000</th>
+<th>3,000</th>
+<th>10,000</th>
+<th>100,000</th>
+<th>1,000,000</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>K 콜 오차(포인트)</td>
+<td>3.05</td>
+<td>0.44</td>
+<td>0.23</td>
+<td>0.73</td>
+<td>0.88</td>
+<td>0.1</td>
+<td>0.02</td>
+</tr>
+</tbody>
+</table></div>
+<p>한 줄의 숫자만 보고 "이만큼 맞았다"고 말할 수 없어요. 이 값을 어떻게 읽을지가 다음 글이에요.</p>
+<hr />
+<h2>GTO 기준과 실전 익스플로잇</h2>
+<h3>GTO 기준(이론)</h3>
+<ul>
+<li><strong>제품마다 쓰는 변형이 달라요.</strong> 음수 자르기와 가중치의 세부는 이 글의 숫자와 달라요(불확실)</li>
+<li><strong>균형이 여러 개일 수 있어요.</strong> 같은 값을 주는 다른 혼합이 있으면 어느 쪽으로 수렴할지는 시작과 순서에 달려요. M74에서 콜 위치가 범위로 묶였던 것과 같은 일이에요</li>
+</ul>
+<h3>실전(라이브·저스테이크) 익스플로잇</h3>
+<p><strong>블러프로 한 번 잡히면 다음 판 블러프를 끊고, 몇 번 이기면 늘리는 상대라면</strong> 그 사람의 조정은 표의 현재 전략처럼 0%와 100%를 오가요. 그런 상대라면 지난 몇 판의 결과가 그 사람의 다음 행동을 알려 줘요. 방금 큰 블러프가 잡힌 상대의 큰 벳은 밸류 쪽으로 무게를 둬요. 이 조정은 그 상대가 잡힌 다음 판을 일부러 블러프로 쓰기 시작하면 역이용돼요.</p>
+<p><strong>내 쪽.</strong> 복기할 때 한 판의 결과가 아니라 <strong>그 자리의 평균</strong>을 봐요. 오늘 판단이 맞았는지는 표본이 쌓인 평균으로만 알 수 있어요.</p>
+<hr />
+<section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. 솔버 화면을 마지막 전략으로 읽기</strong>
+표에서 10만 번째 판의 현재 전략은 바위 100%였어요. 화면의 41.2%는 "이 콤보가 지금 그렇게 결정했다"가 아니라 <strong>평균</strong>이에요. 일부 솔버는 마지막 판의 전략도 보여 줄 수 있어요(제품마다 달라요, 불확실).</p></div><div class="mis-card"><p><strong>실수 2. 솔버가 상대 맞춤형이라고 생각하기</strong>
+솔버는 입력한 레인지의 자기 자신과 둬요. 내 상대의 습관은 입력하지 않으면 없는 정보예요. 상대 맞춤은 노드 잠금 같은 별도 입력이 있어야 해요.</p></div><div class="mis-card"><p><strong>실수 3. 반복만 늘리면 뭐든 정확해진다고 믿기</strong>
+반복은 <strong>나무 안의 오차</strong>만 줄여요. 벳 크기를 두 개만 넣었다면 몇 억 번을 돌려도 세 번째 크기의 답은 안 나와요.</p></div></section>
+<hr />
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<p>솔버 화면을 볼 때 이렇게 물어요.</p>
+<ol>
+<li>이 숫자는 <strong>몇 번 반복한 평균</strong>인가</li>
+<li>이 나무에 <strong>빠진 벳 크기</strong>는 없나</li>
+<li>입력한 레인지가 <strong>내 상대와 얼마나 비슷한가</strong></li>
+</ol></section>
+<hr />
+<h2>내 판단 점검</h2>
+<p><strong>문제 1.</strong> 어떤 노드에서 누적 후회가 바위 +4, 보 +1, 가위 −2예요. 다음 판의 전략은 어떻게 될까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>바위 80%, 보 20%, 가위 0%</strong>예요. 플러스 후회만 모아서 비율을 내요.</p>
+<blockquote>
+<p>4 ÷ (4 + 1) = 0.8</p>
+</blockquote>
+<p>가위의 −2는 쌓인 만큼 벌어야 다시 선택지에 들어와요. 그래서 후회가 큰 음수인 행동은 한동안 안 나와요.</p>
+</details>
+<p><strong>문제 2.</strong> 어떤 노드의 콜과 폴드 누적 후회가 +3과 −3이에요. 이 노드에서 지금까지 10번 평균 콜 빈도는 40%예요. 다음 판의 콜 빈도와, 그 판까지 합친 평균 콜 빈도는 얼마일까요? 솔버는 이제 이 노드를 "콜"로 정한 걸까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>다음 판은 콜 100%이지만 평균은 45.5%</strong>예요. 플러스 후회가 콜뿐이라 다음 판은 전부 콜이에요. 답으로 쓰는 평균은 많이 안 움직여요.</p>
+<blockquote>
+<p>(10 × 0.4 + 1) ÷ 11 = 0.4545</p>
+</blockquote>
+<p>"이제 콜이다"는 현재 전략을 답으로 읽은 거예요. 폴드 쪽 후회가 쌓여 플러스로 돌아서면 다시 섞여요. 2단계 표에서 보가 −3.33에서 플러스로 돌아서는 데 4판이 걸렸어요.</p>
+</details>
+<hr />
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>솔버 화면의 비율을 볼 때 → 평균 전략이라고 읽는다 → 현재 전략은 판마다 돌고 평균만 멈춘다</li>
+<li>답의 정확도를 따질 때 → 반복 수와 틈을 함께 본다 → 평균 후회의 상한은 반복의 제곱근에 반비례하고, 두 사람 몫을 합친 틈은 그 두 배 안쪽이다</li>
+<li>답을 실전에 쓸 때 → 나무의 크기 선택과 레인지 입력을 먼저 본다 → 솔버는 입력한 게임의 답만 찾는다</li>
+</ul></section>
+<hr />
+<section class="sec end"><h2>정리하며</h2>
+<p>오늘은 비대칭 가위바위보를 손으로 여섯 판 돌려서 후회를 세고, AKQ로 옮겨 상대의 도달 확률을 곱하는 이유를 봤어요. 현재 전략은 끝까지 돌고 평균만 41.2%로 모인다는 게 오늘의 그림이에요. 기억할 건 솔버의 답이 입력의 답이라는 점이에요.</p>
+<p>다음 글 M79에서는 이 <strong>오차</strong>를 직접 읽어요. 화면의 빈도 1~2%가 정말 그런 뜻인지, 덜 수렴한 답을 어떻게 알아보는지 다뤄요.</p>
+<p><small>AI 작성 · 숫자는 계산 검증 · 가정 레인지·고정한 스택 기준</small></p></section>
+</article>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="274_M72.html">가위바위보로 보는 혼합 전략: 왜 섞지 않으면 바로 잡힐까</a></li></ul><p class="l">이 글 다음에 볼 글</p><ul><li><a href="281_M79.html">솔버 오차 읽기: 빈도 1~2%와 덜 수렴한 답의 뜻</a></li><li><a href="285_M83.html">AI가 사람을 이긴 뒤: Libratus·Pluribus가 바꾼 것</a></li></ul></aside><nav class="nav"><a class="prev" href="279_M77.html"><div class="l">← 이전 글</div><div class="t">잼 오어 폴드 게임: 푸시·폴드표는 어떻게 나왔을까</div></a><a class="next" href="281_M79.html"><div class="l">다음 글 →</div><div class="t">솔버 오차 읽기: 빈도 1~2%와 덜 수렴한 답의 뜻</div></a></nav></main>
+<script>/*__land__*/(function(){try{if(window.top!==window.self||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;var v='',n='';try{v=localStorage.getItem('vid');if(!v){v=Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('vid',v);}n=localStorage.getItem('nick')||'';}catch(e){}var f=(new URLSearchParams(location.search).get('from')||'').slice(0,30),rf=document.referrer||'',own=false;try{own=!!rf&&new URL(rf).host===location.host;}catch(e){}var b={p:"\ube14\ub85c\uadf8",n:n,v:v};if(f||!own){b.l=1;b.from=f;b.rf=own?'':rf.slice(0,200);}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b),keepalive:true}).catch(function(){});}catch(e){}})();</script>
+</body>
+</html>

@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GTO는 정확히 뭘까: 내쉬 균형과 &quot;안 지는 전략&quot;의 뜻 · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+<meta name="description" content="오늘부터는 전략 자체가 아니라 전략이 왜 그런 모양이 되는지 를 바닥부터 따져 봐요. 첫 글의 주제는 매일 쓰면서 정작 정의해 본 적 없는 말, GTO예요. &quot;GTO로 치면 안 진다&quot;는 말, 맞을까요? 반만 맞아요. 어디까지 맞는지 네 칸짜리 표 하나로 정확히 선을…">
+<link rel="canonical" href="https://xn--bc2b73r.kr/blog/%EA%B8%80/273_M71.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GTO는 정확히 뭘까: 내쉬 균형과 &quot;안 지는 전략&quot;의 뜻 · 뚝섬 홀덤학습">
+<meta property="og:description" content="오늘부터는 전략 자체가 아니라 전략이 왜 그런 모양이 되는지 를 바닥부터 따져 봐요. 첫 글의 주제는 매일 쓰면서 정작 정의해 본 적 없는 말, GTO예요. &quot;GTO로 치면 안 진다&quot;는 말, 맞을까요? 반만 맞아요. 어디까지 맞는지 네 칸짜리 표 하나로 정확히 선을…">
+<meta property="og:url" content="https://xn--bc2b73r.kr/blog/%EA%B8%80/273_M71.html">
+<meta property="og:image" content="https://xn--bc2b73r.kr/hub/banner.jpg">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge m">마스터</span><span class="chip">개념</span><span class="n">마스터 71번째 글 (전체 285편 중 273번째)</span></div><h1>GTO는 정확히 뭘까: 내쉬 균형과 &quot;안 지는 전략&quot;의 뜻</h1>
+<article>
+<p>안녕하세요. 오늘부터는 전략 자체가 아니라 <strong>전략이 왜 그런 모양이 되는지</strong>를 바닥부터 따져 봐요. 첫 글의 주제는 매일 쓰면서 정작 정의해 본 적 없는 말, GTO예요.</p>
+<p>"GTO로 치면 안 진다"는 말, 맞을까요? 반만 맞아요. 어디까지 맞는지 네 칸짜리 표 하나로 정확히 선을 그어 볼게요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>내쉬 균형의 정확한 정의와, 그 안의 <strong>"혼자"</strong>가 하는 일</li>
+<li>GTO가 지켜 주는 건 승리가 아니라 <strong>게임 값</strong>이고, 섞는 전략이 순수 전략의 틈을 닫는 과정</li>
+<li>균형대로만 쳐도 돈이 되는 상대 실수와 <strong>한 푼도 안 되는 실수</strong>를 핸드 단위로 가르는 기준</li>
+</ul></div>
+<hr />
+<h2>핵심 개념: GTO는 가장 많이 버는 전략이 아니라 가장 덜 깎이는 전략</h2>
+<p><strong>내쉬 균형</strong>은 전략 한 쌍에 붙는 이름이에요. 양쪽이 그 전략대로 칠 때 <strong>어느 쪽도 혼자 바꿔서 더 벌 수 없는</strong> 상태를 말해요. 우리가 GTO라고 부르는 건 두 사람이 서로의 몫을 뺏는 게임(제로섬)에서 이 균형에 속하는 전략이에요. GTO는 포커판에서 쓰는 말이고, 게임이론 쪽에서는 <strong>균형 전략</strong>이라고 해요.</p>
+<p>잘하는 사람도 놓치는 건 이 정의가 <strong>"좋다"고 말한 적이 없다</strong>는 점이에요. "상대가 그대로 칠 때 더 나은 선택이 없다"고만 말해요. 여기서 네 가지 오해가 갈라져요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>흔히 하는 말</th>
+<th>정확한 말</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GTO로 치면 안 진다</td>
+<td>두 레인지를 고정한 노드에서는 그 <strong>값</strong>까지만 지킨다. 값이 낸 돈보다 작으면 완벽해도 마이너스다. "안 진다"는 레이크 없는 헤즈업에서 버튼을 번갈아 잡은 합계에 붙는 말이다</td>
+</tr>
+<tr>
+<td>GTO는 상대 실수로 돈을 번다</td>
+<td>균형 상대에게 <strong>EV가 깎이는 행동</strong>을 할 때만 번다. EV가 같은 행동끼리 비율만 틀리면 못 번다</td>
+</tr>
+<tr>
+<td>GTO가 가장 많이 번다</td>
+<td>상대가 치우치면 보통 최선이 아니다. 그런 상대에겐 바닥이지 천장이 아니다</td>
+</tr>
+<tr>
+<td>솔버 답이 GTO다</td>
+<td><strong>정해 준 사이즈와 시작 레인지 안에서</strong> 구한 근사값이다</td>
+</tr>
+</tbody>
+</table></div>
+<p>오늘은 이 네 줄을 숫자로 확인해요.</p>
+<hr />
+<section class="sec why"><h2>왜 그럴까: 리버 한 장면을 네 칸 표로 접으면 보장선이 보여요</h2>
+<p>M52와 같은 종류의 장난감 게임인데 보는 곳이 달라요. M52는 <strong>왜 그 점에서 멈추느냐</strong>를 봤고, 오늘은 그 점이 <strong>무엇을 지켜 주고 무엇을 지켜 주지 않느냐</strong>를 봐요.</p>
+<h3>장난감 게임 가정</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>가정</th>
+<th>이 모델에서</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>스트리트</td>
+<td>리버 한 번, 벳 한 번(레이즈 없음), 사이즈 하나</td>
+</tr>
+<tr>
+<td>팟 / 벳</td>
+<td>10BB / 10BB(팟벳)</td>
+</tr>
+<tr>
+<td>거는 쪽 레인지</td>
+<td>넛 40% + 헛손 60%. 헛손은 체크하면 짐</td>
+</tr>
+<tr>
+<td>받는 쪽 레인지</td>
+<td>전부 블러프캐처(넛에는 지고 헛손에는 이김)</td>
+</tr>
+</tbody>
+</table></div>
+<p>아래의 <strong>몫</strong>은 이 팟에서 거는 쪽이 평균적으로 가져가는 양이에요. 벳으로 더 딴 돈과 잃은 돈까지 넣은 값이고, 결론은 전부 <strong>이 모델에서</strong>예요.</p>
+<h3>1단계. 전략을 표로 접기</h3>
+<p>거는 쪽이 정할 건 헛손을 어떻게 하느냐, 받는 쪽이 정할 건 콜이냐 폴드냐예요. 넛은 벳한다고 두고, 양 끝의 전략만 놓고 네 칸을 채워요.</p>
+<blockquote>
+<p>블러프 없음·늘 콜: 0.4 × 20 = 8</p>
+<p>블러프 없음·늘 폴드: 0.4 × 10 = 4</p>
+<p>전부 블러프·늘 콜: 0.4 × 20 − 0.6 × 10 = 2</p>
+<p>전부 블러프·늘 폴드: 0.4 × 10 + 0.6 × 10 = 10</p>
+</blockquote>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>거는 쪽 몫</th>
+<th>받는 쪽 늘 콜</th>
+<th>받는 쪽 늘 폴드</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>블러프 없음</td>
+<td>8BB</td>
+<td>4BB</td>
+</tr>
+<tr>
+<td>전부 블러프</td>
+<td>2BB</td>
+<td>10BB</td>
+</tr>
+</tbody>
+</table></div>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>리버 결정이 아무리 복잡해 보여도 <strong>누가 무엇을 고르면 얼마가 되나</strong>는 표 한 장으로 접혀요. 게임이론은 이 표를 읽는 방법이에요. 받는 쪽 몫은 10에서 뺀 값이라 따로 그리지 않아도 돼요.</p>
+<h3>2단계. 균형을 찾고 정의로 검사하기</h3>
+<p>네 칸 어디에서도 멈출 수 없다는 건 M52에서 봤죠. 멈추는 점은 거는 쪽이 <strong>헛손의 1/3만 블러프</strong>(레인지 전체의 20%, 벳 속 블러프 비중 33.3%), 받는 쪽이 <strong>콜 50%</strong>예요. 이 점이 균형인지는 정의대로 "혼자 바꿔 보기"로 확인해요.</p>
+<blockquote>
+<p>받는 쪽이 콜 50%일 때 블러프 EV = 0.5 × 10 − 0.5 × 10 = 0</p>
+<p>이 블러프 비중에서 콜 EV = 1/3 × 20 − 2/3 × 10 = 0</p>
+<p>콜 50%일 때 넛을 벳하면 = 0.5 × 20 + 0.5 × 10 = 15</p>
+</blockquote>
+<p>헛손은 체크해도 0, 블러프해도 0이라 비율을 바꿀 이유가 없어요. 넛은 벳이 15, 체크가 10이라 체크로 옮길 이유가 없고요. 받는 쪽도 콜과 폴드가 둘 다 0이에요. 혼자 바꿔서 더 벌 사람이 없으니 균형이에요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>균형을 확인하는 데 <strong>"잘 쳤나"는 필요 없어요.</strong> "혼자"라는 말은 두 사람 제로섬에서는 티가 안 나요. 한쪽이 벌면 다른 쪽이 그만큼 잃으니까요.</p>
+<p>세 사람이 되면 달라져요. 두 사람이 같이 움직여서 셋째 몫을 깎을 수 있거든요. <strong>혼자 바꿔서 못 번다는 것과 안전하다는 것이 다른 말</strong>이 되는 거예요. 그 계산은 M80에서 다뤄요.</p>
+<h3>3단계. 순수 전략의 틈을 섞기가 닫는다</h3>
+<p>먼저 섞지 않을 때 보장되는 몫을 봐요. 거는 쪽이 전략 하나를 골라 최악을 받아들이면 블러프 없음이 4BB, 전부 블러프가 2BB라서 <strong>보장은 4BB까지</strong>예요. 받는 쪽이 전략 하나로 묶으면 늘 콜일 때 거는 쪽이 8BB까지, 늘 폴드일 때 10BB까지 가져가서 <strong>묶을 수 있는 건 8BB까지</strong>예요. 4BB와 8BB 사이에 틈이 있어요.</p>
+<p>이제 섞어요. 거는 쪽이 헛손의 1/3을 블러프하면 받는 쪽이 뭘 해도 몫이 같아요.</p>
+<blockquote>
+<p>늘 콜이면: 2/3 × 8 + 1/3 × 2 = 6</p>
+<p>늘 폴드면: 2/3 × 4 + 1/3 × 10 = 6</p>
+</blockquote>
+<p>받는 쪽이 콜 50%면 이번엔 거는 쪽이 뭘 해도 같아요.</p>
+<blockquote>
+<p>블러프 없음이면: 0.5 × 8 + 0.5 × 4 = 6</p>
+<p>전부 블러프면: 0.5 × 2 + 0.5 × 10 = 6</p>
+</blockquote>
+<p>거는 쪽은 혼자 힘으로 6BB를 확보하고, 받는 쪽은 거는 쪽이 6BB 넘게 못 가져가게 묶어요. 틈이 6BB에서 닫혔어요. 이 6BB가 <strong>게임 값</strong>이에요.</p>
+<p>두 사람 제로섬 게임에서는 <strong>섞는 전략까지 허용하면</strong> "우리가 혼자 확보할 수 있는 최대"와 "상대가 우리를 묶을 수 있는 최소"가 늘 같다는 게 폰 노이만의 미니맥스 정리예요. 거는 쪽 보장선을 직선 두 개로 그리는 건 E08에서 봤고, 오늘 더할 건 이 표에서는 <strong>섞지 않으면 그 둘이 안 만난다</strong>는 점이에요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>"GTO는 안전하다"의 근거는 전략이 훌륭해서가 아니라 <strong>거는 쪽이 확보하는 몫과 받는 쪽이 묶는 한도가 정확히 같아지기 때문</strong>이에요. M57 GTO 절의 "최악" 칸이 바로 이 보장선이고, 이 게임에서는 블러프 없음이 4BB, 헛손의 1/3 블러프가 6BB, 전부 블러프가 2BB예요.</p>
+<p>GTO를 한 줄로 다시 쓰면 <strong>보장선이 가장 높은 전략</strong>이에요. 값에서 보장선을 뺀 차이가 M57의 착취 가능성이고, 솔버 화면의 오차도 같은 종류의 숫자예요. 읽는 법은 M79에서 다뤄요.</p>
+<h3>4단계. 값은 공평하지 않다</h3>
+<p>받는 쪽의 몫 4BB는 팟의 절반이 안 돼요. 레인지만 바꿔서 값이 어떻게 움직이는지 볼게요. 사이즈는 그대로 팟벳이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>거는 쪽 넛 비율</th>
+<th>거는 쪽 몫</th>
+<th>받는 쪽 몫</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>20%</td>
+<td>3BB</td>
+<td>7BB</td>
+</tr>
+<tr>
+<td>33.3%</td>
+<td>5BB</td>
+<td>5BB</td>
+</tr>
+<tr>
+<td>40%</td>
+<td>6BB</td>
+<td>4BB</td>
+</tr>
+<tr>
+<td>60%</td>
+<td>9BB</td>
+<td>1BB</td>
+</tr>
+</tbody>
+</table></div>
+<p>몫을 쇼다운 몫과 벳 몫으로 나누는 건 M53 2단계에서 봤어요. 오늘 쓸 건 균형에서 <strong>헛손의 값이 0</strong>이라는 점이에요. 그래서 거는 쪽 몫은 넛 비율에 넛 한 콤보의 EV 15를 곱한 것뿐이고, 팟의 절반 5BB를 15로 나눈 33.3%가 이 사이즈에서 <strong>양쪽 몫이 5BB로 같아지는 넛 비율</strong>이에요.</p>
+<p>두 사람이 5BB씩 똑같이 낸 팟이라면 넛이 그보다 많을 때 받는 쪽은 <strong>완벽하게 쳐도 마이너스</strong>예요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>이 값을 정하는 건 <strong>리버까지 온 두 레인지</strong>예요. 그 레인지는 앞 스트리트의 선택이 만든 것이고, 오늘은 그걸 고정하고 봤어요. 테이블에서 정확한 값을 알 수는 없으니 넛을 누가 더 들고 있나, 포지션이 어디인가로 방향만 어림하고, 정확한 값은 복기할 때 솔버 EV로 봐요.</p>
+<p>모든 보드와 라인을 평균한 그 자리의 몫을 <strong>자리 값</strong>이라고 하면, "안 진다"가 성립하는 건 <strong>레이크 없는 헤즈업에서 버튼을 번갈아 잡을 때</strong>예요. 두 자리 값의 합이 0이라 상대가 어떻게 치든 합계가 0 아래로 내려가지 않아요. 사람이 여럿인 테이블의 한 바퀴에는 이 말을 쓸 수 없어요.</p>
+<h3>5단계. 실수의 두 종류: EV가 깎이나, 안 깎이나</h3>
+<p>받는 쪽이 콜 50%로 고정한 채 거는 쪽이 벗어나 봐요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>거는 쪽이 하는 일</th>
+<th>거는 쪽 몫</th>
+<th>받는 쪽 몫</th>
+<th>받는 쪽이 더 번 돈</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>균형대로</td>
+<td>6BB</td>
+<td>4BB</td>
+<td>기준</td>
+</tr>
+<tr>
+<td>블러프를 아예 안 함</td>
+<td>6BB</td>
+<td>4BB</td>
+<td>없음</td>
+</tr>
+<tr>
+<td>헛손을 전부 블러프</td>
+<td>6BB</td>
+<td>4BB</td>
+<td>없음</td>
+</tr>
+<tr>
+<td>넛의 절반을 체크</td>
+<td>5BB</td>
+<td>5BB</td>
+<td>1BB</td>
+</tr>
+</tbody>
+</table></div>
+<p>블러프를 안 해도 몫이 그대로인 건 A07과 M52 4단계에서 봤어요. 오늘은 <strong>맨 아랫줄과의 차이</strong>를 봐요. 헛손의 두 행동은 EV가 같은데, 넛의 두 행동은 EV가 달라요.</p>
+<blockquote>
+<p>넛을 벳할 때와 체크할 때의 차이 = 15 − 10 = 5</p>
+<p>넛 절반을 체크한 손실 = 0.4 × 0.5 × 5 = 1</p>
+</blockquote>
+<p>EV가 같은 행동끼리 비율을 틀리는 게 <strong>안쪽 실수</strong>, 균형 상대에게 EV가 깎이는 행동을 하는 게 <strong>바깥 실수</strong>예요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>균형 전략에 돈을 벌어다 주는 건 <strong>바깥 실수뿐</strong>이에요. 기준은 "솔버가 그 행동을 몇 % 쓰나"가 아니라 "그 행동의 EV가 낮나"예요. 균형은 여러 개일 수 있어서, 지금 답에 0%로 나온 행동도 EV가 같을 수 있거든요.</p></section>
+<hr />
+<h2>실제 핸드 예시: BTN 대 BB, 스트레이트가 완성된 리버의 팟벳</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>자리·스택</td>
+<td>BTN(거는 쪽) 대 BB(Hero), 유효 스택 100BB</td>
+</tr>
+<tr>
+<td>프리플랍</td>
+<td>BTN 2.5BB 오픈, SB 폴드, BB 콜 → 팟 5.5BB</td>
+</tr>
+<tr>
+<td>플랍 Q♠ J♦ 4♣</td>
+<td>BB 체크, BTN 2.25BB, BB 콜 → 팟 10BB</td>
+</tr>
+<tr>
+<td>턴 3♥</td>
+<td>BB 체크, BTN 체크</td>
+</tr>
+<tr>
+<td>리버 T♠</td>
+<td>BB 체크, BTN 10BB → BB 결정</td>
+</tr>
+</tbody>
+</table></div>
+<p>Hero는 K♣Q♣예요. 플랍은 필요 에퀴티 22.5%라 Q 페어로 어렵지 않은 콜이고, 턴은 체크로 넘어가 추가 금액이 없어요. 문제는 리버예요. 이번 한 번의 결정 기준이고, 레인지는 <strong>장난감 게임에 맞춘 가정</strong>이에요.</p>
+<p>BTN이 이 팟벳에 쓰는 밸류는 리버에 완성된 위쪽 스트레이트로 둬요. 콤보가 적은 98s나 셋·투페어는 이 사이즈로 안 건다고 보고 뺐어요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>BTN 밸류</th>
+<th>이 보드에서</th>
+<th>콤보</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AK</td>
+<td>A-K-Q-J-T 스트레이트</td>
+<td>16</td>
+</tr>
+<tr>
+<td>K9</td>
+<td>K-Q-J-T-9 스트레이트</td>
+<td>16</td>
+</tr>
+<tr>
+<td>합계</td>
+<td></td>
+<td>32</td>
+</tr>
+</tbody>
+</table></div>
+<p>헛손은 플랍만 치고 턴에 멈춘 A5·A6·A7, 전부 합쳐 48콤보로 가정해요. BTN이 보는 밸류 대 헛손이 장난감의 40% 대 60%와 같아요. BTN은 Hero 패를 모르니 헛손을 고르게 1/3씩 <strong>16콤보 블러프</strong>하고, 벳 전체는 밸류와 블러프를 합쳐 48콤보예요. 엄밀한 균형이 아니라 콤보 수를 맞춘 가정이에요.</p>
+<h3>콜 50%를 무엇으로 채우나</h3>
+<p>BB 레인지 전체의 숙제는 50%를 지키는 건데, 어떤 핸드로 지키느냐는 Hero 카드가 무엇을 지우느냐로 갈려요(블로커로 줄 세우는 법은 E03과 M38). 모두 Q 페어로 밸류에 지고 헛손에 이기는 블러프캐처예요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Hero</th>
+<th>Hero 카드가 지우는 것</th>
+<th>밸류</th>
+<th>블러프</th>
+<th>블러프 비중</th>
+<th>콜 EV</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>K♣Q♣</td>
+<td>K가 AK·K9를</td>
+<td>24콤보</td>
+<td>16콤보</td>
+<td>40%</td>
+<td>+2BB</td>
+</tr>
+<tr>
+<td>Q♣9♣</td>
+<td>9가 K9를</td>
+<td>28콤보</td>
+<td>16콤보</td>
+<td>36.4%</td>
+<td>+0.91BB</td>
+</tr>
+<tr>
+<td>Q♣8♣</td>
+<td>없음</td>
+<td>32콤보</td>
+<td>16콤보</td>
+<td>33.3%</td>
+<td>본전</td>
+</tr>
+<tr>
+<td>A♣Q♣</td>
+<td>A가 AK와 헛손을</td>
+<td>28콤보</td>
+<td>12콤보</td>
+<td>30%</td>
+<td>−1BB</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>K♣Q♣의 콜 EV = 0.4 × 20 − 0.6 × 10 = 2</p>
+<p>A♣Q♣일 때 블러프 수 = 48 × 3/4 × 1/3 = 12</p>
+<p>A♣Q♣의 콜 EV = 0.3 × 20 − 0.7 × 10 = −1</p>
+</blockquote>
+<p>Hero의 K♣Q♣는 위쪽이라 <strong>콜</strong>이에요. 눈여겨볼 건 맨 아래예요. 키커가 가장 좋은 A♣Q♣는 헛손이 전부 A 하이라는 이 가정에서 블러프를 지워서 콜 EV가 −1BB예요. Q♣8♣의 콜은 EV가 같은 <strong>안쪽</strong>이고, A♣Q♣의 콜은 EV가 깎이는 <strong>바깥</strong>이에요. 같은 "블러프캐처의 콜"로 보여도 EV가 달라요.</p>
+<h3>돈으로 다시 보면</h3>
+<p>블로커를 뺀 장난감 평균으로 보면 이래요. Q♣8♣처럼 지우는 카드가 없는 핸드의 몫이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>자리</th>
+<th>팟 몫</th>
+<th>낸 돈</th>
+<th>손익</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BTN</td>
+<td>6BB</td>
+<td>4.75BB</td>
+<td>+1.25BB</td>
+</tr>
+<tr>
+<td>BB</td>
+<td>4BB</td>
+<td>4.75BB</td>
+<td>−0.75BB</td>
+</tr>
+<tr>
+<td>SB</td>
+<td>없음</td>
+<td>0.5BB</td>
+<td>−0.5BB</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>1.25 − 0.75 − 0.5 = 0</p>
+</blockquote>
+<p>이 가정의 이 노드에서 지우는 카드가 없는 핸드는 리버를 완벽하게 풀어도 평균 <strong>−0.75BB</strong>예요. 블라인드 1BB까지 들어간 숫자라서, 프리플랍에 접었을 때의 −1BB보다는 나은 결과예요. 블로커가 좋으면 위로 올라가서 K♣Q♣는 같은 가정에서 +0.81BB예요.</p>
+<h3>상대를 알면 천장이 열려요</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>BTN이 이렇다면</th>
+<th>콜 50%의 몫</th>
+<th>최선 대응의 몫</th>
+<th>더 버는 돈</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>블러프를 아예 안 함</td>
+<td>4BB</td>
+<td>늘 폴드 6BB</td>
+<td>2BB</td>
+</tr>
+<tr>
+<td>헛손을 전부 블러프</td>
+<td>4BB</td>
+<td>늘 콜 8BB</td>
+<td>4BB</td>
+</tr>
+</tbody>
+</table></div>
+<p>표의 오른쪽을 가지려면 <strong>균형을 떠나야</strong> 해요.</p>
+<hr />
+<h2>GTO 기준과 실전 익스플로잇</h2>
+<h3>GTO 기준(이론)</h3>
+<p>장난감 게임에서 6BB와 4BB는 어느 쪽도 혼자 바꿀 수 없는 값이에요. 실제 솔버 답에는 조건이 세 개 붙어요.</p>
+<ul>
+<li><strong>정해 준 게임 안의 답이에요.</strong> 솔버는 벳 사이즈 목록과 시작 레인지를 받아서 그 안의 균형을 구해요. 이 블로그의 헤즈업 DB도 R50 보드의 첫 벳이 6.3BB·14.3BB·올인으로 고정돼 있어서, 목록 밖 사이즈에는 답이 없어요</li>
+<li><strong>근사값이에요.</strong> 얼마나 덜 풀렸는지 읽는 법은 M79에서 다뤄요</li>
+<li><strong>두 사람, 레이크 없음이 전제예요.</strong> 레이크가 있으면 두 사람 EV의 합이 그만큼 마이너스가 되어(레이크 구조는 M60) 제로섬이 깨지고, 값 보장의 전제가 사라져요. 값이 큰 자리는 레이크를 내고도 플러스일 수 있고요. 세 사람도 마찬가지이고, M80에서 다뤄요</li>
+</ul>
+<h3>실전(라이브·저스테이크) 익스플로잇</h3>
+<p><strong>첫째, 상대의 치우침을 핸드 단위로 나눠요.</strong> 장난감에서는 헛손이 전부 같은 값이라 비율 실수가 안쪽이었어요. 실제 레인지는 그렇게 깔끔하지 않아요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>상대의 치우침</th>
+<th>안쪽인 몫</th>
+<th>바깥인 몫</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>콜이 많다</td>
+<td>콜과 폴드의 EV가 같은 블러프캐처를 더 콜한 몫</td>
+<td>콜 EV가 폴드보다 낮은 핸드를 콜한 몫</td>
+</tr>
+<tr>
+<td>블러프가 적다</td>
+<td>체크와 EV가 같은 핸드를 안 친 몫</td>
+<td>블러프 EV가 체크보다 높은 핸드를 안 친 몫</td>
+</tr>
+</tbody>
+</table></div>
+<p>그런 상대라면 "쇼다운에 무슨 핸드를 보여 줬나"를 빈도보다 먼저 봐요.</p>
+<p><strong>둘째, 왼쪽 칸은 근거가 있을 때만 움직여요.</strong> 쇼다운에 블러프가 안 나오는 상대라면 블러프캐처 묶음을 폴드 쪽으로 옮겨서 '상대를 알면' 표의 2BB를 노려요. 그런데 끝까지 옮긴 늘 폴드를 상대가 읽고 헛손을 전부 블러프로 돌리면, 이 게임에서는 받는 쪽 몫이 다 사라져 값보다 4BB 아래로 떨어져요. 얼마나 옮길지 정하는 법은 M57에서 봤으니 그 틀을 그대로 써요.</p>
+<hr />
+<section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. 상대의 콜을 다 같은 실수로 적기</strong>
+균형과 달라 보이는 콜을 전부 "콜이 많은 상대"의 증거로 묶는 경우예요. 표의 Q♣8♣처럼 본전인 콜과 A♣Q♣처럼 1BB가 깎이는 콜은 겉모습이 같아요. 돈이 되는 건 뒤쪽뿐이니 그 행동의 EV가 <strong>얼마나 낮은가</strong>를 봐요.</p></div><div class="mis-card"><p><strong>실수 2. 장난감의 결론을 실제 레인지에 그대로 쓰기</strong>
+"블러프가 적은 상대는 균형으로는 못 번다"라고 외우는 경우예요. 5단계에서 몫이 6BB 그대로였던 건 헛손이 전부 EV가 같아서예요. 실제 레인지에 이 문장을 그대로 들고 가면 받아야 할 돈을 놓쳐요.</p></div><div class="mis-card"><p><strong>실수 3. 한 판의 결과로 콜을 평가하기</strong>
+콜해서 팟을 가져왔다고 잘 친 건 아니에요. 한 판의 결과에는 분산이 그대로 담겨 있어요. 볼 것은 <strong>콜과 폴드의 EV 차이</strong>이고, 여러 판의 평균을 볼 때의 기준점은 0이 아니라 그 노드의 값이에요. 같은 리버라도 Q♣8♣로 도착한 판은 −0.75BB, K♣Q♣로 도착한 판은 +0.81BB가 기준점이에요.</p></div></section>
+<hr />
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<p>상대가 이상한 플레이를 보여 줬을 때 이 순서로 물어요.</p>
+<ol>
+<li>내가 본 건 <strong>빈도인가, 핸드와 행동인가</strong></li>
+<li>그 행동은 이 핸드로 <strong>EV가 낮은가</strong></li>
+<li>아니라면 내가 평소 전략을 바꿀 만큼 <strong>쇼다운이 쌓였나</strong></li>
+</ol></section>
+<hr />
+<h2>내 판단 점검</h2>
+<p><strong>문제 1.</strong> 리버 팟 12BB, 벳 6BB예요. 거는 쪽은 넛 35%·헛손 65%이고 나머지 가정은 본문과 같아요. 두 사람은 이 팟에 각자 6BB씩 냈어요. 둘 다 균형대로 치면 이 팟에서 누가 얼마를 벌까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>받는 쪽이 0.4BB를 벌어요.</strong> 본문의 33.3%는 팟벳일 때의 숫자라 그대로 쓰면 틀려요. 이 사이즈에서는 콜이 66.7%라 넛 한 콤보의 EV가 달라져요.</p>
+<blockquote>
+<p>넛 한 콤보의 EV = 2/3 × 18 + 1/3 × 12 = 16</p>
+<p>0.35 × 16 = 5.6</p>
+<p>12 − 5.6 = 6.4</p>
+<p>6.4 − 6 = 0.4</p>
+</blockquote>
+<p>거는 쪽 몫 5.6BB, 받는 쪽 몫 6.4BB예요. 이 사이즈에서 양쪽 몫이 같아지는 넛 비율은 팟 절반 6BB를 16으로 나눈 37.5%이고, 벳 속 블러프 비중은 25%, 블러프는 레인지의 11.7%예요.</p>
+</details>
+<p><strong>문제 2.</strong> 리버 팟 9BB, 벳 3BB예요. 받는 쪽 레인지는 120콤보이고, 블러프캐처 100콤보와 헛손에게도 지는 핸드 20콤보로 돼 있어요. 거는 쪽은 균형대로 벳해요. 상대 X와 Y는 둘 다 100콤보(83.3%)를 콜해요. X는 블러프캐처 100콤보 전부, Y는 블러프캐처 90콤보와 헛손에게도 지는 핸드 10콤보예요. 거는 쪽이 균형에 머문 채로 더 버는 상대는 누구이고, 벳이 나온 판 기준으로 평균 얼마일까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>Y에게서 벳이 나온 판 기준 0.25BB를 더 벌어요.</strong> X에게서는 더 못 벌어요. 콜 빈도가 같아도 돈이 되는 쪽은 하나예요.</p>
+<p>벳 속 블러프 비중이 20%라 블러프캐처의 콜은 본전이에요.</p>
+<blockquote>
+<p>0.2 × 12 − 0.8 × 3 = 0</p>
+</blockquote>
+<p>균형 콜은 75%, 90콤보예요. X가 더 콜한 10콤보는 본전이라 거는 쪽 몫이 안 변해요. Y가 콜한 10콤보는 헛손에게도 져서 콜할 때마다 3BB를 잃어요.</p>
+<blockquote>
+<p>10 × 3 ÷ 120 = 0.25</p>
+</blockquote>
+</details>
+<hr />
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>상대 경향을 모를 때 → 균형에 머문다 → 두 레인지가 고정된 두 사람 제로섬에서는 어떤 상대를 만나도 몫이 값 아래로 내려가지 않는다</li>
+<li>내 플레이를 복기할 때 → 한 판의 결과가 아니라 콜과 폴드의 EV 차이를 본다 → 결과에는 분산이 그대로 담겨 있고, 여러 판의 평균도 기준점은 0이 아니라 그 노드의 값이다</li>
+<li>상대가 솔버와 다를 때 → 핸드와 행동을 EV로 나눈다 → EV가 깎이는 행동은 균형대로 쳐도 돈이 되고, EV가 같은 행동의 비율은 균형을 떠나야 돈이 된다</li>
+</ul></section>
+<hr />
+<section class="sec end"><h2>정리하며</h2>
+<p>오늘은 리버 한 장면을 네 칸 표로 접어서 GTO가 지켜 주는 범위를 따져 봤어요. 섞지 않으면 4BB와 8BB 사이에 틈이 남았고, 섞어야 6BB에서 만났어요. 그 값은 두 사람에게 공평하지 않았어요.</p>
+<p>다음 글 M72에서는 오늘 그냥 받아들인 <strong>섞는다는 행동 자체</strong>를 가위바위보로 뜯어봐요. 언제 섞어야 하고, 섞는 비율은 무엇이 정하는지를 다뤄요.</p>
+</section><h2>더 읽어 볼 글</h2>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Nash_equilibrium">Nash equilibrium (위키백과)</a>: 내쉬 균형의 정의와 사례. 균형이 곧 좋은 결과는 아니라는 설명이 함께 있어요</li>
+<li><a href="https://en.wikipedia.org/wiki/Minimax_theorem">Minimax theorem (위키백과)</a>: 폰 노이만의 1928년 정리</li>
+</ul>
+<p><small>AI 작성 · 숫자는 계산 검증 · 가정 레인지·고정한 스택 기준</small></p>
+</article>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="210_M38.html">블러프캐처도 좋은 것과 나쁜 것이 있다</a></li><li><a href="225_M52.html">인디퍼런스 원칙: 상대를 콜·폴드 어느 쪽이든 같게 만드는 이유</a></li><li><a href="226_M53.html">폴라 대 블러프캐처 게임: 큰 벳이 이기는 조건</a></li><li><a href="230_M57.html">최대 익스플로잇과 그 대가</a></li><li><a href="233_M60.html">레이크가 바꾸는 전략: 라이브 저스테이크</a></li></ul><p class="l">이 글 다음에 볼 글</p><ul><li><a href="274_M72.html">가위바위보로 보는 혼합 전략: 왜 섞지 않으면 바로 잡힐까</a></li><li><a href="275_M73.html">AKQ 게임: 카드 세 장으로 유도하는 블러프와 콜 비율</a></li><li><a href="279_M77.html">잼 오어 폴드 게임: 푸시·폴드표는 어떻게 나왔을까</a></li></ul></aside><nav class="nav"><a class="prev" href="243_M70.html"><div class="l">← 이전 글</div><div class="t">마스터 심화 마무리 시험</div></a><a class="next" href="274_M72.html"><div class="l">다음 글 →</div><div class="t">가위바위보로 보는 혼합 전략: 왜 섞지 않으면 바로 잡힐까</div></a></nav></main>
+<script>/*__land__*/(function(){try{if(window.top!==window.self||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;var v='',n='';try{v=localStorage.getItem('vid');if(!v){v=Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('vid',v);}n=localStorage.getItem('nick')||'';}catch(e){}var f=(new URLSearchParams(location.search).get('from')||'').slice(0,30),rf=document.referrer||'',own=false;try{own=!!rf&&new URL(rf).host===location.host;}catch(e){}var b={p:"\ube14\ub85c\uadf8",n:n,v:v};if(f||!own){b.l=1;b.from=f;b.rf=own?'':rf.slice(0,200);}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b),keepalive:true}).catch(function(){});}catch(e){}})();</script>
+</body>
+</html>

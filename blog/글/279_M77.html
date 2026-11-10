@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>잼 오어 폴드 게임: 푸시·폴드표는 어떻게 나왔을까 · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+<meta name="description" content="I17부터 푸시·폴드표를 여러 번 썼어요. 그런데 그 표의 숫자는 어디서 온 걸까요? 누가 경험으로 적은 표가 아니라 게임을 풀어서 나온 답이에요. 오늘은 사이트 올인차트와 같은 승률표로 그 답을 직접 만들어요. 식은 두 줄인데, 푸는 과정에서 M71·M72의…">
+<link rel="canonical" href="https://xn--bc2b73r.kr/blog/%EA%B8%80/279_M77.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="잼 오어 폴드 게임: 푸시·폴드표는 어떻게 나왔을까 · 뚝섬 홀덤학습">
+<meta property="og:description" content="I17부터 푸시·폴드표를 여러 번 썼어요. 그런데 그 표의 숫자는 어디서 온 걸까요? 누가 경험으로 적은 표가 아니라 게임을 풀어서 나온 답이에요. 오늘은 사이트 올인차트와 같은 승률표로 그 답을 직접 만들어요. 식은 두 줄인데, 푸는 과정에서 M71·M72의…">
+<meta property="og:url" content="https://xn--bc2b73r.kr/blog/%EA%B8%80/279_M77.html">
+<meta property="og:image" content="https://xn--bc2b73r.kr/hub/banner.jpg">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge m">마스터</span><span class="chip">개념</span><span class="n">마스터 77번째 글 (전체 285편 중 279번째)</span></div><h1>잼 오어 폴드 게임: 푸시·폴드표는 어떻게 나왔을까</h1>
+<article>
+<p>안녕하세요. I17부터 푸시·폴드표를 여러 번 썼어요. 그런데 그 표의 숫자는 어디서 온 걸까요? 누가 경험으로 적은 표가 아니라 게임을 풀어서 나온 답이에요.</p>
+<p>오늘은 사이트 올인차트와 같은 승률표로 그 답을 직접 만들어요. 식은 두 줄인데, 푸는 과정에서 M71·M72의 이야기가 프리플랍에 그대로 나타나요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>표를 만드는 <strong>식 두 줄</strong>과, 번갈아 최선 대응이 왜 멈추지 않는지</li>
+<li>표에 섞이는 핸드가 왜 <strong>경계의 몇 개뿐</strong>인지</li>
+<li>표를 벗어나면 <strong>얼마나 비싼지</strong>, 상대가 벗어나면 어디까지 움직일지</li>
+</ul></div>
+<hr />
+<h2>핵심 개념: 표는 두 사람의 최선 대응이 만난 점이에요</h2>
+<p>잼 오어 폴드 게임은 SB가 올인 또는 폴드, BB가 콜 또는 폴드만 할 수 있는 헤즈업이에요. 10BB에서 답은 이래요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>10BB</th>
+<th>범위</th>
+<th>경계 핸드의 에퀴티</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SB 푸시</td>
+<td>58%</td>
+<td>BB 콜 범위 상대 34.9%</td>
+</tr>
+<tr>
+<td>BB 콜</td>
+<td>37.3%</td>
+<td>SB 푸시 범위 상대 45%</td>
+</tr>
+</tbody>
+</table></div>
+<p>잘하는 사람도 헷갈리는 건 <strong>표의 경계가 핸드의 힘으로 정해진다</strong>는 생각이에요. 경계는 상대 표가 정해요. SB의 경계가 34.9%인 건 BB가 37.3%를 콜하기 때문이고, BB가 37.3%를 콜하는 건 SB가 58%를 푸시하기 때문이에요. 그 둘이 동시에 맞는 곳이 표예요.</p>
+<hr />
+<section class="sec why"><h2>왜 그럴까: 식 두 줄과 멈추지 않는 원</h2>
+<h3>장난감 게임 가정</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>가정</th>
+<th>이 모델에서</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>자리·스택</td>
+<td>헤즈업, SB 0.5BB, BB 1BB, 양쪽 유효 스택 S</td>
+</tr>
+<tr>
+<td>행동</td>
+<td>SB 올인 또는 폴드, BB 콜 또는 폴드</td>
+</tr>
+<tr>
+<td>가치</td>
+<td>칩 EV(레이크·앤티·ICM 없음)</td>
+</tr>
+<tr>
+<td>승률</td>
+<td>사이트 올인차트의 169 핸드 승률표(카드 제거 없음)</td>
+</tr>
+</tbody>
+</table></div>
+<p>결론은 전부 <strong>이 모델에서</strong>예요. 앤티를 넣는 건 E15에서 봤어요.</p>
+<h3>1단계. 식 두 줄</h3>
+<p>식의 재료는 I18·I19에서 본 두 길이에요. 오늘은 그 둘을 한 쌍으로 세워요.</p>
+<p><strong>BB의 식.</strong> BB는 이미 1BB를 넣었고, 콜 비용은 S − 1이에요. 팟은 2S가 돼요. 필요한 에퀴티는 S만으로 정해져요.</p>
+<blockquote>
+<p>10BB의 필요 에퀴티 = 9 ÷ 20 = 0.45</p>
+</blockquote>
+<p><strong>SB의 식.</strong> 폴드하면 −0.5BB예요. 푸시하면 BB가 접을 때 +1BB, 콜할 때 에퀴티로 갈려요. BB 콜 빈도를 p, 콜 범위 상대 에퀴티를 e라고 놓아요.</p>
+<blockquote>
+<p>푸시 EV = (1 − p) × 1 + p × (2S × e − S)</p>
+</blockquote>
+<p>BB 콜 37.3%에 넣으면 푸시 EV가 −0.5와 같아지는 e는 34.9%예요.</p>
+<blockquote>
+<p>(1 − 0.373) × 1 + 0.373 × (20 × 0.349 − 10) = −0.5</p>
+</blockquote>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>BB의 필요 에퀴티는 <strong>상대가 뭘 하든 고정</strong>이에요. 움직이는 건 SB 푸시 범위 상대로 내 핸드의 에퀴티예요. SB는 반대로 p가 바뀌면 필요한 e가 바뀌어요. 폴드로 버는 몫이 있어서 SB의 경계가 훨씬 낮아요. I18의 폴드 에퀴티가 여기서 34.9%라는 숫자로 나와요.</p>
+<h3>2단계. 번갈아 최선 대응은 멈추지 않아요</h3>
+<p>답을 찾는 가장 쉬운 방법은 번갈아 맞춰 보는 거예요. SB가 전부 푸시한다고 놓고, BB의 최선 대응을 구하고, 다시 SB의 최선 대응을 구해요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>차례</th>
+<th>SB 푸시</th>
+<th>그에 맞는 BB 콜</th>
+<th>그에 맞는 SB 푸시</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>100%</td>
+<td>66.2%</td>
+<td>46.3%</td>
+</tr>
+<tr>
+<td>2</td>
+<td>46.3%</td>
+<td>30%</td>
+<td>92.8%</td>
+</tr>
+<tr>
+<td>3</td>
+<td>92.8%</td>
+<td>60.5%</td>
+<td>44.2%</td>
+</tr>
+<tr>
+<td>4</td>
+<td>44.2%</td>
+<td>28.5%</td>
+<td>99.1%</td>
+</tr>
+<tr>
+<td>5</td>
+<td>99.1%</td>
+<td>65.3%</td>
+<td>46.3%</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>다섯 번째에 첫 번째 줄과 거의 같은 곳으로 돌아왔어요.</strong> 46.3 → 92.8 → 44.2 → 99.1 → 46.3의 네 칸을 돌아요. 답을 찾지 못하고 원을 도는 거예요. BB가 콜을 넓히면 SB가 좁히고, SB가 좁히면 BB도 좁히고, BB가 좁히면 SB가 넓혀요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>M72의 가위바위보가 프리플랍에 나타났어요. 멈추는 순수 전략 조합이 없어서 <strong>번갈아 순수하게 맞춰서는 표에 닿지 못해요.</strong> 그럼에도 표가 있는 건 다음 단계 덕분이에요.</p>
+<h3>3단계. 평균을 내면 멈춰요</h3>
+<p>방법을 살짝 바꿔요. 상대의 <strong>지금까지 전략의 평균</strong>에 최선 대응을 해요. 가상 플레이(fictitious play)라고 불러요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>반복</th>
+<th>SB 평균 푸시</th>
+<th>BB 평균 콜</th>
+<th>남은 틈</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>73.2%</td>
+<td>66.2%</td>
+<td>0.3BB</td>
+</tr>
+<tr>
+<td>5</td>
+<td>54.3%</td>
+<td>47.6%</td>
+<td>0.08BB</td>
+</tr>
+<tr>
+<td>10</td>
+<td>52%</td>
+<td>41.4%</td>
+<td>0.04BB</td>
+</tr>
+<tr>
+<td>100</td>
+<td>58.6%</td>
+<td>37.3%</td>
+<td>0.004BB</td>
+</tr>
+<tr>
+<td>1,000</td>
+<td>58%</td>
+<td>37.3%</td>
+<td>0.0004BB</td>
+</tr>
+</tbody>
+</table></div>
+<p>남은 틈은 M71에서 본 것처럼 SB가 지금 평균을 상대로 최선으로 가져갈 값과 BB가 눌러 둘 수 있는 값의 차이예요. 이 게임에서는 반복이 열 배가 되면 틈이 대략 10분의 1로 줄었어요. 4만 번을 돌리면 10BB에서 SB 푸시 58%, BB 콜 37.3%로 멈춰요. 사이트 올인차트의 엔진도 오픈을 끄고 충분히 돌리면 같은 값으로 모여요. I17·I19의 표(58.3%·37.5%)는 엔진의 기본 300번 값이라 소수 자리가 조금 달라요.</p>
+<p>평균 전략을 들여다보면 <strong>섞인 핸드가 경계에 몇 개뿐</strong>이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>쪽</th>
+<th>섞이는 핸드(10BB)</th>
+<th>비율</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SB</td>
+<td>97o, 65o</td>
+<td>33%, 97%</td>
+</tr>
+<tr>
+<td>BB</td>
+<td>J9o, K5o</td>
+<td>67%, 3%</td>
+</tr>
+</tbody>
+</table></div>
+<p>왜 몇 개뿐일까요? SB의 섞이는 핸드 하나마다 BB 쪽에 맞춰야 할 무차별 식이 하나씩 생겨서, <strong>양쪽 섞이는 핸드 수가 같아요.</strong> 스택마다 한 개나 두 개씩이에요. 나머지 핸드는 EV가 분명해서 순수하게 정해져요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>스택</th>
+<th>SB에서 섞이는 핸드</th>
+<th>BB에서 섞이는 핸드</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5BB</td>
+<td>65o 40%</td>
+<td>97o 87%</td>
+</tr>
+<tr>
+<td>8BB</td>
+<td>J7o 58%</td>
+<td>Q7o 77%</td>
+</tr>
+<tr>
+<td>12BB</td>
+<td>Q8o 87%</td>
+<td>Q9o 14%</td>
+</tr>
+<tr>
+<td>15BB</td>
+<td>Q9o 8%</td>
+<td>A3o 27%</td>
+</tr>
+<tr>
+<td>20BB</td>
+<td>Q4s 50%, K9o 24%</td>
+<td>QJo 28%, A6o 90%</td>
+</tr>
+<tr>
+<td>30BB</td>
+<td>Q7s 84%, A4o 40%</td>
+<td>KJo 57%, 44 36%</td>
+</tr>
+</tbody>
+</table></div>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>"섞는다"는 말을 들으면 레인지 전체가 흐릿한 그림이 떠오르지만, 잼 오어 폴드에서는 <strong>거의 전부 순수하고 경계만 흐려요.</strong> 표의 칸이 이렇게 칼로 벤 듯한 이유예요. M71의 "순수 전략 사이의 틈을 닫는 섞기"에서 그 틈이 아주 좁은 게임이에요. 10BB에서 순수한 SB의 최선 보장은 −0.0552BB, 순수한 BB의 최선 묶음은 −0.055BB로 틈이 0.0002BB뿐이에요. 평균을 내면 왜 멈추는지는 다음 글의 CFR이 다뤄요. 가상 플레이는 상대 평균에 최선 대응하고 CFR은 쌓인 후회의 비율대로 움직여요. 답으로 쓰는 게 평균 전략이라는 점은 같아요.</p>
+<h3>4단계. 스택이 깊어지면</h3>
+<p>I17의 표에 필요 에퀴티와 SB 값을 더해 다시 봐요. 정확한 균형값이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>스택</th>
+<th>SB 푸시</th>
+<th>BB 콜</th>
+<th>BB 필요 에퀴티</th>
+<th>SB 값</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5BB</td>
+<td>71.4%</td>
+<td>61.9%</td>
+<td>40%</td>
+<td>+0.05BB</td>
+</tr>
+<tr>
+<td>8BB</td>
+<td>62.2%</td>
+<td>44.3%</td>
+<td>43.8%</td>
+<td>−0.01BB</td>
+</tr>
+<tr>
+<td>10BB</td>
+<td>58%</td>
+<td>37.3%</td>
+<td>45%</td>
+<td>−0.06BB</td>
+</tr>
+<tr>
+<td>12BB</td>
+<td>51.6%</td>
+<td>32.9%</td>
+<td>45.8%</td>
+<td>−0.09BB</td>
+</tr>
+<tr>
+<td>15BB</td>
+<td>46.1%</td>
+<td>27.2%</td>
+<td>46.7%</td>
+<td>−0.14BB</td>
+</tr>
+<tr>
+<td>20BB</td>
+<td>40%</td>
+<td>20.7%</td>
+<td>47.5%</td>
+<td>−0.2BB</td>
+</tr>
+<tr>
+<td>30BB</td>
+<td>31.2%</td>
+<td>13.6%</td>
+<td>48.3%</td>
+<td>−0.29BB</td>
+</tr>
+</tbody>
+</table></div>
+<p>SB 값은 이 게임에서 SB가 시작 스택 대비 평균 얼마를 벌거나 잃는지예요. BB는 그 반대 부호이고, 약 7.4BB에서 0이 돼요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>BB 필요 에퀴티는 40%에서 48.3%로 천천히 오르는데, 콜 폭은 61.9%에서 13.6%로 빠르게 줄어요. 푸시 범위가 좁아질수록 그 범위 상대로 45%를 넘는 핸드가 적어지거든요. SB 값이 스택과 함께 내려가는 건 <strong>SB가 쓸 수 있는 크기가 올인 하나뿐</strong>이기 때문이에요. 잼 오어 폴드가 깊은 스택에 맞지 않는다는 숫자예요.</p>
+<h3>5단계. 표를 벗어나면 얼마나 비쌀까</h3>
+<p>상대를 표대로 고정하고 내 쪽만 벗어나면 이래요. 10BB이고, 폭을 늘리고 줄일 때 핸드는 <strong>그 콜 범위 상대 에퀴티 순서</strong>로 넣고 빼요. 7단계에서 보듯 이 순서가 랜덤 핸드 상대 순서와 달라서, 랜덤 상대 순으로 넓히면 손해가 조금 더 커요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>SB 푸시 폭(BB는 표대로)</th>
+<th>표 대비 SB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100%</td>
+<td>−0.08BB</td>
+</tr>
+<tr>
+<td>80%</td>
+<td>−0.02BB</td>
+</tr>
+<tr>
+<td>70%</td>
+<td>−0.006BB</td>
+</tr>
+<tr>
+<td>45%</td>
+<td>−0.008BB</td>
+</tr>
+<tr>
+<td>30%</td>
+<td>−0.05BB</td>
+</tr>
+</tbody>
+</table></div>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>BB 콜 폭(SB는 표대로)</th>
+<th>표 대비 SB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>25%</td>
+<td>+0.04BB</td>
+</tr>
+<tr>
+<td>50%</td>
+<td>+0.03BB</td>
+</tr>
+<tr>
+<td>70%</td>
+<td>+0.16BB</td>
+</tr>
+<tr>
+<td>100%</td>
+<td>+0.53BB</td>
+</tr>
+</tbody>
+</table></div>
+<h3>이게 무슨 뜻이냐면</h3>
+<p><strong>표의 경계 근처는 평평해요.</strong> 푸시 폭을 45%에서 70%까지 움직여도 손해가 판당 0.01BB 안쪽이에요. 아래 표의 칸이 전부 플러스인 건 M71의 보장선이에요. BB가 어떻게 벗어나도 표대로 친 SB는 −0.06BB 아래로 안 내려가요. 경계의 콤보 한두 개를 외우는 데 쓸 시간에 더 큰 실수를 없애는 게 나아요. 큰 실수는 BB의 <strong>과콜</strong> 쪽이에요. 콜 100%는 판당 0.53BB를 내줘요.</p>
+<h3>6단계. 상대가 표를 벗어나면</h3>
+<p>이번엔 상대의 벗어남에 내가 맞춰요. BB의 콜 폭은 SB 표 상대 에퀴티 순서로 넓히고 좁혔어요. 37.3% 줄은 표대로 섞었을 때의 값이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>BB 콜 폭</th>
+<th>SB의 최선 푸시 폭</th>
+<th>SB 값</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>20%</td>
+<td>100%</td>
+<td>+0.23BB</td>
+</tr>
+<tr>
+<td>25%</td>
+<td>100%</td>
+<td>+0.11BB</td>
+</tr>
+<tr>
+<td>30%</td>
+<td>92.8%</td>
+<td>+0.01BB</td>
+</tr>
+<tr>
+<td>35%</td>
+<td>67.7%</td>
+<td>−0.05BB</td>
+</tr>
+<tr>
+<td>37.3%</td>
+<td>58%</td>
+<td>−0.06BB</td>
+</tr>
+<tr>
+<td>40%</td>
+<td>49.3%</td>
+<td>−0.05BB</td>
+</tr>
+<tr>
+<td>45%</td>
+<td>46.3%</td>
+<td>−0.03BB</td>
+</tr>
+<tr>
+<td>50%</td>
+<td>43%</td>
+<td>+0.01BB</td>
+</tr>
+<tr>
+<td>60%</td>
+<td>45.4%</td>
+<td>+0.09BB</td>
+</tr>
+<tr>
+<td>70%</td>
+<td>47.5%</td>
+<td>+0.18BB</td>
+</tr>
+</tbody>
+</table></div>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>SB 푸시 폭</th>
+<th>BB의 최선 콜 폭</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30%</td>
+<td>18.3%</td>
+</tr>
+<tr>
+<td>45%</td>
+<td>29.1%</td>
+</tr>
+<tr>
+<td>70%</td>
+<td>45.7%</td>
+</tr>
+<tr>
+<td>100%</td>
+<td>66.2%</td>
+</tr>
+</tbody>
+</table></div>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>30~40% 구간에서 SB의 최선이 43포인트 넘게 움직이고, 45~70%는 거의 안 움직여요. 표는 균형점에서는 얌전하지만, <strong>콜이 좁아지는 쪽으로 조금만 벗어나도 최선 대응은 크게 움직여요.</strong> 2단계에서 답이 원을 돈 이유와 같아요. 다만 상대의 콜 폭을 7포인트 단위로 읽을 수 있는지가 먼저예요.</p>
+<h3>7단계. 같은 핸드가 스택마다 다른 줄에 서는 이유</h3>
+<p>SB 푸시 경계에서 BB 콜 범위 상대 에퀴티가 스택마다 어떻게 변하는지 나란히 봐요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>스택</th>
+<th>BB 콜 폭</th>
+<th>SB 경계 에퀴티</th>
+<th>K2o</th>
+<th>T8o</th>
+<th>98o</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8BB</td>
+<td>44.3%</td>
+<td>35.1%</td>
+<td>38.3%</td>
+<td>36.5%</td>
+<td>36.6%</td>
+</tr>
+<tr>
+<td>10BB</td>
+<td>37.3%</td>
+<td>34.9%</td>
+<td>35.7%</td>
+<td>35.7%</td>
+<td>36.2%</td>
+</tr>
+<tr>
+<td>12BB</td>
+<td>32.9%</td>
+<td>35.1%</td>
+<td>33.8%</td>
+<td>35.4%</td>
+<td>36.1%</td>
+</tr>
+<tr>
+<td>15BB</td>
+<td>27.2%</td>
+<td>35%</td>
+<td>32.7%</td>
+<td>35.1%</td>
+<td>35.8%</td>
+</tr>
+<tr>
+<td>20BB</td>
+<td>20.7%</td>
+<td>34.4%</td>
+<td>30.4%</td>
+<td>34.1%</td>
+<td>34.9%</td>
+</tr>
+</tbody>
+</table></div>
+<p>I19에서 본 "콜 범위에 눌리는 정도"를 스택 축으로 늘린 표예요. SB 경계 에퀴티는 34.4%에서 35.1% 사이로 거의 안 움직여요. 움직이는 건 <strong>핸드마다의 에퀴티</strong>예요. K2o는 8BB에서 38.3%로 앞서지만 20BB에서 30.4%까지 떨어지고, T8o와 98o는 천천히 내려와요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>BB의 콜이 좁아질수록 콜 범위에 A와 K가 몰려요. K2o의 K는 그 범위에 눌리고, 큰 카드가 없는 연결 핸드는 눌릴 일이 적어요. 그래서 K2o는 12BB에서 표 밖으로 나가는데 98o는 20BB까지 남아요. <strong>표의 순서는 핸드의 순위가 아니라 그 스택의 상대 범위 앞 순위</strong>예요. 그래서 짧을수록 늘 넓다는 말도 예외가 있어요. 65o는 5BB에서 섞이고 8BB에서 전부 푸시하고 10BB에서 97%이고 12BB에서는 폴드해요.</p></section>
+<hr />
+<h2>실제 핸드 예시: SB 10BB의 T8o</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>자리·스택</td>
+<td>헤즈업, SB(Hero) 10BB, BB 10BB</td>
+</tr>
+<tr>
+<td>블라인드</td>
+<td>SB 0.5BB, BB 1BB, 앤티 없음</td>
+</tr>
+<tr>
+<td>카드</td>
+<td>Hero T♦8♣</td>
+</tr>
+<tr>
+<td>결정</td>
+<td>올인 또는 폴드</td>
+</tr>
+</tbody>
+</table></div>
+<p>이번 한 번의 결정 기준이고, 칩 EV만 봐요. BB가 표대로 37.3%를 콜한다고 놓으면 T8o의 콜 범위 상대 에퀴티는 35.7%예요.</p>
+<blockquote>
+<p>푸시 EV = 0.627 × 1 + 0.373 × (20 × 0.357 − 10) = −0.44</p>
+</blockquote>
+<p>폴드는 −0.5BB니까 푸시가 0.06BB 나아요. <strong>T8o는 푸시</strong>예요. 0.06BB는 작아요. 이 자리가 표의 경계 근처라는 뜻이에요. 같은 자리에서 Q5o를 들었다면 콜 범위 상대 에퀴티가 34.1%라 푸시가 폴드보다 약 0.06BB 나빠서 폴드예요.</p>
+<p>상대가 표를 벗어나면 답이 달라져요. T8o의 푸시 − 폴드예요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>BB 콜 폭</th>
+<th>T8o의 콜 범위 상대 에퀴티</th>
+<th>푸시 − 폴드</th>
+<th>결정</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>25%</td>
+<td>35.1%</td>
+<td>+0.5BB</td>
+<td>푸시</td>
+</tr>
+<tr>
+<td>37.3%</td>
+<td>35.7%</td>
+<td>+0.06BB</td>
+<td>푸시</td>
+</tr>
+<tr>
+<td>50%</td>
+<td>37.5%</td>
+<td>−0.25BB</td>
+<td>폴드</td>
+</tr>
+<tr>
+<td>70%</td>
+<td>42.9%</td>
+<td>−0.2BB</td>
+<td>폴드</td>
+</tr>
+</tbody>
+</table></div>
+<h3>BB 쪽이라면</h3>
+<p>BB에서 같은 T8o를 들면 SB 푸시 범위 상대 에퀴티가 41.6%이고 필요 에퀴티 45%에 못 미쳐요. 콜 EV가 폴드보다 0.68BB 나빠서 <strong>폴드</strong>예요. BB에서 표의 경계는 J9o 근처예요. 같은 핸드가 SB에서는 푸시, BB에서는 폴드인 건 SB만 폴드 에퀴티를 가지기 때문이에요.</p>
+<hr />
+<h2>GTO 기준과 실전 익스플로잇</h2>
+<h3>GTO 기준(이론)</h3>
+<p>세 가지를 조심해서 읽어요.</p>
+<ul>
+<li><strong>칩 EV 표예요.</strong> 토너 버블에서는 칩 한 개의 값이 위아래로 달라서(M33) 같은 표를 쓰면 안 돼요</li>
+<li><strong>SB의 선택지가 둘뿐이에요.</strong> 림프와 미니레이즈가 있으면 깊은 스택에서 답이 달라져요. 4단계의 음수 값이 그 신호예요. 어느 스택에서 얼마나 달라지는지는 이 글에서 재지 않았어요</li>
+<li><strong>카드 제거가 없는 승률표예요.</strong> 콤보 단위의 작은 차이는 빠져 있어요. 경계 핸드 한두 개는 표마다 달라질 수 있어요</li>
+</ul>
+<h3>실전(라이브·저스테이크) 익스플로잇</h3>
+<p><strong>BB가 콜을 아끼는 상대라면</strong> SB의 푸시 폭은 크게 넓어져요. 6단계 표대로 콜 30%면 거의 전부예요. 표본은 "내가 푸시했을 때 콜당한 빈도"로 세요. 그 상대가 콜을 넓히기 시작하면 표로 돌아와요.</p>
+<p><strong>BB가 많이 콜하는 상대라면</strong> 경계 핸드부터 빼요. 50%까지 넓게 콜하는 상대라면 SB의 최선은 43%로 바닥이고, 콜이 70%까지 넓어지면 47.5%로 다시 조금 넓어져요. 약한 콜이 들어와서 SB 핸드의 에퀴티가 오르기 때문이에요. 이 조정은 상대가 쇼다운에 약한 핸드를 보여 줄 때만 믿어요.</p>
+<hr />
+<section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. 표 하나로 모든 스택을 어림하기</strong>
+7단계에서 K2o의 에퀴티는 8BB 38.3%에서 20BB 30.4%로 떨어졌어요. 스택이 달라지면 같은 핸드의 순서가 달라져요. 비슷한 스택의 표를 <strong>그 스택 값으로</strong> 봐요.</p></div><div class="mis-card"><p><strong>실수 2. BB의 필요 에퀴티를 핸드의 절대 힘으로 읽기</strong>
+"45%면 콜"에서 에퀴티는 랜덤 핸드 상대가 아니라 <strong>SB 푸시 범위 상대</strong>예요. 그 범위가 넓어지면 같은 핸드가 콜이 돼요. SB 푸시 폭이 100%면 BB의 최선 콜은 66.2%까지 넓어졌어요.</p></div><div class="mis-card"><p><strong>실수 3. SB에게도 45%를 요구하기</strong>
+SB의 경계는 BB 콜 범위 상대 34.9%예요. 콜 범위 상대로 질 것 같다고 접으면 폴드 에퀴티를 통째로 버려요.</p></div></section>
+<hr />
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<p>숏스택 푸시·폴드에서 표를 보기 전에 이렇게 물어요.</p>
+<ol>
+<li>이 스택의 표에서 내 핸드의 <strong>콜 범위 상대 에퀴티</strong>는 경계보다 얼마나 위인가</li>
+<li>이 상대의 콜 폭은 <strong>표보다 좁은 쪽</strong>인가</li>
+</ol></section>
+<hr />
+<h2>내 판단 점검</h2>
+<p><strong>문제 1.</strong> 14BB 헤즈업에서 BB가 30%를 콜한다고 해요. SB의 경계 핸드는 BB 콜 범위 상대 에퀴티가 얼마여야 할까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>약 35.7%</strong>예요. 폴드 EV −0.5와 푸시 EV가 같아지는 e를 풀어요.</p>
+<blockquote>
+<p>(1 − 0.3) × 1 + 0.3 × (28 × 0.3571 − 14) = −0.5</p>
+</blockquote>
+<p>필요 에퀴티는 BB가 얼마나 콜하느냐에 달렸고, 7단계의 표처럼 스택이 달라도 35% 안팎에 머물러요.</p>
+</details>
+<p><strong>문제 2.</strong> 10BB에서 BB가 어떤 핸드든 전부 콜하는 상대예요. SB의 최선 푸시 폭은 표의 58%보다 좁을까요, 넓을까요? 핸드 구성은 같을까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>약 57.5%로 표와 거의 같고, 핸드 구성은 달라요.</strong> 폴드 에퀴티가 없으니 SB는 랜덤 핸드 상대로 칩을 이기는 핸드만 푸시해요. 표의 푸시 폭은 폴드 에퀴티와 콜 범위 앞 순위로 만들어진 58%이고, 여기의 57.5%는 랜덤 상대 에퀴티가 47.5%를 넘는 핸드에서 나온 값이에요. 폭만 보고 "표대로 치면 되겠네"라고 하면 표에 있는 작은 연결 핸드로 손해를 봐요.</p>
+</details>
+<hr />
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>푸시·폴드표를 볼 때 → 양쪽 범위가 서로의 최선 대응으로 맞물린 점이라고 읽는다 → 경계는 핸드의 힘이 아니라 상대 범위가 정한다</li>
+<li>상대가 표에서 벗어났을 때 → 콜 폭을 세어 내 푸시 폭을 크게 옮긴다 → 표 근처는 평평하지만 한쪽이 벗어나면 최선 대응은 크게 움직인다</li>
+<li>표의 경계 핸드를 고민할 때 → 판당 차이가 0.1BB 안쪽인지 본다 → 그 시간에 큰 실수인 BB 과콜과 상대 콜 폭 읽기를 먼저 고친다</li>
+</ul></section>
+<hr />
+<section class="sec end"><h2>정리하며</h2>
+<p>오늘은 식 두 줄로 표의 재료를 세우고, 번갈아 맞추면 원을 돌지만 평균을 내면 58%와 37.3%로 멈추는 걸 봤어요. T8o의 푸시가 0.06BB 차이라는 게 표 경계의 평평함을 보여 줘요. 기억할 건 표보다 상대의 콜 폭을 먼저 묻는 습관이에요.</p>
+<p>다음 글 M78에서는 오늘 쓴 "평균을 내면 멈춘다"를 뜯어봐요. <strong>가위바위보를 손으로 돌리면서</strong> 솔버가 답을 찾는 방식을 따라가요.</p>
+<p><small>AI 작성 · 숫자는 계산 검증 · 가정 레인지·고정한 스택 기준</small></p></section>
+</article>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="273_M71.html">GTO는 정확히 뭘까: 내쉬 균형과 &quot;안 지는 전략&quot;의 뜻</a></li><li><a href="274_M72.html">가위바위보로 보는 혼합 전략: 왜 섞지 않으면 바로 잡힐까</a></li></ul></aside><nav class="nav"><a class="prev" href="278_M76.html"><div class="l">← 이전 글</div><div class="t">반 스트리트 게임: 포지션의 값을 식으로 세우기</div></a><a class="next" href="280_M78.html"><div class="l">다음 글 →</div><div class="t">솔버는 어떻게 답을 찾을까: 가위바위보로 손으로 돌리는 CFR</div></a></nav></main>
+<script>/*__land__*/(function(){try{if(window.top!==window.self||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;var v='',n='';try{v=localStorage.getItem('vid');if(!v){v=Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('vid',v);}n=localStorage.getItem('nick')||'';}catch(e){}var f=(new URLSearchParams(location.search).get('from')||'').slice(0,30),rf=document.referrer||'',own=false;try{own=!!rf&&new URL(rf).host===location.host;}catch(e){}var b={p:"\ube14\ub85c\uadf8",n:n,v:v};if(f||!own){b.l=1;b.from=f;b.rf=own?'':rf.slice(0,200);}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b),keepalive:true}).catch(function(){});}catch(e){}})();</script>
+</body>
+</html>

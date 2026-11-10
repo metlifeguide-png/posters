@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>암묵적 담합: 올인 뒤 사이드팟 없는 체크다운은 왜 모두에게 이득일까 · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+<meta name="description" content="M80에서 세 사람 게임은 두 사람의 이해가 맞으면 제3자가 돈을 잃는 구조라고 했어요. 토너 버블의 사이드팟 없는 체크다운 이 그 그림이에요. 숏스택이 올인하고 두 사람이 따라왔을 때, 두 사람이 체크로 끝까지 가는 판이요. 오늘은 그게 왜 말 없이도 일어나는지…">
+<link rel="canonical" href="https://xn--bc2b73r.kr/blog/%EA%B8%80/283_M81.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="암묵적 담합: 올인 뒤 사이드팟 없는 체크다운은 왜 모두에게 이득일까 · 뚝섬 홀덤학습">
+<meta property="og:description" content="M80에서 세 사람 게임은 두 사람의 이해가 맞으면 제3자가 돈을 잃는 구조라고 했어요. 토너 버블의 사이드팟 없는 체크다운 이 그 그림이에요. 숏스택이 올인하고 두 사람이 따라왔을 때, 두 사람이 체크로 끝까지 가는 판이요. 오늘은 그게 왜 말 없이도 일어나는지…">
+<meta property="og:url" content="https://xn--bc2b73r.kr/blog/%EA%B8%80/283_M81.html">
+<meta property="og:image" content="https://xn--bc2b73r.kr/hub/banner.jpg">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge m">마스터</span><span class="chip">개념</span><span class="n">마스터 81번째 글 (전체 285편 중 283번째)</span></div><h1>암묵적 담합: 올인 뒤 사이드팟 없는 체크다운은 왜 모두에게 이득일까</h1>
+<article>
+<p>안녕하세요. M80에서 세 사람 게임은 두 사람의 이해가 맞으면 제3자가 돈을 잃는 구조라고 했어요. 토너 버블의 <strong>사이드팟 없는 체크다운</strong>이 그 그림이에요. 숏스택이 올인하고 두 사람이 따라왔을 때, 두 사람이 체크로 끝까지 가는 판이요.</p>
+<p>오늘은 그게 왜 말 없이도 일어나는지 숫자로 세고, 제목의 "모두에게"가 어디까지 맞는지, 어디부터 규칙 문제가 되는지까지 선을 그어요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>체크다운이 <strong>남은 사람과 관전자에게</strong> 이득이 되는 구조와 그 한계</li>
+<li>칩은 버는데 <strong>상금은 잃는</strong> 벳의 조건</li>
+<li>혼자 판단한 체크와 <strong>규칙 문제가 되는 합의</strong>의 경계</li>
+</ul></div>
+<hr />
+<h2>핵심 개념: 합의 없이도 같은 행동이 나오는 건 이해가 같아서예요</h2>
+<p>토너에서 한 사람이 올인하고 뒤에서 두 사람이 콜했는데 플랍 이후 추가 벳이 없는 팟을 <strong>드라이 사이드팟</strong>이라고 불러요. 사이드팟이 비어 있어서 체크해도 잃을 칩이 없어요.</p>
+<p>경제학에서 <strong>암묵적 담합</strong>은 합의 없이 각자의 이익 계산만으로 같은 행동이 나오는 걸 뜻해요. 이 글의 제목은 그 뜻이에요. 규정에서 말하는 담합과는 달라요. 그 구분은 5단계에서 해요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>드라이 사이드팟에서 벳하면</th>
+<th>생기는 일</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>콜을 받음</td>
+<td>사이드팟이 생겨 두 사람끼리 칩을 주고받음</td>
+</tr>
+<tr>
+<td>상대가 폴드함</td>
+<td>메인 팟을 이길 확률은 오르지만 <strong>숏스택을 탈락시킬 손이 하나 줄어듦</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>잘하는 사람도 헷갈리는 건 <strong>"메인 팟을 이길 확률이 오르면 좋은 벳"</strong>이라는 계산이에요. 칩으로는 맞는 말인데 상금으로는 다른 답이 나올 수 있어요.</p>
+<hr />
+<section class="sec why"><h2>왜 그럴까: 네 사람의 상금으로 세어 봐요</h2>
+<h3>장난감 게임 가정</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>가정</th>
+<th>이 모델에서</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>자리</td>
+<td>네 명이 남은 버블, 세 명까지 입상</td>
+</tr>
+<tr>
+<td>상금</td>
+<td>1등 50, 2등 30, 3등 20(상금 풀 100으로 놓음)</td>
+</tr>
+<tr>
+<td>스택</td>
+<td>A 2,000 · B 8,000 · C 6,000 · D 4,000</td>
+</tr>
+<tr>
+<td>앞의 진행</td>
+<td>A가 2,000 올인, B와 C 콜, D 폴드. 블라인드는 생략. 메인 팟 6,000</td>
+</tr>
+<tr>
+<td>보드</td>
+<td>플랍 J♦ 7♣ 2♥까지 보임</td>
+</tr>
+<tr>
+<td>벳</td>
+<td>사이드 벳은 2,000. 콜 뒤 턴·리버는 체크로 놓음</td>
+</tr>
+<tr>
+<td>상금 계산</td>
+<td>ICM(M33). 남은 카드는 전부 세어 평균</td>
+</tr>
+</tbody>
+</table></div>
+<p>C가 체크한다는 전제예요. 결론은 전부 <strong>이 모델에서</strong>예요.</p>
+<h3>1단계. 숏스택 탈락의 값</h3>
+<p>플랍 뒤 각자의 카드가 A K♣Q♣, B 6♠5♠, C J♣T♥라고 해요. B는 헛손이고 C는 탑페어로 앞서 있어요. B가 먼저 말해요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>진행</th>
+<th>A 생존</th>
+<th>A 상금</th>
+<th>B 상금</th>
+<th>C 상금</th>
+<th>D 상금</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>체크다운</td>
+<td>29.3%</td>
+<td>8.28</td>
+<td>31.82</td>
+<td>33.09</td>
+<td>26.81</td>
+</tr>
+<tr>
+<td>B 벳, C 폴드</td>
+<td>74.4%</td>
+<td>21</td>
+<td>31.49</td>
+<td>23.76</td>
+<td>23.76</td>
+</tr>
+<tr>
+<td>B 벳, C 콜</td>
+<td>29.3%</td>
+<td>8.28</td>
+<td>27.96</td>
+<td>36.45</td>
+<td>27.31</td>
+</tr>
+</tbody>
+</table></div>
+<p>칩만 보면 B의 벳이 C를 접게 하면 B의 평균 칩은 6,292에서 7,535로 <strong>1,243칩</strong> 늘어요. 그런데 B의 상금은 31.82에서 31.49로 <strong>줄어요.</strong> C도 D도 줄어요. 폴드해서 판에 없는 D까지 3.05를 잃어요.</p>
+<p>세 사람을 합치면 91.72에서 79로 <strong>12.72가 A에게 넘어가요.</strong> 칩은 B가 벌지만 상금은 세 사람 합계가 A에게 줘요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>A의 탈락이 <strong>세 사람의 공동 이익</strong>이에요. B가 C를 접게 하면 A를 이길 손이 C에서 B의 헛손으로 바뀌어 A의 생존이 29.3%에서 74.4%로 뛰어요. M80의 표현으로는 B와 C, D의 묶음이 A를 상대하는 판이에요. 묶음은 말이 아니라 <strong>상금 구조가 만들어요.</strong></p>
+<h3>2단계. C는 어떻게 대응할까</h3>
+<p>B의 벳을 받으면 C의 콜은 36.45, 폴드는 23.76이에요. <strong>이 손은 콜</strong>이고, 콜을 받은 B는 27.96으로 떨어져요. 벳의 크기가 커질수록 B는 더 나빠져요. 1,000이면 29.98, 3,000이면 25.69, 4,000이면 23.06이에요. 폴드 확률을 f라 하면 B의 벳 값은 이래요.</p>
+<blockquote>
+<p>B의 벳 값 = f × 31.49 + (1 − f) × 27.96</p>
+</blockquote>
+<p>f를 얼마로 놓아도 31.49를 넘지 못하고, 체크다운의 31.82는 C가 체크한다는 전제에서 <strong>어느 폴드율에서도</strong> 벳보다 나아요. 이 자리의 블러프는 폴드를 받아도 안 받아도 손해예요.</p>
+<h3>3단계. 쇼다운 전까지 어느 손이 쉬어야 할까</h3>
+<p>C의 손을 모른다고 해 봐요. B 6♠5♠를 그대로 두고 C를 바꿔 세면 이래요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>C의 손</th>
+<th>체크다운</th>
+<th>벳·폴드</th>
+<th>벳·콜</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>J♣T♥</td>
+<td>31.82</td>
+<td>31.49</td>
+<td>27.96</td>
+</tr>
+<tr>
+<td>A♥J♥</td>
+<td>31.96</td>
+<td>31.46</td>
+<td>28.2</td>
+</tr>
+<tr>
+<td>9♥9♦</td>
+<td>31.76</td>
+<td>31.34</td>
+<td>27.87</td>
+</tr>
+<tr>
+<td>8♥8♦</td>
+<td>31.65</td>
+<td>31.23</td>
+<td>27.68</td>
+</tr>
+<tr>
+<td>7♥7♦</td>
+<td>32.87</td>
+<td>31.46</td>
+<td>29.74</td>
+</tr>
+<tr>
+<td>T♥8♦</td>
+<td>31.84</td>
+<td>31.34</td>
+<td>28.66</td>
+</tr>
+<tr>
+<td>A♥3♦</td>
+<td>33.1</td>
+<td>31.4</td>
+<td>30.79</td>
+</tr>
+<tr>
+<td>4♦3♦</td>
+<td>31.84</td>
+<td>31.3</td>
+<td>33.65</td>
+</tr>
+</tbody>
+</table></div>
+<p>여덟 종류 전부 <strong>벳·폴드가 체크다운보다 낮아요.</strong> 숏스택에게 지고 있는 손의 블러프는 C가 뭐든 비슷한 답이에요.</p>
+<p>이번엔 B가 앞선 손이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>B의 손</th>
+<th>C의 손</th>
+<th>체크다운</th>
+<th>벳·폴드</th>
+<th>벳·콜</th>
+<th>A 생존(체크다운 → 벳·폴드)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T♠T♣</td>
+<td>9♥9♦</td>
+<td>36.66</td>
+<td>37.14</td>
+<td>39.47</td>
+<td>28.7% → 30.2%</td>
+</tr>
+<tr>
+<td>A♠J♠</td>
+<td>9♥9♦</td>
+<td>36.64</td>
+<td>37.21</td>
+<td>39.24</td>
+<td>28.1% → 29.7%</td>
+</tr>
+<tr>
+<td>T♠T♣</td>
+<td>A♥J♥</td>
+<td>32.3</td>
+<td>37.11</td>
+<td>28.93</td>
+<td>25.1% → 30.5%</td>
+</tr>
+<tr>
+<td>T♠T♣</td>
+<td>7♥7♦</td>
+<td>33.32</td>
+<td>37.08</td>
+<td>30.7</td>
+<td>4.1% → 30.7%</td>
+</tr>
+</tbody>
+</table></div>
+<h3>이게 무슨 뜻이냐면</h3>
+<p><strong>숏스택보다 앞선 B의 벳은 폴드를 받으면 체크다운보다 나아요.</strong> A의 생존 변화와 B가 메인 팟을 가져오는 몫을 <strong>같이</strong> 봐야 해요. 다만 앞의 두 줄처럼 벳·콜이 좋은 건 C가 B보다 약한 손으로 콜할 때예요. 카드를 아는 C의 99라면 콜 23.41보다 폴드 27.17을 골라요. 아래 두 줄처럼 C가 B를 앞서면 벳·콜은 체크다운보다 나빠요. 표를 넘어 일반화하면 안 돼요.</p>
+<p>그리고 <strong>"모두에게"는 조건부예요.</strong> 같은 1단계 카드에서 C가 벳하고 B가 폴드하면 C는 33.09에서 33.52로 0.43을 더 벌고, A의 생존은 그대로 29.3%예요. C에게는 체크다운이 최선이 아니에요. 모두의 이익인 건 <strong>숏스택을 이기는 손을 접게 하는 벳을 안 하는 것</strong>까지예요.</p>
+<h3>4단계. 상금 구조와 스택이 바뀌면</h3>
+<p>같은 카드(B 6♠5♠, C J♣T♥)에서 상금만 바꿔요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>상금</th>
+<th>체크다운</th>
+<th>벳·폴드</th>
+<th>차이(체크다운 쪽)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>34/33/33</td>
+<td>31.59</td>
+<td>28.99</td>
+<td>+2.59</td>
+</tr>
+<tr>
+<td>50/30/20(버블)</td>
+<td>31.82</td>
+<td>31.49</td>
+<td>+0.34</td>
+</tr>
+<tr>
+<td>40/30/20/10(전원 입상)</td>
+<td>29.2</td>
+<td>29.05</td>
+<td>+0.15</td>
+</tr>
+<tr>
+<td>60/40(두 명 입상)</td>
+<td>32.6</td>
+<td>33.97</td>
+<td>−1.37</td>
+</tr>
+<tr>
+<td>65/35(두 명 입상)</td>
+<td>32.46</td>
+<td>34.43</td>
+<td>−1.97</td>
+</tr>
+<tr>
+<td>100(승자독식)</td>
+<td>31.46</td>
+<td>37.67</td>
+<td>−6.21</td>
+</tr>
+</tbody>
+</table></div>
+<p>상금이 평평할수록 체크다운 쪽이에요. 전원 입상인 40/30/20/10에서도 +0.15인 건 ICM에서 칩이 쌓일수록 칩 한 개의 상금 값이 줄어들기 때문이에요. 두 명 입상이면 A가 탈락해도 버블이 안 끝나서 부호가 뒤집혀요. 승자독식은 칩 EV와 같고, 벳·콜의 값이 22.5라서 C의 폴드율이 59.1%를 넘으면 블러프가 벌어요.</p>
+<blockquote>
+<p>(31.46 − 22.5) ÷ (37.67 − 22.5) = 0.5906</p>
+</blockquote>
+<p>스택도 답을 바꿔요. 같은 카드와 50/30/20에서 체크다운 쪽 차이예요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>스택(A·B·C·D)</th>
+<th>차이</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2,000 · 8,000 · 6,000 · 4,000</td>
+<td>+0.34</td>
+</tr>
+<tr>
+<td>1,000 · 8,000 · 6,000 · 5,000</td>
+<td>+0.51</td>
+</tr>
+<tr>
+<td>2,000 · 4,000 · 6,000 · 8,000</td>
+<td>+2.84</td>
+</tr>
+<tr>
+<td>4,000 · 8,000 · 6,000 · 2,000</td>
+<td>−0.98</td>
+</tr>
+<tr>
+<td>2,000 · 12,000 · 4,000 · 2,000</td>
+<td>−0.84</td>
+</tr>
+</tbody>
+</table></div>
+<p>표 안에서는 A가 진짜 숏스택이고 내가 앞서지 않을수록 체크다운 쪽이에요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>드라이 사이드팟의 체크다운은 <strong>불변의 규칙이 아니라 상금과 스택에서 나온 답</strong>이에요. 캐시 게임이나 승자독식에 가까운 구조에서는 그대로 쓰면 안 돼요.</p>
+<h3>5단계. 어디까지가 혼자의 판단일까</h3>
+<p>위의 계산은 각자가 <strong>자기 상금만 보고 체크를 고른</strong> 결과예요. 이 글의 구분은 이래요. 규정의 문구가 아니라 글의 분류예요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>행동</th>
+<th>이 글의 분류</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>각자 자기 EV로 판단해서 체크</td>
+<td>전략</td>
+</tr>
+<tr>
+<td>말이나 신호로 "체크로 가자"고 맞춤</td>
+<td>합의로 다뤄질 수 있음</td>
+</tr>
+<tr>
+<td>친분이나 이해관계 때문에 특정 상대를 봐줌</td>
+<td>소프트 플레이</td>
+</tr>
+<tr>
+<td>일부러 칩을 내줌</td>
+<td>칩 덤핑</td>
+</tr>
+</tbody>
+</table></div>
+<p>Poker TDA의 윤리 조항은 포커를 개인 경기로 보고, 소프트 플레이에 벌칙을, 칩 덤핑과 그 밖의 담합에 실격을 정해요. 칩 몰수까지 언급한 판본도 있어요. WSOP 규정은 담합을 둘 이상의 합의로 정의하고 소프트 플레이와 칩 덤핑을 예로 들어요. 조 번호는 판본마다 달라요. 체크다운에 이 규정이 어떻게 적용되는지는 글쓴이의 해석이고, 실제 판단은 그 대회의 규정과 디렉터에게 있어요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>제목의 담합은 <strong>합의 없는 같은 행동</strong>이라는 뜻이고, 규정 위반이라는 말이 아니에요. 다만 같은 체크라도 말을 얹으면 합의로 다뤄질 수 있어요. 스택이나 ICM 이유로 특정 상대에게 벳을 안 하는 건 전략이에요. 친분으로 봐주는 건 달라요. 전략이라면 말할 필요가 없어요.</p></section>
+<hr />
+<h2>실제 핸드 예시: 버블의 드라이 사이드팟, B의 6♠5♠</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>자리·상금</td>
+<td>네 명 남은 버블, 세 명 입상(50/30/20)</td>
+</tr>
+<tr>
+<td>스택</td>
+<td>A 2,000 · Hero(B) 8,000 · C 6,000 · D 4,000</td>
+</tr>
+<tr>
+<td>프리플랍</td>
+<td>A 올인 2,000, Hero 콜, C 콜, D 폴드. 메인 팟 6,000</td>
+</tr>
+<tr>
+<td>플랍 J♦ 7♣ 2♥</td>
+<td>Hero 결정</td>
+</tr>
+<tr>
+<td>Hero</td>
+<td>6♠5♠</td>
+</tr>
+</tbody>
+</table></div>
+<p>이번 한 번의 결정 기준이고, 카드를 다 안다고 놓은 <strong>설명용 숫자</strong>예요. 실제 Hero는 C의 카드를 모르지만, 3단계 표의 여덟 종류와 A K♣Q♣에서 폴드를 받는 경우의 답은 같았어요. A의 손은 표에서 고정했어요.</p>
+<p><strong>플랍.</strong> Hero는 <strong>체크</strong>해요. 숏스택이 C의 손을 넘어야 하는 판을 그대로 둬요.</p>
+<p><strong>턴 3♠.</strong> 스트리트가 바뀌면 값도 바뀌어요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>진행</th>
+<th>체크다운</th>
+<th>벳·폴드</th>
+<th>벳·콜</th>
+<th>A 생존(체크다운 → 벳·폴드)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>턴 3♠</td>
+<td>32.89</td>
+<td>31.26</td>
+<td>29.73</td>
+<td>14.3% → 76.2%</td>
+</tr>
+<tr>
+<td>리버 8♦(턴 3♠ 뒤)</td>
+<td>32.75</td>
+<td>28.21</td>
+<td>29.5</td>
+<td>0% → 100%</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>리버 8♦.</strong> C가 이미 앞서 있으면 A의 생존은 0%이고, Hero가 벳해서 C를 접게 하면 100%가 돼요. 벳·폴드가 체크다운보다 4.54 낮아요. Hero는 <strong>끝까지 체크</strong>해요.</p>
+<blockquote>
+<p>32.75 − 28.21 = 4.54</p>
+</blockquote>
+<p>턴에서 Hero가 양방 스트레이트 드로우를 받았더라도(턴 4♥) 체크다운 33.67, 벳·폴드 32.48로 답이 같아요.</p>
+<h3>C 쪽이라면</h3>
+<p>B가 체크한 뒤 C가 J♣T♥로 벳해서 B가 폴드하면 C는 체크다운보다 0.43을 더 벌어요. 앞서 있는 손은 밸류를 받거나 헛손의 드로우를 접게 해서 벌어요. 다만 C는 B의 카드를 몰라요. 접게 한 B의 손이 A를 이기고 있었다면 1단계와 같은 일이 C 쪽에서 생겨 A의 생존이 올라요.</p>
+<hr />
+<h2>GTO 기준과 실전 익스플로잇</h2>
+<h3>GTO 기준(이론)</h3>
+<ul>
+<li><strong>이 표는 상대 카드를 다 알고 계산했어요.</strong> 3단계처럼 여러 손을 재면 줄이지만, 레인지를 놓고 맞춘 답은 이 글에서 재지 않았어요(불확실)</li>
+<li><strong>ICM은 다음 판들의 스킬을 뺀 근사예요.</strong> 스택이 비슷한 판에서는 값이 달라질 수 있어요(M33)</li>
+<li><strong>혼자 체크다운의 이익은 작을 수 있어요.</strong> 플랍 표에서 0.34였어요. 콜을 받을 위험까지 넣어야 차이가 벌어져요</li>
+</ul>
+<h3>실전(라이브·저스테이크) 익스플로잇</h3>
+<p><strong>드라이 사이드팟에서 강한 손으로도 체크하는 상대라면</strong> 그 사람의 체크는 약함이 아니에요. 그 사람이 여기서 벳한다면 아주 강한 손이니 내 중간 손으로 받지 않아요. 이 읽기는 그 상대의 드라이 사이드팟 블러프가 보이는 순간 버려요.</p>
+<p><strong>벳으로 판을 빼앗으려는 상대를 만나면</strong> 내 앞선 손을 그 벳에 접으면 이익을 그 사람에게 주는 셈이에요. 체크다운을 기대하지 말고 내 손의 상금 값으로 콜을 정해요. 그 상대가 강한 손으로만 벳하기 시작하면 표대로 접어요.</p>
+<hr />
+<section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. 메인 팟 승률만 보고 벳하기</strong>
+표에서 칩은 1,243칩이 늘었지만 상금은 줄었어요. 버블에서는 <strong>숏스택의 생존 변화와 내 메인 팟 몫</strong>을 같이 세요.</p></div><div class="mis-card"><p><strong>실수 2. 드라이 사이드팟이면 무조건 체크</strong>
+3단계에서 A♠J♠의 체크다운은 36.64, 벳·폴드는 37.21이었어요. 숏스택을 이기는 손은 벳을 생각할 자리예요. 상금이 60/40이면 헛손의 답도 바뀌어요.</p></div><div class="mis-card"><p><strong>실수 3. 체크를 말로 맞추기</strong>
+계산이 같으니 입 밖으로 내도 된다고 생각하는 경우예요. 5단계처럼 <strong>합의로 다뤄질 수 있어요.</strong> 전략은 혼자 해도 같은 결과가 나와요.</p></div></section>
+<hr />
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<p>드라이 사이드팟에서 카드를 받고 이 순서로 물어요.</p>
+<ol>
+<li>내 손이 <strong>숏스택을 넘고 있나</strong></li>
+<li>이 벳이 늘리는 <strong>숏스택의 생존</strong>과 내가 가져올 <strong>메인 팟</strong>은 얼마인가</li>
+<li>숏스택의 탈락이 <strong>다른 사람들의 상금</strong>을 얼마나 올리는 구조인가</li>
+</ol></section>
+<hr />
+<h2>내 판단 점검</h2>
+<p><strong>문제 1.</strong> 같은 판에서 리버가 K♦ 8♠로 끝났어요(턴 K♦, 리버 8♠). A는 K 페어로 이미 C의 J 페어를 이기고 있어요. Hero는 6♠5♠예요. 체크다운과 벳·폴드는 각각 28.21이에요. 숏스택의 생존이 어차피 100%이니 벳해 볼까요? 벳·콜은 21.79예요.</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>벳은 얻을 게 없어요.</strong> 체크다운과 벳·폴드의 값이 28.21로 같아요. 콜을 받으면 21.79로 떨어져요.</p>
+<blockquote>
+<p>28.21 − 21.79 = 6.42</p>
+</blockquote>
+<p>숏스택이 이미 앞서면 벳·폴드는 공짜일 뿐 이득이 없어요. 체크로 끝내요.</p>
+</details>
+<p><strong>문제 2.</strong> 같은 카드에서 스택이 A 2,000, B 8,000, C 8,000, D 2,000으로 바뀌었어요. 숏스택이 둘이니 A의 탈락이 덜 값질 것 같아요. 체크다운과 벳·폴드의 차이(체크다운 쪽)는 기본의 +0.34보다 작아질까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>오히려 +0.6으로 커져요.</strong> 체크다운 32.8, 벳·폴드 32.2예요.</p>
+<blockquote>
+<p>32.8 − 32.2 = 0.6</p>
+</blockquote>
+<p>숏스택이 둘이라고 A의 탈락 값이 줄지 않았어요. 왜 그런지는 네 사람의 칩이 모두 얽힌 ICM 계산 안에 있어서 한 줄로 설명하기 어려워요. 감보다 ICM 표를 먼저 봐요.</p>
+</details>
+<hr />
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>드라이 사이드팟에서 블러프를 생각할 때 → 내 손이 숏스택에게 지고 있는지 본다 → 지는 손이 앞선 손을 접게 하면 칩은 벌어도 상금을 잃는다</li>
+<li>앞선 손을 들었을 때 → 벳이 폴드로 끝날 때와 콜로 끝날 때 값을 나눠 본다 → 폴드를 받아도 벌지만 콜은 상대 손에 따라 뒤집힌다</li>
+<li>체크다운을 고를 때 → 혼자의 EV 계산으로만 정한다 → 말이나 신호로 맞추면 합의로 다뤄질 수 있다</li>
+</ul></section>
+<hr />
+<section class="sec end"><h2>정리하며</h2>
+<p>오늘은 버블의 드라이 사이드팟에서 네 사람의 상금을 세어 봤어요. 헛손의 벳이 칩을 1,243칩 늘려도 상금이 줄어드는 건 숏스택의 생존이 29.3%에서 74.4%로 뛰기 때문이에요. 체크가 합의 없이 나오는 건 상금 구조가 같은 답을 주기 때문이고, 그 답도 상금과 스택에 따라 바뀌어요.</p>
+<p>다음 글 M82에서는 <strong>에퀴티의 분포</strong>를 봐요. 평균이 같은 두 레인지가 왜 다른 전략을 만드는지 다뤄요.</p>
+</section><h2>더 읽어 볼 글</h2>
+<ul>
+<li><a href="https://www.cardplayer.com/cardplayer-poker-magazines/card-player-magzine-38-16-michael-grinder-mizrachi-poker-players-championship/articles/card-player-magazine-38-16-commentary-burnham-chip-dumping-collusion">Contracts And Poker: Chip Dumping</a>: TDA 윤리 조항과 WSOP의 담합·칩 덤핑 규정을 다룬 Card Player 칼럼(2025)</li>
+</ul>
+<p><small>AI 작성 · 숫자는 계산 검증 · 가정 레인지·고정한 스택 기준</small></p>
+</article>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="282_M80.html">세 명이 되면 균형은 왜 안전하지 않을까</a></li></ul></aside><nav class="nav"><a class="prev" href="282_M80.html"><div class="l">← 이전 글</div><div class="t">세 명이 되면 균형은 왜 안전하지 않을까</div></a><a class="next" href="284_M82.html"><div class="l">다음 글 →</div><div class="t">에퀴티 분포: 평균이 같아도 전략이 달라지는 이유</div></a></nav></main>
+<script>/*__land__*/(function(){try{if(window.top!==window.self||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;var v='',n='';try{v=localStorage.getItem('vid');if(!v){v=Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('vid',v);}n=localStorage.getItem('nick')||'';}catch(e){}var f=(new URLSearchParams(location.search).get('from')||'').slice(0,30),rf=document.referrer||'',own=false;try{own=!!rf&&new URL(rf).host===location.host;}catch(e){}var b={p:"\ube14\ub85c\uadf8",n:n,v:v};if(f||!own){b.l=1;b.from=f;b.rf=own?'':rf.slice(0,200);}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b),keepalive:true}).catch(function(){});}catch(e){}})();</script>
+</body>
+</html>

@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>반 스트리트 게임: 포지션의 값을 식으로 세우기 · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+<meta name="description" content="M74·M75는 받는 쪽을 체크로 묶어 둔 반 스트리트 게임 이었어요. 오늘은 그 묶음을 풀어요. 먼저 행동하는 쪽도 벳할 수 있게 하고, 같은 핸드 분포에서 마지막에 행동한다는 게 몇 BB짜리인지 식으로 세워요. 포지션이 좋다는 말은 누구나 하지만 얼마나 좋으냐고…">
+<link rel="canonical" href="https://xn--bc2b73r.kr/blog/%EA%B8%80/278_M76.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="반 스트리트 게임: 포지션의 값을 식으로 세우기 · 뚝섬 홀덤학습">
+<meta property="og:description" content="M74·M75는 받는 쪽을 체크로 묶어 둔 반 스트리트 게임 이었어요. 오늘은 그 묶음을 풀어요. 먼저 행동하는 쪽도 벳할 수 있게 하고, 같은 핸드 분포에서 마지막에 행동한다는 게 몇 BB짜리인지 식으로 세워요. 포지션이 좋다는 말은 누구나 하지만 얼마나 좋으냐고…">
+<meta property="og:url" content="https://xn--bc2b73r.kr/blog/%EA%B8%80/278_M76.html">
+<meta property="og:image" content="https://xn--bc2b73r.kr/hub/banner.jpg">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge m">마스터</span><span class="chip">개념</span><span class="n">마스터 76번째 글 (전체 285편 중 278번째)</span></div><h1>반 스트리트 게임: 포지션의 값을 식으로 세우기</h1>
+<article>
+<p>안녕하세요. M74·M75는 받는 쪽을 체크로 묶어 둔 <strong>반 스트리트 게임</strong>이었어요. 오늘은 그 묶음을 풀어요. 먼저 행동하는 쪽도 벳할 수 있게 하고, 같은 핸드 분포에서 마지막에 행동한다는 게 몇 BB짜리인지 식으로 세워요.</p>
+<p>포지션이 좋다는 말은 누구나 하지만 얼마나 좋으냐고 물으면 답이 없어요. 답을 먼저 말하면 팟 20BB 리버에서 0.83BB예요. 생각보다 작은 이 숫자가 어디서 나오는지 따라가요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>포지션의 값을 <strong>세 게임의 차이</strong>로 재는 법</li>
+<li>먼저 행동하는 쪽의 벳 권리가 <strong>벳 크기에 따라 달라지는</strong> 이유</li>
+<li>상대의 체크가 왜 내 밸류 폭을 넓히는지, <strong>언제 안 넓히는지</strong></li>
+</ul></div>
+<hr />
+<h2>핵심 개념: 포지션의 값은 벳할 권리의 차이예요</h2>
+<p>양쪽이 같은 핸드 분포를 받고 팟 20BB, 벳 20BB만 쓰는 게임을 세 가지로 놓아요. X는 먼저 행동하는 쪽, Y는 마지막에 행동하는 쪽이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>게임</th>
+<th>X 몫</th>
+<th>Y 몫</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>쇼다운만</td>
+<td>10BB</td>
+<td>10BB</td>
+</tr>
+<tr>
+<td>반 스트리트(Y만 벳)</td>
+<td>8.89BB</td>
+<td>11.11BB</td>
+</tr>
+<tr>
+<td>온 스트리트(둘 다 벳, 레이즈 없음)</td>
+<td>9.17BB</td>
+<td>10.83BB</td>
+</tr>
+</tbody>
+</table></div>
+<p>Y가 마지막에 행동해서 갖는 몫이 0.83BB예요. 1.11BB에서 줄어든 0.28BB가 <strong>X가 벳할 권리로 되찾은 돈</strong>이고요.</p>
+<p>잘하는 사람도 헷갈리는 건 "포지션이 있으면 벳을 더 친다"는 말이에요. 이 게임에서 Y의 밸류 폭이 넓어지는 건 마지막이라서가 아니라 <strong>X가 벳할 수 있었는데 안 했기 때문</strong>이에요. X가 벳을 못 하는 게임이었다면 Y의 체크 뒤 밸류 폭은 넓어지지 않아요.</p>
+<hr />
+<section class="sec why"><h2>왜 그럴까: 식 세 줄로 Y의 벳 폭이 나와요</h2>
+<h3>장난감 게임 가정</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>가정</th>
+<th>이 모델에서</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>핸드</td>
+<td>양쪽이 0과 1 사이의 숫자를 고르게 받음. 작은 숫자가 이김</td>
+</tr>
+<tr>
+<td>팟 / 벳</td>
+<td>20BB / 20BB(팟벳). 양쪽이 같은 크기를 씀. 크기는 4단계에서, 양쪽이 다른 경우는 7단계에서 바꿔요</td>
+</tr>
+<tr>
+<td>순서</td>
+<td>X가 체크 또는 벳. X가 벳하면 Y가 콜 또는 폴드. X가 체크하면 Y가 체크 또는 벳, Y가 벳하면 X가 콜 또는 폴드</td>
+</tr>
+<tr>
+<td>레이즈</td>
+<td>없음</td>
+</tr>
+</tbody>
+</table></div>
+<p>결론은 전부 <strong>이 모델에서</strong>예요.</p>
+<h3>1단계. 균형의 모습</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>구간(0이 최강)</th>
+<th>폭</th>
+<th>X</th>
+<th>Y(X가 체크한 뒤)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>맨 위</td>
+<td>33.3%</td>
+<td>절반 벳, 절반 체크콜</td>
+<td>밸류 벳</td>
+</tr>
+<tr>
+<td>가운데</td>
+<td>50%</td>
+<td>체크</td>
+<td>체크</td>
+</tr>
+<tr>
+<td>맨 아래</td>
+<td>16.7%</td>
+<td>절반 블러프, 절반 체크폴드</td>
+<td>블러프</td>
+</tr>
+</tbody>
+</table></div>
+<p>X가 벳하면 Y는 맨 위 33.3%에 가운데에서 16.7%포인트를 더해 50%를 콜해요. X가 체크한 뒤 Y가 벳하면 X는 맨 위의 체크 절반에 가운데에서 16.7%포인트를 더해 콜해요.</p>
+<p>M74의 답과 나란히 놓으면 Y가 X의 체크 뒤에 하는 일이 얼마나 달라졌는지 보여요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>Y의 체크 뒤 전략</th>
+<th>밸류 폭</th>
+<th>블러프 폭</th>
+<th>벳 폭</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>반 스트리트(M74)</td>
+<td>22.2%</td>
+<td>11.1%</td>
+<td>33.3%</td>
+</tr>
+<tr>
+<td>온 스트리트</td>
+<td>33.3%</td>
+<td>16.7%</td>
+<td>50%</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>밸류도 블러프도 1.5배로 넓어졌어요.</strong> 이 표가 왜 이렇게 생겼는지 식으로 볼게요.</p>
+<h3>2단계. 식 세 줄</h3>
+<p>벳 크기를 팟의 s배로 놓아요.</p>
+<p><strong>첫째 줄.</strong> X의 맨 위 핸드는 벳과 체크콜이 같아야 해요. 벳하면 Y의 약한 콜에게서 더 받고, 체크하면 Y의 약한 벳에게서 더 받아요. 나보다 강한 Y에게 잃는 돈은 어느 쪽이든 같아요. 팟이 식에서 빠지는 건 맨 위 핸드가 어느 길이든 약한 Y 전부에게서 팟을 가져오기 때문이에요.</p>
+<blockquote>
+<p>X의 벳 − 체크콜 = 벳 × (Y 콜 폭 − Y 벳 폭)</p>
+</blockquote>
+<p>그래서 <strong>Y의 콜 폭과 Y의 벳 폭이 같아요.</strong></p>
+<p><strong>둘째 줄.</strong> X의 맨 아래 핸드는 블러프와 체크폴드가 같아야 해요. 체크폴드의 몫은 0이에요. Y의 벳 레인지 맨 아래도 블러프로 빠지니, Y가 체크할 때는 X의 맨 아래가 이기는 상대가 없거든요. M74 5단계처럼 쇼다운 몫이 남지 않아서 Y의 콜은 <strong>MDF 그대로</strong>예요.</p>
+<blockquote>
+<p>Y 콜 폭 = 1 ÷ (1 + s) = 0.5</p>
+</blockquote>
+<p><strong>셋째 줄.</strong> Y의 벳 속 블러프 비중은 A05 공식이에요. 밸류 폭을 t라 하면 블러프 폭은 t × s ÷ (1 + s)이고, 둘을 더한 벳 폭이 MDF예요.</p>
+<blockquote>
+<p>t + t × s ÷ (1 + s) = 1 ÷ (1 + s)</p>
+</blockquote>
+<p>풀면 <strong>t = 1 ÷ (1 + 2s)</strong>예요. 팟벳이면 33.3%이고, 블러프 폭은 그 절반인 16.7%예요.</p>
+<p><strong>X의 맨 위 벳 비율은 Y가 정해요.</strong> 이 비율을 a라 할게요. 밸류 경계 t의 Y는 X의 체크콜 중 자기 위와 아래가 같아야 해서, X의 콜은 위에서 d = t + (1 − a) × t까지 내려와요. 블러프 경계 u의 Y는 블러프와 체크가 같아야 하니 u − d = s × 2t × (1 − a)이고, u는 1 − MDF + t예요. 풀면 a는 1 ÷ (1 + s)가 나와요. 팟벳이면 절반이에요. X의 맨 아래 블러프 비율이 같은 a인 건 Y의 콜 경계를 무차별로 만들려면 벳 속 블러프 비중이 A05 공식이어야 해서예요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>M74 7단계에서 받는 쪽 위가 잘리면 거는 쪽 밸류가 넓어진다고 했어요. 여기서는 X가 <strong>자기 손으로 위를 덜어 낸</strong> 모습이에요. 맨 위의 절반이 벳으로 빠져나가서 체크 레인지의 위가 얇아졌고, 체크콜의 경계도 아래로 내려왔어요. 그만큼 Y의 얇은 밸류가 살아났어요. 포지션이 밸류를 넓힌 게 아니라 <strong>상대의 체크라는 정보</strong>가 넓혔어요.</p>
+<h3>3단계. X의 몫을 식으로</h3>
+<p>X의 모든 핸드는 체크가 균형 전략에 들어 있어요. 그러니 X의 몫은 "늘 체크하고 최선으로 콜·폴드한다"고 치고 세도 같아요. 블러프 경계를 u라 하면 팟벳에서 u는 5/6이에요.</p>
+<ul>
+<li>맨 위 구간의 핸드: Y의 벳을 전부 콜해요. 나보다 약한 Y의 밸류와 블러프에게서 벳을 더 받고, 나보다 강한 Y에게 벳만큼 잃어요</li>
+<li>가운데 핸드: Y의 벳에 콜 EV가 0이라 콜해도 폴드해도 몫이 없어요. Y가 체크할 때 나보다 약한 쪽만큼 이겨요</li>
+<li>맨 아래 핸드: 몫이 0이에요</li>
+</ul>
+<p>맨 위 구간의 몫은 (u − t) + 1 − (1 + 2s) × x이고 평균을 내면 (u − t) + 1/2예요. 가운데 구간의 평균은 (u − t) ÷ 2예요. 두 구간을 폭으로 가중해 더하면 u² ÷ 2 + t × (1 − t) ÷ 2이고, 1 − t가 2st라서 식이 정리돼요.</p>
+<blockquote>
+<p>X 몫(팟을 1로) = u² ÷ 2 + s × t²</p>
+</blockquote>
+<p>팟벳에 넣으면 25/72 + 1/9가 되고, 이건 11/24예요.</p>
+<blockquote>
+<p>20 × 11/24 = 9.17</p>
+</blockquote>
+<p>Y는 그 나머지인 10.83BB예요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>식에서 보이는 건 <strong>X의 몫이 Y의 전략만으로 정해진다</strong>는 점이에요. X가 언제 벳하느냐는 몫을 바꾸지 않아요. X의 벳이 하는 일은 Y가 이 전략 밖으로 나가지 못하게 묶는 거예요. 한쪽이 표대로 안 하면 돈이 얼마나 움직이는지 봐요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>틀리는 쪽</th>
+<th>X 몫</th>
+<th>균형 대비</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>없음(균형)</td>
+<td>9.17BB</td>
+<td></td>
+</tr>
+<tr>
+<td>X가 벳을 안 쓰고 Y가 맞춰 옴</td>
+<td>8.89BB</td>
+<td>X가 0.28BB 손해</td>
+</tr>
+<tr>
+<td>Y가 M74 전략을 고집하고 X가 맞춰 옴</td>
+<td>9.81BB</td>
+<td>Y가 0.65BB 손해</td>
+</tr>
+</tbody>
+</table></div>
+<p>둘째 줄이 벳 권리의 값이에요. 셋째 줄은 "상대가 체크했으니 위 22.2%만 치고, 벳이 오면 위 44.4%만 콜한다"를 고집한 값이고요. <strong>상대가 벳을 쓰는 사람 앞에서 M74 표를 쓰는 쪽이 더 비싸요.</strong></p>
+<h3>4단계. 크기별 포지션의 값</h3>
+<p>같은 식으로 크기를 바꿔요. 왼쪽 두 칸은 Y의 체크 뒤 전략이고, 더 번 돈은 모두 쇼다운만의 10BB 대비예요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>벳(팟 대비)</th>
+<th>Y 밸류 폭</th>
+<th>Y 벳 폭</th>
+<th>반 스트리트의 Y</th>
+<th>온 스트리트의 Y(포지션의 값)</th>
+<th>X의 벳 권리</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>25%</td>
+<td>66.7%</td>
+<td>80%</td>
+<td>0.74BB</td>
+<td>0.27BB</td>
+<td>0.47BB</td>
+</tr>
+<tr>
+<td>50%</td>
+<td>50%</td>
+<td>66.7%</td>
+<td>1BB</td>
+<td>0.56BB</td>
+<td>0.44BB</td>
+</tr>
+<tr>
+<td>75%</td>
+<td>40%</td>
+<td>57.1%</td>
+<td>1.09BB</td>
+<td>0.73BB</td>
+<td>0.36BB</td>
+</tr>
+<tr>
+<td>100%</td>
+<td>33.3%</td>
+<td>50%</td>
+<td>1.11BB</td>
+<td>0.83BB</td>
+<td>0.28BB</td>
+</tr>
+<tr>
+<td>150%</td>
+<td>25%</td>
+<td>40%</td>
+<td>1.07BB</td>
+<td>0.9BB</td>
+<td>0.17BB</td>
+</tr>
+<tr>
+<td>200%</td>
+<td>20%</td>
+<td>33.3%</td>
+<td>1BB</td>
+<td>0.89BB</td>
+<td>0.11BB</td>
+</tr>
+<tr>
+<td>400%</td>
+<td>11.1%</td>
+<td>20%</td>
+<td>0.74BB</td>
+<td>0.71BB</td>
+<td>0.03BB</td>
+</tr>
+</tbody>
+</table></div>
+<p>X의 맨 위 벳 비율은 1 ÷ (1 + s)예요. 크기가 커질수록 X가 벳하는 양이 빠르게 줄어요. 온 스트리트의 Y가 더 번 돈을 식으로 정리하면 팟 × s² ÷ (2 × (1 + s)² × (1 + 2s))예요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p><strong>작은 벳을 쓰는 판에서는 먼저 행동하는 쪽의 벳 권리가 커요.</strong> 25% 벳이면 Y가 포지션으로 버는 돈은 0.27BB뿐이고, 식의 최대는 팟의 약 1.618배에서 0.9BB예요. X의 벳 권리는 팟의 30% 안팎에서 가장 크고, 큰 크기에서는 X의 벳이 Y의 콜에 막혀서 거의 값을 못 해요. M75의 반 스트리트는 s와 1/s가 같았는데 이 표는 50%와 200%가 달라요(0.56BB와 0.89BB). 대칭이 깨진 건 X의 벳 권리가 작은 쪽에서 더 많이 빼앗아서예요.</p>
+<h3>5단계. AKQ로 보는 작은 판</h3>
+<p>M73의 AKQ에서 먼저 행동하는 X가 A를 들었다고 해요. 팟 12BB, 벳 b예요. A의 선택은 비교 한 번으로 끝나요.</p>
+<blockquote>
+<p>벳으로 더 받는 돈 = 0.5 × K 콜 × 벳</p>
+<p>체크로 더 받는 돈 = 0.5 × Q 블러프 × 벳</p>
+</blockquote>
+<p>K 콜은 (팟 − 벳) ÷ (팟 + 벳), Q 블러프는 벳 ÷ (팟 + 벳)이에요. 벳이 팟의 절반보다 작으면 벳, 크면 체크가 나아요. Y가 더 버는 돈은 M73 5단계 식에서 콜 자리에 <strong>둘 중 작은 쪽</strong>이 들어가요. 벳이 작을 때 Y가 더 번 돈은 Y의 Q가 X의 K에게서 훔치는 팟에서 X의 A가 K의 콜로 받는 돈을 뺀 값이고, 이걸 정리하면 Q 블러프 × 벳 ÷ 6이 돼요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>벳</th>
+<th>K 콜</th>
+<th>Q 블러프</th>
+<th>A의 선택</th>
+<th>Y만 벳할 때 Y가 더 번 돈</th>
+<th>둘 다 벳할 때</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3BB</td>
+<td>60%</td>
+<td>20%</td>
+<td>벳</td>
+<td>0.3BB</td>
+<td>0.1BB</td>
+</tr>
+<tr>
+<td>4BB</td>
+<td>50%</td>
+<td>25%</td>
+<td>벳</td>
+<td>0.33BB</td>
+<td>0.17BB</td>
+</tr>
+<tr>
+<td>6BB</td>
+<td>33.3%</td>
+<td>33.3%</td>
+<td>같음</td>
+<td>0.33BB</td>
+<td>0.33BB</td>
+</tr>
+<tr>
+<td>9BB</td>
+<td>14.3%</td>
+<td>42.9%</td>
+<td>체크</td>
+<td>0.21BB</td>
+<td>0.21BB</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>3BB일 때 = 0.2 × 3 ÷ 6 = 0.1</p>
+</blockquote>
+<p>9BB 줄의 K 콜 14.3%는 하한이에요. X가 A를 체크하는 균형에서는 그 이상의 값도 답이 될 수 있고, Y가 더 번 돈은 그대로예요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>강한 핸드로 먼저 벳할지 체크할지는 <strong>받을 콜과 잡을 블러프의 비교</strong>예요. 세 장짜리 판에서는 그 답이 한쪽으로 깔끔하게 떨어지고, 줄지어 있는 분포에서는 두 값이 같아질 때까지 맨 위가 섞여요.</p>
+<h3>6단계. 스트리트가 늘면</h3>
+<p>한 스트리트만 잰 값이 작아 보이니 벳할 기회를 늘려 봐요. 카드가 더 안 나오고 핸드 순위가 고정된 채 같은 크기로 스트리트만 늘린 게임을 코드로 풀었어요(격자 60칸, 시작 팟 20BB 기준).</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>스트리트 수</th>
+<th>50% 벳일 때 포지션의 값</th>
+<th>100% 벳일 때 포지션의 값</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>0.56BB</td>
+<td>0.83BB</td>
+</tr>
+<tr>
+<td>2</td>
+<td>0.77BB</td>
+<td>1.11BB</td>
+</tr>
+<tr>
+<td>3</td>
+<td>0.88BB</td>
+<td>1.23BB</td>
+</tr>
+</tbody>
+</table></div>
+<p>스트리트가 세 배가 돼도 포지션의 값은 세 배가 아니에요. 핸드가 고정이면 앞 스트리트의 벳과 콜로 레인지가 이미 잘려서 뒤 스트리트에 남은 밸류와 블러프의 폭이 줄어들거든요. 실제 포커에서는 카드가 바뀌면서 M41이 다룬 에퀴티 실현 문제까지 끼어들어서 이 표보다 커질 수 있어요(불확실, 이 글에서 재지 않았어요).</p>
+<h3>7단계. 양쪽 크기가 다르면</h3>
+<p>지금까지는 X와 Y가 같은 크기를 썼어요. 2단계 첫째 줄은 크기가 같을 때의 식이고, 크기를 따로 쓰면 이렇게 돼요.</p>
+<blockquote>
+<p>X의 벳 − 체크콜 = X 벳 × (Y 콜 폭 − x) − Y 벳 × (Y 벳 폭 − x)</p>
+</blockquote>
+<p>핸드 위치 x가 식에서 안 사라져요. 맨 위가 섞이지 않고 갈라진다는 뜻이에요. 격자 60칸을 CFR로 풀어서 포지션의 값을 쟀어요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>X의 벳(팟 대비)</th>
+<th>Y가 팟벳일 때</th>
+<th>Y가 하프팟일 때</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>25%</td>
+<td>0.05BB</td>
+<td>0.18BB</td>
+</tr>
+<tr>
+<td>33%</td>
+<td>0.12BB</td>
+<td>0.3BB</td>
+</tr>
+<tr>
+<td>50%</td>
+<td>0.3BB</td>
+<td>0.56BB</td>
+</tr>
+<tr>
+<td>75%</td>
+<td>0.59BB</td>
+<td>0.42BB</td>
+</tr>
+<tr>
+<td>100%</td>
+<td>0.83BB</td>
+<td>0.36BB</td>
+</tr>
+<tr>
+<td>150%</td>
+<td>0.76BB</td>
+<td>0.33BB</td>
+</tr>
+</tbody>
+</table></div>
+<p>X의 크기가 Y와 같을 때 포지션의 값이 가장 커요. X가 작게 치면 맨 위는 체크콜로 넘어가고 그 아래가 벳이 되고, X가 크게 치면 맨 위가 벳이에요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>앞의 0.83BB는 <strong>양쪽 크기가 같다는 가정</strong>의 값이에요. Y가 팟벳만 쓰는 판에서 X가 25%로 리드하면 Y의 포지션은 0.05BB밖에 안 남아요. 먼저 행동하는 쪽이 <strong>상대와 다른 크기를 고르는 것</strong> 자체가 포지션의 값을 빼앗아요.</p></section>
+<hr />
+<h2>실제 핸드 예시: BTN의 KQ, BB가 체크한 뒤</h2>
+<p>M74 장면을 그대로 써요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>자리·스택</td>
+<td>BTN(Hero) 대 BB, 유효 스택 100BB</td>
+</tr>
+<tr>
+<td>프리플랍</td>
+<td>BTN 2.5BB 오픈, SB 폴드, BB 콜 → 팟 5.5BB</td>
+</tr>
+<tr>
+<td>플랍 K♠ 7♦ 2♣</td>
+<td>BB 체크, BTN 3.25BB, BB 콜 → 팟 12BB</td>
+</tr>
+<tr>
+<td>턴 5♥</td>
+<td>BB 체크, BTN 4BB, BB 콜 → 팟 20BB</td>
+</tr>
+<tr>
+<td>리버 9♠</td>
+<td>BB 체크, BTN 결정</td>
+</tr>
+</tbody>
+</table></div>
+<p>Hero는 K♦Q♥예요. M74에서는 BB가 벳할 수 없는 게임으로 놓고 벳 − 체크가 −2.22BB였어요. 이번엔 <strong>BB도 리버에 벳할 수 있었던 게임</strong>이에요. 이번 한 번의 결정 기준이고, 레인지는 <strong>이 표에 맞춘 가정</strong>이에요. 양쪽이 같은 분포로 108콤보씩 있고, 묶음 크기는 실제 콤보 수와 달라요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>위에서 몇 번째</th>
+<th>콤보</th>
+<th>BB</th>
+<th>BTN(BB 체크 뒤)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1~36</td>
+<td>36콤보</td>
+<td>18콤보 벳, 18콤보 체크콜</td>
+<td>팟벳</td>
+</tr>
+<tr>
+<td>37~90</td>
+<td>54콤보</td>
+<td>체크(그중 18콤보 콜)</td>
+<td>체크</td>
+</tr>
+<tr>
+<td>91~108</td>
+<td>18콤보</td>
+<td>9콤보 블러프, 9콤보 체크폴드</td>
+<td>블러프</td>
+</tr>
+</tbody>
+</table></div>
+<p>BB가 체크했으니 남은 레인지는 위 18콤보, 가운데 54콤보, 아래 9콤보로 81콤보예요. Hero의 KQ는 위 25~36번째라서 BB의 체크콜과 이렇게 만나요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>콜 받는 상대</th>
+<th>콤보</th>
+<th>결과</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1~24 중 체크한 절반</td>
+<td>12콤보</td>
+<td>짐</td>
+</tr>
+<tr>
+<td>KQ 중 체크한 절반</td>
+<td>6콤보</td>
+<td>비김</td>
+</tr>
+<tr>
+<td>가운데 콜</td>
+<td>18콤보</td>
+<td>이김</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>벳 − 체크 = 20 × (18 − 12) ÷ 81 = 1.48</p>
+</blockquote>
+<p>Hero는 <strong>팟벳</strong>을 쳐요. 같은 KQ가 −2.22BB에서 +1.48BB로 뒤집혔어요. 달라진 건 두 가지예요. BB의 체크가 위를 덜어 냈고, BB의 콜이 48번째에서 54번째까지 내려왔어요.</p>
+<p>맨 위 36콤보를 어떻게 나누는지에 따라 이 값은 달라져요. 벳과 체크콜이 같은 값이라 어느 배분이든 균형이거든요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>BB가 체크콜로 남긴 맨 위</th>
+<th>KQ의 벳 − 체크</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>19~36번째</td>
+<td>+2.96BB</td>
+</tr>
+<tr>
+<td>콤보마다 절반씩(위 표)</td>
+<td>+1.48BB</td>
+</tr>
+<tr>
+<td>1~18번째</td>
+<td>0BB</td>
+</tr>
+</tbody>
+</table></div>
+<h3>BB 쪽이라면</h3>
+<p>BB가 같은 KQ를 들고 먼저 행동한다면 벳과 체크콜의 값이 같아요. 벳을 받아 주는 BTN의 콜도, BB의 체크 뒤에 나오는 BTN의 벳도 54콤보로 폭이 같고 지는 상대·이기는 상대의 수가 같거든요.</p>
+<blockquote>
+<p>벳 − 체크콜 = 20 × ((18 − 24) − (18 − 24)) ÷ 108 = 0</p>
+</blockquote>
+<p>"어느 쪽이 더 낫나"가 균형에서는 질문이 안 돼요. 이 핸드가 <strong>벳과 체크콜에 나뉘어 있어야</strong> 앞의 Hero가 위 표대로 움직여요.</p>
+<hr />
+<h2>GTO 기준과 실전 익스플로잇</h2>
+<h3>GTO 기준(이론)</h3>
+<p>네 가지를 조심해서 읽어요.</p>
+<ul>
+<li><strong>양쪽 크기를 같게 놓았어요.</strong> 다르면 7단계처럼 값이 크게 달라져요</li>
+<li><strong>레이즈가 없는 게임이에요.</strong> 체크레이즈와 벳 뒤 레이즈가 있으면 맨 위의 값이 달라져요. 체크로 맨 위를 숨기는 값은 이 게임보다 커질 수 있어요(불확실)</li>
+<li><strong>1단계 표는 코드로 찾아 식으로 확인한 답이에요.</strong> 맨 위 안에서 어느 핸드를 벳으로 보내느냐는 다른 배분도 있어요(장면의 표). 벳 비율 1 ÷ (1 + s)와 몫은 Y의 두 무차별 조건에서 정해져요</li>
+<li><strong>양쪽 분포가 같아요.</strong> 실제 BB 대 BTN은 레인지 자체가 달라요. 포지션의 값과 레인지 우위를 한 숫자로 섞어 읽으면 안 돼요</li>
+</ul>
+<h3>실전(라이브·저스테이크) 익스플로잇</h3>
+<p><strong>강한 핸드로 리드를 전혀 안 하는 상대라면</strong> 체크 레인지의 위가 그대로 있어요. 그 상대의 체크는 정보가 아니에요. 표의 위 36콤보로 밸류를 넓히면 M74의 −2.22BB 쪽으로 돌아가니, 위 24콤보로 좁혀요. 그 상대가 리드를 섞기 시작하면 위가 얇아지니 다시 넓혀요.</p>
+<p><strong>상대의 리드 빈도를 세는 법.</strong> 이 모델에서 팟벳이면 X는 전체의 25%, 하프팟이면 44.4%를 먼저 벳해요. 표본이 쌓이기 전에는 리드에 강한 핸드가 얼마나 섞이는지를 쇼다운으로 하나씩 모아요. 강한 핸드의 리드를 한 번도 못 봤다면 체크를 정보로 쓰지 않는 쪽이 안전해요.</p>
+<p><strong>X 자리에서 Y가 표보다 블러프를 많이 치는 상대라면</strong> 강한 핸드는 체크콜로 더 벌어요. 5단계의 비교에서 블러프 쪽이 커지니까요. Y가 체크백만 하는 상대라면 반대로 리드가 나아요. 그 상대가 강한 핸드로만 벳하기 시작하면 체크콜의 값이 사라지니 되돌려요.</p>
+<hr />
+<section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. 크기가 달라도 같은 표를 쓰기</strong>
+7단계에서 Y가 팟벳일 때 X가 25%로 리드하면 Y의 포지션은 0.05BB였어요. 상대의 리드 크기가 내 벳 크기와 다르면 이 글의 Y 표를 그대로 쓰지 않아요.</p></div><div class="mis-card"><p><strong>실수 2. 넛이면 먼저 벳</strong>
+5단계의 9BB에서 A의 벳은 0.64BB, 체크는 1.93BB를 더 받아요. 크게 칠수록 받을 콜보다 잡을 블러프가 커요.</p></div><div class="mis-card"><p><strong>실수 3. 포지션의 값을 레인지의 값과 합쳐 읽기</strong>
+같은 분포에서 잰 포지션의 값은 팟 20BB에 0.83BB예요. BTN과 BB의 수익 차이에는 블라인드, 여러 스트리트, 레인지 차이가 함께 들어 있어요. 이 표만으로 자리별 수익을 설명하면 안 돼요.</p></div></section>
+<hr />
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<p>리버에서 상대가 체크했을 때 이렇게 물어요.</p>
+<ol>
+<li>상대의 <strong>벳 크기</strong>가 내가 쓰는 크기와 같은가</li>
+<li>그 체크로 <strong>위가 얇아지고 콜이 내려왔나</strong></li>
+</ol></section>
+<hr />
+<h2>내 판단 점검</h2>
+<p><strong>문제 1.</strong> 같은 게임에서 벳이 팟의 2/3예요. X가 체크한 뒤 Y의 밸류 폭, 블러프 폭, 벳 폭은 얼마일까요? 팟 20BB에서 포지션의 값은 몇 BB일까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>밸류 42.9%, 블러프 17.1%, 벳 폭 60%, 포지션의 값 0.69BB</strong>예요.</p>
+<blockquote>
+<p>t = 1 ÷ (1 + 2 × 2/3) = 0.4286</p>
+</blockquote>
+<p>블러프 폭은 t × (2/3) ÷ (5/3)이고, 합이 MDF 60%예요. 블러프 경계 u는 0.8286이에요.</p>
+<blockquote>
+<p>X 몫 = 0.8286 × 0.8286 ÷ 2 + 2/3 × 0.4286 × 0.4286 = 0.4657</p>
+</blockquote>
+<p>Y가 더 번 돈은 (0.5 − 0.4657) × 20이에요.</p>
+</details>
+<p><strong>문제 2.</strong> AKQ 게임에서 팟 12BB, 벳 8BB예요. 먼저 행동하는 쪽이 A를 들었어요. 상대의 K 콜 빈도는 20%, 상대의 Q 블러프 빈도는 40%예요. 벳과 체크 중 어느 쪽이 얼마나 더 벌까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>체크가 0.8BB 더 벌어요.</strong> 넛이니 벳이라는 감이 여기서 틀려요.</p>
+<blockquote>
+<p>벳 = 0.5 × 0.2 × 8 = 0.8</p>
+<p>체크 = 0.5 × 0.4 × 8 = 1.6</p>
+</blockquote>
+<p>벳이 팟의 절반을 넘어서 받을 콜보다 잡을 블러프가 커요.</p>
+</details>
+<hr />
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>상대가 체크한 뒤 밸류를 정할 때 → 상대가 그 자리에서 벳을 쓰는 사람인지 먼저 본다 → 벳이 위를 덜어 내고 콜이 내려왔을 때만 내 밸류 폭이 넓어진다</li>
+<li>먼저 행동하는 자리에서 강한 핸드를 들었을 때 → 받을 콜과 잡을 블러프를 비교한다 → 벳이 작을수록 벳 쪽이고 클수록 체크 쪽이다</li>
+<li>포지션의 값을 어림할 때 → 같은 분포·같은 크기의 숫자부터 본다 → 한 스트리트에 팟의 5%가 안 되고, 크기가 다르면 더 작아진다</li>
+</ul></section>
+<hr />
+<section class="sec end"><h2>정리하며</h2>
+<p>오늘은 X에게 벳 권리를 돌려주고 식 세 줄로 Y의 폭을 구했어요. 그 결과 팟 20BB에서 포지션의 값이 0.83BB이고, X의 벳 권리는 작은 크기 쪽에서 더 크다는 걸 봤어요. KQ가 −2.22BB에서 +1.48BB로 뒤집힌 건 BB의 체크가 위를 덜어 내고 콜이 내려왔기 때문이에요. 기억할 건 상대의 체크가 정보가 되는 조건이에요.</p>
+<p>다음 글 M77에서는 게임을 프리플랍으로 옮겨요. <strong>잼 오어 폴드 게임</strong>으로 푸시·폴드표가 어디서 나오는지 풀어요.</p>
+<p><small>AI 작성 · 숫자는 계산 검증 · 가정 레인지·고정한 스택 기준</small></p></section>
+</article>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="275_M73.html">AKQ 게임: 카드 세 장으로 유도하는 블러프와 콜 비율</a></li></ul></aside><nav class="nav"><a class="prev" href="277_M75.html"><div class="l">← 이전 글</div><div class="t">[0,1] 게임 2: 벳 크기가 바뀌면 구간은 어떻게 움직일까</div></a><a class="next" href="279_M77.html"><div class="l">다음 글 →</div><div class="t">잼 오어 폴드 게임: 푸시·폴드표는 어떻게 나왔을까</div></a></nav></main>
+<script>/*__land__*/(function(){try{if(window.top!==window.self||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;var v='',n='';try{v=localStorage.getItem('vid');if(!v){v=Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('vid',v);}n=localStorage.getItem('nick')||'';}catch(e){}var f=(new URLSearchParams(location.search).get('from')||'').slice(0,30),rf=document.referrer||'',own=false;try{own=!!rf&&new URL(rf).host===location.host;}catch(e){}var b={p:"\ube14\ub85c\uadf8",n:n,v:v};if(f||!own){b.l=1;b.from=f;b.rf=own?'':rf.slice(0,200);}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b),keepalive:true}).catch(function(){});}catch(e){}})();</script>
+</body>
+</html>

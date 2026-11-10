@@ -5,20 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>헤즈업 프리플랍: 스택 깊이가 바뀌면 SB 첫 행동은 어떻게 달라질까? (헤즈업 기준) · 뚝섬 홀덤학습</title>
 <link rel="stylesheet" href="../style.css">
-<meta name="description" content="I12에서 100BB 헤즈업 SB의 첫 행동 표를 행동별 EV로 읽었고, E26에서는 솔버 표를 전체 빈도 → 사이즈 → 핸드별 순서로 읽고, 한 핸드가 섞으면 그 행동들의 EV가 거의 같다는 뜻이라고 정리했죠. 오늘은 I12의 표를 스택 깊이만 25BB부터…">
+<meta name="description" content="I12에서 100BB 헤즈업 SB의 첫 행동 표를 행동별 EV로 읽었고, E26에서는 솔버 표를 전체 빈도 → 사이즈 → 핸드별 순서로 읽고, 한 핸드가 섞으면 그 행동들의 EV가 거의 같다는 뜻이라고 정리했죠. I12의 표를 스택 깊이만 25BB부터 200BB까지…">
 <link rel="canonical" href="https://xn--bc2b73r.kr/blog/%EA%B8%80/115_E18.html">
 <meta property="og:type" content="article">
 <meta property="og:title" content="헤즈업 프리플랍: 스택 깊이가 바뀌면 SB 첫 행동은 어떻게 달라질까? (헤즈업 기준) · 뚝섬 홀덤학습">
-<meta property="og:description" content="I12에서 100BB 헤즈업 SB의 첫 행동 표를 행동별 EV로 읽었고, E26에서는 솔버 표를 전체 빈도 → 사이즈 → 핸드별 순서로 읽고, 한 핸드가 섞으면 그 행동들의 EV가 거의 같다는 뜻이라고 정리했죠. 오늘은 I12의 표를 스택 깊이만 25BB부터…">
+<meta property="og:description" content="I12에서 100BB 헤즈업 SB의 첫 행동 표를 행동별 EV로 읽었고, E26에서는 솔버 표를 전체 빈도 → 사이즈 → 핸드별 순서로 읽고, 한 핸드가 섞으면 그 행동들의 EV가 거의 같다는 뜻이라고 정리했죠. I12의 표를 스택 깊이만 25BB부터 200BB까지…">
 <meta property="og:url" content="https://xn--bc2b73r.kr/blog/%EA%B8%80/115_E18.html">
 <meta property="og:image" content="https://xn--bc2b73r.kr/hub/banner.jpg">
 </head>
 <body>
 <header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
-<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">개념</span><span class="n">고급 19번째 글 (전체 272편 중 124번째)</span></div><h1>헤즈업 프리플랍: 스택 깊이가 바뀌면 SB 첫 행동은 어떻게 달라질까? (헤즈업 기준)</h1>
+<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">개념</span><span class="n">고급 19번째 글 (전체 285편 중 124번째)</span></div><h1>헤즈업 프리플랍: 스택 깊이가 바뀌면 SB 첫 행동은 어떻게 달라질까? (헤즈업 기준)</h1>
 <article>
-<p>안녕하세요. I12에서 100BB 헤즈업 SB의 첫 행동 표를 행동별 EV로 읽었고, E26에서는 솔버 표를 <strong>전체 빈도 → 사이즈 → 핸드별</strong> 순서로 읽고, 한 핸드가 섞으면 그 행동들의 EV가 거의 같다는 뜻이라고 정리했죠.</p>
-<p>오늘은 I12의 표를 <strong>스택 깊이만</strong> 25BB부터 200BB까지 바꿔 가며 봐요. 같은 핸드가 깊이에 따라 올인에서 레이즈로, 레이즈에서 림프로 옮겨 가는데, 그 변화가 <strong>어디서, 왜</strong> 일어나는지가 오늘의 주제예요.</p>
+<p>I12에서 100BB 헤즈업 SB의 첫 행동 표를 행동별 EV로 읽었고, E26에서는 솔버 표를 <strong>전체 빈도 → 사이즈 → 핸드별</strong> 순서로 읽고, 한 핸드가 섞으면 그 행동들의 EV가 거의 같다는 뜻이라고 정리했죠.</p>
+<p>I12의 표를 <strong>스택 깊이만</strong> 25BB부터 200BB까지 바꿔 가며 봐요. 같은 핸드가 깊이에 따라 올인에서 레이즈로, 레이즈에서 림프로 옮겨 가는데, 그 변화가 <strong>어디서, 왜</strong> 일어나는지가 오늘의 주제예요.</p>
 <div class="learn"><p class="h">이 글에서 배울 것</p><ul>
 <li>이 모델에서 깊이가 바뀌면 같이 바뀌는 것: <strong>고를 수 있는 행동, 오픈 크기, 플랍 이후 에퀴티를 얼마나 가져가나</strong></li>
 <li>SB 첫 행동의 빈도가 깊이를 따라 고르게 움직이지 않고 <strong>몇 군데 경계에서 뛴다</strong>는 것, 그리고 그 경계를 읽는 법</li>
@@ -43,7 +43,7 @@
 <li><strong>4벳 올인</strong>(SB가 BB의 3벳을 받고 다시 올인): <strong>60BB 이하에서만</strong> 있어요</li>
 <li><strong>오픈 크기</strong>: 25·30BB <strong>2BB</strong>, 40·50BB <strong>2.1BB</strong>, 60BB <strong>2.2BB</strong>, 80BB <strong>2.3BB</strong>, 100BB <strong>2.5BB</strong>, 200BB <strong>2.6BB</strong>(3벳·4벳 크기도 깊이마다 조금씩 달라요)</li>
 </ul>
-<p>이게 무슨 뜻이냐면, 이 모델에서 깊이를 바꾸면 핸드의 힘만 바뀌는 게 아니라 <strong>게임의 규칙 몇 개가 같이 바뀌어요.</strong> 그 규칙이 바뀌는 자리가 오늘 표에서 빈도가 뛰는 자리와 겹쳐요.</p>
+<p>이 모델에서 깊이를 바꾸면 핸드의 힘만 바뀌는 게 아니라 <strong>게임의 규칙 몇 개가 같이 바뀌어요.</strong> 그 규칙이 바뀌는 자리가 오늘 표에서 빈도가 뛰는 자리와 겹쳐요.</p>
 <p class="concl"><strong>결론부터 말할게요. 이 모델에서 SB 첫 행동은 깊이를 따라 고르게 변하지 않고, 25BB에서 40BB 사이와 60BB에서 80BB 사이에서 크게 바뀌어요.</strong> 25BB에서는 6♠5♠가 올인 100%, 40~60BB에서는 약한 오프수트 일부를 접고(폴드 약 7%), 80BB 위에서는 다시 거의 접지 않아요.</p>
 <h2>2단계. 깊이별 전체 빈도</h2>
 <div class="tbl"><table>
@@ -243,7 +243,7 @@
 30BB의 림프 급감을 "30BB부터는 림프하면 안 된다"로 외우면, 그게 림프 팟 계수를 바꾼 설정의 결과일 수 있다는 걸 놓쳐요. <strong>빈도가 뛰는 자리에서는 모델 설정부터</strong> 확인해야 해요.</p></div></section>
 <hr />
 <h2>"근사 모델 숫자를 그대로 믿어도 돼요?"</h2>
-<p>좋은 질문이에요. 방향은 참고하되, 작은 차이에는 매달리지 않는 게 좋아요. 7♠2♦의 0.01BB 같은 차이는 실현 계수를 조금만 다르게 잡아도 뒤집힐 수 있어요.</p>
+<p>방향은 참고하되, 작은 차이에는 매달리지 않는 게 좋아요. 7♠2♦의 0.01BB 같은 차이는 실현 계수를 조금만 다르게 잡아도 뒤집힐 수 있어요.</p>
 <p>또 이 모델은 경계마다 규칙이 바뀌니, 경계 근처 깊이의 전략은 <strong>모델 설정에 민감</strong>해요. 실제 헤즈업 솔버로 플랍 이후까지 풀면 다르게 나올 수 있어요.</p>
 <h2>숫자가 뒤집히는 지점</h2>
 <p>기준은 <strong>선택지가 생기거나 사라지는 깊이</strong>와 <strong>행동별 EV 순서가 바뀌는 깊이</strong>예요. 이 모델에서 선택지가 바뀌는 곳은 첫 행동 올인(25BB 이하)과 4벳 올인(60BB 이하)의 경계예요. 두 행동의 EV가 가까운 핸드일수록, 그 경계를 넘을 때 순서가 바뀌기 쉬워요.</p>
@@ -268,15 +268,15 @@
 </details>
 <section class="sec key"><h2>핵심 정리</h2>
 <ul>
-<li>이 모델에서 깊이를 바꾸면 핸드 힘만이 아니라 <strong>선택지·림프 팟 계수·오픈 크기</strong>가 같이 바뀌어요</li>
+<li>이 모델에서 깊이를 바꾸면 <strong>선택지·림프 팟 계수·오픈 크기</strong>가 같이 바뀌어요</li>
 <li>SB 첫 행동 빈도는 <strong>25~40BB, 60~80BB에서 계단처럼</strong> 바뀌고, 그 경계는 모델 설정이 바뀌는 자리와 겹쳐요</li>
 <li>선택이 바뀌는 원인은 <strong>선택지가 사라진 것</strong>과 <strong>EV 순서가 바뀐 것</strong> 두 가지예요</li>
 <li>반올림한 EV의 0.01 차이는 <strong>사실상 같은 값</strong>일 수 있어, 그런 핸드의 100%·섞기 비율은 외우지 않아요</li>
 </ul>
 </section><section class="sec end"><h2>정리하며</h2>
-<p>오늘은 헤즈업 근사 모델에서 SB 첫 행동을 25BB부터 200BB까지 바꿔 봤어요.</p>
+<p>헤즈업 근사 모델에서 SB 첫 행동을 25BB부터 200BB까지 바꿔 봤어요.</p>
 <p>빈도는 깊이를 따라 고르게 변하지 않고 25~40BB와 60~80BB에서 뛰었고, 그 자리는 첫 행동 올인·림프 팟 계수·4벳 올인·오픈 크기가 바뀌는 모델 설정과 겹쳤어요. 6♠5♠는 올인 → 레이즈 → 림프로, 7♠2♦는 림프 → 폴드 → 림프로 구간을 지나갔죠.</p>
-<p>다음 글 E19에서는 프리플랍을 지나 <strong>헤즈업 SRP의 턴</strong>으로 가요. 플랍에서 체크가 돌아왔을 때 BB가 턴에 먼저 벳하는 <strong>프로브</strong>를 봐요. 숫자 출처도 오늘의 프리플랍 근사 모델이 아니라 <strong>헤즈업 솔버 DB의 턴 표</strong>로 바뀌어요.</p>
+<p>다음 글 E19에서는 프리플랍을 지나 <strong>헤즈업 SRP의 턴</strong>으로 가요. 플랍에서 체크가 돌아왔을 때 BB가 턴에 먼저 벳하는 <strong>프로브</strong>를 봐요. 숫자 출처도 <strong>헤즈업 솔버 DB의 턴 표</strong>로 바뀌어요.</p>
 <hr />
 <p><small>AI 작성 · 헤즈업·빅앤티 근사 모델 기준(플랍 이후 실현 계수로 단순화, 솔버 결과 아님 · 6맥스 아님) · SB(버튼) 첫 행동 · EV는 핸드 시작 전 스택 대비(소수 둘째 자리 반올림)</small></p></section>
 </article>

@@ -5,23 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>파이널 테이블: 같은 핸드인데 왜 스택 분포에 따라 푸시·콜이 바뀔까? · 뚝섬 홀덤학습</title>
 <link rel="stylesheet" href="../style.css">
-<meta name="description" content="E11·E12에서 버블의 콜은 ICM 필요 승률이 높아지고, 테이블에 짧은 스택이 있으면 더 높아진다고 했죠. I19·I20에서는 SB 올인과 BB 콜을 칩 기준으로 계산했고요. 오늘은 ICM으로 두 자리를 다 봐요. 콜하는 BB만이 아니라 올인하는 SB까지요.…">
+<meta name="description" content="E11·E12에서 버블의 콜은 ICM 필요 승률이 높아지고, 테이블에 숏스택이 있으면 더 높아진다고 했죠. I19·I20에서는 SB 올인과 BB 콜을 칩 기준으로 계산했고요. ICM으로 두 자리를 다 봐요. 콜하는 BB와 올인하는 SB까지요. Hero와 상대 스택은…">
 <link rel="canonical" href="https://xn--bc2b73r.kr/blog/%EA%B8%80/110_E13.html">
 <meta property="og:type" content="article">
 <meta property="og:title" content="파이널 테이블: 같은 핸드인데 왜 스택 분포에 따라 푸시·콜이 바뀔까? · 뚝섬 홀덤학습">
-<meta property="og:description" content="E11·E12에서 버블의 콜은 ICM 필요 승률이 높아지고, 테이블에 짧은 스택이 있으면 더 높아진다고 했죠. I19·I20에서는 SB 올인과 BB 콜을 칩 기준으로 계산했고요. 오늘은 ICM으로 두 자리를 다 봐요. 콜하는 BB만이 아니라 올인하는 SB까지요.…">
+<meta property="og:description" content="E11·E12에서 버블의 콜은 ICM 필요 승률이 높아지고, 테이블에 숏스택이 있으면 더 높아진다고 했죠. I19·I20에서는 SB 올인과 BB 콜을 칩 기준으로 계산했고요. ICM으로 두 자리를 다 봐요. 콜하는 BB와 올인하는 SB까지요. Hero와 상대 스택은…">
 <meta property="og:url" content="https://xn--bc2b73r.kr/blog/%EA%B8%80/110_E13.html">
 <meta property="og:image" content="https://xn--bc2b73r.kr/hub/banner.jpg">
 </head>
 <body>
 <header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
-<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">토너</span><span class="n">고급 14번째 글 (전체 272편 중 119번째)</span></div><h1>파이널 테이블: 같은 핸드인데 왜 스택 분포에 따라 푸시·콜이 바뀔까?</h1>
+<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">토너</span><span class="n">고급 14번째 글 (전체 285편 중 119번째)</span></div><h1>파이널 테이블: 같은 핸드인데 왜 스택 분포에 따라 푸시·콜이 바뀔까?</h1>
 <article>
-<p>안녕하세요. E11·E12에서 버블의 콜은 ICM 필요 승률이 높아지고, 테이블에 짧은 스택이 있으면 더 높아진다고 했죠. I19·I20에서는 SB 올인과 BB 콜을 칩 기준으로 계산했고요.</p>
-<p>오늘은 ICM으로 <strong>두 자리를 다</strong> 봐요. 콜하는 BB만이 아니라 올인하는 SB까지요. <strong>Hero와 상대 스택은 그대로인데, 다른 두 사람 스택만 바뀌어도</strong> 같은 핸드의 답이 뒤집히는 걸 확인할게요.</p>
+<p>E11·E12에서 버블의 콜은 ICM 필요 승률이 높아지고, 테이블에 숏스택이 있으면 더 높아진다고 했죠. I19·I20에서는 SB 올인과 BB 콜을 칩 기준으로 계산했고요.</p>
+<p>ICM으로 <strong>두 자리를 다</strong> 봐요. 콜하는 BB와 올인하는 SB까지요. <strong>Hero와 상대 스택은 그대로인데, 다른 두 사람 스택만 바뀌어도</strong> 같은 핸드의 답이 뒤집히는 걸 확인할게요.</p>
 <div class="learn"><p class="h">이 글에서 배울 것</p><ul>
 <li>ICM에서 <strong>SB 올인의 손익</strong>을 "접을 때 몫 + 콜 받을 때 몫"으로 나눠 구하는 법</li>
-<li>짧은 스택이 있으면 <strong>BB는 좁게 콜하고, 그래서 SB는 넓게 올인</strong>하게 되는 연결</li>
+<li>숏스택이 있으면 <strong>BB는 좁게 콜하고, 그래서 SB는 넓게 올인</strong>하게 되는 연결</li>
 <li>콜 받았을 때 손해가 더 큰데도 <strong>올인이 더 좋아질 수 있는</strong> 이유</li>
 </ul></div>
 <hr />
@@ -41,7 +41,7 @@
 </thead>
 <tbody>
 <tr>
-<td>① 짧은 스택 있음 (E11 장면)</td>
+<td>① 숏스택 있음 (E11 장면)</td>
 <td>5BB</td>
 <td>30BB</td>
 </tr>
@@ -80,7 +80,7 @@
 <thead>
 <tr>
 <th></th>
-<th>① 짧은 스택 있음</th>
+<th>① 숏스택 있음</th>
 <th>② 고른 스택</th>
 </tr>
 </thead>
@@ -109,7 +109,7 @@
 <li><strong>콜 받을 때 몫</strong> = BB가 콜하는 비율 × 콜 받았을 때 평균(폴드 대비)</li>
 </ul>
 <p>"BB가 접으면 버는 상금"은 모두 접었을 때(SB 16BB)의 기대 상금에서 SB가 폴드할 때(14.5BB)의 기대 상금을 뺀 값이에요. ①이면 27.41006 − 26.02891 = <strong>1.38115</strong>예요. 폴드 대비 1.5BB(내 SB 0.5 + BB 1)를 더 갖는 게 상금으로 이만큼이에요.</p>
-<h3>① 짧은 스택 있음</h3>
+<h3>① 숏스택 있음</h3>
 <blockquote>
 <p>0.96494(BB가 접는 비율) × 1.38115(접으면 버는 상금) = <strong>약 +1.33</strong></p>
 <p>0.03506(BB가 콜하는 비율) × (−19.14471)(콜 받았을 때 평균) = <strong>약 −0.67</strong></p>
@@ -129,7 +129,7 @@
 <thead>
 <tr>
 <th></th>
-<th>① 짧은 스택 있음</th>
+<th>① 숏스택 있음</th>
 <th>② 고른 스택</th>
 </tr>
 </thead>
@@ -155,7 +155,7 @@
 <section class="sec why"><h2>왜 그럴까: 두 자리의 결정은 서로 물려 있어요</h2>
 <h3>BB의 부담이 SB의 무기가 돼요</h3>
 <p>①에서 BB는 지면 4등이고, 폴드하면 CO가 먼저 떨어질 가능성 덕에 몫이 커요. 그래서 BB는 <strong>아주 좁게만</strong> 콜해요(약 3.5%).</p>
-<p>SB는 그 사정을 이용해요. BB가 거의 안 받아 주니, T♠4♦ 같은 약한 핸드로도 블라인드를 가져오는 몫(약 +1.33)이 콜 받는 손해(약 −0.67)를 넉넉히 덮어요. <strong>BB를 묶어 두는 짧은 스택이 SB에게는 공짜 블라인드</strong>가 되는 셈이에요.</p>
+<p>SB는 그 사정을 이용해요. BB가 거의 안 받아 주니, T♠4♦ 같은 약한 핸드로도 블라인드를 가져오는 몫(약 +1.33)이 콜 받는 손해(약 −0.67)를 넉넉히 덮어요. <strong>BB를 묶어 두는 숏스택이 SB에게는 공짜 블라인드</strong>가 되는 셈이에요.</p>
 <h3>SB도 지면 탈락인데 왜 넓게 밀까</h3>
 <p>SB도 15BB라 콜 받고 지면 4등이에요. 그래서 콜 받았을 때 평균이 크게 나빠요(①에서 약 −19.14). 그런데 SB의 손익은 <strong>"콜 받을 확률"이 곱해진 값</strong>이에요. BB 콜 범위가 좁으면 이 위험이 거의 드러나지 않아요.</p>
 <p>반대로 BB는 결정 순간에 이미 올인을 맞은 상태라, 콜하면 그 위험을 <strong>100% 떠안아요.</strong> 같은 스택, 같은 상금 구조라도 <strong>먼저 거는 쪽과 받는 쪽</strong>의 무게가 달라요.</p>
@@ -167,13 +167,13 @@
 </ul>
 <p>반대로 접을 때 버는 상금은 ① 약 1.38, ② 약 1.6으로 ①이 오히려 조금 작아요. 그런데도 ①이 올인에 유리한 건 <strong>접는 비율</strong>(약 96.5% 대 약 89.3%)이 판을 가르기 때문이에요. 접을 때 몫은 두 분포가 비슷하고, 콜 받을 확률이 결과를 정해요.</p>
 </section><section class="sec mis"><h2>자주 하는 실수</h2>
-<div class="mis-card"><p><strong>실수 1. "짧은 스택이 있으면 나도 다 조여야 한다"</strong>
-①에서 조여야 하는 건 <strong>올인을 받는 BB</strong>예요. 올인하는 SB는 오히려 T♠4♦까지 넓게 밀어 약 +0.66을 벌어요. 짧은 스택이 있을 때는 내가 <strong>거는 쪽인지 받는 쪽인지</strong>부터 봐야 해요.</p></div><div class="mis-card"><p><strong>실수 2. "콜 받으면 더 크게 지니까 ①이 더 위험한 올인"</strong>
+<div class="mis-card"><p><strong>실수 1. "숏스택이 있으면 나도 다 조여야 한다"</strong>
+①에서 조여야 하는 건 <strong>올인을 받는 BB</strong>예요. 올인하는 SB는 오히려 T♠4♦까지 넓게 밀어 약 +0.66을 벌어요. 숏스택이 있을 때는 내가 <strong>거는 쪽인지 받는 쪽인지</strong>부터 봐야 해요.</p></div><div class="mis-card"><p><strong>실수 2. "콜 받으면 더 크게 지니까 ①이 더 위험한 올인"</strong>
 콜 받았을 때 평균만 보면 ①(약 −19.14)이 ②(약 −13.46)보다 나빠요. 하지만 그 손해에 곱해지는 콜 비율이 약 3.5%와 약 10.7%로 세 배 가까이 달라요. 올인의 값은 <strong>콜 받았을 때 손해 × 콜 받을 확률</strong>로 봐야 해요.</p></div><div class="mis-card"><p><strong>실수 3. "에퀴티가 거의 같으니 판정도 같다"</strong>
 A♠J♦는 두 분포에서 약 63.6%와 약 62.9%로 거의 같았지만, 판정은 폴드와 콜로 갈렸어요. ICM에서는 에퀴티보다 <strong>그 자리의 기준선</strong>이 더 크게 움직일 수 있어요.</p></div></section>
 <hr />
 <h2>"SB는 넓게 밀고 BB는 좁게 받으면, BB가 손해 아니에요?"</h2>
-<p>좋은 질문이에요. 블라인드를 자주 내주니 손해처럼 보이죠. 맞아요, BB는 이 대결에서 블라인드를 계속 잃어요. 다만 <strong>콜 범위 밖의 핸드로 접는 것</strong>은, 그 자리에서 콜했을 때보다 기대 상금을 덜 잃는 선택이에요.</p>
+<p>블라인드를 자주 내주니 손해처럼 보이죠. 맞아요, BB는 이 대결에서 블라인드를 계속 잃어요. 다만 <strong>콜 범위 밖의 핸드로 접는 것</strong>은, 그 자리에서 콜했을 때보다 기대 상금을 덜 잃는 선택이에요.</p>
 <p>여기에는 오늘의 가정이 하나 붙어 있어요. 계산은 <strong>블라인드 압박이 없는</strong> 한 번의 결정이에요. 실전에서는 블라인드를 계속 내주면 스택이 줄어 다음 판의 사정이 바뀌니, 이 결론은 <strong>이 가정 안에서만</strong> 맞아요.</p>
 <h2>숫자가 뒤집히는 지점</h2>
 <ul>
@@ -184,7 +184,7 @@ A♠J♦는 두 분포에서 약 63.6%와 약 62.9%로 거의 같았지만, 판�
 <p>파이널 테이블에서 블라인드 대결이 오면 이 순서로 봐요.</p>
 <ol>
 <li>블라인드 대결이 오면 내 스택·상대 스택 말고 <strong>다른 사람 스택</strong>부터 훑기</li>
-<li>테이블에 4등 후보(가장 짧은 스택)가 누구인지 정하기</li>
+<li>테이블에 4등 후보(제일 숏스택)가 누구인지 정하기</li>
 <li>스택 분포가 바뀌면 지난번 판단을 <strong>그대로 쓰지 말고</strong> 다시 따지기</li>
 </ol></section>
 <hr />
@@ -207,12 +207,12 @@ A♠J♦는 두 분포에서 약 63.6%와 약 62.9%로 거의 같았지만, 판�
 <section class="sec key"><h2>핵심 정리</h2>
 <ul>
 <li>ICM에서 SB 올인의 값 = <strong>접을 때 몫 + 콜 받을 때 몫</strong>. 두 몫 모두 BB의 콜 범위가 정해요</li>
-<li>짧은 스택이 있으면 <strong>받는 쪽(BB)의 기준선이 올라가고</strong>, 그 덕에 <strong>거는 쪽(SB)은 더 넓게</strong> 밀 수 있어요</li>
+<li>숏스택이 있으면 <strong>받는 쪽(BB)의 기준선이 올라가고</strong>, 그 덕에 <strong>거는 쪽(SB)은 더 넓게</strong> 밀 수 있어요</li>
 <li>콜 받았을 때 손해가 커도, <strong>콜 받을 확률이 작으면</strong> 올인이 더 좋아질 수 있어요</li>
 <li>같은 핸드의 판정은 에퀴티보다 <strong>그 분포의 기준선</strong>에 따라 뒤집혀요</li>
 </ul>
 </section><section class="sec end"><h2>정리하며</h2>
-<p>오늘은 같은 SB 15BB 대 BB 15BB를 두 스택 분포에 놓고, 양쪽 자리를 모두 계산했어요.</p>
+<p>같은 SB 15BB 대 BB 15BB를 두 스택 분포에 놓고, 양쪽 자리를 모두 계산했어요.</p>
 <p>CO가 5BB인 ①에서는 BB의 필요 승률이 약 66.9%로 높아 BB가 약 3.5%만 콜했고, 그래서 SB는 T♠4♦로도 올인이 약 +0.66 이득이었어요. 스택이 고른 ②에서는 BB 기준선이 약 60.9%로 내려와 콜이 늘었고, T♠4♦ 올인은 본전 아래로, A♠J♦ 콜은 본전 위로 넘어갔죠.</p>
 <p>오늘 하나만 가져가면 돼요. 파이널 테이블에서는 <strong>"내가 거는 쪽인가, 받는 쪽인가"</strong>와 <strong>다른 사람의 스택</strong>을 함께 보세요.</p>
 <p>다음 글 E14에서는 오늘 본 "받는 쪽의 부담"을 <strong>빅스택</strong>의 눈으로 봐요. 버블에서 빅스택의 올인이 왜 받기 어려운지 계산해요.</p>

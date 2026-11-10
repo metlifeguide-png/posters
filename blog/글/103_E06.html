@@ -5,20 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>헤즈업 SRP c-bet: 상대가 얼마나 접느냐에 따라 c-bet 빈도는 어떻게 바뀔까? (헤즈업 기준) · 뚝섬 홀덤학습</title>
 <link rel="stylesheet" href="../style.css">
-<meta name="description" content="E04에서는 c-bet을 레인지 구성 으로 읽었고, A08에서는 c-bet이 본전이 되는 폴드 비율 을 계산했죠. 오늘은 이 둘을 한자리에 놓아요. &quot;상대가 많이 접으면 c-bet을 많이 하면 된다&quot;는 말은 반만 맞아요. 오늘은 솔버 표에서 어디까지 맞고, 어디서부터…">
+<meta name="description" content="E04에서는 c-bet을 레인지 구성 으로 읽었고, A08에서는 c-bet이 본전이 되는 폴드 비율 을 계산했죠. 이 둘을 한자리에 놓아요. &quot;상대가 많이 접으면 c-bet을 많이 하면 된다&quot;는 말은 반만 맞아요. 솔버 표에서 어디까지 맞고, 어디서부터 다른 게…">
 <link rel="canonical" href="https://xn--bc2b73r.kr/blog/%EA%B8%80/103_E06.html">
 <meta property="og:type" content="article">
 <meta property="og:title" content="헤즈업 SRP c-bet: 상대가 얼마나 접느냐에 따라 c-bet 빈도는 어떻게 바뀔까? (헤즈업 기준) · 뚝섬 홀덤학습">
-<meta property="og:description" content="E04에서는 c-bet을 레인지 구성 으로 읽었고, A08에서는 c-bet이 본전이 되는 폴드 비율 을 계산했죠. 오늘은 이 둘을 한자리에 놓아요. &quot;상대가 많이 접으면 c-bet을 많이 하면 된다&quot;는 말은 반만 맞아요. 오늘은 솔버 표에서 어디까지 맞고, 어디서부터…">
+<meta property="og:description" content="E04에서는 c-bet을 레인지 구성 으로 읽었고, A08에서는 c-bet이 본전이 되는 폴드 비율 을 계산했죠. 이 둘을 한자리에 놓아요. &quot;상대가 많이 접으면 c-bet을 많이 하면 된다&quot;는 말은 반만 맞아요. 솔버 표에서 어디까지 맞고, 어디서부터 다른 게…">
 <meta property="og:url" content="https://xn--bc2b73r.kr/blog/%EA%B8%80/103_E06.html">
 <meta property="og:image" content="https://xn--bc2b73r.kr/hub/banner.jpg">
 </head>
 <body>
 <header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
-<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">개념</span><span class="n">고급 7번째 글 (전체 272편 중 112번째)</span></div><h1>헤즈업 SRP c-bet: 상대가 얼마나 접느냐에 따라 c-bet 빈도는 어떻게 바뀔까? (헤즈업 기준)</h1>
+<main class="wrap"><div class="meta"><span class="badge e">고급</span><span class="chip">개념</span><span class="n">고급 7번째 글 (전체 285편 중 112번째)</span></div><h1>헤즈업 SRP c-bet: 상대가 얼마나 접느냐에 따라 c-bet 빈도는 어떻게 바뀔까? (헤즈업 기준)</h1>
 <article>
-<p>안녕하세요. E04에서는 c-bet을 <strong>레인지 구성</strong>으로 읽었고, A08에서는 c-bet이 본전이 되는 <strong>폴드 비율</strong>을 계산했죠. 오늘은 이 둘을 한자리에 놓아요.</p>
-<p>"상대가 많이 접으면 c-bet을 많이 하면 된다"는 말은 반만 맞아요. 오늘은 솔버 표에서 <strong>어디까지 맞고, 어디서부터 다른 게 필요한지</strong>를 직접 확인해 볼게요.</p>
+<p>E04에서는 c-bet을 <strong>레인지 구성</strong>으로 읽었고, A08에서는 c-bet이 본전이 되는 <strong>폴드 비율</strong>을 계산했죠. 이 둘을 한자리에 놓아요.</p>
+<p>"상대가 많이 접으면 c-bet을 많이 하면 된다"는 말은 반만 맞아요. 솔버 표에서 <strong>어디까지 맞고, 어디서부터 다른 게 필요한지</strong>를 직접 확인해 볼게요.</p>
 <div class="learn"><p class="h">이 글에서 배울 것</p><ul>
 <li>순수 블러프 c-bet의 <strong>본전 폴드율</strong>이 왜 "벳 ÷ (팟 + 벳)"인지, 직접 따져 보는 법</li>
 <li>솔버의 BB 폴드 비율이 c-bet 빈도와 <strong>어떤 경향</strong>으로 이어지고, 그 경향이 <strong>어디서 깨지는지</strong></li>
@@ -89,7 +89,7 @@
 
 <h3>첫째: 모든 보드에서 본전보다 많이 접어요</h3>
 <p>네 보드 모두 2BB에 <strong>25%보다</strong>, 4.5BB에 <strong>약 42.9%보다</strong> 많이 접어요. 사실 이번 요약에 들어 있는 플랍 59개 보드 전부가 그래요.</p>
-<p>이게 무슨 뜻이냐면, 이 조건에서는 BTN이 아무것도 없는 핸드로 c-bet해도 <strong>접게 하는 것만으로 본전 이상</strong>이라는 거예요. 블러프가 손해라서 c-bet을 줄이는 보드는 없어요. E26에서 본 것처럼 BB 콜 레인지가 약해서예요.</p>
+<p>이 조건에서는 BTN이 아무것도 없는 핸드로 c-bet해도 <strong>접게 하는 것만으로 본전 이상</strong>이라는 거예요. 블러프가 손해라서 c-bet을 줄이는 보드는 없어요. E26에서 본 것처럼 BB 콜 레인지가 약해서예요.</p>
 <h3>둘째: 많이 접을수록 체크가 줄어드는 경향</h3>
 <p>4.5BB 폴드 기준으로 위에서 아래로 줄면서, BTN 체크는 <strong>약 1.9% → 약 50.8%</strong>로 늘어요. BB가 본전보다 <strong>넉넉하게</strong> 접는 보드에서는 BTN이 거의 다 벳하고, 여유가 줄어드는 보드에서는 체크가 늘어요. 제목의 질문에 대한 첫 번째 답이에요.</p>
 <p>그런데 표 안에도 이상한 곳이 있어요. 2BB 폴드는 6♠ 5♥ 4♦(약 31.3%)가 J♠ 8♥ 4♦(약 30.2%)보다 조금 높은데, 체크는 훨씬 많아요. 2BB 벳에 BB 레이즈가 6♠ 5♥ 4♦는 <strong>약 18.8%</strong>, J♠ 8♥ 4♦는 <strong>약 9.1%</strong>예요. 이 레이즈가 다음 단계의 열쇠예요.</p>
@@ -168,7 +168,7 @@
 <p>Hero가 BTN에서 Q♣J♦를 들었다고 해 볼게요.</p>
 <p>K♠ 5♥ 2♦라면 BB는 2BB 벳에 약 38.3% 접고, 레이즈는 약 11.5%예요. 접어 주는 몫이 크고 반격은 적어요. 솔버는 QJo로 벳을 <strong>79%</strong>, 체크를 21% 섞어요. 섞는다는 건 두 몫이 비슷하다는 뜻이지만, 벳 쪽이 더 많이 나와요.</p>
 <p>5♠ 3♥ 2♦라면 BB는 비슷하게 약 39.8% 접지만, 레이즈가 약 21.6%예요. 다섯 번 벳하면 한 번꼴로 레이즈를 맞고 QJo의 몫을 버려야 해요. 솔버는 이 보드에서 QJo를 <strong>83%</strong> 체크해요.</p>
-<p>이게 무슨 뜻이냐면, <strong>"얼마나 접나"는 블러프가 가능한지를 정하고, "얼마나 반격하나"와 "체크하면 얼마나 남나"가 실제로 벳할지를 정한다</strong>는 거예요.</p></section>
+<p><strong>"얼마나 접나"는 블러프가 가능한지를 정하고, "얼마나 반격하나"와 "체크하면 얼마나 남나"가 실제로 벳할지를 정한다</strong>는 거예요.</p></section>
 <hr />
 <section class="sec mis"><h2>자주 하는 실수</h2>
 <div class="mis-card"><p><strong>실수 1. "본전보다 많이 접으니 다 벳"</strong>
@@ -177,7 +177,7 @@
 오늘 숫자는 BB가 강한 핸드를 넓게 3벳하는 헤즈업 레인지에서 나왔어요. E26에서 본 것처럼 이 BB의 콜 레인지에는 포켓페어가 33·22뿐이고, A는 A5o~A2o뿐이에요. 3벳을 거의 안 하는 상대라면 콜 레인지에 강한 핸드가 남아 덜 접을 수 있어요. 대신 <strong>상대가 프리플랍에 무엇을 3벳으로 보냈는지</strong>부터 떠올려요.</p></div></section>
 <hr />
 <h2>"BB가 본전보다 많이 접으면 BB가 손해 보는 거 아니에요?"</h2>
-<p>좋은 질문이에요. 이 노드만 떼어 보면 BTN의 블러프가 이득을 보니 그렇게 보여요. 하지만 BB가 접는 핸드는 콜해도 이어 가기 어려운 핸드라, 억지로 콜하면 손해가 더 커질 수 있어요. E26에서 본 것처럼 솔버는 <strong>핸드 전체</strong>를 보고 이 노드에서 접는 쪽을 골라요.</p>
+<p>이 노드만 떼어 보면 BTN의 블러프가 이득을 보니 그렇게 보여요. 하지만 BB가 접는 핸드는 콜해도 이어 가기 어려운 핸드라, 억지로 콜하면 손해가 더 커질 수 있어요. E26에서 본 것처럼 솔버는 <strong>핸드 전체</strong>를 보고 이 노드에서 접는 쪽을 골라요.</p>
 <h2>숫자가 뒤집히는 지점</h2>
 <p>순수 블러프의 기준선은 <strong>2BB에 BB 폴드 25%</strong>, <strong>4.5BB에 약 42.9%</strong>예요. BB 폴드가 이 선 아래로 내려가면 블러프 c-bet은 그 자체로 손해가 돼요. 이번 59개 보드에서는 그런 보드가 없었고, 그 대신 <strong>레이즈가 많은 보드</strong>에서 체크가 크게 느는 경향이 있었어요.</p>
 <section class="sec tip"><h2>선생님의 한마디</h2>
@@ -213,7 +213,7 @@
 <li>상대 <strong>레이즈</strong>가 많은 보드에서는 벳이 몫을 잃을 위험이 커져서, 폴드율이 비슷해도 체크가 크게 늘어요</li>
 </ul>
 </section><section class="sec end"><h2>정리하며</h2>
-<p>오늘은 순수 블러프의 본전 폴드율을 직접 따져 본 뒤, 솔버의 BB 폴드 비율과 나란히 놓았어요.</p>
+<p>순수 블러프의 본전 폴드율을 직접 따져 본 뒤, 솔버의 BB 폴드 비율과 나란히 놓았어요.</p>
 <p>이 헤즈업 조건에서는 모든 보드에서 BB가 본전보다 많이 접었고, 많이 접는 보드일수록 BTN 체크가 줄었어요. 하지만 K♠ 5♥ 2♦와 5♠ 3♥ 2♦처럼 폴드가 거의 같아도, BB 레이즈가 많은 보드에서는 QJo·QTo 같은 핸드가 체크로 돌아섰죠. 그러니 실전에서 c-bet을 고민할 때는 상대가 접을지에 더해, <strong>내가 맞을 반격과 체크로 지킬 몫</strong>까지 한 번에 떠올리면 돼요.</p>
 <p>다음 글 E07에서는 팟을 키워 <strong>3벳팟 플랍</strong>으로 가요. 이번에는 프리플랍에 3벳한 BB가 먼저 벳하는 쪽이 되고, 강한 핸드가 어느 쪽에 몰리느냐에 따라 벳이 어떻게 바뀌는지 봐요.</p>
 <hr />

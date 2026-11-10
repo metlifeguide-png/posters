@@ -5,20 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>에퀴티란? 두 핸드를 붙여 보면 &quot;이 팟에서 우리 몫&quot;이 보인다 · 뚝섬 홀덤학습</title>
 <link rel="stylesheet" href="../style.css">
-<meta name="description" content="초급에서는 &quot;에퀴티 = 이 팟에서 이길 확률&quot;이라고만 했죠(B14). 그런데 계산기에 핸드를 넣으면 74.44% 같은 숫자가 나와요. 이 숫자는 어디서, 어떻게 나온 걸까요? 오늘은 그걸 직접 세어 보면서 에퀴티를 처음부터 제대로 잡아 볼게요. 다 읽고 나면 계산기…">
+<meta name="description" content="초급에서는 &quot;에퀴티 = 이 팟에서 이길 확률&quot;이라고만 했죠(B14). 그런데 계산기에 핸드를 넣으면 74.44% 같은 숫자가 나와요. 이 숫자는 어디서, 어떻게 나온 걸까요? 그걸 직접 세어 보면서 에퀴티를 처음부터 제대로 잡아 볼게요. 다 읽고 나면 계산기 숫자가…">
 <link rel="canonical" href="https://xn--bc2b73r.kr/blog/%EA%B8%80/035_I05.html">
 <meta property="og:type" content="article">
 <meta property="og:title" content="에퀴티란? 두 핸드를 붙여 보면 &quot;이 팟에서 우리 몫&quot;이 보인다 · 뚝섬 홀덤학습">
-<meta property="og:description" content="초급에서는 &quot;에퀴티 = 이 팟에서 이길 확률&quot;이라고만 했죠(B14). 그런데 계산기에 핸드를 넣으면 74.44% 같은 숫자가 나와요. 이 숫자는 어디서, 어떻게 나온 걸까요? 오늘은 그걸 직접 세어 보면서 에퀴티를 처음부터 제대로 잡아 볼게요. 다 읽고 나면 계산기…">
+<meta property="og:description" content="초급에서는 &quot;에퀴티 = 이 팟에서 이길 확률&quot;이라고만 했죠(B14). 그런데 계산기에 핸드를 넣으면 74.44% 같은 숫자가 나와요. 이 숫자는 어디서, 어떻게 나온 걸까요? 그걸 직접 세어 보면서 에퀴티를 처음부터 제대로 잡아 볼게요. 다 읽고 나면 계산기 숫자가…">
 <meta property="og:url" content="https://xn--bc2b73r.kr/blog/%EA%B8%80/035_I05.html">
 <meta property="og:image" content="https://xn--bc2b73r.kr/hub/banner.jpg">
 </head>
 <body>
 <header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
-<main class="wrap"><div class="meta"><span class="badge i">중급</span><span class="chip">개념</span><span class="n">중급 4번째 글 (전체 272편 중 44번째)</span></div><h1>에퀴티란? 두 핸드를 붙여 보면 &quot;이 팟에서 우리 몫&quot;이 보인다</h1>
+<main class="wrap"><div class="meta"><span class="badge i">중급</span><span class="chip">개념</span><span class="n">중급 4번째 글 (전체 285편 중 44번째)</span></div><h1>에퀴티란? 두 핸드를 붙여 보면 &quot;이 팟에서 우리 몫&quot;이 보인다</h1>
 <article>
-<p>안녕하세요. 초급에서는 "에퀴티 = 이 팟에서 이길 확률"이라고만 했죠(B14).</p>
-<p>그런데 계산기에 핸드를 넣으면 74.44% 같은 숫자가 나와요. 이 숫자는 <strong>어디서, 어떻게</strong> 나온 걸까요? 오늘은 그걸 직접 세어 보면서 에퀴티를 처음부터 제대로 잡아 볼게요. 다 읽고 나면 계산기 숫자가 "그냥 나오는 값"이 아니라 <strong>눈에 보이는 숫자</strong>가 될 거예요.</p>
+<p>초급에서는 "에퀴티 = 이 팟에서 이길 확률"이라고만 했죠(B14).</p>
+<p>그런데 계산기에 핸드를 넣으면 74.44% 같은 숫자가 나와요. 이 숫자는 <strong>어디서, 어떻게</strong> 나온 걸까요? 그걸 직접 세어 보면서 에퀴티를 처음부터 제대로 잡아 볼게요. 다 읽고 나면 계산기 숫자가 "그냥 나오는 값"이 아니라 <strong>눈에 보이는 숫자</strong>가 될 거예요.</p>
 <div class="learn"><p class="h">이 글에서 배울 것</p><ul>
 <li>에퀴티를 "이길 확률"보다 정확하게, <strong>끝까지 갔을 때의 평균 몫</strong>으로 말하는 법</li>
 <li>플랍 에퀴티를 <strong>990가지를 직접 세서</strong> 구하는 법, 프리플랍은 왜 다른 방법(몬테카를로)을 쓰는지</li>
@@ -48,7 +48,7 @@
 <p>플랍에서는 두 사람 손 4장과 보드 3장, 모두 7장이 보여요. 덱 52장에서 빼면 <strong>남은 카드는 45장</strong>이에요.</p>
 <p>이 45장 중에서 턴과 리버로 2장이 나와요. 나올 수 있는 두 장 조합은 45 × 44 ÷ 2 = <strong>990가지</strong>예요. (턴·리버 순서만 바뀐 건 같은 결과라 2로 나눠요.)</p>
 <p>990가지를 <strong>하나도 빼지 않고</strong> 깔아 보고 누가 이기는지 세면, 그게 정확한 에퀴티예요. 어림이 아니라서 다시 세도 똑같이 나와요.</p>
-<h3>예시 A — 셋 vs 넛 플러시 드로우</h3>
+<h3>예시 A: 셋 vs 넛 플러시 드로우</h3>
 <p><strong>Hero</strong> <img src="../카드/7c.svg" width="40"> <img src="../카드/7d.svg" width="40"> vs <strong>상대</strong> <img src="../카드/Ah.svg" width="40"> <img src="../카드/Kh.svg" width="40"> · <strong>보드</strong> <img src="../카드/7h.svg" width="40"> <img src="../카드/4h.svg" width="40"> <img src="../카드/2s.svg" width="40"></p>
 <p>Hero는 7 셋, 상대는 넛 플러시 드로우예요. 990가지를 다 세면 이래요.</p>
 <div class="tbl"><table>
@@ -82,7 +82,7 @@
 
 <p>표에서 눈여겨볼 곳이 하나 있어요. 상대가 하트를 맞춰 <strong>플러시 이상을 만든 조합은 360가지</strong>인데, 플러시로 이긴 건 244가지뿐이에요. 나머지 360 − 244 = <strong>116가지</strong>는 플러시를 맞추고도 졌어요. 어떻게 그런지는 아래 '왜 그럴까'에서 따라가 봐요.</p>
 <p>또 하나, 상대가 이긴 253가지 안에는 플러시가 아닌 <strong>스트레이트 9가지</strong>도 있어요. 턴·리버로 3과 5가 나오면 상대는 A-2-3-4-5 스트레이트가 돼요. 이렇게 "주된 드로우" 말고 <strong>숨은 길</strong>까지 다 세는 게 정확한 계산이에요.</p>
-<h3>예시 B — 드로우 vs 오버페어</h3>
+<h3>예시 B: 드로우 vs 오버페어</h3>
 <p><strong>Hero</strong> <img src="../카드/9s.svg" width="40"> <img src="../카드/8s.svg" width="40"> vs <strong>상대</strong> <img src="../카드/Ac.svg" width="40"> <img src="../카드/Ad.svg" width="40"> · <strong>보드</strong> <img src="../카드/7s.svg" width="40"> <img src="../카드/6d.svg" width="40"> <img src="../카드/2c.svg" width="40"></p>
 <p>Hero는 9-8-7-6 양방 스트레이트 드로우예요. 스페이드가 턴·리버에 <strong>연달아</strong> 나오면 플러시도 돼요. 지금은 페어도 없죠. 그런데 990가지를 세면 이래요.</p>
 <div class="tbl"><table>
@@ -168,7 +168,7 @@ AA는 KK에게 약 82.06%로 크게 앞서지만, 남은 약 17.94%는 KK 몫이
 예시 A에서 상대 쪽 하트는 9장 남아 있어요. 그런데 그중 <strong>2♥</strong>는 나오는 순간 보드에 2가 두 장이 돼서, 상대가 플러시를 맞추는 동시에 Hero가 풀하우스가 돼요. 하트인데도 상대에게는 이기는 카드가 아닌 거죠. 상대가 이미 셋 이상이면, 내 아웃츠 중에 <strong>보드에 짝을 만드는 카드</strong>가 섞여 있는지 먼저 봐요.</p></div></section>
 <hr />
 <h2>"50% 넘으면 무조건 콜해도 되는 거 아니에요?"</h2>
-<p>좋은 질문이에요. 꼭 그렇진 않아요. 에퀴티는 "필요 에퀴티"(B06)와 <strong>같이</strong> 봐야 해요. 칩으로 직접 따라가 볼게요.</p>
+<p>꼭 그렇진 않아요. 에퀴티는 "필요 에퀴티"(B06)와 <strong>같이</strong> 봐야 해요. 칩으로 직접 따라가 볼게요.</p>
 <p>팟이 10인데 상대가 5를 걸었어요(하프팟). Hero가 5를 콜하면 콜한 뒤 팟은 20이에요. Hero 에퀴티가 25%라면, 끝까지 갔을 때 Hero의 평균 몫은 20 × 0.25 = 5예요. <strong>Hero가 낸 5와 똑같죠.</strong> 그래서 이 벳의 필요 에퀴티가 25%인 거예요.</p>
 <p>에퀴티가 25%보다 크면 평균 몫이 낸 돈보다 커지고, 작으면 낸 돈보다 작아져요. 그러니 <strong>에퀴티 &gt; 필요 에퀴티면, 더 이상 베팅이 없을 때 콜이 이득</strong>이에요(B14). 절반이 안 돼도 25%만 넘으면 콜이 남고, 반대로 절반이 넘어도 상대 벳이 아주 크면 모자랄 수 있어요.</p>
 <p>예시 B처럼 뒤에 베팅이 남은 플랍에서는 앞으로 더 낼 돈도 생각해야 해서, 이 비교만으로 끝나지 않아요. 그 부분은 바로 다음 글 I03에서 다뤄요. 그리고 실전에서는 상대 핸드를 하나로 알 수 없어요. 여러 핸드 중 하나라는 점을 넣는 법은 I06(핸드 대 레인지)에서 배워요.</p>
@@ -201,7 +201,7 @@ AA는 KK에게 약 82.06%로 크게 앞서지만, 남은 약 17.94%는 KK 몫이
 <li>테이블에서는 이 순서로 물어요: <strong>지금 누가 앞섰지? → 뒤진 쪽은 몇 장으로 살아나지? → 그 카드가 나와도 앞선 쪽이 되찾는 길은 없나?</strong></li>
 </ul>
 </section><section class="sec end"><h2>정리하며</h2>
-<p>오늘은 에퀴티를 "끝까지 갔을 때 우리 평균 몫"으로 정의하고, 플랍에서 990가지를 직접 세어 숫자가 어디서 나오는지 봤어요.</p>
+<p>에퀴티를 "끝까지 갔을 때 우리 평균 몫"으로 정의하고, 플랍에서 990가지를 직접 세어 숫자가 어디서 나오는지 봤어요.</p>
 <p>셋 vs 넛 플러시 드로우는 990가지 중 737가지를 Hero가 가져갔어요. 그중에는 상대가 플러시를 맞추고도 진 116가지가 숨어 있었죠. 페어 없는 드로우도 365가지로 3분의 1 넘게 가져갔고요. 이 숫자들은 <strong>지금 누가 앞섰는지, 뒤진 쪽을 살려 줄 카드가 몇 장인지, 앞선 쪽이 다시 뒤집을 길이 있는지</strong>로 설명돼요.</p>
 <p>바로 다음 글 I03에서는 실수 2에서 본 <strong>두 장 남았을 때와 한 장 남았을 때의 차이</strong>가 플랍 플러시 드로우 콜을 어떻게 바꾸는지 봐요. 상대가 <strong>여러 핸드 중 하나</strong>일 때 에퀴티를 구하는 법은 그 한 편 뒤인 I06에서 배워요.</p>
 <hr />

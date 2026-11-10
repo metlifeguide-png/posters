@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>솔버 오차 읽기: 빈도 1~2%와 덜 수렴한 답의 뜻 · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+<meta name="description" content="M78에서 솔버는 후회를 줄이다가 어느 순간 멈추는 프로그램이라는 걸 봤어요. 멈춘 자리는 정답이 아니라 정답 근처 예요. 오늘은 그 거리를 숫자로 읽어요. 이 블로그의 솔버 DB도 예외가 아니에요. 그래서 DB를 만들 때 남긴 기록을 그대로 꺼내서, 화면의 1%와…">
+<link rel="canonical" href="https://xn--bc2b73r.kr/blog/%EA%B8%80/281_M79.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="솔버 오차 읽기: 빈도 1~2%와 덜 수렴한 답의 뜻 · 뚝섬 홀덤학습">
+<meta property="og:description" content="M78에서 솔버는 후회를 줄이다가 어느 순간 멈추는 프로그램이라는 걸 봤어요. 멈춘 자리는 정답이 아니라 정답 근처 예요. 오늘은 그 거리를 숫자로 읽어요. 이 블로그의 솔버 DB도 예외가 아니에요. 그래서 DB를 만들 때 남긴 기록을 그대로 꺼내서, 화면의 1%와…">
+<meta property="og:url" content="https://xn--bc2b73r.kr/blog/%EA%B8%80/281_M79.html">
+<meta property="og:image" content="https://xn--bc2b73r.kr/hub/banner.jpg">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge m">마스터</span><span class="chip">개념</span><span class="n">마스터 79번째 글 (전체 285편 중 281번째)</span></div><h1>솔버 오차 읽기: 빈도 1~2%와 덜 수렴한 답의 뜻</h1>
+<article>
+<p>안녕하세요. M78에서 솔버는 후회를 줄이다가 어느 순간 멈추는 프로그램이라는 걸 봤어요. 멈춘 자리는 정답이 아니라 <strong>정답 근처</strong>예요. 오늘은 그 거리를 숫자로 읽어요.</p>
+<p>이 블로그의 솔버 DB도 예외가 아니에요. 그래서 DB를 만들 때 남긴 기록을 그대로 꺼내서, 화면의 1%와 2%를 어떻게 읽어야 하는지 정해요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>솔버 로그의 틈을 <strong>BB로 바꿔 읽는 법</strong></li>
+<li>빈도 1~2%가 <strong>0과 구분되는지</strong> 가르는 세 가지 질문</li>
+<li>덜 수렴한 답의 <strong>세 가지 모습</strong></li>
+</ul></div>
+<hr />
+<h2>핵심 개념: 솔버 화면의 숫자에는 세 겹의 오차가 있어요</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>오차</th>
+<th>어디서 생기나</th>
+<th>줄이는 법</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>입력 오차</td>
+<td>벳 크기를 몇 개만 넣음, 레인지를 가정으로 넣음</td>
+<td>입력을 바꿔 다시 풂</td>
+</tr>
+<tr>
+<td>수렴 오차</td>
+<td>반복을 유한하게 멈춤</td>
+<td>더 돌림</td>
+</tr>
+<tr>
+<td>표시 오차</td>
+<td>핸드 묶음으로 평균, 소수 반올림</td>
+<td>콤보 단위로 봄</td>
+</tr>
+</tbody>
+</table></div>
+<p>잘하는 사람도 헷갈리는 건 <strong>낮은 빈도를 "조금 섞으라는 뜻"으로 읽는 것</strong>이에요. 화면에 1%가 찍혀 있으면 정말 1% 섞으라는 답인지, 0으로 가는 중에 멈춘 숫자인지부터 물어야 해요. 오늘은 둘째 칸을 재요.</p>
+<hr />
+<section class="sec why"><h2>왜 그럴까: 정답을 아는 게임을 일부러 덜 풀어 봐요</h2>
+<h3>장난감 게임 가정</h3>
+<p>M74의 반 스트리트 게임을 그대로 써요. 양쪽이 0과 1 사이의 숫자를 받고, 팟 20BB, 벳 20BB, 받는 쪽은 체크로 묶어 둬요. 정답은 벳이 위 22.2%와 아래 11.1%, 콜 총량이 위 44.4%만큼이에요. 답을 식으로 아는 게임이라 <strong>솔버 답이 정답에서 얼마나 떨어졌는지</strong> 직접 잴 수 있어요. 숫자는 격자 100칸으로 M78의 CFR을 두 사람이 번갈아 갱신하며 돌린 값이에요. 실제 솔버와 나무도 칸의 수도 달라서 비율은 <strong>이 게임의 값</strong>이에요.</p>
+<h3>1단계. 틈을 BB로 바꾸기</h3>
+<p>M71에서 틈은 한쪽이 최선 대응으로 가져갈 수 있는 값과 다른 쪽이 눌러 둘 수 있는 값의 차이라고 했어요. 솔버 로그의 숫자는 그 값을 두 사람으로 나눠 평균을 내고 팟의 퍼센트로 쓴 거예요. 이 블로그 DB를 만든 프로그램의 코드가 그렇게 돼 있어요.</p>
+<blockquote>
+<p>로그의 숫자 = 두 사람이 평균적으로 더 뜯길 수 있는 돈 ÷ 시작 팟 × 100</p>
+</blockquote>
+<p>BB로 바꾸는 건 간단해요.</p>
+<blockquote>
+<p>팟 19BB, 로그 1.67%일 때 = 19 × 0.0167 = 0.32</p>
+</blockquote>
+<p><strong>두 사람이 평균 0.32BB, 합쳐서 0.63BB 뜯길 수 있는 답</strong>이라는 뜻이에요. 한쪽은 더 크고 다른 쪽은 더 작을 수 있어요. 이 장난감도 100번 뒤 평균 0.044BB인데 거는 쪽은 0.078BB, 받는 쪽은 0.009BB예요. 이 값은 도달 확률로 가중한 나무 전체의 합이고, 한 콤보의 오차가 아니에요. 드문 노드의 오차는 여기에 거의 안 잡혀요.</p>
+<h3>2단계. 덜 풀면 0%가 어떻게 보이나</h3>
+<p>정답에서 벳 빈도가 0%인 가운데 구간(위 30~80%)을 봐요. 반복을 늘리면서 이 칸들이 몇 %로 보이는지 재요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>반복</th>
+<th>틈(로그 방식)</th>
+<th>0%여야 할 칸의 평균</th>
+<th>그중 가장 큰 칸</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>7</td>
+<td>3.03%</td>
+<td>24.5%</td>
+<td>65.8%</td>
+</tr>
+<tr>
+<td>10</td>
+<td>2.09%</td>
+<td>17.3%</td>
+<td>46.1%</td>
+</tr>
+<tr>
+<td>12</td>
+<td>1.74%</td>
+<td>14.8%</td>
+<td>38.4%</td>
+</tr>
+<tr>
+<td>30</td>
+<td>0.71%</td>
+<td>6.2%</td>
+<td>15.4%</td>
+</tr>
+<tr>
+<td>100</td>
+<td>0.22%</td>
+<td>1.8%</td>
+<td>4.6%</td>
+</tr>
+<tr>
+<td>300</td>
+<td>0.07%</td>
+<td>0.6%</td>
+<td>1.5%</td>
+</tr>
+<tr>
+<td>1,000</td>
+<td>0.02%</td>
+<td>0.2%</td>
+<td>0.5%</td>
+</tr>
+</tbody>
+</table></div>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>이 게임에서는 틈이 0.22%일 때 0%여야 할 칸이 평균 1.8%로 보여요. <strong>화면의 1~2%가 정답 0%의 다른 모습일 수 있다</strong>는 말이에요. 틈이 0.07%까지 내려가야 평균이 1% 아래로 들어오고, 같은 줄의 가장 큰 칸은 그래도 1.5%예요. 이 표에서 0% 칸의 평균은 틈의 8~9배예요. 큰 나무에서도 그런지는 재지 않았어요.</p>
+<h3>3단계. 어느 칸이 오래 떨릴까</h3>
+<p>이번엔 구간마다 EV 차이와 함께 봐요. 벳 − 체크는 정답 전략 앞에서 그 핸드가 벳했을 때의 손익이고, 전부 체크가 정답인 칸이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>위에서 위치</th>
+<th>벳 − 체크</th>
+<th>100번 뒤 벳 빈도</th>
+<th>1,000번 뒤 벳 빈도</th>
+<th>100번 뒤 빈도 × 손해</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>23.5%</td>
+<td>−0.51BB</td>
+<td>19.6%</td>
+<td>1.96%</td>
+<td>0.1BB</td>
+</tr>
+<tr>
+<td>25.5%</td>
+<td>−1.31BB</td>
+<td>7.1%</td>
+<td>0.71%</td>
+<td>0.09BB</td>
+</tr>
+<tr>
+<td>30.5%</td>
+<td>−3.31BB</td>
+<td>4.6%</td>
+<td>0.46%</td>
+<td>0.15BB</td>
+</tr>
+<tr>
+<td>50.5%</td>
+<td>−7.68BB</td>
+<td>1.4%</td>
+<td>0.14%</td>
+<td>0.1BB</td>
+</tr>
+<tr>
+<td>85.5%</td>
+<td>−0.68BB</td>
+<td>15.3%</td>
+<td>1.53%</td>
+<td>0.1BB</td>
+</tr>
+</tbody>
+</table></div>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>EV 손해가 클수록 빈도가 작아요. 더 정확히는 <strong>빈도 × 손해가 칸마다 거의 같아요.</strong> 덜 나쁜 칸은 늦게까지 후회가 플러스로 남고, 많이 나쁜 칸은 초반 몇 판만 찍히고 끊겨서 평균에 조금만 남아요.</p>
+<p>그래서 "1.4%면 거의 안 치는 핸드니 EV도 비슷하겠지"는 거꾸로예요. 낮은 빈도는 <strong>오히려 많이 나쁜 칸</strong>일 수 있어요. 7.68BB가 나쁜 벳이 1.4%로 찍혀 있었어요. M72에서 "섞는다는 건 EV가 거의 같다는 뜻"이라고 한 건 다 푼 답의 말이에요.</p>
+<h3>4단계. 빈도 1~2%를 가르는 세 가지 질문</h3>
+<p><strong>첫째, 보드에서 역할이 같은 핸드끼리 이어지나.</strong> 이 블로그 DB의 Q♠J♥8♦ 100BB 싱글 레이즈 팟, BB 첫 행동이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>8 페어 핸드</th>
+<th>작은 벳</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>K8s</td>
+<td>18%</td>
+</tr>
+<tr>
+<td>T8s</td>
+<td>25%</td>
+</tr>
+<tr>
+<td>98s</td>
+<td>22%</td>
+</tr>
+<tr>
+<td>87s</td>
+<td>1%</td>
+</tr>
+<tr>
+<td>86s</td>
+<td>2%</td>
+</tr>
+<tr>
+<td>85s</td>
+<td>3%</td>
+</tr>
+<tr>
+<td>84s</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>87o</td>
+<td>9%</td>
+</tr>
+<tr>
+<td>86o</td>
+<td>11%</td>
+</tr>
+<tr>
+<td>85o</td>
+<td>12%</td>
+</tr>
+<tr>
+<td>K8o</td>
+<td>1%</td>
+</tr>
+<tr>
+<td>T8o</td>
+<td>4%</td>
+</tr>
+<tr>
+<td>98o</td>
+<td>1%</td>
+</tr>
+</tbody>
+</table></div>
+<p>수딧 87~84의 0~3%와 오프수트 K8·T8·98의 1~4%는 큰 키커 쪽과 끊겨 있고, 오프수트 87~85의 9~12%도 그 옆과 끊겨 있어요. <strong>이 표만으로는 어느 묶음이 혼합인지 못 가려요.</strong> 그럴 땐 둘째 질문으로 넘어가요.</p>
+<p><strong>둘째, 더 풀었을 때 그 값이 유지되나.</strong> 표시되는 숫자가 반복을 더 돌렸을 때 그대로면 혼합이고, 계속 줄면 떨림이에요. 장난감에서는 이렇게 갈려요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>칸(더 돌리면 가는 곳)</th>
+<th>100번</th>
+<th>1,000번</th>
+<th>1만 번</th>
+<th>10만 번</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>거는 쪽 위 22.5%(0%)</td>
+<td>65%</td>
+<td>11.9%</td>
+<td>1.2%</td>
+<td>0.1%</td>
+</tr>
+<tr>
+<td>거는 쪽 위 89.5%(100%)</td>
+<td>52.9%</td>
+<td>82.1%</td>
+<td>98%</td>
+<td>99.8%</td>
+</tr>
+<tr>
+<td>받는 쪽 위 40.5%(콜 총량 안)</td>
+<td>59%</td>
+<td>58.8%</td>
+<td>59.7%</td>
+<td>60.2%</td>
+</tr>
+<tr>
+<td>받는 쪽 위 60.5%(콜 총량 밖)</td>
+<td>9.5%</td>
+<td>3.3%</td>
+<td>0.3%</td>
+<td>0%</td>
+</tr>
+</tbody>
+</table></div>
+<p>100번에 65%, 53%로 섞인 듯 보이던 칸이 0%와 100%로 가요. <strong>경계 칸은 덜 풀리면 큰 숫자로도 흔들려요.</strong> DB 화면만으로는 다시 풀어 보기 전에 알 수 없어요.</p>
+<p><strong>셋째, 이 빈도가 맞아도 돈이 되나.</strong> 3단계의 빈도 × 손해가 칸마다 약 0.1BB였어요. 칸 하나의 몫은 작고, 그게 칸 수만큼 쌓인 게 틈이에요. 그런 칸은 1% 단위로 외우는 것보다 큰 칸을 정확히 읽는 게 낫다는 건 M77의 평평한 경계와 같은 이야기예요.</p>
+<h3>5단계. 덜 수렴한 답의 세 가지 모습</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>모습</th>
+<th>어떻게 보이나</th>
+<th>왜</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>가운데까지 흐림</td>
+<td>전부 체크일 듯한 핸드들에 몇 %씩 벳이 묻어 있음</td>
+<td>2단계의 첫 줄처럼 EV 차이가 있어도 아직 안 줄었음</td>
+</tr>
+<tr>
+<td>이웃끼리 들쭉날쭉</td>
+<td>역할이 같은 핸드가 1%, 3%, 0%로 찍힘</td>
+<td>칸마다 후회가 쌓인 순서가 달라서일 수 있음(불확실)</td>
+</tr>
+<tr>
+<td>안 쓰는 크기에 잔여</td>
+<td>거의 안 쓰는 벳 크기에 0.1~1%가 남음</td>
+<td>몇 번 시도한 흔적이 평균에 섞임</td>
+</tr>
+</tbody>
+</table></div>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>셋 다 있다고 답이 틀린 건 아니에요. <strong>숫자를 믿을 수 있는 자릿수가 줄었다</strong>는 신호예요. 그럴 때는 정수 빈도를 외우지 말고 "벳 쪽", "체크 쪽", "반반"처럼 한 단계 거칠게 읽어요.</p>
+<h3>6단계. 이 블로그 DB의 오차</h3>
+<p>DB를 만들 때 남긴 기록에서 보드마다 <strong>가장 마지막 풀이</strong>의 틈을 모은 값이에요(11/09 기록 기준). 처음엔 목표 2%로 풀었고, 뒤에 많은 보드를 목표 4%로 다시 풀어 덮어썼어요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>스팟</th>
+<th>보드 수</th>
+<th>틈의 중앙값</th>
+<th>T♠4♥2♦</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>100BB 싱글 레이즈</td>
+<td>1,150</td>
+<td>3.38%</td>
+<td>3.43%</td>
+</tr>
+<tr>
+<td>50BB 싱글 레이즈</td>
+<td>1,153</td>
+<td>3.4%</td>
+<td>1.75%</td>
+</tr>
+<tr>
+<td>25BB 싱글 레이즈</td>
+<td>1,153</td>
+<td>3.14%</td>
+<td>1.94%</td>
+</tr>
+<tr>
+<td>100BB 3벳 팟</td>
+<td>1,755</td>
+<td>3.21%</td>
+<td>1.67%</td>
+</tr>
+</tbody>
+</table></div>
+<p>네 스팟 합 5,211개의 틈은 1.27%에서 7.29% 사이이고 중앙값은 3.29%예요. 2% 이하는 1.9%, 3%를 넘는 건 73.7%예요. T♠4♥2♦의 네 칸은 처음 목표 2%·최대 100번으로 푼 기록이고, 50BB·25BB·3벳은 작지만 100BB 싱글은 3.43%로 100번 안에 목표에 못 들어갔어요. 같은 DB라도 <strong>보드마다 정밀도가 달라요.</strong></p>
+<p>요약본 20개 스팟 1,198개 보드의 모든 노드 약 707만 칸을 세면 39.8%가 0%, 19.2%가 95~100%, 3.6%가 1~2%, 2.6%가 3~5%, 34.8%가 그 사이예요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>장난감은 틈 3%대에서 정답 0%인 칸이 평균 24.5%로 보이고, 화면에 0으로 찍히는 칸이 거의 없어요. DB는 39.8%가 0으로 찍혀서 모양 자체가 달라요. <strong>방향만 옮기고 크기는 못 옮겨요.</strong> 그래도 <strong>1~2% 칸을 0과 구분할 근거는 없다</strong>고 읽는 게 안전해요. 앞으로 이 블로그의 표를 볼 때는 이렇게 읽어요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>화면의 숫자</th>
+<th>읽는 법</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0~2%</td>
+<td>0으로 읽음</td>
+</tr>
+<tr>
+<td>3~5%</td>
+<td>거의 안 쓰는 쪽. 이웃 핸드를 보고 판단</td>
+</tr>
+<tr>
+<td>6~94%</td>
+<td>섞임이거나 덜 풀린 경계 칸. 소수와 정수 단위까지 외우지 않음</td>
+</tr>
+<tr>
+<td>95~100%</td>
+<td>전부로 읽음</td>
+</tr>
+</tbody>
+</table></div>
+<p>장난감에서 0~2%를 0으로, 95% 이상을 100으로 바꿔 봤더니 로그 틈이 10번 2.09→1.84%, 100번 0.22→0.14%, 1,000번 0.022→0.016%로 오히려 작아졌어요. 다만 경계의 숫자(2%, 5%, 94%)를 장난감이 정해 주지는 않아요. 이건 <strong>이 글의 읽기 규칙</strong>이에요.</p></section>
+<hr />
+<h2>실제 핸드 예시: R50의 KK, 47%와 53%를 어떻게 읽을까</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>자리·스택</td>
+<td>헤즈업, BB(Hero) 대 SB, 유효 스택 100BB, 빅앤티 1BB</td>
+</tr>
+<tr>
+<td>프리플랍</td>
+<td>SB 2.5BB 오픈, Hero 9BB 3벳, SB 콜 → 팟 19BB</td>
+</tr>
+<tr>
+<td>플랍 T♠ 4♥ 2♦</td>
+<td>Hero 먼저 행동</td>
+</tr>
+<tr>
+<td>Hero</td>
+<td>K♠K♦</td>
+</tr>
+</tbody>
+</table></div>
+<p>R50에서 쓴 DB 값을 다시 봐요. 이번 한 번의 결정 기준이고, 프리플랍 레인지는 DB에 넣은 가정이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>핸드</th>
+<th>체크</th>
+<th>6.3BB</th>
+<th>14.3BB</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AA</td>
+<td>1%</td>
+<td>75%</td>
+<td>24%</td>
+</tr>
+<tr>
+<td>KK</td>
+<td>0%</td>
+<td>47%</td>
+<td>53%</td>
+</tr>
+<tr>
+<td>QQ</td>
+<td>0%</td>
+<td>33%</td>
+<td>66%</td>
+</tr>
+<tr>
+<td>JJ</td>
+<td>0%</td>
+<td>3%</td>
+<td>96%</td>
+</tr>
+<tr>
+<td>TT</td>
+<td>2%</td>
+<td>96%</td>
+<td>2%</td>
+</tr>
+<tr>
+<td>KQs</td>
+<td>1%</td>
+<td>48%</td>
+<td>52%</td>
+</tr>
+</tbody>
+</table></div>
+<p>표의 전체 행동은 체크 0.50%, 6.3BB 44.50%, 14.3BB 54.90%, 올인 0.10%예요. 이 3벳 팟의 로그 틈은 1.67%이고, 1단계처럼 BB로는 두 사람 평균 약 0.32BB예요.</p>
+<p>읽는 규칙을 적용해요.</p>
+<ul>
+<li>AA의 체크 1%, TT의 체크 2%와 14.3BB 2%, 전체의 체크 0.50%와 올인 0.10%는 <strong>0으로 읽어요</strong></li>
+<li>JJ의 6.3BB 3%는 거의 안 쓰는 쪽이에요. JJ는 14.3BB로 읽어요</li>
+<li>KK의 47 대 53, KQs의 48 대 52는 <strong>반반</strong>으로 읽어요</li>
+</ul>
+<p>Hero는 K♠K♦로 14.3BB를 골라요. 47%와 53%의 6포인트 차이로 고른 게 아니에요. 반반인 자리에서 정해 둔 규칙을 따른 결과예요. M72의 시계 규칙으로 초침이 앞쪽 절반이면 6.3BB, 뒤쪽 절반이면 14.3BB로 정했고, 이번엔 뒤쪽이었다고 놓아요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>R50에서 "KK는 47%, 53%로 섞어요"라고 쓴 건 DB의 숫자 그대로예요. 오늘 더한 건 그 숫자의 <strong>믿을 수 있는 자릿수</strong>예요. 이 표에서 쓸 만한 정보는 "JJ는 큰 벳 쪽, TT는 작은 벳 쪽, KK는 둘 다"까지예요. 그것만으로도 충분히 비싼 정보예요.</p>
+<h3>반대쪽에서 보면</h3>
+<p>SB가 이 벳을 받을 때도 마찬가지예요. BB의 14.3BB 속에 어떤 핸드가 몇 % 들어 있는지 정수로 맞추는 건 무의미해요. <strong>JJ가 96%로 큰 벳에 있고 TT는 작은 벳에 있다</strong>는 구조를 읽는 데 써요.</p>
+<hr />
+<h2>GTO 기준과 실전 익스플로잇</h2>
+<h3>GTO 기준(이론)</h3>
+<ul>
+<li><strong>틈은 도달 확률로 가중한 나무 전체의 합이에요.</strong> 도달 확률이 낮은 노드는 후회와 평균 전략에 실리는 무게가 작아서 덜 풀리기 쉽고, 틈에도 거의 안 잡혀요</li>
+<li><strong>입력 오차는 틈에 안 잡혀요.</strong> 벳 크기를 몇 개만 넣은 나무에서 틈이 0.1%여도, 빠진 크기까지 답한 게 아니에요(M78 6단계)</li>
+<li><strong>이 글의 읽기 규칙은 이 DB의 틈 수준에 맞춘 거예요.</strong> 틈이 0.1% 아래인 답이라면 1% 칸의 뜻도 달라져요</li>
+</ul>
+<h3>실전(라이브·저스테이크) 익스플로잇</h3>
+<p><strong>1% 라인을 표본 없이 쓰지 않아요.</strong> 라이브에서 상대는 그 라인을 볼 일이 거의 없고, 내가 1% 빈도를 지키는 것도 불가능해요. 그 시간에 큰 칸에서 상대가 어떻게 벗어나는지를 봐요.</p>
+<p><strong>낮은 빈도 라인을 반복하는 상대라면</strong> 그 자체가 표본이에요. 표의 1%가 아니라 <strong>실제 횟수</strong>로 조정해요. 그 라인을 줄이기 시작하면 원래대로 돌아와요.</p>
+<hr />
+<section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. 낮은 빈도면 EV가 비슷하다고 읽기</strong>
+3단계에서 벳 − 체크가 −7.68BB인 칸이 100번 뒤에 1.4%로 찍혀 있었어요. 덜 풀린 답에서는 낮은 빈도가 오히려 많이 나쁜 칸일 수 있어요. 빈도와 함께 <strong>보드에서 역할이 같은 핸드</strong>를 같이 봐요.</p></div><div class="mis-card"><p><strong>실수 2. DB 전체의 정밀도를 한 숫자로 믿기</strong>
+네 스팟의 틈 중앙값은 3%대인데 어떤 보드는 1.67%, 어떤 보드는 7%를 넘어요. 보드마다 다른 자릿수를 <strong>같은 표처럼</strong> 인용하지 않아요.</p></div></section>
+<hr />
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<p>솔버 표를 볼 때 이렇게 물어요.</p>
+<ol>
+<li>이 칸을 외워서 <strong>판당 얼마나 달라지나</strong></li>
+<li>답이 소수까지 필요한가, <strong>벳 쪽·체크 쪽</strong>이면 충분한가</li>
+</ol></section>
+<hr />
+<h2>내 판단 점검</h2>
+<p><strong>문제 1.</strong> 실제 핸드 표의 AA와 QQ 줄을 이 글의 읽기 규칙으로 읽어 보세요.</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>AA는 체크 1%를 0으로 읽고 작은 벳 쪽(75 대 24), QQ는 큰 벳 쪽(33 대 66)이에요.</strong> 둘 다 소수까지 외울 필요는 없어요. 크기의 방향과 대략의 비율이면 충분해요.</p>
+</details>
+<p><strong>문제 2.</strong> 3단계 게임의 1,000번 뒤 답에서 위 85.5% 칸의 벳이 1.53%, 위 50.5% 칸의 벳이 0.14%로 보여요. 표대로 치면 어느 칸에서 잃는 돈이 더 클까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>약 0.01BB로 거의 같아요.</strong> 0.14%면 거의 안 치니 손해도 작겠다는 감은 틀려요. 위 50.5%의 벳은 체크보다 7.68BB가 나쁘고, 위 85.5%의 벳은 0.68BB가 나빠요.</p>
+<blockquote>
+<p>0.0153 × 0.68 = 0.0104</p>
+<p>0.0014 × 7.68 = 0.0108</p>
+</blockquote>
+<p>낮게 찍힌 칸일수록 한 번의 손해가 커서 곱은 비슷해져요.</p>
+</details>
+<hr />
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>솔버 답을 받을 때 → 로그의 틈을 팟과 곱해 BB로 바꾼다 → 두 사람 평균으로 얼마가 열려 있는지가 숫자의 자릿수를 정한다</li>
+<li>낮은 빈도를 볼 때 → 역할이 같은 핸드와 이어지는지 본다 → 덜 푼 답의 낮은 빈도는 많이 나쁜 칸일 수 있고 빈도 × 손해는 칸마다 비슷하다</li>
+<li>이 블로그 DB를 볼 때 → 0~2%는 0으로, 95~100%는 전부로 읽는다 → 네 스팟의 틈 중앙값이 3%대라 정수 자리까지 믿을 근거가 없다</li>
+</ul></section>
+<hr />
+<section class="sec end"><h2>정리하며</h2>
+<p>오늘은 정답을 아는 게임을 일부러 덜 풀어서 0%가 몇 %로 보이는지 재고, 이 블로그 DB의 틈 기록을 꺼내 읽었어요. KK의 47 대 53이 반반으로 읽히는 건 덜 풀린 경계 칸이 큰 숫자로도 흔들리는 걸 봤기 때문이에요. 기억할 건 표의 숫자마다 믿을 수 있는 자릿수가 있다는 점이에요.</p>
+<p>다음 글 M80에서는 지금까지 두 사람으로 묶어 둔 게임을 <strong>세 사람</strong>으로 넓혀요. 균형을 지켜도 왜 안전하지 않은지 다뤄요.</p>
+<p><small>AI 작성 · 숫자는 계산 검증 · 가정 레인지·고정한 스택 기준</small></p></section>
+</article>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="280_M78.html">솔버는 어떻게 답을 찾을까: 가위바위보로 손으로 돌리는 CFR</a></li></ul></aside><nav class="nav"><a class="prev" href="280_M78.html"><div class="l">← 이전 글</div><div class="t">솔버는 어떻게 답을 찾을까: 가위바위보로 손으로 돌리는 CFR</div></a><a class="next" href="282_M80.html"><div class="l">다음 글 →</div><div class="t">세 명이 되면 균형은 왜 안전하지 않을까</div></a></nav></main>
+<script>/*__land__*/(function(){try{if(window.top!==window.self||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;var v='',n='';try{v=localStorage.getItem('vid');if(!v){v=Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('vid',v);}n=localStorage.getItem('nick')||'';}catch(e){}var f=(new URLSearchParams(location.search).get('from')||'').slice(0,30),rf=document.referrer||'',own=false;try{own=!!rf&&new URL(rf).host===location.host;}catch(e){}var b={p:"\ube14\ub85c\uadf8",n:n,v:v};if(f||!own){b.l=1;b.from=f;b.rf=own?'':rf.slice(0,200);}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b),keepalive:true}).catch(function(){});}catch(e){}})();</script>
+</body>
+</html>

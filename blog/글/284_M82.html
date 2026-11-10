@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>에퀴티 분포: 평균이 같아도 전략이 달라지는 이유 · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+<meta name="description" content="&quot;이 보드에서 BTN 레인지 에퀴티는 50%야.&quot; 많이 듣는 문장이에요. 그런데 그 50%가 어떻게 만들어졌는지는 숫자 하나로 안 보여요. 넛과 헛손이 반반인 50%와 전부 중간 핸드인 50%는 전혀 다른 레인지거든요. 오늘은 평균이 똑같은 레인지가 얼마나 다른 돈을…">
+<link rel="canonical" href="https://xn--bc2b73r.kr/blog/%EA%B8%80/284_M82.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="에퀴티 분포: 평균이 같아도 전략이 달라지는 이유 · 뚝섬 홀덤학습">
+<meta property="og:description" content="&quot;이 보드에서 BTN 레인지 에퀴티는 50%야.&quot; 많이 듣는 문장이에요. 그런데 그 50%가 어떻게 만들어졌는지는 숫자 하나로 안 보여요. 넛과 헛손이 반반인 50%와 전부 중간 핸드인 50%는 전혀 다른 레인지거든요. 오늘은 평균이 똑같은 레인지가 얼마나 다른 돈을…">
+<meta property="og:url" content="https://xn--bc2b73r.kr/blog/%EA%B8%80/284_M82.html">
+<meta property="og:image" content="https://xn--bc2b73r.kr/hub/banner.jpg">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge m">마스터</span><span class="chip">개념</span><span class="n">마스터 82번째 글 (전체 285편 중 284번째)</span></div><h1>에퀴티 분포: 평균이 같아도 전략이 달라지는 이유</h1>
+<article>
+<p>안녕하세요. "이 보드에서 BTN 레인지 에퀴티는 50%야." 많이 듣는 문장이에요. 그런데 그 50%가 어떻게 만들어졌는지는 숫자 하나로 안 보여요. 넛과 헛손이 반반인 50%와 전부 중간 핸드인 50%는 전혀 다른 레인지거든요.</p>
+<p>오늘은 평균이 똑같은 레인지가 얼마나 다른 돈을 버는지 작은 게임으로 재고, 이 블로그 DB의 실제 보드에서 같은 일이 일어나는지 봐요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>평균 에퀴티와 <strong>에퀴티 분포</strong>를 가르는 법</li>
+<li>같은 평균에서 거는 쪽이 버는 돈이 <strong>0부터 8BB까지</strong> 벌어지는 구조</li>
+<li>실제 보드에서 분포가 <strong>벳 빈도와 크기</strong>를 바꾸는 모습</li>
+</ul></div>
+<hr />
+<h2>핵심 개념: 평균 하나로는 레인지의 모양이 안 보여요</h2>
+<p>레인지의 각 콤보가 상대 레인지 전체를 상대로 갖는 에퀴티를 낮은 것부터 높은 것까지 줄 세운 그림이 <strong>에퀴티 분포</strong>예요. 평균이 같아도 모양은 크게 달라요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>모양</th>
+<th>뜻</th>
+<th>평균</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>균등</td>
+<td>약한 것부터 강한 것까지 고르게</td>
+<td>50%</td>
+</tr>
+<tr>
+<td>폴라</td>
+<td>아주 강한 것과 아주 약한 것으로 갈림</td>
+<td>50%</td>
+</tr>
+<tr>
+<td>응축</td>
+<td>가운데에 모여 있음</td>
+<td>50%</td>
+</tr>
+</tbody>
+</table></div>
+<p>잘하는 사람도 헷갈리는 건 <strong>평균이 앞서면 벳, 뒤지면 체크</strong>라는 습관이에요. M36의 넛 우위와 레인지 우위 구분을 한 칸 더 밀면, 그 차이는 평균이 아니라 <strong>분포의 어느 부분이 어떻게 생겼느냐</strong>에서 나와요.</p>
+<hr />
+<section class="sec why"><h2>왜 그럴까: 평균을 고정하고 모양만 바꿔요</h2>
+<h3>장난감 게임 가정</h3>
+<p>M74의 반 스트리트 게임이에요. 팟 20BB, 거는 쪽(X)만 벳할 수 있고 받는 쪽(Y)은 콜 또는 폴드예요. 핸드는 0과 1 사이의 숫자이고 분포만 바꿔요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>분포</th>
+<th>이 모델에서</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>균등</td>
+<td>0~1 전체에 고르게</td>
+</tr>
+<tr>
+<td>폴라</td>
+<td>위 20%와 아래 20%에만</td>
+</tr>
+<tr>
+<td>응축</td>
+<td>가운데 40~60%에만</td>
+</tr>
+</tbody>
+</table></div>
+<p>세 분포 모두 균등한 상대에게 평균 에퀴티 50%예요. 격자 200칸으로 CFR을 돌린 값이고, 결론은 전부 <strong>이 모델에서</strong>예요.</p>
+<h3>1단계. 평균이 같아도 번 돈은 달라요</h3>
+<p>쇼다운만 하면 X의 몫은 팟 × 에퀴티라서 10BB예요. 벳할 권리로 더 번 돈을 크기별로 봐요. Y는 균등이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>벳(팟 대비)</th>
+<th>X 균등</th>
+<th>X 폴라</th>
+<th>X 응축</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>25%</td>
+<td>+0.74BB</td>
+<td>+1.46BB</td>
+<td>0BB</td>
+</tr>
+<tr>
+<td>50%</td>
+<td>+1BB</td>
+<td>+2.22BB</td>
+<td>0BB</td>
+</tr>
+<tr>
+<td>100%</td>
+<td>+1.11BB</td>
+<td>+2.75BB</td>
+<td>0BB</td>
+</tr>
+<tr>
+<td>200%</td>
+<td>+1BB</td>
+<td>+2.5BB</td>
+<td>0BB</td>
+</tr>
+<tr>
+<td>400%</td>
+<td>+0.74BB</td>
+<td>+1.85BB</td>
+<td>0BB</td>
+</tr>
+</tbody>
+</table></div>
+<h3>이게 무슨 뜻이냐면</h3>
+<p><strong>평균 에퀴티 50%가 몫 10BB를 뜻하지 않아요.</strong> 응축은 정확히 10BB, 폴라는 팟벳에서 12.75BB예요. 에퀴티 실현율로 쓰면 응축은 100%, 균등은 111%, 폴라는 127.5%예요. M41에서 자리가 에퀴티 실현을 바꾼다고 했죠. 같은 일을 <strong>모양</strong>이 해요. 여기서의 실현은 벳할 권리 하나만 있는 게임의 값이에요.</p>
+<h3>2단계. 왜 응축은 하나도 못 벌까</h3>
+<p>응축 레인지의 핸드는 전부 가운데예요. 콜해 주는 Y의 위쪽 핸드에는 지고, Y의 약한 핸드는 벳에 접어 버려요. M74의 경계로 말하면 콜 범위의 위쪽 절반에 드는 핸드가 없어요. 블러프로 쓰기에도 쇼다운으로 이기는 몫이 너무 커요. M74에서 블러프 경계가 쇼다운 가치로 정해진다고 했죠. 그래서 <strong>벳 자체가 사라져요.</strong> 이 결론은 Y가 균등이고 반 스트리트이며 에퀴티가 고정일 때 말이에요. 드로우가 카드로 바뀌거나 상대를 접게 할 몫이 있는 실제 판에서는 달라요.</p>
+<p>폴라는 정반대예요. 위 20%는 콜해 주는 Y 대부분을 이기고, 아래 20%는 쇼다운 가치가 없어서 블러프로 쓰기 좋아요. 팟벳이면 거는 쪽 벳 폭이 75%까지 넓어져요. 균등의 33.3%와 비교해 보면 차이가 커요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>응축은 "벳으로 얻을 게 없는 모양"이고 폴라는 "밸류와 블러프가 다 있는 모양"이에요. 밸류와 블러프가 어디서 나오는지는 평균으로 보이지 않아요.</p>
+<h3>3단계. 상대의 모양까지 놓으면</h3>
+<p>이제 Y의 모양도 바꿔요. 전부 평균 50%, 팟벳이에요. 표의 값은 X가 더 번 돈이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th></th>
+<th>Y 균등</th>
+<th>Y 폴라</th>
+<th>Y 응축</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>X 균등</td>
+<td>+1.11BB</td>
+<td>+0.44BB</td>
+<td>+4.25BB</td>
+</tr>
+<tr>
+<td>X 폴라</td>
+<td>+2.75BB</td>
+<td>+1.11BB</td>
+<td>+5BB</td>
+</tr>
+<tr>
+<td>X 응축</td>
+<td>0BB</td>
+<td>0BB</td>
+<td>+1.11BB</td>
+</tr>
+</tbody>
+</table></div>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>세 가지가 보여요. 같은 모양끼리는 어느 쪽이든 +1.11BB예요. 이 게임은 순서만 보므로 양쪽 분포가 같으면 균등 대 균등과 같은 게임이에요. 모양은 <strong>상대에 대한 모양</strong>이에요.</p>
+<p><strong>내 쪽에 응축 바깥 핸드가 있고 상대가 응축이면 큰 돈이 나와요.</strong> 응축 레인지는 전부 블러프캐처(M52)라서 M53의 게임이 돼요. 그리고 <strong>상대가 폴라면 내 벳은 값이 줄어요.</strong> Y의 약한 절반은 어차피 접고 콜은 위 20%에서만 나와서, 돈을 내줄 가운데 핸드가 없거든요. X 균등의 밸류 폭이 Y 균등일 때 22%에서 Y 폴라일 때 9%로 줄어요.</p>
+<p>"이 레인지는 강해"라는 말로는 이 표의 어느 칸인지 알 수 없어요. 두 사람의 <strong>모양의 조합</strong>이 벳의 값을 정해요.</p>
+<h3>4단계. 크기는 상대 모양을 따라가요</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>벳(팟 대비)</th>
+<th>균등 대 응축</th>
+<th>폴라 대 응축</th>
+<th>폴라 대 균등</th>
+<th>균등 대 폴라</th>
+<th>폴라 대 폴라</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>25%</td>
+<td>+1.76BB</td>
+<td>+2BB</td>
+<td>+1.46BB</td>
+<td>+0.3BB</td>
+<td>+0.74BB</td>
+</tr>
+<tr>
+<td>50%</td>
+<td>+2.89BB</td>
+<td>+3.33BB</td>
+<td>+2.22BB</td>
+<td>+0.4BB</td>
+<td>+1BB</td>
+</tr>
+<tr>
+<td>100%</td>
+<td>+4.25BB</td>
+<td>+5BB</td>
+<td>+2.75BB</td>
+<td>+0.44BB</td>
+<td>+1.11BB</td>
+</tr>
+<tr>
+<td>200%</td>
+<td>+5.56BB</td>
+<td>+6.67BB</td>
+<td>+2.5BB</td>
+<td>+0.4BB</td>
+<td>+1BB</td>
+</tr>
+<tr>
+<td>400%</td>
+<td>+6.56BB</td>
+<td>+8BB</td>
+<td>+1.85BB</td>
+<td>+0.3BB</td>
+<td>+0.74BB</td>
+</tr>
+</tbody>
+</table></div>
+<p>응축을 상대할 때는 크기를 키울수록 번 돈이 계속 늘어요. 균등이나 폴라를 상대할 때는 팟벳 근처에서 꺾여요. 폴라 대 응축의 더 번 돈은 식으로 나와요. 더 번 돈 = 팟 × 위쪽 0.5 × 콜 빈도 1 ÷ (1 + s) × 벳 s = 팟 × 0.5 × s ÷ (1 + s)예요. 크기를 키워도 팟 × 0.5를 넘지는 못해요. M75에서 본 "팟벳 최대"는 양쪽 다 균등일 때의 답이었어요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>레인지 모양과 크기 질문은 같이 풀어야 해요. M53이 큰 벳을 권했던 게임이 바로 "상대가 응축"인 게임이었어요. M54의 캡드(위만 잘린) 레인지와 콘덴스드(양쪽이 빠진) 레인지는 아래가 남느냐가 달라서 같은 칸은 아니에요.</p>
+<h3>5단계. 실제 보드에서 재 보기</h3>
+<p>이 블로그 DB의 100BB 싱글 레이즈(빅앤티) 레인지로 BTN의 콤보별 에퀴티를 BB의 프리플랍 레인지 상대로 쟀어요. 콤보마다 400번 표본으로 잰 값이라 구간은 ±1포인트 안팎 흔들려요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>보드</th>
+<th>BTN 평균</th>
+<th>30% 미만</th>
+<th>30~50%</th>
+<th>50~70%</th>
+<th>70~85%</th>
+<th>85% 이상</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A♠ K♥ 7♦</td>
+<td>50.3%</td>
+<td>30.1%</td>
+<td>24.9%</td>
+<td>18%</td>
+<td>13.6%</td>
+<td>13.5%</td>
+</tr>
+<tr>
+<td>T♠ 9♥ 6♦</td>
+<td>49.9%</td>
+<td>21%</td>
+<td>27.8%</td>
+<td>34.4%</td>
+<td>14%</td>
+<td>2.8%</td>
+</tr>
+<tr>
+<td>A♠ Q♥ 4♦</td>
+<td>51.5%</td>
+<td>26%</td>
+<td>25.4%</td>
+<td>21.7%</td>
+<td>12.9%</td>
+<td>14%</td>
+</tr>
+<tr>
+<td>6♠ 5♥ 4♦</td>
+<td>51.5%</td>
+<td>5.4%</td>
+<td>44.8%</td>
+<td>38.1%</td>
+<td>9.2%</td>
+<td>2.5%</td>
+</tr>
+</tbody>
+</table></div>
+<p>첫 두 줄은 평균이 약 50%로 비슷해요. 솔버의 답을 나란히 놓아요. BB가 체크한 뒤 BTN의 행동이에요(팟 6BB, 작은 벳 2BB, 큰 벳 4.5BB).</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>보드</th>
+<th>BTN 체크</th>
+<th>작은 벳</th>
+<th>큰 벳</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A♠ K♥ 7♦</td>
+<td>20.4%</td>
+<td>49.5%</td>
+<td>30.1%</td>
+</tr>
+<tr>
+<td>T♠ 9♥ 6♦</td>
+<td>45%</td>
+<td>29.9%</td>
+<td>25%</td>
+</tr>
+<tr>
+<td>A♠ Q♥ 4♦</td>
+<td>16.1%</td>
+<td>58.1%</td>
+<td>25.9%</td>
+</tr>
+<tr>
+<td>6♠ 5♥ 4♦</td>
+<td>22.9%</td>
+<td>15%</td>
+<td>62.1%</td>
+</tr>
+</tbody>
+</table></div>
+<p>BB의 위쪽 두께까지 나란히 놓으면 이래요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>보드</th>
+<th>BTN 70% 이상</th>
+<th>BB 70% 이상</th>
+<th>큰 벳</th>
+<th>BB 30~70%</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A♠ K♥ 7♦</td>
+<td>27%</td>
+<td>24.4%</td>
+<td>30.1%</td>
+<td>56.2%</td>
+</tr>
+<tr>
+<td>T♠ 9♥ 6♦</td>
+<td>16.8%</td>
+<td>18.1%</td>
+<td>25%</td>
+<td>65%</td>
+</tr>
+<tr>
+<td>A♠ Q♥ 4♦</td>
+<td>26.9%</td>
+<td>26.3%</td>
+<td>25.9%</td>
+<td>51.4%</td>
+</tr>
+<tr>
+<td>6♠ 5♥ 4♦</td>
+<td>11.7%</td>
+<td>5.2%</td>
+<td>62.1%</td>
+<td>88%</td>
+</tr>
+</tbody>
+</table></div>
+<p>60개 보드 전체로 재면(120번 표본의 표, 이 DB의 60개 보드에서) BTN의 체크 뒤 벳 빈도는 평균 에퀴티와 상관이 +0.68로 가장 강하고, 양쪽 끝 두께(30% 미만과 85% 이상의 합)와는 +0.03이에요. 반면 큰 벳 비중은 평균과 −0.1이고, BB의 30~70% 두께와 +0.55, BB의 70% 이상과 −0.49예요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p><strong>평균은 얼마나 자주 칠지를 꽤 말해 주고, 얼마나 크게 칠지는 거의 말해 주지 못해요.</strong> 크기는 상대의 모양을 따라가요. 6♠ 5♥ 4♦의 BTN은 표에서 가장 응축인데 큰 벳이 62.1%예요. 2단계의 "응축은 벳이 사라진다"와 반대처럼 보이지만 BB가 30~70%에 88%로 더 응축이에요. 3단계의 "상대가 응축" 칸이에요. 다만 표본에서 뽑은 상관이고 분포로 다 설명되지는 않아요.</p></section>
+<hr />
+<h2>실제 핸드 예시: BTN의 J♣J♦, 평균이 같은 두 보드</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>내용</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>자리·스택</td>
+<td>헤즈업 모델, BTN(Hero) 대 BB, 유효 스택 100BB</td>
+</tr>
+<tr>
+<td>프리플랍</td>
+<td>BTN 2.5BB 오픈, BB 콜 → 팟 6BB(빅앤티 1BB 포함, DB 가정)</td>
+</tr>
+<tr>
+<td>플랍</td>
+<td>A♠ K♥ 7♦ 또는 T♠ 9♥ 6♦, BB 체크</td>
+</tr>
+<tr>
+<td>Hero</td>
+<td>J♣J♦</td>
+</tr>
+</tbody>
+</table></div>
+<p>두 보드에서 BTN 레인지의 평균 에퀴티는 약 50%로 비슷해요. 이번 한 번의 결정 기준이고, 프리플랍 레인지는 DB의 <strong>가정</strong>이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>보드</th>
+<th>JJ 체크</th>
+<th>JJ 작은 벳(2BB)</th>
+<th>JJ 큰 벳(4.5BB)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A♠ K♥ 7♦</td>
+<td>71%</td>
+<td>29%</td>
+<td>0%</td>
+</tr>
+<tr>
+<td>T♠ 9♥ 6♦</td>
+<td>0%</td>
+<td>32%</td>
+<td>68%</td>
+</tr>
+</tbody>
+</table></div>
+<p>M79의 읽기 규칙으로는 앞줄은 "체크 쪽", 뒷줄은 "큰 벳 쪽"이에요. <strong>같은 JJ, 비슷한 평균인데 답이 갈려요.</strong></p>
+<p>BB가 체크 뒤 계속하는 콤보 중 지금 J♣J♦를 이기는 비중을 세어 봐요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>보드</th>
+<th>J♣J♦의 BTN 레인지 안 위치</th>
+<th>2BB에 계속 중 JJ를 이김</th>
+<th>4.5BB에 계속 중 JJ를 이김</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A♠ K♥ 7♦</td>
+<td>위 27.5% 안쪽</td>
+<td>34.6%</td>
+<td>45.7%</td>
+</tr>
+<tr>
+<td>T♠ 9♥ 6♦</td>
+<td>위 9.9% 안쪽</td>
+<td>6.3%</td>
+<td>8.6%</td>
+</tr>
+</tbody>
+</table></div>
+<p>BTN 레인지 안에서는 두 보드 다 위쪽이에요. 크게 다른 건 <strong>콜·레이즈로 남는 쪽 안에서의 위치</strong>예요. M74의 "콜해 주는 핸드 안의 위치"와 같은 잣대이고, T♠ 9♥ 6♦의 BB는 콜로 남기는 범위에 JJ를 이기는 콤보가 거의 없어요. A♠ K♥ 7♦에서 Hero는 표대로 <strong>대체로 체크</strong>해요. 다만 이 보드의 JJ는 계속 범위의 절반 넘게 이기는데도 체크가 많아서, 레이즈와 뒤 스트리트까지 얽힌 답이라 이 표만으로는 다 설명되지 않아요. T♠ 9♥ 6♦에서 Hero는 <strong>대체로 4.5BB</strong>를 쳐요. M72의 시계 규칙으로 앞쪽 3분의 1이면 2BB, 뒤쪽이면 4.5BB로 나눠요.</p>
+<h3>BB 쪽이라면</h3>
+<p>BB의 분포도 달라요. 앞 보드의 BB는 30~50% 구간이 많고 뒷 보드의 BB는 50~70% 구간이 두꺼워요. 앞 보드의 BB가 70% 이상도 더 많아서, 위쪽 두께만으로 큰 벳 비중(30.1%와 25%)이 설명되지는 않아요.</p>
+<hr />
+<h2>GTO 기준과 실전 익스플로잇</h2>
+<h3>GTO 기준(이론)</h3>
+<ul>
+<li><strong>에퀴티는 남은 카드를 끝까지 평균 낸 값이에요.</strong> 그 사이의 행동은 안 들어 있어요. 드로우와 약한 페어가 같은 40%여도 다음 스트리트 행동은 달라요</li>
+<li><strong>표의 구간은 BB 프리플랍 레인지 상대로 잰 값이에요.</strong> BB의 체크 뒤로 재면 평균이 조금 달라지고, 벳과 콜이 지나가면 분포가 더 바뀌어요</li>
+<li><strong>크기와 분포의 관계는 양쪽을 다 봐야 해요.</strong> 4단계처럼 상대 모양을 놓지 않고 내 모양만으로 크기를 말할 수 없어요</li>
+</ul>
+<h3>실전(라이브·저스테이크) 익스플로잇</h3>
+<p><strong>상대 레인지가 응축되는 라인이라고 읽힌다면</strong> 크기를 키워요. 여러 번 콜만 하면서 온 상대는 양쪽 끝이 빠지기 쉬워요(슬로플레이가 있으면 위가 남아요). 4단계에서 크기를 키울수록 늘어난 칸이에요. 그 상대가 체크레이즈나 큰 콜을 섞기 시작하면 위가 있다고 보고 원래 크기로 돌아와요.</p>
+<p><strong>상대의 팟벳 속 블러프 비중이 3분의 1을 넘는다는 쇼다운 증거가 있을 때만</strong> 내 블러프캐처 콜을 넓혀요. 폴라 벳이어도 균형의 콜은 균등과 거의 같아요. 그 상대가 강한 핸드만 보여 주기 시작하면 표로 돌아와요.</p>
+<hr />
+<section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. 평균 에퀴티 하나로 라인 정하기</strong>
+A♠ Q♥ 4♦와 6♠ 5♥ 4♦는 평균이 51.5%로 같고 벳 빈도도 84%와 77%로 비슷한데 큰 벳은 25.9%와 62.1%예요. 평균이 <strong>크기까지는 말해 주지 못해요.</strong></p></div><div class="mis-card"><p><strong>실수 2. "내 레인지가 강하니 크게"</strong>
+4단계에서 폴라 대 폴라는 400%에 +0.74BB, 폴라 대 응축은 +8BB였어요. 크기는 내 모양과 <strong>상대 모양의 조합</strong>이에요.</p></div><div class="mis-card"><p><strong>실수 3. 내 핸드의 에퀴티로 벳을 정하기</strong>
+J♣J♦의 에퀴티는 두 보드에서 69.4%와 76.7%로 비슷한 쪽이에요. 크게 다른 건 <strong>상대의 계속 범위 안에서의 위치</strong>였어요(45.7%와 8.6%). 다만 그것만으로 답이 다 설명되지는 않아요.</p></div></section>
+<hr />
+<section class="sec tip"><h2>선생님의 한마디</h2>
+<p>플랍을 보자마자 이렇게 물어요.</p>
+<ol>
+<li>내 레인지의 <strong>양쪽 끝이 두꺼운가, 가운데가 두꺼운가</strong></li>
+<li>상대 레인지는 <strong>위가 있는 모양인가, 응축된 모양인가</strong></li>
+<li>내 핸드는 상대가 <strong>계속하는 범위</strong>의 어디쯤인가</li>
+</ol></section>
+<hr />
+<h2>내 판단 점검</h2>
+<p><strong>문제 1.</strong> 팟 30BB에서 평균 에퀴티 40%인 레인지가 있어요. 벳할 수 있는 쪽이라서 몫이 13.2BB라면 에퀴티 실현율은 얼마일까요? 응축 레인지처럼 벳으로 아무것도 못 번다면 몫은 얼마일까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>실현율은 110%, 응축일 때 몫은 12BB</strong>예요.</p>
+<blockquote>
+<p>13.2 ÷ (30 × 0.4) = 1.1</p>
+</blockquote>
+<p>평균이 같아도 분포에 따라 몫이 12BB부터 그 이상으로 달라져요. 에퀴티만 적은 숫자로는 몫을 말할 수 없어요.</p>
+</details>
+<p><strong>문제 2.</strong> 4단계 게임에서 X는 폴라, Y는 응축이에요. 팟 20BB에 벳을 400%에서 1000%로 키우면 X의 더 번 돈은 어떻게 될까요? 크기가 너무 크면 콜이 안 나와서 번 돈이 줄어들 거라는 감은 맞을까요?</p>
+<details>
+<summary>정답 보기</summary>
+<p><strong>계속 늘어요. 약 9.09BB예요.</strong> 4단계의 식 그대로예요.</p>
+<blockquote>
+<p>20 × 0.5 × 10 ÷ 11 = 9.09</p>
+</blockquote>
+<p>응축인 Y는 전부 블러프캐처라 콜이 MDF를 끝까지 지켜요. 콜 빈도는 줄지만 벳이 그보다 빨리 커져요. 더 번 돈은 10BB를 넘지 못해요. 다만 실제 레인지가 이렇게 완전히 응축되는 일은 드물고, 스택에도 묶여요.</p>
+</details>
+<hr />
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>레인지 강약을 말할 때 → 평균에 더해 양쪽 끝과 가운데의 두께를 본다 → 평균은 빈도를 꽤 말해 주지만 크기는 거의 말해 주지 못한다</li>
+<li>벳 크기를 고를 때 → 내 모양과 상대 모양을 함께 놓는다 → 상대가 응축일수록 큰 벳이 늘고, 위가 있으면 팟벳 근처에서 꺾인다</li>
+<li>한 핸드를 정할 때 → 상대가 계속하는 범위 안에서 어디쯤인지 본다 → 내 레인지 안에서는 둘 다 위쪽이어도 계속 범위 안의 위치는 크게 다르다</li>
+</ul></section>
+<hr />
+<section class="sec end"><h2>정리하며</h2>
+<p>오늘은 평균 에퀴티 50%로 묶은 세 모양이 0BB부터 8BB까지 다른 돈을 버는 걸 봤어요. 실제 보드에서도 평균이 약 50%로 비슷한 두 플랍의 J♣J♦가 체크 쪽과 큰 벳 쪽으로 갈렸어요. 기억할 건 평균 뒤에 있는 모양을 먼저 그리는 습관이에요.</p>
+<p>다음 글 M83에서는 시리즈를 마무리해요. <strong>AI가 사람을 이긴 뒤</strong> 무엇이 바뀌었고, 무엇을 가져오면 안 되는지 다뤄요.</p>
+<p><small>AI 작성 · 숫자는 계산 검증 · 가정 레인지·고정한 스택 기준</small></p></section>
+</article>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="273_M71.html">GTO는 정확히 뭘까: 내쉬 균형과 &quot;안 지는 전략&quot;의 뜻</a></li></ul></aside><nav class="nav"><a class="prev" href="283_M81.html"><div class="l">← 이전 글</div><div class="t">암묵적 담합: 올인 뒤 사이드팟 없는 체크다운은 왜 모두에게 이득일까</div></a><a class="next" href="285_M83.html"><div class="l">다음 글 →</div><div class="t">AI가 사람을 이긴 뒤: Libratus·Pluribus가 바꾼 것</div></a></nav></main>
+<script>/*__land__*/(function(){try{if(window.top!==window.self||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;var v='',n='';try{v=localStorage.getItem('vid');if(!v){v=Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('vid',v);}n=localStorage.getItem('nick')||'';}catch(e){}var f=(new URLSearchParams(location.search).get('from')||'').slice(0,30),rf=document.referrer||'',own=false;try{own=!!rf&&new URL(rf).host===location.host;}catch(e){}var b={p:"\ube14\ub85c\uadf8",n:n,v:v};if(f||!own){b.l=1;b.from=f;b.rf=own?'':rf.slice(0,200);}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b),keepalive:true}).catch(function(){});}catch(e){}})();</script>
+</body>
+</html>
