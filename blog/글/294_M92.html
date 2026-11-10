@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>구조가 실력을 보상한다: 레벨 길이·시작 스택과 ROI · 뚝섬 홀덤학습</title>
+<link rel="stylesheet" href="../style.css">
+<meta name="description" content="같은 실력으로 터보 대회와 딥스택 대회를 치면 ROI가 얼마나 달라질까요? I25에서 구조표 읽는 법을 봤고, M84에서는 실력을 사다리 p로 옮겼어요. 오늘은 레벨 길이와 시작 스택을 바꿔 가며 같은 실력이 ROI로 얼마나 돌아오는지 시뮬레이션으로 재요. 그…">
+<link rel="canonical" href="https://xn--bc2b73r.kr/blog/%EA%B8%80/294_M92.html">
+<meta property="og:type" content="article">
+<meta property="og:title" content="구조가 실력을 보상한다: 레벨 길이·시작 스택과 ROI · 뚝섬 홀덤학습">
+<meta property="og:description" content="같은 실력으로 터보 대회와 딥스택 대회를 치면 ROI가 얼마나 달라질까요? I25에서 구조표 읽는 법을 봤고, M84에서는 실력을 사다리 p로 옮겼어요. 오늘은 레벨 길이와 시작 스택을 바꿔 가며 같은 실력이 ROI로 얼마나 돌아오는지 시뮬레이션으로 재요. 그…">
+<meta property="og:url" content="https://xn--bc2b73r.kr/blog/%EA%B8%80/294_M92.html">
+<meta property="og:image" content="https://xn--bc2b73r.kr/hub/banner.jpg">
+</head>
+<body>
+<header class="top"><div class="in"><a href="../index.html">← 글 목록</a><span class="sp"></span><span class="brand">뚝섬 홀덤학습</span></div></header>
+<main class="wrap"><div class="meta"><span class="badge m">마스터</span><span class="chip">개념</span><span class="n">마스터 92번째 글 (전체 294편 중 294번째)</span></div><h1>구조가 실력을 보상한다: 레벨 길이·시작 스택과 ROI</h1>
+<article>
+<p>같은 실력으로 터보 대회와 딥스택 대회를 치면 ROI가 얼마나 달라질까요? I25에서 구조표 읽는 법을 봤고, M84에서는 실력을 사다리 p로 옮겼어요.</p>
+<p>오늘은 레벨 길이와 시작 스택을 바꿔 가며 <strong>같은 실력이 ROI로 얼마나 돌아오는지</strong> 시뮬레이션으로 재요. 그 ROI가 시간당 수익, 바이인 수, 콜 기준까지 어떻게 바꾸는지도 계산해요.</p>
+<div class="learn"><p class="h">이 글에서 배울 것</p><ul>
+<li>레벨 길이와 시작 스택 중 어느 쪽이 ROI를 더 크게 움직이는지</li>
+<li>실력이 깊은 스택에서만 나타난다는 가정이 결론을 얼마나 바꾸는지</li>
+<li>구조에 따라 시간당 수익과 바이인 수가 어떻게 달라지고, 콜 기준은 실력 가정에 따라 어떻게 달라지는지</li>
+</ul></div>
+<h2>핵심 개념: 같은 실력의 ROI는 구조가 정해요</h2>
+<p>실력은 승부마다 조금씩 돈이 돼요. 승부 수가 적은 구조에서는 실력이 돈으로 바뀔 기회가 적어요. 실력 쪽 우위가 같아도 이 글의 모형에서 ROI는 이렇게 달라져요(64명 8명 지급, 시뮬 3만 번, 표본 오차 약 2.3~3.1%p).</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>구조</th>
+<th>평균 라운드 수</th>
+<th>Hero의 ROI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>시작 30BB, 레벨 1라운드</td>
+<td>6.9</td>
+<td>약 +6.8%</td>
+</tr>
+<tr>
+<td>시작 30BB, 레벨 4라운드</td>
+<td>14.6</td>
+<td>약 +30.2%</td>
+</tr>
+<tr>
+<td>시작 30BB, 레벨 8라운드</td>
+<td>23.1</td>
+<td>약 +57.8%</td>
+</tr>
+<tr>
+<td>시작 100BB, 레벨 8라운드</td>
+<td>46.6</td>
+<td>약 +79.1%</td>
+</tr>
+</tbody>
+</table></div>
+<p>그래서 내 ROI를 말할 때는 어떤 구조의 ROI인지 같이 적어야 해요. 터보에서 잰 ROI를 딥스택에 그대로 쓰면 어긋나요.</p>
+<section class="sec why"><h2>왜 그럴까: 승부 수와 스택 깊이가 실력의 기회를 만들어요</h2>
+<h3>이 글의 가정</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>가정</th>
+<th>내용</th>
+<th>실전에서 깨지는 곳</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>모형</td>
+<td>살아 있는 사람을 매 라운드 무작위로 짝지어 승부해요</td>
+<td>실제로는 테이블별로 여러 판이 돌아요</td>
+</tr>
+<tr>
+<td>승부 크기</td>
+<td>두 스택 중 작은 쪽과 10BB 중 작은 금액</td>
+<td>팟 크기는 판마다 달라요</td>
+</tr>
+<tr>
+<td>레벨</td>
+<td>레벨마다 BB ×1.5</td>
+<td>실제 구조표는 레벨마다 비율이 달라요</td>
+</tr>
+<tr>
+<td>실력</td>
+<td>Hero의 승부 승률이 50% + 3%p × min(1, 유효 스택 ÷ 40BB), 나머지 63명은 50%</td>
+<td>실력은 판단 전체에서 나와요</td>
+</tr>
+<tr>
+<td>상금</td>
+<td>M84의 64명 8명 지급 사다리, 레이크 없음</td>
+<td>대회마다 달라요</td>
+</tr>
+</tbody>
+</table></div>
+<p>여기서 '라운드'는 짝지어 한 번 승부하는 단위예요. 실력 없는 사람끼리 치는 검산에서 ROI는 약 +1.4%, 약 +0.2%로 표본 오차 안이었어요.</p>
+<h3>1단계. 레벨 길이와 시작 스택의 표를 봐요</h3>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>시작 스택</th>
+<th>레벨 1라운드</th>
+<th>레벨 2라운드</th>
+<th>레벨 4라운드</th>
+<th>레벨 8라운드</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>20BB</td>
+<td>약 +8.0%</td>
+<td>약 +12.2%</td>
+<td>약 +26.2%</td>
+<td>약 +47.7%</td>
+</tr>
+<tr>
+<td>30BB</td>
+<td>약 +6.8%</td>
+<td>약 +16.8%</td>
+<td>약 +30.2%</td>
+<td>약 +57.8%</td>
+</tr>
+<tr>
+<td>60BB</td>
+<td>약 +6.1%</td>
+<td>약 +19.5%</td>
+<td>약 +38.1%</td>
+<td>약 +77.1%</td>
+</tr>
+<tr>
+<td>100BB</td>
+<td>약 +8.6%</td>
+<td>약 +20.0%</td>
+<td>약 +39.1%</td>
+<td>약 +79.1%</td>
+</tr>
+<tr>
+<td>200BB</td>
+<td>약 +14.4%</td>
+<td>약 +29.3%</td>
+<td>약 +49.2%</td>
+<td>약 +84.8%</td>
+</tr>
+</tbody>
+</table></div>
+<p>칸마다 표본 오차가 약 2.3~3.1%p라, 레벨 1라운드 줄의 앞쪽 네 칸처럼 작은 차이는 구분되지 않아요.</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>이 표에서는 <strong>레벨 길이를 늘린 효과가 시작 스택을 늘린 효과보다 커요.</strong> 30BB에서 레벨을 1에서 8로 늘리면 약 51.0%p 올라요. 레벨 8에서 시작 스택을 30BB에서 200BB로 늘리면 약 27.0%p 올라요. 레벨이 짧으면 스택이 깊어도 블라인드가 금방 따라와서 승부 수가 많이 안 늘어요.</p>
+<h3>2단계. 실력을 깊은 스택에만 준 가정을 바꿔요</h3>
+<p>위 표는 유효 스택 40BB 아래에서는 실력이 줄어든다고 놓았어요. 깊이와 상관없이 3%p 우위를 주면 표가 달라져요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>구조</th>
+<th>깊이에 따른 실력</th>
+<th>깊이와 상관없는 실력</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>시작 20BB, 레벨 1</td>
+<td>약 +8.0%</td>
+<td>약 +45.4%</td>
+</tr>
+<tr>
+<td>시작 30BB, 레벨 4</td>
+<td>약 +30.2%</td>
+<td>약 +86.1%</td>
+</tr>
+<tr>
+<td>시작 100BB, 레벨 4</td>
+<td>약 +39.1%</td>
+<td>약 +93.6%</td>
+</tr>
+<tr>
+<td>시작 200BB, 레벨 8</td>
+<td>약 +84.8%</td>
+<td>약 +146.9%</td>
+</tr>
+</tbody>
+</table></div>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>깊이와 상관없는 3%p는 짧은 구조에서도 큰 ROI를 만들어요. 그러니 '터보는 실력이 안 먹힌다'는 말은 승부 수와 <strong>짧은 스택에서 내 우위가 얼마나 남는가</strong>에 달린 말이에요. 푸시폴드 판단에 강한 사람이라면 짧은 구조의 우위가 깊이 모형보다 클 수 있어요(불확실).</p>
+<h3>3단계. 가정마다 두 효과를 따로 재요</h3>
+<p>레벨 길이의 효과와 시작 스택의 효과를 각 가정에서 따로 쟀어요(2만 번, 표 1단계와 다른 시행).</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>가정</th>
+<th>30BB·레벨 1</th>
+<th>30BB·레벨 8</th>
+<th>200BB·레벨 8</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>기본(우위 3%p, 승부 10BB, 레벨 ×1.5)</td>
+<td>약 +6.9%</td>
+<td>약 +60.9%</td>
+<td>약 +85.0%</td>
+</tr>
+<tr>
+<td>우위 2%p</td>
+<td>약 +5.9%</td>
+<td>약 +31.4%</td>
+<td>약 +50.3%</td>
+</tr>
+<tr>
+<td>우위 5%p</td>
+<td>약 +15.2%</td>
+<td>약 +117.1%</td>
+<td>약 +177.3%</td>
+</tr>
+<tr>
+<td>승부 크기 5BB</td>
+<td>약 +6.7%</td>
+<td>약 +38.7%</td>
+<td>약 +54.5%</td>
+</tr>
+<tr>
+<td>승부 크기 20BB</td>
+<td>약 +16.3%</td>
+<td>약 +67.8%</td>
+<td>약 +119.3%</td>
+</tr>
+<tr>
+<td>레벨마다 BB ×1.25</td>
+<td>약 +12.1%</td>
+<td>약 +88.4%</td>
+<td>약 +152.4%</td>
+</tr>
+<tr>
+<td>레벨마다 BB ×2</td>
+<td>약 +8.1%</td>
+<td>약 +44.6%</td>
+<td>약 +50.7%</td>
+</tr>
+<tr>
+<td>승부 크기 40BB</td>
+<td>약 +26.2%</td>
+<td>약 +64.2%</td>
+<td>약 +122.5%</td>
+</tr>
+</tbody>
+</table></div>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>승부 크기 20BB 이하의 일곱 가정에서는 레벨 효과(왼쪽에서 가운데)가 시작 스택 효과(가운데에서 오른쪽)보다 크거나 비슷했어요. 승부 크기 20BB는 약 51.5%p 대 약 51.5%p로 거의 같아요. 승부 크기 40BB에서는 스택 효과가 더 커져서 약 38.0%p 대 약 58.3%p로 뒤집혀요. 한 판의 승부가 클수록 스택 깊이의 값이 커지는 쪽이에요. 숫자의 크기는 가정마다 크게 달라서, 이 표의 ROI를 내 대회 ROI로 쓰지 말고 방향을 비교하는 데만 쓰세요.</p>
+<h3>4단계. 시간당으로 바꿔 봐요</h3>
+<p>ROI가 높은 구조는 그만큼 오래 쳐요. 라운드당 ROI를 시간의 대용으로 놓으면 이래요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>구조</th>
+<th>ROI</th>
+<th>평균 라운드 수</th>
+<th>라운드당 ROI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>20BB, 레벨 1</td>
+<td>약 +8.0%</td>
+<td>5.3</td>
+<td>약 1.50%</td>
+</tr>
+<tr>
+<td>20BB, 레벨 4</td>
+<td>약 +26.2%</td>
+<td>11.1</td>
+<td>약 2.36%</td>
+</tr>
+<tr>
+<td>20BB, 레벨 8</td>
+<td>약 +47.7%</td>
+<td>16.9</td>
+<td>약 2.82%</td>
+</tr>
+<tr>
+<td>30BB, 레벨 1</td>
+<td>약 +6.8%</td>
+<td>6.9</td>
+<td>약 0.99%</td>
+</tr>
+<tr>
+<td>30BB, 레벨 4</td>
+<td>약 +30.2%</td>
+<td>14.6</td>
+<td>약 2.07%</td>
+</tr>
+<tr>
+<td>30BB, 레벨 8</td>
+<td>약 +57.8%</td>
+<td>23.1</td>
+<td>약 2.50%</td>
+</tr>
+<tr>
+<td>60BB, 레벨 8</td>
+<td>약 +77.1%</td>
+<td>36.5</td>
+<td>약 2.11%</td>
+</tr>
+<tr>
+<td>100BB, 레벨 8</td>
+<td>약 +79.1%</td>
+<td>46.6</td>
+<td>약 1.70%</td>
+</tr>
+<tr>
+<td>200BB, 레벨 8</td>
+<td>약 +84.8%</td>
+<td>60.9</td>
+<td>약 1.39%</td>
+</tr>
+</tbody>
+</table></div>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>이 표에서 라운드당 ROI는 시작 스택이 짧고 레벨이 긴 20BB·레벨 8에서 가장 높았어요. 시작 스택을 200BB까지 늘리면 ROI는 더 커져도 라운드가 그보다 많이 늘어서 라운드당 값은 내려가요. 표본 오차가 있는 값을 라운드로 나눈 숫자이고, 라운드당 ROI가 실제 시간과 똑같지도 않아요.</p>
+<h3>5단계. 표본과 바이인 수도 달라져요</h3>
+<p>ROI의 95% 구간 폭을 ±10%p로 줄이는 데 필요한 판 수와 M87의 어림식 B ≈ σ² ÷ μ를 구조별로 쟀어요(괄호는 ROI 표본 오차만큼 더하고 뺀 범위).</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>구조</th>
+<th>한 판 표준편차</th>
+<th>필요한 판 수</th>
+<th>어림 바이인 수</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30BB, 레벨 1</td>
+<td>약 3.97</td>
+<td>약 6,061판</td>
+<td>약 232개(약 173~349개)</td>
+</tr>
+<tr>
+<td>30BB, 레벨 4</td>
+<td>약 4.42</td>
+<td>약 7,505판</td>
+<td>약 65개(약 60~71개)</td>
+</tr>
+<tr>
+<td>30BB, 레벨 8</td>
+<td>약 4.99</td>
+<td>약 9,554판</td>
+<td>약 43개(약 41~45개)</td>
+</tr>
+<tr>
+<td>100BB, 레벨 8</td>
+<td>약 5.26</td>
+<td>약 10,609판</td>
+<td>약 35개(약 34~36개)</td>
+</tr>
+</tbody>
+</table></div>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>구간 폭은 표본 표준오차의 1.96배이고, 표의 표준편차는 시뮬에서 잰 값이에요. 같은 실력인데 레벨이 짧은 구조는 ROI가 작아서 필요한 바이인 수가 몇 배 커져요. 레벨 1의 줄은 ROI 표본 오차가 ROI의 약 3분의 1이라 범위가 약 2배 벌어져요. M86처럼 ROI는 긴 표본이 필요하고, 구조가 다른 대회를 한 장부에 섞으면 평균의 뜻이 흐려져요.</p>
+<h3>6단계. 콜 기준은 실력 가정에 달려요</h3>
+<p>구조별 ROI를 M84의 사다리 p로 옮기면 M85의 지수로 콜 기준을 어림할 수 있어요. 콜 기준은 (폴드 스택 ÷ 이긴 스택)의 지수 제곱이고, 지수는 log₂(1 ÷ p)예요. 같은 시뮬에서 스택을 바꿔 값을 직접 재면 결과가 달라요. 대회 첫 라운드에 나머지 사람은 모두 30BB이고, Hero는 폴드하면 27.5BB, 이기면 60.5BB, 상대는 폴드 시 33BB·이기면 탈락이에요. 직접 잰 콜 기준은 폴드 값 ÷ 이긴 값이고(칩 기준 약 45.45%), 10만 번에서 표본 오차는 약 0.6~0.7%p예요. 사다리 지수의 열은 깊이에 따른 실력의 ROI로 구한 값이에요.</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>구조</th>
+<th>사다리 p</th>
+<th>사다리 지수의 콜 기준</th>
+<th>직접 잰 값(깊이에 따른 실력)</th>
+<th>직접 잰 값(깊이와 상관없는 실력)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30BB, 레벨 1</td>
+<td>약 50.77%</td>
+<td>약 46.25%</td>
+<td>약 46.81%</td>
+<td>약 48.57%</td>
+</tr>
+<tr>
+<td>30BB, 레벨 2</td>
+<td>약 51.83%</td>
+<td>약 47.35%</td>
+<td>약 48.64%</td>
+<td></td>
+</tr>
+<tr>
+<td>30BB, 레벨 4</td>
+<td>약 53.14%</td>
+<td>약 48.72%</td>
+<td>약 47.79%</td>
+<td>약 51.35%</td>
+</tr>
+<tr>
+<td>30BB, 레벨 8</td>
+<td>약 55.51%</td>
+<td>약 51.20%</td>
+<td>약 47.32%</td>
+<td>약 51.78%</td>
+</tr>
+</tbody>
+</table></div>
+<p>27.5 ÷ 60.5 = 0.4545</p>
+<h3>이게 무슨 뜻이냐면</h3>
+<p>사다리 지수는 ROI 하나로 콜 기준을 어림하는 방법이라 구조가 느리면 값이 올라가요. 시뮬에서 실력이 깊은 스택에서만 나온다고 놓으면 직접 잰 값은 약 46.81~48.64%이고 레벨 1에서 8까지 뚜렷하게 올라가지 않았어요(레벨 2의 약 48.64%는 표본 오차보다 조금 큰 값이에요). 깊이와 상관없는 실력으로 놓으면 레벨 1의 약 48.57%에서 레벨 8의 약 51.78%까지 올라가요. <strong>콜 기준은 구조보다 내 우위가 어느 스택에서 나오느냐에 달렸어요.</strong> 이 차이의 원인을 이 글에서 따로 재지는 않았어요.</p>
+</section><h2>실제 핸드 예시: 시작 스택 30BB, 레벨 길이만 다른 대회</h2>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>항목</th>
+<th>값</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>대회</td>
+<td>64명 8명 지급, 레이크 없음</td>
+</tr>
+<tr>
+<td>스택</td>
+<td>Hero(BB) 30BB, BTN 30BB</td>
+</tr>
+<tr>
+<td>프리플랍</td>
+<td>BTN 2.5BB, SB 폴드, Hero 콜(팟 5.5BB)</td>
+</tr>
+<tr>
+<td>플랍</td>
+<td>J♠ 8♥ 3♣</td>
+</tr>
+<tr>
+<td>Hero</td>
+<td>K♦ J♣</td>
+</tr>
+<tr>
+<td>액션</td>
+<td>Hero 체크, BTN 올인 27.5BB</td>
+</tr>
+</tbody>
+</table></div>
+<p>콜 금액 27.5BB, 콜한 뒤 판돈 60.5BB예요. BTN의 올인 범위를 AA, KK, QQ, JJ, TT, 99, 88, 33, AJ, KJ, QJ, JT, T9 수딧, 97 수딧으로 가정하면 Hero의 에퀴티는 <strong>약 50.23%</strong>예요(턴·리버 전수 계산).</p>
+<div class="tbl"><table>
+<thead>
+<tr>
+<th>구조</th>
+<th>사다리 지수</th>
+<th>직접(깊이에 따른 실력)</th>
+<th>직접(깊이와 상관없는 실력)</th>
+<th>약 50.23%와 비교</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>레벨 1</td>
+<td>약 46.25%</td>
+<td>약 46.81%</td>
+<td>약 48.57%</td>
+<td>콜(깊이와 상관없는 실력은 표본 오차를 넣으면 경계)</td>
+</tr>
+<tr>
+<td>레벨 4</td>
+<td>약 48.72%</td>
+<td>약 47.79%</td>
+<td>약 51.35%</td>
+<td>깊이에 따른 실력이면 콜, 깊이와 상관없는 실력은 경계에 가까운 폴드</td>
+</tr>
+<tr>
+<td>레벨 8</td>
+<td>약 51.20%</td>
+<td>약 47.32%</td>
+<td>약 51.78%</td>
+<td>깊이에 따른 실력이면 콜, 나머지는 폴드</td>
+</tr>
+</tbody>
+</table></div>
+<p>Hero가 깊은 플레이에서 우위가 나온다고 믿으면 이 장면은 레벨 8에서도 콜이고, 짧은 스택에서도 같은 우위가 있다고 믿으면 레벨 4부터 폴드 쪽이에요. 레벨 4의 차이 약 1.12%p는 표본 오차의 2배가 안 돼서 경계로 읽어 주세요. 범위에서 TT·99를 빼고 AQ·AK 수딧을 넣으면 에퀴티는 약 46.19%로 내려가요. 깊이에 따른 실력의 레벨 1 기준 약 46.81%와는 표본 오차 안의 차이고, 나머지 기준에는 못 미쳐요. 76·KQ 수딧을 더 넣으면 약 53.43%라 이 표의 모든 기준을 넘어요.</p>
+<p>Hero의 대회는 레벨 4라운드 구조였고, Hero는 자기 우위가 깊은 플레이에서 나온다고 보고 콜했어요. BTN은 T♦ 9♦였고 턴 2♠, 리버 5♥로 Hero의 J 페어가 이겼어요.</p>
+<h2>GTO 기준과 실전 익스플로잇</h2>
+<h3>GTO 기준(이론)</h3>
+<p>레이크가 없고 모두가 균형으로 치면 ROI는 구조와 상관없이 0이에요. 이 글의 Hero ROI는 나머지가 균형에서 벗어나 있다는 가정 위의 값이에요. 깊이별 균형 레인지는 이 모형에 들어 있지 않고, 승부 크기를 10BB로 고정한 단순화도 있어요.</p>
+<h3>실전(라이브·저스테이크) 익스플로잇</h3>
+<p><strong>레벨이 긴 대회에 깊은 플레이가 약한 상대가 많다면</strong> 그 구조의 ROI를 높게 보고 대회를 고르세요. 상대가 깊은 스택에서도 잘 치면 2단계처럼 내 우위가 줄어서 이 판단은 어긋나요.</p>
+<p><strong>터보 대회에서 푸시폴드가 약한 상대가 많다면</strong> 깊은 스택 우위에 기대지 말고 콜·올인 범위 공부에서 ROI를 찾으세요. 내 푸시폴드도 틀린다면 그 차이는 줄어들어요.</p>
+<section class="sec mis"><h2>자주 하는 실수</h2>
+<div class="mis-card"><p><strong>실수 1. "터보는 실력이 안 먹힌다고 믿고 ROI를 0으로 친다"</strong></p>
+<p>깊이와 상관없는 3%p 우위라면 20BB·레벨 1의 ROI는 약 +45.4%까지 올라갔어요. 내 우위가 어느 스택에서 나오는지 먼저 봐야 해요.</p></div><div class="mis-card"><p><strong>실수 2. "구조가 느리니 플립의 콜 기준을 크게 올린다"</strong></p>
+<p>사다리 지수로는 레벨 8의 기준이 약 51.20%지만, 깊이에 따른 실력으로 직접 재면 약 47.32%였어요. 내 우위가 어느 스택에서 나오는지 보지 않고 구조만으로 콜을 접으면 잃는 값이 생겨요.</p></div><div class="mis-card"><p><strong>실수 3. "ROI가 큰 대회가 언제나 시간당으로도 좋다"</strong></p>
+<p>이 모형의 200BB·레벨 8은 ROI가 가장 높은 쪽이지만 라운드당 ROI는 20BB·레벨 8의 절반 정도예요.</p></div></section><section class="sec tip"><h2>선생님의 한마디</h2>
+<ul>
+<li>대회를 고를 때: 레벨 길이가 얼마이고, 내 우위가 나오는 스택이 이 구조에 충분히 나오나</li>
+<li>장부를 볼 때: 이 ROI는 어떤 구조에서 나온 숫자이고, 이 구조의 ROI로 바이인 수를 세고 있나</li>
+<li>경계의 플립에서: 내 우위가 깊은 스택에서 나오나, 짧은 스택에서도 나오나</li>
+</ul>
+</section><h2>내 판단 점검</h2>
+<p><strong>문제 1.</strong> 두 대회가 있어요. A는 바이인 10만 원, 내 ROI +60%, 평균 5시간이에요. B는 바이인 10만 원, 내 ROI +18%, 평균 1시간 30분이에요. 친구는 "ROI가 세 배 넘게 높은 A가 더 좋은 대회"라고 해요. 시간당 기대값으로 비교하고, 하루 3시간만 칠 수 있을 때 어떻게 고를지 말해 보세요.</p>
+<details>
+<summary>정답 보기</summary>
+<p>A의 시간당 기대값은 이래요.</p>
+<p>10 × 0.6 ÷ 5 = 1.2</p>
+<p>B의 시간당 기대값은 이래요.</p>
+<p>10 × 0.18 ÷ 1.5 = 1.2</p>
+<p>둘 다 시간당 1.2만 원이에요. 하루 3시간이면 A는 끝까지 치기 어렵고 B는 두 번 칠 수 있어요. ROI 하나로 정할 수 없고 시간과 분산, 하루 일정을 같이 봐야 해요.</p>
+</details>
+<p><strong>문제 2.</strong> 장부에 터보 900판과 슬로우 100판이 있어요. 터보의 ROI는 +8%, 한 판 표준편차는 약 4이고, 슬로우의 ROI는 +60%, 한 판 표준편차는 약 5예요. 친구는 "슬로우 ROI가 훨씬 높으니 앞으로 슬로우만 치고 바이인 수도 슬로우 ROI로 잡자"라고 해요. 두 ROI의 95% 구간을 어림해서 친구 말을 판단해 보세요.</p>
+<details>
+<summary>정답 보기</summary>
+<p>표준오차는 터보가 4 ÷ 30 = 0.1333, 슬로우가 5 ÷ 10 = 0.5예요. 1.96배를 하면 터보는 ROI ±약 26%p, 슬로우는 ±약 98%p예요. 슬로우의 구간은 약 −38%에서 약 +158%까지 벌어져서 터보의 구간(약 −18%에서 약 +34%)과 겹쳐요. 슬로우 ROI +60%를 그대로 쓰면 어림 바이인 수가 25 ÷ 0.6 = 약 42개로 작게 나오지만, 표본이 적어 믿기 어려워요. 슬로우로 옮기더라도 바이인 수는 더 넉넉하게 잡고 표본을 먼저 쌓아야 해요.</p>
+</details>
+<section class="sec key"><h2>핵심 정리</h2>
+<ul>
+<li>대회를 고를 때는 → 레벨 길이부터 보고 ROI를 구조별로 나눠 적어요 → 승부 크기 20BB 이하의 이 모형에서 레벨 길이가 시작 스택보다 ROI를 크게 움직였기 때문이에요</li>
+<li>터보에서는 → 내 우위가 짧은 스택에도 남아 있는지 확인해요 → 깊이와 상관없는 우위라면 짧은 구조의 ROI도 커지기 때문이에요</li>
+<li>경계의 플립에서는 → 구조 하나로 콜 기준을 옮기지 말고 내 우위가 나오는 스택부터 판단해요 → 이 장면의 레벨 8 콜 기준이 실력 가정에 따라 약 47.32%와 약 51.78%로 달랐기 때문이에요</li>
+</ul>
+</section><section class="sec end"><h2>정리하며</h2>
+<p>이 모형에서 시작 30BB의 ROI는 레벨을 1에서 8로 늘리면 약 +6.8%에서 약 +57.8%로 올라갔고, 시작 스택을 늘린 효과는 그보다 작았어요. 어림 바이인 수는 약 232개에서 약 43개로 줄었어요. 이 장면의 콜 기준은 실력 가정에 따라 레벨 8에서 약 47.32%와 약 51.78%로 갈렸어요.</p>
+<p><small>AI 작성 · 숫자는 계산 검증 · 가정 레인지·고정한 스택 기준 · 짝짓기 승부 모형·실력·블라인드 구조는 예시, 시뮬 표본 오차는 본문 표기</small></p></section>
+</article>
+<aside class="more"><h2>이어서 읽기</h2><p class="l">먼저 읽을 글</p><ul><li><a href="286_M84.html">더블업 이론: 칩이 두 배면 우승 확률도 두 배일까</a></li><li><a href="056_I25.html">토너먼트 구조 읽기: 블라인드 레벨·앤티·리엔트리·레이트 레지는 무엇을 바꿀까?</a></li></ul></aside><nav class="nav"><a class="prev" href="293_M91.html"><div class="l">← 이전 글</div><div class="t">바운티 파워와 미스터리 바운티</div></a></nav></main>
+<script>/*__land__*/(function(){try{if(!window.ttAct){var TA={};window.ttAct=function(a){try{if(TA[a]||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;TA[a]=1;var v='',n='';try{v=localStorage.getItem('vid')||'';n=localStorage.getItem('nick')||'';}catch(e){}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({a:a,p:"\ube14\ub85c\uadf8",n:n,v:v}),keepalive:true}).catch(function(){});}catch(e){}};}if(window.top!==window.self||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;var v='',n='';try{v=localStorage.getItem('vid');if(!v){v=Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('vid',v);}n=localStorage.getItem('nick')||'';}catch(e){}var f=(new URLSearchParams(location.search).get('from')||'').slice(0,30),rf=document.referrer||'',own=false;try{own=!!rf&&new URL(rf).host===location.host;}catch(e){}var b={p:"\ube14\ub85c\uadf8",n:n,v:v};if(f||!own){b.l=1;b.from=f;b.rf=own?'':rf.slice(0,200);}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b),keepalive:true}).catch(function(){});}catch(e){}})();</script>
+</body>
+</html>
