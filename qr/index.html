@@ -111,6 +111,7 @@ main>section>.mu,main>section>.top .mu,main>section .ln b{color:#9aa8c2}
 #tiset .tic{padding:9px 4px;font-size:15px;white-space:nowrap}#tiset .tic.has{font-weight:800}
 #tiset .tirs{display:flex;align-items:center;gap:8px;margin-top:10px}#tiset .tirs input{width:90px}
 #tiset .tich{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font-size:13px;color:var(--mu)}#tiset .tich button{border-radius:999px;padding:6px 12px;font-size:13px}
+#tiset .tiadd{width:100%;margin-top:6px;padding:9px;font-size:14px;border-style:dashed}#tiset .tix .tib2{display:flex;gap:4px}#tiset .tix .tib2 .tic{flex:1}#tiset .tix .tvd{padding:9px 8px}
 #tiset .tigo{width:100%;padding:15px;font-size:17px;margin-top:12px}
 #ti .tia{width:100%;max-width:760px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px}
 #ti .tia button,#ti .tib button{border:1px solid #4a4058;border-radius:10px;padding:13px 0;font:inherit;font-size:16px;font-weight:800;cursor:pointer;color:#f3eee2;background:#241d30}
@@ -173,6 +174,7 @@ body.qrtb #kt,body.qrtb #kw{display:none!important}
 <div class="pn" id="tiset"><div class="tir hd"><span></span><span>포지션</span><span>스택 (bb)</span><span>카드</span></div>
 <div class="tir"><b>Hero</b><select id="tiHp" aria-label="Hero 포지션"></select><input id="tiHs" inputmode="decimal" autocomplete="off" placeholder="비움" aria-label="Hero 스택"><button type="button" class="btn tic" id="tiHc">+ 카드</button></div>
 <div class="tir"><b>상대</b><select id="tiVp" aria-label="상대 포지션"></select><input id="tiVs" inputmode="decimal" autocomplete="off" placeholder="비움" aria-label="상대 스택"><button type="button" class="btn tic" id="tiVc">+ 카드</button></div>
+<div id="tiVx"></div><button type="button" class="btn tiadd" id="tiVa">+ 상대 추가 (멀티웨이)</button>
 <div class="tirs"><span>나머지 스택</span><input id="tiRs" inputmode="decimal" autocomplete="off" placeholder="100" aria-label="나머지 스택"><span class="mu">bb · 모르면 비워 두세요</span></div>
 <div class="tich">전체 적용 <button type="button" class="btn" data-ts="15">15bb</button><button type="button" class="btn" data-ts="25">25bb</button><button type="button" class="btn" data-ts="40">40bb</button><button type="button" class="btn" data-ts="100">100bb</button></div>
 <input id="tiMe" maxlength="200" autocomplete="off" placeholder="메모 (선택)" style="margin-top:10px">
@@ -852,7 +854,11 @@ function tiMode(m){try{localStorage.setItem('qr_mode',m)}catch(e){}const r=$('#r
 function tiSetFill(){if(!T)return;const O=tiOrder(),hs=$('#tiHp'),vs=$('#tiVp'),hp=hs.value||TIS.hp||(O.includes('BTN')?'BTN':O[0]),vp=vs.value!==''?vs.value:(TIS.vp!=null?TIS.vp:'BB');
  hs.innerHTML=O.map(p=>`<option${p===hp?' selected':''}>${p}</option>`).join('');if(!O.includes(hp))hs.value=O[0];
  vs.innerHTML='<option value="">없음</option>'+O.map(p=>`<option${p===vp?' selected':''}>${p}</option>`).join('');if(vp&&!O.includes(vp))vs.value='';
- tiCardBtn()}
+ tiExDraw();tiCardBtn()}
+function tiExUsed(skip){const u=[$('#tiHp').value,$('#tiVp').value];(TIS.ex||[]).forEach((x,i)=>{if(i!==skip)u.push(x.p)});return u}
+function tiExDraw(){const O=tiOrder(),box=$('#tiVx');if(!box)return;TIS.ex=(TIS.ex||[]).filter(x=>O.includes(x.p));
+ box.innerHTML=TIS.ex.map((x,i)=>`<div class="tir tix" data-i="${i}"><b>상대${i+2}</b><select class="tvp" aria-label="상대${i+2} 포지션">${O.map(p=>`<option${p===x.p?' selected':''}>${p}</option>`).join('')}</select><input class="tvs" inputmode="decimal" autocomplete="off" placeholder="비움" value="${esc(x.s||'')}" aria-label="상대${i+2} 스택"><span class="tib2"><button type="button" class="btn tic tvc${x.c.length?' has':''}">${x.c.length?cH(x.c):'+ 카드'}</button><button type="button" class="btn tvd" aria-label="상대${i+2} 빼기">✕</button></span></div>`).join('')}
+function tiAllV(){return [...TIS.vc,...(TIS.ex||[]).flatMap(x=>x.c)]}
 function tiCardBtn(){const b=(id,c)=>{const e=$(id);e.innerHTML=c.length?cH(c):'+ 카드';e.classList.toggle('has',!!c.length)};b('#tiHc',TIS.hc);b('#tiVc',TIS.vc)}
 // 카드 고르기 창 (need장 · used 는 못 고름)
 function tiPick(title,need,used,init,cb){let sel=(init||[]).slice(0,need),rk='';const w=document.createElement('div');w.id='tipk';
@@ -907,11 +913,12 @@ function tiL(G,R){const L={card:G.hp+(G.hc.length?' '+G.hc.join(''):''),stack:G.
  L.show=Object.entries(G.sh).filter(([p,c])=>c.length===2&&p!==G.hp).map(([p,c])=>p+' '+c.join('')).join(', ');
  K.forEach(k=>{if(L[k]===undefined)L[k]=''});return L}
 function tiStart(){if(!T)return;const O=tiOrder(),hp=$('#tiHp').value,vp=$('#tiVp').value;
- if(!hp){toast('Hero 포지션을 골라 주세요');return}if(vp&&vp===hp){toast('Hero와 상대 포지션이 같아요');return}
+ if(!hp){toast('Hero 포지션을 골라 주세요');return}if(TIS.hc.length!==2){toast('내 카드 2장을 먼저 넣어 주세요');tiPick('Hero · '+hp+' 카드',2,tiAllV(),TIS.hc,c=>{TIS.hc=c.length===2?c:[];tiCardBtn()});return}if(vp&&vp===hp){toast('Hero와 상대 포지션이 같아요');return}
  const rs=tiN($('#tiRs').value)||100,stk0={};O.forEach(p=>stk0[p]=rs);const hs=tiN($('#tiHs').value),vs=tiN($('#tiVs').value);if(hs)stk0[hp]=hs;if(vp&&vs)stk0[vp]=vs;
  const S=T.S,u=S.bb>0;const G={O,hp,vp,hc:TIS.hc.slice(),sh:{},stk0,log:[],ante:S.ante,sbv:u?S.sb/S.bb:.5,at:u?S.at/S.bb:(S.ante==='none'?0:1),memo:$('#tiMe').value.trim()};
  if(S.ante==='none')G.at=0;if(vp&&TIS.vc.length===2)G.sh[vp]=TIS.vc.slice();
- TIS.hp=hp;TIS.vp=vp;try{T.tis={hp,vp,rs:$('#tiRs').value,hs:$('#tiHs').value,vs:$('#tiVs').value};sv()}catch(e){}
+ const seen=new Set([hp,vp].filter(Boolean));for(const x of (TIS.ex||[])){if(seen.has(x.p)){toast(x.p+' 자리가 겹쳐요');return}seen.add(x.p);const v=tiN(x.s);if(v)G.stk0[x.p]=v;if(x.c.length===2)G.sh[x.p]=x.c.slice()}
+ TIS.hp=hp;TIS.vp=vp;try{T.tis={hp,vp,rs:$('#tiRs').value,hs:$('#tiHs').value,vs:$('#tiVs').value,ex:(TIS.ex||[]).map(x=>({p:x.p,s:x.s}))};sv()}catch(e){}
  TI={G,raise:0,peek:0};const w=document.createElement('div');w.id='ti';
  w.innerHTML=`<div class="rph"><button type="button" class="rpx" id="tiBk">‹ 설정</button><b>${esc(T.name)} · 핸드 입력</b><button type="button" class="rpx" id="tiPk">상대 카드</button></div>
   <div class="rpt" id="tiT"></div><div class="rpcap" id="tiC"></div><div id="tiA"></div>`;
@@ -954,17 +961,23 @@ function tiDraw(){if(!TI)return;const G=TI.G,R=tiRun(G),Q={hp:G.hp,hc:G.hc,sh:G.
  const ri=$('#tiRv');if(ri)ri.onkeydown=e=>{if(e.key==='Enter')$('#tiRo').click()}}
 function tiSave(R){if(!T||!TI)return;const G=TI.G;if(!G.log.length&&!confirm('액션 없이 자리·카드만 저장할까요?'))return;
  const L=tiL(G,R),h={id:'h'+Date.now(),hid:String(Date.now()).slice(-9)+Math.floor(Math.random()*90+10),ts:Date.now(),L,S:{...T.S},d:0};
- T.hands.unshift(h);sv();hands();tiClose();TIS.hc=[];TIS.vc=[];tiCardBtn();$('#tiMe').value='';toast('저장됨 · 복기 탭에서 리플레이로 볼 수 있어요');tab(1)}
+ T.hands.unshift(h);sv();hands();tiClose();TIS.hc=[];TIS.vc=[];(TIS.ex||[]).forEach(x=>x.c=[]);tiExDraw();tiCardBtn();$('#tiMe').value='';toast('저장됨 · 복기 탭에서 리플레이로 볼 수 있어요');tab(1)}
 (function tiInit(){if(!$('#tiset'))return;
  $('#tiM1').onclick=()=>tiMode('tb');$('#tiM0').onclick=()=>tiMode('txt');
  $('#tiGo').onclick=tiStart;
- $('#tiHc').onclick=()=>tiPick('Hero · '+($('#tiHp').value||'')+' 카드',2,TIS.vc,TIS.hc,c=>{TIS.hc=c.length===2?c:[];tiCardBtn()});
- $('#tiVc').onclick=()=>{if(!$('#tiVp').value){toast('상대 포지션을 먼저 골라 주세요');return}tiPick('상대 · '+$('#tiVp').value+' 카드',2,TIS.hc,TIS.vc,c=>{TIS.vc=c.length===2?c:[];tiCardBtn()})};
- $('#tiset').addEventListener('click',e=>{const b=e.target.closest('[data-ts]');if(!b)return;const v=b.dataset.ts;$('#tiRs').value=v;$('#tiHs').value='';$('#tiVs').value=''});
+ $('#tiHc').onclick=()=>tiPick('Hero · '+($('#tiHp').value||'')+' 카드',2,tiAllV(),TIS.hc,c=>{TIS.hc=c.length===2?c:[];tiCardBtn()});
+ $('#tiVc').onclick=()=>{if(!$('#tiVp').value){toast('상대 포지션을 먼저 골라 주세요');return}tiPick('상대 · '+$('#tiVp').value+' 카드',2,[...TIS.hc,...tiAllV().filter(c=>!TIS.vc.includes(c))],TIS.vc,c=>{TIS.vc=c.length===2?c:[];tiCardBtn()})};
+ $('#tiset').addEventListener('click',e=>{const b=e.target.closest('[data-ts]');if(!b)return;const v=b.dataset.ts;$('#tiRs').value=v;$('#tiHs').value='';$('#tiVs').value='';(TIS.ex||[]).forEach(x=>x.s='');tiExDraw()});
  $('#tiVp').onchange=e=>{TIS.vp=e.target.value};$('#tiHp').onchange=e=>{TIS.hp=e.target.value};
  $('#mx').addEventListener('change',tiSetFill);
+ $('#tiVa').onclick=()=>{const O=tiOrder();TIS.ex=TIS.ex||[];const u=tiExUsed(-1),p=O.find(q=>!u.includes(q));if(!p){toast('빈 자리가 없어요');return}TIS.ex.push({p,s:'',c:[]});tiExDraw()};
+ const vx=$('#tiVx');vx.addEventListener('change',e=>{const r=e.target.closest('.tix');if(!r)return;const x=TIS.ex[+r.dataset.i];if(e.target.classList.contains('tvp'))x.p=e.target.value});
+ vx.addEventListener('input',e=>{const r=e.target.closest('.tix');if(r&&e.target.classList.contains('tvs'))TIS.ex[+r.dataset.i].s=e.target.value});
+ vx.addEventListener('click',e=>{const b=e.target.closest('button'),r=e.target.closest('.tix');if(!b||!r)return;const i=+r.dataset.i,x=TIS.ex[i];
+  if(b.classList.contains('tvd')){TIS.ex.splice(i,1);tiExDraw();return}
+  if(b.classList.contains('tvc'))tiPick('상대'+(i+2)+' · '+x.p+' 카드',2,[...TIS.hc,...tiAllV().filter(c=>!x.c.includes(c))],x.c,c=>{x.c=c.length===2?c:[];tiExDraw()})});
  let m='tb';try{m=localStorage.getItem('qr_mode')||'tb'}catch(e){}tiMode(m)})();
-const _tiEnter=enter;enter=function(t){_tiEnter(t);const z=t.tis||{};TIS={hc:[],vc:[],hp:z.hp,vp:z.vp};if($('#tiRs'))$('#tiRs').value=z.rs||'';if($('#tiHs'))$('#tiHs').value=z.hs||'';if($('#tiVs'))$('#tiVs').value=z.vs||'';
+const _tiEnter=enter;enter=function(t){_tiEnter(t);const z=t.tis||{};TIS={hc:[],vc:[],hp:z.hp,vp:z.vp,ex:(z.ex||[]).map(x=>({p:x.p,s:x.s||'',c:[]}))};if($('#tiRs'))$('#tiRs').value=z.rs||'';if($('#tiHs'))$('#tiHs').value=z.hs||'';if($('#tiVs'))$('#tiVs').value=z.vs||'';
  if($('#tiHp')){$('#tiHp').value='';$('#tiVp').value=''}tiSetFill()};
 </script><script>/*__land__*/(function(){try{if(!window.ttAct){var TA={};window.ttAct=function(a){try{if(TA[a]||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;TA[a]=1;var v='',n='';try{v=localStorage.getItem('vid')||'';n=localStorage.getItem('nick')||'';}catch(e){}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({a:a,p:"\ube60\ub978\ubcf5\uae30",n:n,v:v}),keepalive:true}).catch(function(){});}catch(e){}};}if(window.top!==window.self||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;var v='',n='';try{v=localStorage.getItem('vid');if(!v){v=Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('vid',v);}n=localStorage.getItem('nick')||'';}catch(e){}var f=(new URLSearchParams(location.search).get('from')||'').slice(0,30),rf=document.referrer||'',own=false;try{own=!!rf&&new URL(rf).host===location.host;}catch(e){}var b={p:"\ube60\ub978\ubcf5\uae30",n:n,v:v};if(f||!own){b.l=1;b.from=f;b.rf=own?'':rf.slice(0,200);}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b),keepalive:true}).catch(function(){});}catch(e){}})();</script>
 </body></html>
