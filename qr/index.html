@@ -70,6 +70,38 @@ body{font-family:"Pretendard Variable",Pretendard,"Apple SD Gothic Neo","Noto Sa
 main>section{color:#eef2f8}.pn,.tc{color:var(--tx)}
 main>section>.mu,main>section>.top .mu,main>section .ln b{color:#9aa8c2}
 .pn,.tc{border-radius:16px}
+/*rp1*/ /* ▶ 테이블 리플레이 (11/13) */
+#rp{position:fixed;inset:0;z-index:9000;background:#0d0b14;color:#f3eee2;display:flex;flex-direction:column;align-items:center;overflow:auto;padding:max(10px,env(safe-area-inset-top)) 10px max(12px,env(safe-area-inset-bottom))}
+#rp .rph{width:100%;max-width:760px;display:flex;align-items:center;justify-content:space-between;gap:8px}#rp .rph b{font-size:15px}
+#rp .rpx{background:none;border:1px solid #4a4058;color:#f3eee2;border-radius:10px;padding:7px 12px;font:inherit;font-size:14px;cursor:pointer}
+#rp .rpt{position:relative;width:100%;max-width:760px;aspect-ratio:1.55/1;margin:10px 0 6px}
+@media(max-width:560px){#rp .rpt{aspect-ratio:1/1.25}}
+#rp .rpf{position:absolute;inset:9% 6%;border-radius:999px;background:radial-gradient(ellipse at center,#5b3a86 0%,#3d2560 70%,#2a1a44 100%);border:5px solid #b08a4a;box-shadow:0 0 0 6px #241830,inset 0 0 40px rgba(0,0,0,.45)}
+@media(max-width:560px){#rp .rpf{inset:7% 12%}}
+#rp .rpc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;width:62%}
+#rp .rppot{font-weight:800;font-size:clamp(13px,3.4vw,18px)}
+#rp .rpbd{display:flex;gap:4px;justify-content:center}
+#rp .rpe{width:clamp(26px,7vw,44px);aspect-ratio:.72;border:1px dashed rgba(255,255,255,.25);border-radius:5px}
+#rp .rpk{width:clamp(26px,7vw,44px);aspect-ratio:.72;border-radius:5px;background:#fff;color:#1b1b1b;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:clamp(12px,3.4vw,19px);line-height:1;box-shadow:0 2px 4px rgba(0,0,0,.4)}
+#rp .rpk.r{color:#d0263b}#rp .rpk.bk{background:repeating-linear-gradient(45deg,#2f5b46 0 4px,#244a39 4px 8px);border:1px solid #6f8f7f}
+#rp .rpk.sm{width:clamp(20px,5.2vw,32px);font-size:clamp(10px,2.7vw,14px)}
+#rp .rps{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;transition:opacity .2s}
+#rp .rps .cs{display:flex;gap:2px;margin-bottom:-6px;z-index:1}
+#rp .rps .sb{min-width:clamp(54px,14vw,78px);padding:5px 6px;border-radius:999px;background:#1d1726;border:2px solid #6b5a3c;text-align:center;line-height:1.15}
+#rp .rps .sb b{display:block;font-size:clamp(11px,3vw,14px)}#rp .rps .sb span{font-size:clamp(11px,3vw,14px);font-variant-numeric:tabular-nums}
+#rp .rps.hero .sb{border-color:#e9c46a}#rp .rps.on .sb{border-color:#f7e7b0;box-shadow:0 0 0 3px rgba(247,231,176,.35)}
+#rp .rps.fd{opacity:.38}#rp .rps.out{opacity:.22}#rp .rps.win .sb{border-color:#3fbf8a;box-shadow:0 0 0 3px rgba(63,191,138,.4)}
+#rp .rps .ac{font-size:11px;font-weight:800;color:#f7e7b0;min-height:13px;white-space:nowrap}
+#rp .rpb{position:absolute;transform:translate(-50%,-50%);background:rgba(0,0,0,.45);border:1px solid #c9a35a;color:#ffe9b0;border-radius:999px;padding:2px 7px;font-size:clamp(10px,2.8vw,13px);font-weight:700;white-space:nowrap}
+#rp .rpd{position:absolute;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:#fff;color:#111;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center}
+#rp .rpcap{width:100%;max-width:760px;min-height:44px;background:#1a1522;border:1px solid #3a3048;border-radius:12px;padding:8px 12px;font-size:15px;display:flex;align-items:center;gap:8px}
+#rp .rpcap i{font-style:normal;font-size:12px;color:#c9a35a;font-weight:800;white-space:nowrap}
+#rp .rpbar{width:100%;max-width:760px;margin:8px 0 4px}#rp .rpbar input{width:100%;accent-color:#e9c46a}
+#rp .rpctl{width:100%;max-width:760px;display:grid;grid-template-columns:1fr 1fr 1.4fr 1fr 1fr;gap:6px}
+#rp .rpctl button{background:#241d30;border:1px solid #4a4058;color:#f3eee2;border-radius:10px;padding:11px 0;font:inherit;font-size:16px;cursor:pointer}
+#rp .rpctl button.pl{background:#e9c46a;color:#241a05;border-color:#e9c46a;font-weight:800}
+#rp .rpop{width:100%;max-width:760px;display:flex;gap:6px;justify-content:flex-end;margin-top:8px}
+#rp .rpop button{background:none;border:1px solid #4a4058;color:#d8cfe6;border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer}#rp .rpop button.on{border-color:#e9c46a;color:#e9c46a}
 </style><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <meta name="description" content="홀덤 실전 핸드를 폰으로 빠르게 기록하고 다시 보는 무료 복기 도구. 아이디·비밀번호만으로 내 기록을 저장하고 핸드리뷰로 질문할 수 있어요.">
 <link rel="canonical" href="https://xn--bc2b73r.kr/qr/">
@@ -632,7 +664,7 @@ function hands(){const H=T.hands;$('#tb1').textContent='복기 ('+H.length+')';$
   <div class="cds">${cH(Q.hc)} ${Q.board.length?'· '+cH(Q.board):''}</div>
   <div class="mu">${Q.es!=null?'유효 스택 '+f(Q.es*Q.u)+' ('+f(Q.es)+'bb)':''} ${qs?`<span class="tag">고민: ${Q.q.join('·')}</span>`:''}${miss?'<span class="tag">입력 누락</span>':''}</div>
   ${h.L.memo?`<div class="mu">${esc(h.L.memo)}</div>`:''}
-  <div class="bt"><button class="btn" data-a="eq">스트리트별 보기</button><button class="btn" data-a="gto">GTO Wizard 복사</button><button class="btn" data-a="cl">Claude 복기용 복사</button><button class="btn" data-a="rv">리뷰 작성</button><button class="btn" data-a="ed">${h.d?'이어서 쓰기':'수정'}</button><button class="btn" data-a="del">삭제</button></div></div>`}).join(''):'<p class="mu">아직 저장한 핸드가 없습니다. 위에서 기록하고 [저장]을 눌러 보세요.</p>'}
+  <div class="bt"><button class="btn pri" data-a="rp">▶ 리플레이</button><button class="btn" data-a="eq">스트리트별 보기</button><button class="btn" data-a="gto">GTO Wizard 복사</button><button class="btn" data-a="cl">Claude 복기용 복사</button><button class="btn" data-a="rv">리뷰 작성</button><button class="btn" data-a="ed">${h.d?'이어서 쓰기':'수정'}</button><button class="btn" data-a="del">삭제</button></div></div>`}).join(''):'<p class="mu">아직 저장한 핸드가 없습니다. 위에서 기록하고 [저장]을 눌러 보세요.</p>'}
 function saveH(d){const L=getL();if(!K.some(k=>L[k].trim())){toast('입력된 내용이 없습니다');return}
  const old=ed&&T.hands.find(h=>h.id===ed),h={id:ed||'h'+Date.now(),hid:old?old.hid:String(Date.now()).slice(-9)+Math.floor(Math.random()*90+10),ts:old?old.ts:Date.now(),L,S:{...T.S},d};
  if(old)T.hands[T.hands.indexOf(old)]=h;else T.hands.unshift(h);
@@ -671,7 +703,7 @@ function init(){mk();kp();$('#tb0').onclick=()=>tab(0);$('#tb1').onclick=()=>tab
  $('#exp').onclick=()=>{const hs=T.hands.filter(h=>!h.d&&h.S.bb).reverse(),t=hs.map(ps).join('\n\n\n');if(hs.length<T.hands.filter(h=>!h.d).length)toast('BB를 안 적은 핸드는 빼고 복사했어요');if(!t){toast('내보낼 핸드가 없습니다');return}cp(t);
   try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([t],{type:'text/plain'}));a.download=T.name+'.txt';a.click()}catch(e){}};
  $('#hands').onclick=e=>{/*cdtap*/let b=e.target.closest('button[data-a]');if(!b){const c=e.target.closest('.hc .cds');if(c)b=c.closest('.hc').querySelector('button[data-a="eq"]')}if(!b)return;const id=b.closest('.hc').dataset.id,h=T.hands.find(x=>x.id===id),a=b.dataset.a;
-  if(a==='gto'){if(!h.S.bb){toast('blind 줄에 BB를 입력하면 GTO Wizard 복사가 돼요');return}cp(ps(h))}else if(a==='cl')cp(cl(h));else if(a==='eq')revToggle(b,h);else if(a==='rv')toReview(h);
+  if(a==='gto'){if(!h.S.bb){toast('blind 줄에 BB를 입력하면 GTO Wizard 복사가 돼요');return}cp(ps(h))}else if(a==='cl')cp(cl(h));else if(a==='eq')revToggle(b,h);else if(a==='rp')rpOpen(h);else if(a==='rv')toReview(h);
   else if(a==='ed'){ed=id;T.S={...h.S};let L2=h.L;if(T.S.v!==2){if(T.S.bb>0)L2=conv(norm(h.L),T.S.bb);T.S.v=2}T.form=L2;ses();setL(L2);sv();upd();window.scrollTo(0,0);tab(0);toast('불러왔습니다. 저장하면 덮어씁니다')}
   else if(a==='del'&&confirm('이 핸드를 삭제할까요?')){T.hands=T.hands.filter(x=>x.id!==id);sv();hands()}};
  $('#li').onclick=()=>authGo('login');$('#su').onclick=()=>authGo('signup');$('#lo').hidden=true;   // 로그아웃은 뚝섬 홈에서
@@ -699,5 +731,74 @@ function memGate(){if(document.getElementById("memGate"))return;const w=document
   addEventListener('beforeunload',e=>{if(GUEST&&D.tours.some(t=>t.hands.length)){e.preventDefault();e.returnValue=''}});
   home()}
 if(!MTOK)qrGuest();
+/*rp1*/ // ▶ 테이블 리플레이 (11/13) · 저장한 핸드(sim 결과)를 테이블 위에서 한 액션씩 재생 · 기록 방식·저장 데이터는 그대로
+let RP=null;
+function rpFrames(h){const Q=sim(h.L,h.S),O=Q.order,KB=[0,3,4,5],F=[];
+ const inPlay=new Set([...Object.keys(Q.st),...Q.ev.map(e=>e.p),...Object.keys(Q.sh||{})]);if(Q.hp)inPlay.add(Q.hp);
+ const stk={},bet={},fold=new Set(),out=new Set(O.filter(p=>!inPlay.has(p)));let pot=0,board=[];
+ O.forEach(p=>{stk[p]=Q.st[p]!=null?Q.st[p]:null});
+ const pay=(p,a)=>{if(stk[p]!=null)stk[p]=Math.max(0,stk[p]-a)};
+ if(Q.ante){if(h.S.ante==='bb'){if(Q.st.BB!=null)pay('BB',Q.at)}else if(h.S.ante==='all')O.forEach(p=>{if(Q.st[p]!=null)pay(p,Q.at)});pot+=Q.ante}
+ if(Q.st.SB!=null){bet.SB=Q.sbv;pay('SB',Q.sbv)}else pot+=Q.sbv;
+ if(Q.st.BB!=null){bet.BB=Q.bbv;pay('BB',Q.bbv)}else pot+=Q.bbv;
+ const snap=(st,txt,o)=>F.push(Object.assign({st,txt,stk:{...stk},bet:{...bet},pot,board:board.slice(),fold:[...fold],out:[...out],act:'',lab:{},show:0,win:[]},o||{}));
+ const lab={};
+ snap(0,'블라인드'+(Q.ante?'·앤티':'')+' · '+(Q.hp?'Hero '+Q.hp:'')+(Q.hc.length?' '+Q.hc.map(dc).join(' '):''),{lab:{}});
+ const sum=()=>Object.values(bet).reduce((a,b)=>a+b,0);
+ for(let i=0;i<4;i++){
+  if(i>0){if(Q.board.length<KB[i])break;pot+=sum();for(const k in bet)delete bet[k];for(const k in lab)delete lab[k];board=Q.board.slice(0,KB[i]);
+   snap(i,NM[i]+' '+board.slice(i===1?0:KB[i]-1).map(dc).join(' '))}
+  Q.ev.filter(e=>e.st===i).forEach(e=>{let t='';const p=e.p;
+   if(e.k==='f'){fold.add(p);t='폴드'}else if(e.k==='x')t='체크';
+   else{bet[p]=(bet[p]||0)+(e.add||0);pay(p,e.add||0);
+    t=e.k==='c'?(e.ai?'올인 콜':'콜')+' '+f(e.add):e.k==='b'?(e.ai?'올인 ':'')+'벳 '+f(bet[p]):(e.ai?'올인 ':'')+'레이즈 '+f(bet[p])}
+   lab[p]=t.replace(/\s[\d.]+$/,'');snap(i,p+' '+t+(e.k!=='f'&&e.k!=='x'?'bb':''),{act:p,lab:{...lab}})});
+  if(Q.unc[i]){const u=Q.unc[i];bet[u.p]=Math.max(0,(bet[u.p]||0)-u.amt);if(stk[u.p]!=null)stk[u.p]+=u.amt;snap(i,u.p+' 콜 안 된 '+f(u.amt)+'bb 돌려받음',{lab:{...lab}})}}
+ pot+=sum();for(const k in bet)delete bet[k];
+ const alive=[...Q.alive].filter(p=>!fold.has(p)),last=board.length>=5?3:board.length===4?2:board.length===3?1:0;
+ if(Q.ended==='fold'||alive.length===1){const w=alive[0]||[...Q.alive][0];if(w&&stk[w]!=null)stk[w]+=pot;
+  snap(last,(w||'?')+' 팟 '+f(pot)+'bb 가져감 (상대 폴드)',{win:w?[w]:[],potShow:pot});}
+ else{const known=alive.filter(p=>p===Q.hp?Q.hc.length===2:(Q.sh[p]||[]).length===2);let win=[],txt='쇼다운';
+  if(board.length===5&&known.length===alive.length&&alive.length>1){try{const hs=alive.map(p=>(p===Q.hp?Q.hc:Q.sh[p]).map(eqI)),r=eqCalc(hs,board.map(eqI)),mx=Math.max(...r);win=alive.filter((p,i)=>r[i]>=mx-1e-9);
+   const sh=pot/win.length;win.forEach(p=>{if(stk[p]!=null)stk[p]+=sh});txt=win.length>1?'쇼다운 · '+win.join('·')+' 팟 나눔 ('+f(sh)+'bb씩)':'쇼다운 · '+win[0]+' 승리 · 팟 '+f(pot)+'bb'}catch(e){}}
+  else txt+=' · 팟 '+f(pot)+'bb'+(known.length<alive.length?' (모르는 패가 있어 승자는 표시 안 함)':'');
+  snap(last,txt,{show:1,win,potShow:pot})}
+ return {Q,F,O};}
+function rpCard(c,cls){if(!c)return `<div class="rpk bk ${cls||''}"></div>`;const x=dc(c);return `<div class="rpk ${/[♥♦]/.test(x)?'r':''} ${cls||''}"><span>${x[0]==='T'?'10':x[0]}</span><span>${x.slice(1)}</span></div>`}
+function rpDraw(){if(!RP)return;const {Q,F,O}=RP.d,fr=F[RP.i],n=O.length,hi=Q.hp&&O.includes(Q.hp)?O.indexOf(Q.hp):O.indexOf('BTN');
+ const narrow=window.innerWidth<=560,rx=narrow?40:44,ry=narrow?42:40;
+ const at=(p,k)=>{const j=(O.indexOf(p)-(hi<0?0:hi)+n)%n,a=Math.PI/2+j*2*Math.PI/n;return [50+Math.cos(a)*rx*k,50+Math.sin(a)*ry*k]};
+ let h='<div class="rpf"></div>';
+ O.forEach(p=>{const [x,y]=at(p,1),hero=p===Q.hp,fd=fr.fold.includes(p),out=fr.out.includes(p),sh=(Q.sh||{})[p]||[];
+  let cs='';if(!out&&!fd){if(hero&&Q.hc.length)cs=Q.hc.map(c=>rpCard(c,'sm')).join('');else if(sh.length&&(fr.show||RP.peek))cs=sh.map(c=>rpCard(c,'sm')).join('');else if(!out)cs=rpCard('','sm')+rpCard('','sm')}
+  const st=fr.stk[p];
+  h+=`<div class="rps${hero?' hero':''}${fr.act===p?' on':''}${fd?' fd':''}${out?' out':''}${fr.win.includes(p)?' win':''}" style="left:${x}%;top:${y}%"><div class="ac">${fr.lab[p]?esc(fr.lab[p]):''}</div><div class="cs">${cs}</div><div class="sb"><b>${p}</b><span>${st==null?'-':f(st)+'bb'}</span></div></div>`;
+  const b=fr.bet[p];if(b>1e-9){const [bx,by]=at(p,.58);h+=`<div class="rpb" style="left:${bx}%;top:${by}%">${f(b)}</div>`}
+  if(p==='BTN'||(n===2&&p==='SB')){const [dx,dy]=at(p,.74);h+=`<div class="rpd" style="left:${dx+4}%;top:${dy}%">D</div>`}});
+ const bd=[0,1,2,3,4].map(k=>fr.board[k]?rpCard(fr.board[k]):'<div class="rpe"></div>').join('');
+ const potv=fr.potShow!=null?fr.potShow:fr.pot+Object.values(fr.bet).reduce((a,b)=>a+b,0);
+ h+=`<div class="rpc"><div class="rppot">팟 ${f(potv)}bb</div><div class="rpbd">${bd}</div></div>`;
+ $('#rpT').innerHTML=h;
+ $('#rpC').innerHTML=`<i>${NM[fr.st]||''} ${RP.i+1}/${F.length}</i><span>${esc(fr.txt)}</span>`;
+ $('#rpR').max=F.length-1;$('#rpR').value=RP.i;$('#rpP').textContent=RP.t?'⏸ 멈춤':'▶ 재생';$('#rpP').classList.toggle('pl',1);
+ $('#rpSp').textContent=RP.sp+'x';$('#rpPk').classList.toggle('on',!!RP.peek);$('#rpPk').hidden=!Object.keys(Q.sh||{}).length}
+function rpGo(i){if(!RP)return;RP.i=Math.max(0,Math.min(RP.d.F.length-1,i));if(RP.i>=RP.d.F.length-1)rpStop();rpDraw()}
+function rpStop(){if(RP&&RP.t){clearInterval(RP.t);RP.t=0}}
+function rpPlay(){if(!RP)return;if(RP.t){rpStop();rpDraw();return}if(RP.i>=RP.d.F.length-1)RP.i=0;RP.t=setInterval(()=>rpGo(RP.i+1),1200/RP.sp);rpDraw()}
+function rpClose(){rpStop();RP=null;const w=$('#rp');if(w)w.remove();document.removeEventListener('keydown',rpKey);document.body.style.overflow=''}
+function rpKey(e){if(!RP)return;if(e.key==='Escape')rpClose();else if(e.key==='ArrowRight'){rpStop();rpGo(RP.i+1)}else if(e.key==='ArrowLeft'){rpStop();rpGo(RP.i-1)}else if(e.key===' '){e.preventDefault();rpPlay()}}
+function rpOpen(h){let d;try{d=rpFrames(h)}catch(e){toast('리플레이를 만들 수 없어요: '+e.message);return}
+ if(!d.Q.ev.length&&!d.Q.board.length){toast('재생할 액션이 없어요 (pre 줄을 먼저 적어 주세요)');return}
+ rpClose();RP={d,i:0,t:0,sp:1,peek:0};const w=document.createElement('div');w.id='rp';
+ w.innerHTML=`<div class="rph"><b>${esc(T&&T.name||'핸드')} · 리플레이</b><button type="button" class="rpx" id="rpX">✕ 닫기</button></div>
+  <div class="rpt" id="rpT"></div><div class="rpcap" id="rpC"></div>
+  <div class="rpbar"><input type="range" id="rpR" min="0" max="0" value="0" aria-label="재생 위치"></div>
+  <div class="rpctl"><button type="button" id="rpF" aria-label="처음">⏮</button><button type="button" id="rpB" aria-label="이전">◀</button><button type="button" id="rpP" class="pl">▶ 재생</button><button type="button" id="rpN" aria-label="다음">▶</button><button type="button" id="rpE" aria-label="끝">⏭</button></div>
+  <div class="rpop"><button type="button" id="rpPk">상대 카드 보기</button><button type="button" id="rpSp">1x</button></div>`;
+ document.body.appendChild(w);document.body.style.overflow='hidden';
+ $('#rpX').onclick=rpClose;$('#rpF').onclick=()=>{rpStop();rpGo(0)};$('#rpB').onclick=()=>{rpStop();rpGo(RP.i-1)};$('#rpN').onclick=()=>{rpStop();rpGo(RP.i+1)};$('#rpE').onclick=()=>{rpStop();rpGo(1e9)};$('#rpP').onclick=rpPlay;
+ $('#rpR').oninput=e=>{rpStop();rpGo(+e.target.value)};$('#rpPk').onclick=()=>{RP.peek=!RP.peek;rpDraw()};
+ $('#rpSp').onclick=()=>{RP.sp=RP.sp===1?2:RP.sp===2?0.5:1;if(RP.t){rpStop();rpPlay()}else rpDraw()};
+ document.addEventListener('keydown',rpKey);window.addEventListener('resize',()=>{if(RP)rpDraw()});rpDraw()}
 </script><script>/*__land__*/(function(){try{if(!window.ttAct){var TA={};window.ttAct=function(a){try{if(TA[a]||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;TA[a]=1;var v='',n='';try{v=localStorage.getItem('vid')||'';n=localStorage.getItem('nick')||'';}catch(e){}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({a:a,p:"\ube60\ub978\ubcf5\uae30",n:n,v:v}),keepalive:true}).catch(function(){});}catch(e){}};}if(window.top!==window.self||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;var v='',n='';try{v=localStorage.getItem('vid');if(!v){v=Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('vid',v);}n=localStorage.getItem('nick')||'';}catch(e){}var f=(new URLSearchParams(location.search).get('from')||'').slice(0,30),rf=document.referrer||'',own=false;try{own=!!rf&&new URL(rf).host===location.host;}catch(e){}var b={p:"\ube60\ub978\ubcf5\uae30",n:n,v:v};if(f||!own){b.l=1;b.from=f;b.rf=own?'':rf.slice(0,200);}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b),keepalive:true}).catch(function(){});}catch(e){}})();</script>
 </body></html>
