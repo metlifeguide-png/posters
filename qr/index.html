@@ -71,37 +71,71 @@ main>section{color:#eef2f8}.pn,.tc{color:var(--tx)}
 main>section>.mu,main>section>.top .mu,main>section .ln b{color:#9aa8c2}
 .pn,.tc{border-radius:16px}
 /*rp1*/ /* ▶ 테이블 리플레이 (11/13) */
-#rp{position:fixed;inset:0;z-index:9000;background:#0d0b14;color:#f3eee2;display:flex;flex-direction:column;align-items:center;overflow:auto;padding:max(10px,env(safe-area-inset-top)) 10px max(12px,env(safe-area-inset-bottom))}
-#rp .rph{width:100%;max-width:760px;display:flex;align-items:center;justify-content:space-between;gap:8px}#rp .rph b{font-size:15px}
-#rp .rpx{background:none;border:1px solid #4a4058;color:#f3eee2;border-radius:10px;padding:7px 12px;font:inherit;font-size:14px;cursor:pointer}
-#rp .rpt{position:relative;width:100%;max-width:760px;aspect-ratio:1.55/1;margin:10px 0 6px}
-@media(max-width:560px){#rp .rpt{aspect-ratio:1/1.25}}
-#rp .rpf{position:absolute;inset:9% 6%;border-radius:999px;background:radial-gradient(ellipse at center,#5b3a86 0%,#3d2560 70%,#2a1a44 100%);border:5px solid #b08a4a;box-shadow:0 0 0 6px #241830,inset 0 0 40px rgba(0,0,0,.45)}
-@media(max-width:560px){#rp .rpf{inset:7% 12%}}
-#rp .rpc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;width:62%}
-#rp .rppot{font-weight:800;font-size:clamp(13px,3.4vw,18px)}
-#rp .rpbd{display:flex;gap:4px;justify-content:center}
-#rp .rpe{width:clamp(26px,7vw,44px);aspect-ratio:.72;border:1px dashed rgba(255,255,255,.25);border-radius:5px}
-#rp .rpk{width:clamp(26px,7vw,44px);aspect-ratio:.72;border-radius:5px;background:#fff;color:#1b1b1b;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:clamp(12px,3.4vw,19px);line-height:1;box-shadow:0 2px 4px rgba(0,0,0,.4)}
-#rp .rpk.r{color:#d0263b}#rp .rpk.bk{background:repeating-linear-gradient(45deg,#2f5b46 0 4px,#244a39 4px 8px);border:1px solid #6f8f7f}
-#rp .rpk.sm{width:clamp(20px,5.2vw,32px);font-size:clamp(10px,2.7vw,14px)}
-#rp .rps{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;transition:opacity .2s}
-#rp .rps .cs{display:flex;gap:2px;margin-bottom:-6px;z-index:1}
-#rp .rps .sb{min-width:clamp(54px,14vw,78px);padding:5px 6px;border-radius:999px;background:#1d1726;border:2px solid #6b5a3c;text-align:center;line-height:1.15}
-#rp .rps .sb b{display:block;font-size:clamp(11px,3vw,14px)}#rp .rps .sb span{font-size:clamp(11px,3vw,14px);font-variant-numeric:tabular-nums}
-#rp .rps.hero .sb{border-color:#e9c46a}#rp .rps.on .sb{border-color:#f7e7b0;box-shadow:0 0 0 3px rgba(247,231,176,.35)}
-#rp .rps.fd{opacity:.38}#rp .rps.out{opacity:.22}#rp .rps.win .sb{border-color:#3fbf8a;box-shadow:0 0 0 3px rgba(63,191,138,.4)}
-#rp .rps .ac{font-size:11px;font-weight:800;color:#f7e7b0;min-height:13px;white-space:nowrap}
-#rp .rpb{position:absolute;transform:translate(-50%,-50%);background:rgba(0,0,0,.45);border:1px solid #c9a35a;color:#ffe9b0;border-radius:999px;padding:2px 7px;font-size:clamp(10px,2.8vw,13px);font-weight:700;white-space:nowrap}
-#rp .rpd{position:absolute;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:#fff;color:#111;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center}
-#rp .rpcap{width:100%;max-width:760px;min-height:44px;background:#1a1522;border:1px solid #3a3048;border-radius:12px;padding:8px 12px;font-size:15px;display:flex;align-items:center;gap:8px}
-#rp .rpcap i{font-style:normal;font-size:12px;color:#c9a35a;font-weight:800;white-space:nowrap}
-#rp .rpbar{width:100%;max-width:760px;margin:8px 0 4px}#rp .rpbar input{width:100%;accent-color:#e9c46a}
-#rp .rpctl{width:100%;max-width:760px;display:grid;grid-template-columns:1fr 1fr 1.4fr 1fr 1fr;gap:6px}
-#rp .rpctl button{background:#241d30;border:1px solid #4a4058;color:#f3eee2;border-radius:10px;padding:11px 0;font:inherit;font-size:16px;cursor:pointer}
-#rp .rpctl button.pl{background:#e9c46a;color:#241a05;border-color:#e9c46a;font-weight:800}
-#rp .rpop{width:100%;max-width:760px;display:flex;gap:6px;justify-content:flex-end;margin-top:8px}
-#rp .rpop button{background:none;border:1px solid #4a4058;color:#d8cfe6;border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer}#rp .rpop button.on{border-color:#e9c46a;color:#e9c46a}
+#rp,#ti{position:fixed;inset:0;z-index:9000;background:#0d0b14;color:#f3eee2;display:flex;flex-direction:column;align-items:center;overflow:auto;padding:max(10px,env(safe-area-inset-top)) 10px max(12px,env(safe-area-inset-bottom))}
+:is(#rp,#ti) .rph{width:100%;max-width:760px;display:flex;align-items:center;justify-content:space-between;gap:8px}:is(#rp,#ti) .rph b{font-size:15px}
+:is(#rp,#ti) .rpx{background:none;border:1px solid #4a4058;color:#f3eee2;border-radius:10px;padding:7px 12px;font:inherit;font-size:14px;cursor:pointer}
+:is(#rp,#ti) .rpt{position:relative;width:100%;max-width:760px;aspect-ratio:1.55/1;margin:10px 0 6px}
+@media(max-width:560px){:is(#rp,#ti) .rpt{aspect-ratio:1/1.25}}
+:is(#rp,#ti) .rpf{position:absolute;inset:9% 6%;border-radius:999px;background:radial-gradient(ellipse at center,#5b3a86 0%,#3d2560 70%,#2a1a44 100%);border:5px solid #b08a4a;box-shadow:0 0 0 6px #241830,inset 0 0 40px rgba(0,0,0,.45)}
+@media(max-width:560px){:is(#rp,#ti) .rpf{inset:7% 12%}}
+:is(#rp,#ti) .rpc{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:6px;width:62%}
+:is(#rp,#ti) .rppot{font-weight:800;font-size:clamp(13px,3.4vw,18px)}
+:is(#rp,#ti) .rpbd{display:flex;gap:4px;justify-content:center}
+:is(#rp,#ti) .rpe{width:clamp(26px,7vw,44px);aspect-ratio:.72;border:1px dashed rgba(255,255,255,.25);border-radius:5px}
+:is(#rp,#ti) .rpk{width:clamp(26px,7vw,44px);aspect-ratio:.72;border-radius:5px;background:#fff;color:#1b1b1b;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:clamp(12px,3.4vw,19px);line-height:1;box-shadow:0 2px 4px rgba(0,0,0,.4)}
+:is(#rp,#ti) .rpk.r{color:#d0263b}:is(#rp,#ti) .rpk.bk{background:repeating-linear-gradient(45deg,#2f5b46 0 4px,#244a39 4px 8px);border:1px solid #6f8f7f}
+:is(#rp,#ti) .rpk.sm{width:clamp(20px,5.2vw,32px);font-size:clamp(10px,2.7vw,14px)}
+:is(#rp,#ti) .rps{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;transition:opacity .2s}
+:is(#rp,#ti) .rps .cs{display:flex;gap:2px;margin-bottom:-6px;z-index:1}
+:is(#rp,#ti) .rps .sb{min-width:clamp(54px,14vw,78px);padding:5px 6px;border-radius:999px;background:#1d1726;border:2px solid #6b5a3c;text-align:center;line-height:1.15}
+:is(#rp,#ti) .rps .sb b{display:block;font-size:clamp(11px,3vw,14px)}:is(#rp,#ti) .rps .sb span{font-size:clamp(11px,3vw,14px);font-variant-numeric:tabular-nums}
+:is(#rp,#ti) .rps.hero .sb{border-color:#e9c46a}:is(#rp,#ti) .rps.on .sb{border-color:#f7e7b0;box-shadow:0 0 0 3px rgba(247,231,176,.35)}
+:is(#rp,#ti) .rps.fd{opacity:.38}:is(#rp,#ti) .rps.out{opacity:.22}:is(#rp,#ti) .rps.win .sb{border-color:#3fbf8a;box-shadow:0 0 0 3px rgba(63,191,138,.4)}
+:is(#rp,#ti) .rps .ac{font-size:11px;font-weight:800;color:#f7e7b0;min-height:13px;white-space:nowrap}
+:is(#rp,#ti) .rpb{position:absolute;transform:translate(-50%,-50%);background:rgba(0,0,0,.45);border:1px solid #c9a35a;color:#ffe9b0;border-radius:999px;padding:2px 7px;font-size:clamp(10px,2.8vw,13px);font-weight:700;white-space:nowrap}
+:is(#rp,#ti) .rpd{position:absolute;transform:translate(-50%,-50%);width:20px;height:20px;border-radius:50%;background:#fff;color:#111;font-size:11px;font-weight:900;display:flex;align-items:center;justify-content:center}
+:is(#rp,#ti) .rpcap{width:100%;max-width:760px;min-height:44px;background:#1a1522;border:1px solid #3a3048;border-radius:12px;padding:8px 12px;font-size:15px;display:flex;align-items:center;gap:8px}
+:is(#rp,#ti) .rpcap i{font-style:normal;font-size:12px;color:#c9a35a;font-weight:800;white-space:nowrap}
+:is(#rp,#ti) .rpbar{width:100%;max-width:760px;margin:8px 0 4px}:is(#rp,#ti) .rpbar input{width:100%;accent-color:#e9c46a}
+:is(#rp,#ti) .rpctl{width:100%;max-width:760px;display:grid;grid-template-columns:1fr 1fr 1.4fr 1fr 1fr;gap:6px}
+:is(#rp,#ti) .rpctl button{background:#241d30;border:1px solid #4a4058;color:#f3eee2;border-radius:10px;padding:11px 0;font:inherit;font-size:16px;cursor:pointer}
+:is(#rp,#ti) .rpctl button.pl{background:#e9c46a;color:#241a05;border-color:#e9c46a;font-weight:800}
+:is(#rp,#ti) .rpop{width:100%;max-width:760px;display:flex;gap:6px;justify-content:flex-end;margin-top:8px}
+:is(#rp,#ti) .rpop button{background:none;border:1px solid #4a4058;color:#d8cfe6;border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer}:is(#rp,#ti) .rpop button.on{border-color:#e9c46a;color:#e9c46a}
+/*ti1*/ /* 🃏 테이블 입력 (11/13) */
+.timode{display:flex;gap:6px;margin:0 0 8px}.timode .btn{flex:1;padding:10px 0;font-size:14px}.timode .btn.on{background:var(--ac);border-color:var(--ac);color:#fff;font-weight:700}
+#rec:not(.tbm) #tiset{display:none}#rec.tbm #form,#rec.tbm #pa,#rec.tbm .sv{display:none}
+#tiset .tir{display:grid;grid-template-columns:52px 1fr 1fr 1.2fr;gap:6px;align-items:center;margin-top:6px}
+#tiset .tir.hd{margin-top:0;font-size:12px;color:var(--mu)}#tiset .tir b{font-size:15px}
+#tiset select,#tiset input{width:100%;box-sizing:border-box;padding:10px 8px;border:1px solid var(--ln);border-radius:10px;background:var(--pn);color:var(--tx);font:inherit;font-size:15px}
+#tiset .tic{padding:9px 4px;font-size:15px;white-space:nowrap}#tiset .tic.has{font-weight:800}
+#tiset .tirs{display:flex;align-items:center;gap:8px;margin-top:10px}#tiset .tirs input{width:90px}
+#tiset .tich{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font-size:13px;color:var(--mu)}#tiset .tich button{border-radius:999px;padding:6px 12px;font-size:13px}
+#tiset .tigo{width:100%;padding:15px;font-size:17px;margin-top:12px}
+#ti .tia{width:100%;max-width:760px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px}
+#ti .tia button,#ti .tib button{border:1px solid #4a4058;border-radius:10px;padding:13px 0;font:inherit;font-size:16px;font-weight:800;cursor:pointer;color:#f3eee2;background:#241d30}
+#ti .tia .fo{background:#4a2630;border-color:#7a3a48}#ti .tia .ca{background:#1f4044;border-color:#2f6a6f}#ti .tia .ra{background:#4a3a1f;border-color:#8a6a2a}
+#ti .tia button small{display:block;font-size:12px;font-weight:600;opacity:.85}
+#ti .tib{width:100%;max-width:760px;display:grid;grid-template-columns:1fr 1fr 1.3fr;gap:6px;margin-top:6px}#ti .tib button{font-size:14px;font-weight:600;padding:11px 0}
+#ti .tib .tsv{background:#e9c46a;color:#241a05;border-color:#e9c46a;font-weight:800}
+#ti .tirz{width:100%;max-width:760px;background:#1a1522;border:1px solid #3a3048;border-radius:12px;padding:10px;margin-top:8px;display:flex;flex-direction:column;gap:8px}
+#ti .tirz .q{display:flex;flex-wrap:wrap;gap:6px}#ti .tirz .q button{flex:1;min-width:64px;background:#241d30;border:1px solid #4a4058;color:#f3eee2;border-radius:999px;padding:8px 6px;font:inherit;font-size:13px;cursor:pointer}
+#ti .tirz .r{display:flex;gap:6px;align-items:center}#ti .tirz input{flex:1;min-width:0;padding:10px;border-radius:10px;border:1px solid #4a4058;background:#0d0b14;color:#fff;font:inherit;font-size:16px}
+#ti .tirz .ok{background:#e9c46a;color:#241a05;border:0;border-radius:10px;padding:11px 16px;font:inherit;font-weight:800;cursor:pointer}
+#ti .tiw{width:100%;max-width:760px;display:flex;flex-direction:column;gap:6px;margin-top:8px}#ti .tiw button{border-radius:10px;padding:13px 0;font:inherit;font-size:16px;font-weight:800;cursor:pointer;border:1px solid #4a4058;background:#241d30;color:#f3eee2}#ti .tiw button.pri2{background:#e9c46a;color:#241a05;border-color:#e9c46a}
+#ti #tiA{width:100%;max-width:760px;display:flex;flex-direction:column;align-items:stretch}
+body.qrtb #kt,body.qrtb #kw{display:none!important}
+#tipk{position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:12px}
+#tipk>div{width:min(500px,100%);background:#211b2b;border:1px solid #b08a4a;border-radius:14px;padding:14px;color:#f3eee2;display:flex;flex-direction:column;gap:10px}
+#tipk .h{display:flex;justify-content:space-between;align-items:center}#tipk .h b{font-size:17px;color:#f7e7b0}
+#tipk .sl{display:flex;gap:6px;justify-content:center}#tipk .sl .rpk,#tipk .sl .rpe{width:44px}
+#tipk .rk{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}#tipk .st{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+#tipk button{border:1px solid #4a4058;background:#3a3550;color:#fff;border-radius:8px;padding:11px 0;font:inherit;font-size:17px;font-weight:800;cursor:pointer}
+#tipk button.on{background:#e9c46a;color:#241a05;border-color:#e9c46a}#tipk button:disabled{opacity:.25;cursor:default}
+#tipk .st button{background:#1a1522;font-size:24px;padding:6px 0}#tipk .st .r{color:#ff6b7a}#tipk .st .d{color:#6bb6ea}#tipk .st .c{color:#6fd39b}
+#tipk .bt{display:grid;grid-template-columns:1fr 1fr;gap:8px}#tipk .bt .ap{background:#e9c46a;color:#241a05;border-color:#e9c46a}
+#tipk .rpk{width:44px;aspect-ratio:.72;border-radius:5px;background:#fff;color:#1b1b1b;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:18px;line-height:1}#tipk .rpk.r{color:#d0263b}
+#tipk .rpe{aspect-ratio:.72;border:1px dashed #6f8f7f;border-radius:5px;background:#12261d}
 </style><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <meta name="description" content="홀덤 실전 핸드를 폰으로 빠르게 기록하고 다시 보는 무료 복기 도구. 아이디·비밀번호만으로 내 기록을 저장하고 핸드리뷰로 질문할 수 있어요.">
 <link rel="canonical" href="https://xn--bc2b73r.kr/qr/">
@@ -130,12 +164,19 @@ main>section>.mu,main>section>.top .mu,main>section .ln b{color:#9aa8c2}
 <section id="app" hidden>
 <div class="top"><div class="row"><button class="btn" id="back" style="padding:10px 18px;font-size:22px">←</button><div><h2 id="tt"></h2><span class="mu">새 핸드</span></div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px"><button class="btn" id="fresh" style="font-size:13px;padding:7px 12px">↺ 새로쓰기</button><span class="mu" id="sst" style="font-size:12px">자동 저장</span></div></div>
 <div class="seg"><button class="btn on" id="tb0">기록</button><button class="btn" id="tb1">복기</button></div>
-<div id="rec"><div class="pn ses"><div><label>테이블</label><select id="mx"><option value="9">9max</option><option value="8">8max</option><option value="7">7max</option><option value="6">6max</option><option value="5">5max</option><option value="4">4max</option><option value="3">3max</option><option value="2">2max (헤즈업)</option></select></div>
+<div id="rec"><div class="timode"><button class="btn" id="tiM1" type="button">🃏 테이블 입력</button><button class="btn" id="tiM0" type="button">⌨ 빠른 입력 (글자)</button></div><div class="pn ses"><div><label>테이블</label><select id="mx"><option value="9">9max</option><option value="8">8max</option><option value="7">7max</option><option value="6">6max</option><option value="5">5max</option><option value="4">4max</option><option value="3">3max</option><option value="2">2max (헤즈업)</option></select></div>
 <div><label>앤티 방식</label><select id="an"><option value="bb">BB앤티</option><option value="all">올앤티</option><option value="none">앤티 없음</option></select></div></div>
 <div class="pn blw" id="blw"><div class="blh"><b>blind</b><select id="blsel" class="blsel"></select></div>
 <div class="mu" style="font-size:12px;margin:-2px 0 6px">BB만 넣으면 SB·앤티는 자동으로 채워져요 · 오른쪽 목록에서 골라도 돼요</div>
 <div class="blf"><label>SB<input id="bsb" type="text" inputmode="numeric" autocomplete="off" placeholder="500"></label><label>BB<input id="bbb" type="text" inputmode="numeric" autocomplete="off" placeholder="1000"></label><label>앤티<input id="bat" type="text" inputmode="numeric" autocomplete="off" placeholder="1000"></label></div>
 <input id="bi" type="hidden"></div>
+<div class="pn" id="tiset"><div class="tir hd"><span></span><span>포지션</span><span>스택 (bb)</span><span>카드</span></div>
+<div class="tir"><b>Hero</b><select id="tiHp" aria-label="Hero 포지션"></select><input id="tiHs" inputmode="decimal" autocomplete="off" placeholder="비움" aria-label="Hero 스택"><button type="button" class="btn tic" id="tiHc">+ 카드</button></div>
+<div class="tir"><b>상대</b><select id="tiVp" aria-label="상대 포지션"></select><input id="tiVs" inputmode="decimal" autocomplete="off" placeholder="비움" aria-label="상대 스택"><button type="button" class="btn tic" id="tiVc">+ 카드</button></div>
+<div class="tirs"><span>나머지 스택</span><input id="tiRs" inputmode="decimal" autocomplete="off" placeholder="100" aria-label="나머지 스택"><span class="mu">bb · 모르면 비워 두세요</span></div>
+<div class="tich">전체 적용 <button type="button" class="btn" data-ts="15">15bb</button><button type="button" class="btn" data-ts="25">25bb</button><button type="button" class="btn" data-ts="40">40bb</button><button type="button" class="btn" data-ts="100">100bb</button></div>
+<input id="tiMe" maxlength="200" autocomplete="off" placeholder="메모 (선택)" style="margin-top:10px">
+<button type="button" class="btn pri tigo" id="tiGo">핸드 시작</button></div>
 <div id="form"></div>
 <div class="pn pa" id="pa" style="margin-top:8px"></div>
 <div class="sv"><button class="btn" id="later">나중에</button><button class="btn pri" id="save">저장</button></div>
@@ -765,19 +806,21 @@ function rpFrames(h){const Q=sim(h.L,h.S),O=Q.order,KB=[0,3,4,5],F=[];
   snap(last,txt,{show:1,win,potShow:pot})}
  return {Q,F,O};}
 function rpCard(c,cls){if(!c)return `<div class="rpk bk ${cls||''}"></div>`;const x=dc(c);return `<div class="rpk ${/[♥♦]/.test(x)?'r':''} ${cls||''}"><span>${x[0]==='T'?'10':x[0]}</span><span>${x.slice(1)}</span></div>`}
-function rpDraw(){if(!RP)return;const {Q,F,O}=RP.d,fr=F[RP.i],n=O.length,hi=Q.hp&&O.includes(Q.hp)?O.indexOf(Q.hp):O.indexOf('BTN');
+function rpTbl(O,Q,fr,peek){const n=O.length,hi=Q.hp&&O.includes(Q.hp)?O.indexOf(Q.hp):O.indexOf('BTN');
  const narrow=window.innerWidth<=560,rx=narrow?40:44,ry=narrow?42:40;
  const at=(p,k)=>{const j=(O.indexOf(p)-(hi<0?0:hi)+n)%n,a=Math.PI/2+j*2*Math.PI/n;return [50+Math.cos(a)*rx*k,50+Math.sin(a)*ry*k]};
  let h='<div class="rpf"></div>';
- O.forEach(p=>{const [x,y]=at(p,1),hero=p===Q.hp,fd=fr.fold.includes(p),out=fr.out.includes(p),sh=(Q.sh||{})[p]||[];
-  let cs='';if(!out&&!fd){if(hero&&Q.hc.length)cs=Q.hc.map(c=>rpCard(c,'sm')).join('');else if(sh.length&&(fr.show||RP.peek))cs=sh.map(c=>rpCard(c,'sm')).join('');else if(!out)cs=rpCard('','sm')+rpCard('','sm')}
+ O.forEach(p=>{const [x,y]=at(p,1),hero=p===Q.hp,fd=fr.fold.includes(p),out=(fr.out||[]).includes(p),sh=(Q.sh||{})[p]||[];
+  let cs='';if(!out&&!fd){if(hero&&Q.hc.length)cs=Q.hc.map(c=>rpCard(c,'sm')).join('');else if(sh.length&&(fr.show||peek))cs=sh.map(c=>rpCard(c,'sm')).join('');else if(!out)cs=rpCard('','sm')+rpCard('','sm')}
   const st=fr.stk[p];
-  h+=`<div class="rps${hero?' hero':''}${fr.act===p?' on':''}${fd?' fd':''}${out?' out':''}${fr.win.includes(p)?' win':''}" style="left:${x}%;top:${y}%"><div class="ac">${fr.lab[p]?esc(fr.lab[p]):''}</div><div class="cs">${cs}</div><div class="sb"><b>${p}</b><span>${st==null?'-':f(st)+'bb'}</span></div></div>`;
+  h+=`<div class="rps${hero?' hero':''}${fr.act===p?' on':''}${fd?' fd':''}${out?' out':''}${(fr.win||[]).includes(p)?' win':''}" style="left:${x}%;top:${y}%"><div class="ac">${(fr.lab||{})[p]?esc(fr.lab[p]):''}</div><div class="cs">${cs}</div><div class="sb"><b>${p}</b><span>${st==null?'-':f(st)+'bb'}</span></div></div>`;
   const b=fr.bet[p];if(b>1e-9){const [bx,by]=at(p,.58);h+=`<div class="rpb" style="left:${bx}%;top:${by}%">${f(b)}</div>`}
   if(p==='BTN'||(n===2&&p==='SB')){const [dx,dy]=at(p,.74);h+=`<div class="rpd" style="left:${dx+4}%;top:${dy}%">D</div>`}});
  const bd=[0,1,2,3,4].map(k=>fr.board[k]?rpCard(fr.board[k]):'<div class="rpe"></div>').join('');
  const potv=fr.potShow!=null?fr.potShow:fr.pot+Object.values(fr.bet).reduce((a,b)=>a+b,0);
  h+=`<div class="rpc"><div class="rppot">팟 ${f(potv)}bb</div><div class="rpbd">${bd}</div></div>`;
+ return h}
+function rpDraw(){if(!RP)return;const {Q,F,O}=RP.d,fr=F[RP.i],h=rpTbl(O,Q,fr,RP.peek);
  $('#rpT').innerHTML=h;
  $('#rpC').innerHTML=`<i>${NM[fr.st]||''} ${RP.i+1}/${F.length}</i><span>${esc(fr.txt)}</span>`;
  $('#rpR').max=F.length-1;$('#rpR').value=RP.i;$('#rpP').textContent=RP.t?'⏸ 멈춤':'▶ 재생';$('#rpP').classList.toggle('pl',1);
@@ -800,5 +843,128 @@ function rpOpen(h){let d;try{d=rpFrames(h)}catch(e){toast('리플레이를 만�
  $('#rpR').oninput=e=>{rpStop();rpGo(+e.target.value)};$('#rpPk').onclick=()=>{RP.peek=!RP.peek;rpDraw()};
  $('#rpSp').onclick=()=>{RP.sp=RP.sp===1?2:RP.sp===2?0.5:1;if(RP.t){rpStop();rpPlay()}else rpDraw()};
  document.addEventListener('keydown',rpKey);window.addEventListener('resize',()=>{if(RP)rpDraw()});rpDraw()}
+/*ti1*/ // 🃏 테이블 입력 (11/13) · 자리·스택·카드를 정하고 [핸드 시작] → 테이블에서 UTG부터 차례대로 폴드·콜·레이즈를 누름
+//   저장은 '빠른 입력'과 똑같은 글자 형식(stack·card·pre·flopb…)으로 만들어 T.hands 에 넣음 → 복기·복사·리플레이가 그대로 동작
+let TI=null,TIS={hc:[],vc:[]};
+const tiN=v=>{const n=parseFloat(String(v||'').replace(/[^0-9.]/g,''));return isFinite(n)&&n>0?n:0};
+function tiOrder(){const m=+(T&&T.S.max)||9;return P9.slice(9-m)}
+function tiMode(m){try{localStorage.setItem('qr_mode',m)}catch(e){}const r=$('#rec');if(!r)return;r.classList.toggle('tbm',m==='tb');document.body.classList.toggle('qrtb',m==='tb');$('#tiM1').classList.toggle('on',m==='tb');$('#tiM0').classList.toggle('on',m!=='tb');if(m==='tb')tiSetFill()}
+function tiSetFill(){if(!T)return;const O=tiOrder(),hs=$('#tiHp'),vs=$('#tiVp'),hp=hs.value||TIS.hp||(O.includes('BTN')?'BTN':O[0]),vp=vs.value!==''?vs.value:(TIS.vp!=null?TIS.vp:'BB');
+ hs.innerHTML=O.map(p=>`<option${p===hp?' selected':''}>${p}</option>`).join('');if(!O.includes(hp))hs.value=O[0];
+ vs.innerHTML='<option value="">없음</option>'+O.map(p=>`<option${p===vp?' selected':''}>${p}</option>`).join('');if(vp&&!O.includes(vp))vs.value='';
+ tiCardBtn()}
+function tiCardBtn(){const b=(id,c)=>{const e=$(id);e.innerHTML=c.length?cH(c):'+ 카드';e.classList.toggle('has',!!c.length)};b('#tiHc',TIS.hc);b('#tiVc',TIS.vc)}
+// 카드 고르기 창 (need장 · used 는 못 고름)
+function tiPick(title,need,used,init,cb){let sel=(init||[]).slice(0,need),rk='';const w=document.createElement('div');w.id='tipk';
+ const draw=()=>{const R=['A','K','Q','J','T','9','8','7','6','5','4','3','2'],S=[['s','♠',''],['h','♥','r'],['d','♦','d'],['c','♣','c']],u=new Set([...(used||[]),...sel]);
+  w.innerHTML=`<div role="dialog" aria-label="${esc(title)}"><div class="h"><b>${esc(title)}</b><button type="button" data-x="1" style="padding:6px 12px;font-size:14px">취소</button></div>
+   <div class="sl">${Array.from({length:need},(_,i)=>sel[i]?rpCard(sel[i]):'<div class="rpe"></div>').join('')}</div>
+   <div class="rk">${R.map(r=>`<button type="button" data-r="${r}" class="${r===rk?'on':''}" ${S.every(z=>u.has(r+z[0]))?'disabled':''}>${r==='T'?'10':r}</button>`).join('')}</div>
+   <div class="st">${S.map(z=>`<button type="button" data-s="${z[0]}" class="${z[2]}" ${!rk||u.has(rk+z[0])||sel.length>=need?'disabled':''} aria-label="${z[1]}">${z[1]}</button>`).join('')}</div>
+   <div class="bt"><button type="button" data-cl="1">지우기</button><button type="button" class="ap" data-ok="1">적용</button></div></div>`};
+ draw();document.body.appendChild(w);
+ w.onclick=e=>{const b=e.target.closest('button');if(e.target===w){w.remove();return}if(!b||b.disabled)return;
+  if(b.dataset.x){w.remove();return}if(b.dataset.cl){sel=[];rk='';draw();return}if(b.dataset.ok){w.remove();cb(sel);return}
+  if(b.dataset.r){rk=b.dataset.r;if(sel.length>=need)sel=[];draw();return}
+  if(b.dataset.s&&rk){sel.push(rk+b.dataset.s);rk='';if(sel.length>=need){draw();setTimeout(()=>{if(w.isConnected){w.remove();cb(sel)}},180)}else draw()}}}
+// ---- 판 계산 (bb 단위) ----
+function tiRun(G){const O=G.O,n=O.length,stk={...G.stk0},bet={},fold=new Set(),allin=new Set(),acts=[[],[],[],[]],lab={};
+ let pot=0,st=0,board=[],cur=0,acted=new Set(),phase='act',turn=null,last='',runout=false,win=[];
+ const pay=(p,a)=>{a=Math.min(a,stk[p]);stk[p]-=a;if(stk[p]<=1e-9){stk[p]=0;allin.add(p)}return a};
+ if(G.ante==='bb'&&O.includes('BB'))pot+=pay('BB',G.at);else if(G.ante==='all')O.forEach(p=>{pot+=pay(p,G.at)});
+ if(O.includes('SB'))bet.SB=pay('SB',G.sbv);if(O.includes('BB'))bet.BB=pay('BB',1);cur=1;
+ const ord=i=>{if(i===0)return O;if(n===2)return ['BB','SB'];const k=O.indexOf('SB');return k<0?O:[...O.slice(k),...O.slice(0,k)]};
+ const needs=q=>!fold.has(q)&&!allin.has(q)&&(!acted.has(q)||(bet[q]||0)<cur-1e-9);
+ const first=()=>ord(st).find(needs)||null;
+ const nextFrom=p=>{const L=ord(st),i=L.indexOf(p);for(let k=1;k<=n;k++){const q=L[(i+k)%n];if(needs(q))return q}return null};
+ const alive=()=>O.filter(q=>!fold.has(q)),live=()=>alive().filter(q=>!allin.has(q));
+ const endStreet=()=>{const e=Object.entries(bet).filter(([q])=>!fold.has(q)||true).sort((a,b)=>b[1]-a[1]);
+  const sec=e.length>1?e[1][1]:0;if(e.length&&e[0][1]>sec+1e-9){const q=e[0][0],ex=e[0][1]-sec;bet[q]-=ex;stk[q]+=ex;if(stk[q]>1e-9)allin.delete(q)}
+  pot+=Object.values(bet).reduce((a,b)=>a+b,0);for(const k in bet)delete bet[k];for(const k in lab)delete lab[k];cur=0;acted=new Set();
+  if(alive().length===1){phase='end';win=alive();return}
+  if(st===3){phase='show';return}
+  if(live().length<=1)runout=true;phase='board'};
+ turn=first();
+ for(const e of G.log){
+  if(e.t==='a'){if(phase!=='act'||!turn)break;const p=turn,to0=bet[p]||0;let tok='',lb='';
+   if(e.k==='f'){fold.add(p);tok='f';lb='폴드'}
+   else if(e.k==='x'){tok='x';lb='체크'}
+   else if(e.k==='c'){const add=pay(p,cur-to0);bet[p]=to0+add;tok='c';lb=allin.has(p)?'올인 콜':'콜'}
+   else{const want=Math.max(e.to,cur),add=pay(p,want-to0);bet[p]=to0+add;const ai=allin.has(p);
+    if(bet[p]>cur+1e-9){lb=(ai?'올인 ':'')+(cur>0&&!(st===0&&cur<=1&&false)?(st===0?'레이즈':'레이즈'):'벳');if(st>0&&cur===0)lb=(ai?'올인 ':'')+'벳';cur=bet[p]}else lb=ai?'올인 콜':'콜';
+    tok=ai?'jam':'R'+bet[p]}
+   acts[st].push([p,tok]);acted.add(p);lab[p]=lb;last=p+' '+lb+(tok==='c'||tok[0]==='R'||tok==='jam'?' '+f(bet[p])+'bb':'');
+   if(alive().length===1){endStreet();continue}
+   const nx=nextFrom(p);if(nx)turn=nx;else{turn=null;endStreet()}}
+  else if(e.t==='b'){if(phase!=='board')break;board.push(...e.c);st++;last=NM[st]+' '+e.c.map(dc).join(' ');
+   if(runout){if(st===3)phase='show';else phase='board'}else{phase='act';turn=first();if(!turn){endStreet()}}}}
+ if(phase==='act'&&!turn)turn=first();
+ return {stk,bet,fold:[...fold],allin:[...allin],acts,lab,pot,st,board,cur,phase,turn,last,runout,win,toCall:turn?Math.max(0,Math.min(cur-(bet[turn]||0),stk[turn])):0}}
+function tiChip(x){return T.S.bb>0?f(Math.round(x*T.S.bb*100)/100):f(x)}
+function tiL(G,R){const L={card:G.hp+(G.hc.length?' '+G.hc.join(''):''),stack:G.O.map(p=>p+' '+tiChip(G.stk0[p])).join(', '),memo:G.memo||''};
+ ['pre','flop','turn','river'].forEach((k,i)=>{L[k]=R.acts[i].map(([p,t])=>p+' '+(t[0]==='R'?tiChip(+t.slice(1)):t)).join(', ')});
+ L.flopb=R.board.slice(0,3).join('');L.turnb=R.board[3]||'';L.riverb=R.board[4]||'';
+ L.show=Object.entries(G.sh).filter(([p,c])=>c.length===2&&p!==G.hp).map(([p,c])=>p+' '+c.join('')).join(', ');
+ K.forEach(k=>{if(L[k]===undefined)L[k]=''});return L}
+function tiStart(){if(!T)return;const O=tiOrder(),hp=$('#tiHp').value,vp=$('#tiVp').value;
+ if(!hp){toast('Hero 포지션을 골라 주세요');return}if(vp&&vp===hp){toast('Hero와 상대 포지션이 같아요');return}
+ const rs=tiN($('#tiRs').value)||100,stk0={};O.forEach(p=>stk0[p]=rs);const hs=tiN($('#tiHs').value),vs=tiN($('#tiVs').value);if(hs)stk0[hp]=hs;if(vp&&vs)stk0[vp]=vs;
+ const S=T.S,u=S.bb>0;const G={O,hp,vp,hc:TIS.hc.slice(),sh:{},stk0,log:[],ante:S.ante,sbv:u?S.sb/S.bb:.5,at:u?S.at/S.bb:(S.ante==='none'?0:1),memo:$('#tiMe').value.trim()};
+ if(S.ante==='none')G.at=0;if(vp&&TIS.vc.length===2)G.sh[vp]=TIS.vc.slice();
+ TIS.hp=hp;TIS.vp=vp;try{T.tis={hp,vp,rs:$('#tiRs').value,hs:$('#tiHs').value,vs:$('#tiVs').value};sv()}catch(e){}
+ TI={G,raise:0,peek:0};const w=document.createElement('div');w.id='ti';
+ w.innerHTML=`<div class="rph"><button type="button" class="rpx" id="tiBk">‹ 설정</button><b>${esc(T.name)} · 핸드 입력</b><button type="button" class="rpx" id="tiPk">상대 카드</button></div>
+  <div class="rpt" id="tiT"></div><div class="rpcap" id="tiC"></div><div id="tiA"></div>`;
+ document.body.appendChild(w);document.body.style.overflow='hidden';
+ $('#tiBk').onclick=()=>{if(TI.G.log.length&&!confirm('입력한 액션은 저장되지 않아요. 설정으로 돌아갈까요?'))return;tiClose()};
+ $('#tiPk').onclick=()=>{TI.peek=!TI.peek;tiDraw()};tiDraw()}
+function tiClose(){TI=null;const w=$('#ti');if(w)w.remove();document.body.style.overflow=''}
+function tiUsed(G,R){return [...G.hc,...Object.values(G.sh).flat(),...R.board]}
+function tiDraw(){if(!TI)return;const G=TI.G,R=tiRun(G),Q={hp:G.hp,hc:G.hc,sh:G.sh};
+ const fr={stk:R.stk,bet:R.bet,fold:R.fold,out:[],act:R.phase==='act'?R.turn:'',lab:R.lab,pot:R.pot,board:R.board,show:R.phase==='show'||R.phase==='end',win:R.win};
+ $('#tiT').innerHTML=rpTbl(G.O,Q,fr,TI.peek);$('#tiPk').classList.toggle('on',!!TI.peek);
+ const tot=R.pot+Object.values(R.bet).reduce((a,b)=>a+b,0);let cap='',a='';
+ const undo=`<button type="button" id="tiU" ${G.log.length?'':'disabled'}>↶ 되돌리기</button>`,save=`<button type="button" class="tsv" id="tiS">저장</button>`;
+ if(R.phase==='act'){const p=R.turn,tc=R.toCall,canChk=tc<=1e-9,big=R.cur>0;
+  cap=`<i>${NM[R.st]}</i><span><b>${p}</b> 차례${tc>0?' · 콜 '+f(tc)+'bb':''}${R.last?' <span style="opacity:.6">· 앞: '+esc(R.last)+'</span>':''}</span>`;
+  a=`<div class="tia"><button type="button" class="fo" data-k="f">FOLD</button><button type="button" class="ca" data-k="${canChk?'x':'c'}">${canChk?'CHECK':'CALL<small>'+f(tc)+'bb</small>'}</button><button type="button" class="ra" data-k="r">${big?'RAISE':'BET'}</button></div>`;
+  if(TI.raise){const pv=R.pot+Object.values(R.bet).reduce((x,y)=>x+y,0),my=R.bet[p]||0,max=my+R.stk[p];let Qs=[];
+   if(R.st===0&&R.cur<=1)Qs=[[2,'2bb'],[2.2,'2.2bb'],[2.5,'2.5bb'],[3,'3bb']];
+   else if(R.cur>0)Qs=[[R.cur*2.5,'2.5배'],[R.cur*3,'3배'],[R.cur*4,'4배']];
+   else Qs=[[pv*.33,'33%'],[pv*.5,'50%'],[pv*.75,'75%'],[pv,'팟']];
+   Qs=Qs.map(([v,l])=>[Math.round(Math.min(v,max)*10)/10,l]);
+   a+=`<div class="tirz"><div class="q">${Qs.map(([v,l])=>`<button type="button" data-rv="${v}">${l}<br><b>${f(v)}bb</b></button>`).join('')}<button type="button" data-rv="${max}">올인<br><b>${f(max)}bb</b></button></div>
+    <div class="r"><input id="tiRv" inputmode="decimal" autocomplete="off" placeholder="${big?'몇 bb까지 레이즈':'몇 bb 벳'}"><button type="button" class="ok" id="tiRo">확인</button></div></div>`}
+  a+=`<div class="tib">${undo}<button type="button" id="tiE">여기까지 저장</button>${save}</div>`}
+ else if(R.phase==='board'){const need=R.st===0?3:1;cap=`<i>${NM[R.st]} 끝</i><span>${R.runout?'올인 · ':''}${NM[R.st+1]} 카드를 골라 주세요 · 팟 ${f(tot)}bb</span>`;
+  a=`<div class="tiw"><button type="button" class="pri2" id="tiBd">${NM[R.st+1]} 카드 ${need}장 고르기</button></div><div class="tib">${undo}<button type="button" id="tiE">여기까지 저장</button>${save}</div>`}
+ else{const al=G.O.filter(p=>!R.fold.includes(p));
+  cap=R.phase==='end'?`<i>끝</i><span>${R.win[0]} 팟 ${f(tot)}bb 가져감</span>`:`<i>쇼다운</i><span>팟 ${f(tot)}bb · 본 상대 카드가 있으면 넣어 주세요</span>`;
+  a=`<div class="tiw">${R.phase==='show'?al.filter(p=>p!==G.hp).map(p=>`<button type="button" data-sc="${p}">${p} 카드 ${G.sh[p]&&G.sh[p].length?cH(G.sh[p])+' (바꾸기)':'넣기 (선택)'}</button>`).join(''):''}</div><div class="tib">${undo}<span></span>${save}</div>`}
+ $('#tiC').innerHTML=cap;$('#tiA').innerHTML=a;
+ const A=$('#tiA');A.onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;
+  if(b.id==='tiU'){G.log.pop();TI.raise=0;tiDraw();return}
+  if(b.id==='tiS'||b.id==='tiE'){tiSave(R);return}
+  if(b.id==='tiBd'){const need=R.st===0?3:1;tiPick(NM[R.st+1]+' 카드',need,tiUsed(G,R),[],c=>{if(c.length===need){G.log.push({t:'b',c});tiDraw()}});return}
+  if(b.dataset.sc){const p=b.dataset.sc;tiPick(p+' 카드',2,tiUsed(G,R).filter(c=>!(G.sh[p]||[]).includes(c)),G.sh[p]||[],c=>{if(c.length===2)G.sh[p]=c;else delete G.sh[p];tiDraw()});return}
+  if(b.id==='tiRo'){const v=tiN($('#tiRv').value);if(!v){toast('금액을 bb로 적어 주세요');return}if(v<=R.cur+1e-9&&v<(R.bet[R.turn]||0)+R.stk[R.turn]-1e-9){toast(f(R.cur)+'bb보다 크게 적어 주세요');return}G.log.push({t:'a',k:'r',to:v});TI.raise=0;tiDraw();return}
+  if(b.dataset.rv){G.log.push({t:'a',k:'r',to:+b.dataset.rv});TI.raise=0;tiDraw();return}
+  const k=b.dataset.k;if(!k)return;if(k==='r'){TI.raise=!TI.raise;tiDraw();if(TI.raise){const i=$('#tiRv');if(i)i.focus()}return}
+  G.log.push({t:'a',k});TI.raise=0;tiDraw()};
+ const ri=$('#tiRv');if(ri)ri.onkeydown=e=>{if(e.key==='Enter')$('#tiRo').click()}}
+function tiSave(R){if(!T||!TI)return;const G=TI.G;if(!G.log.length&&!confirm('액션 없이 자리·카드만 저장할까요?'))return;
+ const L=tiL(G,R),h={id:'h'+Date.now(),hid:String(Date.now()).slice(-9)+Math.floor(Math.random()*90+10),ts:Date.now(),L,S:{...T.S},d:0};
+ T.hands.unshift(h);sv();hands();tiClose();TIS.hc=[];TIS.vc=[];tiCardBtn();$('#tiMe').value='';toast('저장됨 · 복기 탭에서 리플레이로 볼 수 있어요');tab(1)}
+(function tiInit(){if(!$('#tiset'))return;
+ $('#tiM1').onclick=()=>tiMode('tb');$('#tiM0').onclick=()=>tiMode('txt');
+ $('#tiGo').onclick=tiStart;
+ $('#tiHc').onclick=()=>tiPick('Hero · '+($('#tiHp').value||'')+' 카드',2,TIS.vc,TIS.hc,c=>{TIS.hc=c.length===2?c:[];tiCardBtn()});
+ $('#tiVc').onclick=()=>{if(!$('#tiVp').value){toast('상대 포지션을 먼저 골라 주세요');return}tiPick('상대 · '+$('#tiVp').value+' 카드',2,TIS.hc,TIS.vc,c=>{TIS.vc=c.length===2?c:[];tiCardBtn()})};
+ $('#tiset').addEventListener('click',e=>{const b=e.target.closest('[data-ts]');if(!b)return;const v=b.dataset.ts;$('#tiRs').value=v;$('#tiHs').value='';$('#tiVs').value=''});
+ $('#tiVp').onchange=e=>{TIS.vp=e.target.value};$('#tiHp').onchange=e=>{TIS.hp=e.target.value};
+ $('#mx').addEventListener('change',tiSetFill);
+ let m='tb';try{m=localStorage.getItem('qr_mode')||'tb'}catch(e){}tiMode(m)})();
+const _tiEnter=enter;enter=function(t){_tiEnter(t);const z=t.tis||{};TIS={hc:[],vc:[],hp:z.hp,vp:z.vp};if($('#tiRs'))$('#tiRs').value=z.rs||'';if($('#tiHs'))$('#tiHs').value=z.hs||'';if($('#tiVs'))$('#tiVs').value=z.vs||'';
+ if($('#tiHp')){$('#tiHp').value='';$('#tiVp').value=''}tiSetFill()};
 </script><script>/*__land__*/(function(){try{if(!window.ttAct){var TA={};window.ttAct=function(a){try{if(TA[a]||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;TA[a]=1;var v='',n='';try{v=localStorage.getItem('vid')||'';n=localStorage.getItem('nick')||'';}catch(e){}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify({a:a,p:"\ube60\ub978\ubcf5\uae30",n:n,v:v}),keepalive:true}).catch(function(){});}catch(e){}};}if(window.top!==window.self||/bot|crawl|spider|slurp|yeti|lighthouse|headless/i.test(navigator.userAgent))return;var v='',n='';try{v=localStorage.getItem('vid');if(!v){v=Date.now().toString(36)+Math.random().toString(36).slice(2,10);localStorage.setItem('vid',v);}n=localStorage.getItem('nick')||'';}catch(e){}var f=(new URLSearchParams(location.search).get('from')||'').slice(0,30),rf=document.referrer||'',own=false;try{own=!!rf&&new URL(rf).host===location.host;}catch(e){}var b={p:"\ube60\ub978\ubcf5\uae30",n:n,v:v};if(f||!own){b.l=1;b.from=f;b.rf=own?'':rf.slice(0,200);}fetch("https://211-233-211-164.sslip.io/api/visit",{method:'POST',headers:{'Content-Type':'application/json','ngrok-skip-browser-warning':'1'},body:JSON.stringify(b),keepalive:true}).catch(function(){});}catch(e){}})();</script>
 </body></html>
