@@ -171,11 +171,11 @@ body.qrtb #kt,body.qrtb #kw{display:none!important}
 <div class="mu" style="font-size:12px;margin:-2px 0 6px">BB만 넣으면 SB·앤티는 자동으로 채워져요 · 오른쪽 목록에서 골라도 돼요</div>
 <div class="blf"><label>SB<input id="bsb" type="text" inputmode="numeric" autocomplete="off" placeholder="500"></label><label>BB<input id="bbb" type="text" inputmode="numeric" autocomplete="off" placeholder="1000"></label><label>앤티<input id="bat" type="text" inputmode="numeric" autocomplete="off" placeholder="1000"></label></div>
 <input id="bi" type="hidden"></div>
-<div class="pn" id="tiset"><div class="tir hd"><span></span><span>포지션</span><span>스택 (bb)</span><span>카드</span></div>
+<div class="pn" id="tiset"><div class="timode tiu"><button class="btn" id="tiU1" type="button">스택(칩)으로 입력</button><button class="btn" id="tiU0" type="button">BB로 입력</button></div><div class="tir hd"><span></span><span>포지션</span><span id="tiUh">스택 (bb)</span><span>카드</span></div>
 <div class="tir"><b>Hero</b><select id="tiHp" aria-label="Hero 포지션"></select><input id="tiHs" inputmode="decimal" autocomplete="off" placeholder="비움" aria-label="Hero 스택"><button type="button" class="btn tic" id="tiHc">+ 카드</button></div>
 <div class="tir"><b>상대</b><select id="tiVp" aria-label="상대 포지션"></select><input id="tiVs" inputmode="decimal" autocomplete="off" placeholder="비움" aria-label="상대 스택"><button type="button" class="btn tic" id="tiVc">+ 카드</button></div>
 <div id="tiVx"></div><button type="button" class="btn tiadd" id="tiVa">+ 상대 추가 (멀티웨이)</button>
-<div class="tirs"><span>나머지 스택</span><input id="tiRs" inputmode="decimal" autocomplete="off" placeholder="100" aria-label="나머지 스택"><span class="mu">bb · 모르면 비워 두세요</span></div>
+<div class="tirs"><span>나머지 스택</span><input id="tiRs" inputmode="decimal" autocomplete="off" placeholder="100" aria-label="나머지 스택"><span class="mu" id="tiRu">bb · 모르면 비워 두세요</span></div>
 <div class="tich">전체 적용 <button type="button" class="btn" data-ts="15">15bb</button><button type="button" class="btn" data-ts="25">25bb</button><button type="button" class="btn" data-ts="40">40bb</button><button type="button" class="btn" data-ts="100">100bb</button></div>
 <input id="tiMe" maxlength="200" autocomplete="off" placeholder="메모 (선택)" style="margin-top:10px">
 <button type="button" class="btn pri tigo" id="tiGo">핸드 시작</button></div>
@@ -519,7 +519,7 @@ function blAnte(bb){const a=$('#an').value;return a==='bb'?bb:0}   // BB앤티�
 function blFill(){const S=T.S;$('#bsb').value=S.sb||'';$('#bbb').value=S.bb||'';$('#bat').value=S.bb?(S.at||0):'';blMan={};
  ['bsb','bat'].forEach(i=>$('#'+i).classList.remove('au'));blChips()}
 function blSave(){const sb=blN($('#bsb').value),bb=blN($('#bbb').value),at=blN($('#bat').value);
- T.S.blind=bb?`${sb} ${bb} ${at}`:'';$('#bi').value=T.S.blind;bparse(T.S);sv();upd();blChips()}
+ T.S.blind=bb?`${sb} ${bb} ${at}`:'';$('#bi').value=T.S.blind;bparse(T.S);sv();upd();blChips();if($('#tiU1'))tiUnit(TIU,1)}
 function blChips(){const S=T.S,an=$('#an').value;
  $('#blsel').innerHTML='<option value="">자동입력 ▼</option>'+BLV.map(([a,b])=>`<option value="${a},${b}">${a.toLocaleString()} / ${b.toLocaleString()}${an==='bb'?' (앤티 '+b.toLocaleString()+')':''}</option>`).join('');$('#blsel').value=BLV.some(([a,b])=>S.sb===a&&S.bb===b)?S.sb+','+S.bb:''
  }   // 고른 블라인드를 가운데로
@@ -808,6 +808,8 @@ function rpFrames(h){const Q=sim(h.L,h.S),O=Q.order,KB=[0,3,4,5],F=[];
   snap(last,txt,{show:1,win,potShow:pot})}
  return {Q,F,O};}
 function rpCard(c,cls){if(!c)return `<div class="rpk bk ${cls||''}"></div>`;const x=dc(c);return `<div class="rpk ${/[♥♦]/.test(x)?'r':''} ${cls||''}"><span>${x[0]==='T'?'10':x[0]}</span><span>${x.slice(1)}</span></div>`}
+let RPU=0;   // 0=bb 표시 · 숫자=칩 표시(그 BB 값을 곱함) · 테이블 입력에서 '스택으로 입력'일 때
+const rpN=x=>RPU?Math.round(x*RPU).toLocaleString():f(x),rpF=x=>RPU?Math.round(x*RPU).toLocaleString():f(x)+'bb';
 function rpTbl(O,Q,fr,peek){const n=O.length,hi=Q.hp&&O.includes(Q.hp)?O.indexOf(Q.hp):O.indexOf('BTN');
  const narrow=window.innerWidth<=560,rx=narrow?40:44,ry=narrow?42:40;
  const at=(p,k)=>{const j=(O.indexOf(p)-(hi<0?0:hi)+n)%n,a=Math.PI/2+j*2*Math.PI/n;return [50+Math.cos(a)*rx*k,50+Math.sin(a)*ry*k]};
@@ -815,12 +817,12 @@ function rpTbl(O,Q,fr,peek){const n=O.length,hi=Q.hp&&O.includes(Q.hp)?O.indexOf
  O.forEach(p=>{const [x,y]=at(p,1),hero=p===Q.hp,fd=fr.fold.includes(p),out=(fr.out||[]).includes(p),sh=(Q.sh||{})[p]||[];
   let cs='';if(!out&&!fd){if(hero&&Q.hc.length)cs=Q.hc.map(c=>rpCard(c,'sm')).join('');else if(sh.length&&(fr.show||peek))cs=sh.map(c=>rpCard(c,'sm')).join('');else if(!out)cs=rpCard('','sm')+rpCard('','sm')}
   const st=fr.stk[p];
-  h+=`<div class="rps${hero?' hero':''}${fr.act===p?' on':''}${fd?' fd':''}${out?' out':''}${(fr.win||[]).includes(p)?' win':''}" style="left:${x}%;top:${y}%"><div class="ac">${(fr.lab||{})[p]?esc(fr.lab[p]):''}</div><div class="cs">${cs}</div><div class="sb"><b>${p}</b><span>${st==null?'-':f(st)+'bb'}</span></div></div>`;
-  const b=fr.bet[p];if(b>1e-9){const [bx,by]=at(p,.58);h+=`<div class="rpb" style="left:${bx}%;top:${by}%">${f(b)}</div>`}
+  h+=`<div class="rps${hero?' hero':''}${fr.act===p?' on':''}${fd?' fd':''}${out?' out':''}${(fr.win||[]).includes(p)?' win':''}" style="left:${x}%;top:${y}%"><div class="ac">${(fr.lab||{})[p]?esc(fr.lab[p]):''}</div><div class="cs">${cs}</div><div class="sb"><b>${p}</b><span>${st==null?'-':rpF(st)}</span></div></div>`;
+  const b=fr.bet[p];if(b>1e-9){const [bx,by]=at(p,.58);h+=`<div class="rpb" style="left:${bx}%;top:${by}%">${rpN(b)}</div>`}
   if(p==='BTN'||(n===2&&p==='SB')){const [dx,dy]=at(p,.74);h+=`<div class="rpd" style="left:${dx+4}%;top:${dy}%">D</div>`}});
  const bd=[0,1,2,3,4].map(k=>fr.board[k]?rpCard(fr.board[k]):'<div class="rpe"></div>').join('');
  const potv=fr.potShow!=null?fr.potShow:fr.pot+Object.values(fr.bet).reduce((a,b)=>a+b,0);
- h+=`<div class="rpc"><div class="rppot">팟 ${f(potv)}bb</div><div class="rpbd">${bd}</div></div>`;
+ h+=`<div class="rpc"><div class="rppot">팟 ${rpF(potv)}</div><div class="rpbd">${bd}</div></div>`;
  return h}
 function rpDraw(){if(!RP)return;const {Q,F,O}=RP.d,fr=F[RP.i],h=rpTbl(O,Q,fr,RP.peek);
  $('#rpT').innerHTML=h;
@@ -834,7 +836,7 @@ function rpClose(){rpStop();RP=null;const w=$('#rp');if(w)w.remove();document.re
 function rpKey(e){if(!RP)return;if(e.key==='Escape')rpClose();else if(e.key==='ArrowRight'){rpStop();rpGo(RP.i+1)}else if(e.key==='ArrowLeft'){rpStop();rpGo(RP.i-1)}else if(e.key===' '){e.preventDefault();rpPlay()}}
 function rpOpen(h){let d;try{d=rpFrames(h)}catch(e){toast('리플레이를 만들 수 없어요: '+e.message);return}
  if(!d.Q.ev.length&&!d.Q.board.length){toast('재생할 액션이 없어요 (pre 줄을 먼저 적어 주세요)');return}
- rpClose();RP={d,i:0,t:0,sp:1,peek:0};const w=document.createElement('div');w.id='rp';
+ rpClose();RPU=0;RP={d,i:0,t:0,sp:1,peek:0};const w=document.createElement('div');w.id='rp';
  w.innerHTML=`<div class="rph"><b>${esc(T&&T.name||'핸드')} · 리플레이</b><button type="button" class="rpx" id="rpX">✕ 닫기</button></div>
   <div class="rpt" id="rpT"></div><div class="rpcap" id="rpC"></div>
   <div class="rpbar"><input type="range" id="rpR" min="0" max="0" value="0" aria-label="재생 위치"></div>
@@ -847,14 +849,20 @@ function rpOpen(h){let d;try{d=rpFrames(h)}catch(e){toast('리플레이를 만�
  document.addEventListener('keydown',rpKey);window.addEventListener('resize',()=>{if(RP)rpDraw()});rpDraw()}
 /*ti1*/ // 🃏 테이블 입력 (11/13) · 자리·스택·카드를 정하고 [핸드 시작] → 테이블에서 UTG부터 차례대로 폴드·콜·레이즈를 누름
 //   저장은 '빠른 입력'과 똑같은 글자 형식(stack·card·pre·flopb…)으로 만들어 T.hands 에 넣음 → 복기·복사·리플레이가 그대로 동작
-let TI=null,TIS={hc:[],vc:[]};
+let TI=null,TIS={hc:[],vc:[]},TIU=(()=>{try{return localStorage.getItem('qr_unit')||'bb'}catch(e){return 'bb'}})();   // 스택 입력 방식: chip(칩 그대로) · bb
+function tiBB(){return T&&T.S.bb>0?T.S.bb:0}
+function tiUnit(u,quiet){if(u==='chip'&&!tiBB()){if(!quiet){toast('스택으로 입력하려면 위 blind에 BB를 먼저 넣어 주세요');TIU='bb'}u='bb'}else TIU=u;try{localStorage.setItem('qr_unit',TIU)}catch(e){}
+ $('#tiU1').classList.toggle('on',u==='chip');$('#tiU0').classList.toggle('on',u!=='chip');const c=u==='chip';
+ $('#tiUh').textContent=c?'스택 (칩)':'스택 (bb)';$('#tiRu').textContent=c?'칩 · 모르면 비워 두세요':'bb · 모르면 비워 두세요';$('#tiRs').placeholder=c?String(100*tiBB()):'100';
+ document.querySelectorAll('#tiset [data-ts]').forEach(b=>b.textContent=c?(b.dataset.ts*tiBB()).toLocaleString():b.dataset.ts+'bb')}
+const tiSt=v=>{const n=tiN(v);return n&&TIU==='chip'&&tiBB()?n/tiBB():n};
 const tiN=v=>{const n=parseFloat(String(v||'').replace(/[^0-9.]/g,''));return isFinite(n)&&n>0?n:0};
 function tiOrder(){const m=+(T&&T.S.max)||9;return P9.slice(9-m)}
 function tiMode(m){try{localStorage.setItem('qr_mode',m)}catch(e){}const r=$('#rec');if(!r)return;r.classList.toggle('tbm',m==='tb');document.body.classList.toggle('qrtb',m==='tb');$('#tiM1').classList.toggle('on',m==='tb');$('#tiM0').classList.toggle('on',m!=='tb');if(m==='tb')tiSetFill()}
 function tiSetFill(){if(!T)return;const O=tiOrder(),hs=$('#tiHp'),vs=$('#tiVp'),hp=hs.value||TIS.hp||(O.includes('BTN')?'BTN':O[0]),vp=vs.value!==''?vs.value:(TIS.vp!=null?TIS.vp:'BB');
  hs.innerHTML=O.map(p=>`<option${p===hp?' selected':''}>${p}</option>`).join('');if(!O.includes(hp))hs.value=O[0];
  vs.innerHTML='<option value="">없음</option>'+O.map(p=>`<option${p===vp?' selected':''}>${p}</option>`).join('');if(vp&&!O.includes(vp))vs.value='';
- tiExDraw();tiCardBtn()}
+ tiExDraw();tiCardBtn();tiUnit(TIU,1)}
 function tiExUsed(skip){const u=[$('#tiHp').value,$('#tiVp').value];(TIS.ex||[]).forEach((x,i)=>{if(i!==skip)u.push(x.p)});return u}
 function tiExDraw(){const O=tiOrder(),box=$('#tiVx');if(!box)return;TIS.ex=(TIS.ex||[]).filter(x=>O.includes(x.p));
  box.innerHTML=TIS.ex.map((x,i)=>`<div class="tir tix" data-i="${i}"><b>상대${i+2}</b><select class="tvp" aria-label="상대${i+2} 포지션">${O.map(p=>`<option${p===x.p?' selected':''}>${p}</option>`).join('')}</select><input class="tvs" inputmode="decimal" autocomplete="off" placeholder="비움" value="${esc(x.s||'')}" aria-label="상대${i+2} 스택"><span class="tib2"><button type="button" class="btn tic tvc${x.c.length?' has':''}">${x.c.length?cH(x.c):'+ 카드'}</button><button type="button" class="btn tvd" aria-label="상대${i+2} 빼기">✕</button></span></div>`).join('')}
@@ -899,7 +907,7 @@ function tiRun(G){const O=G.O,n=O.length,stk={...G.stk0},bet={},fold=new Set(),a
    else{const want=Math.max(e.to,cur),add=pay(p,want-to0);bet[p]=to0+add;const ai=allin.has(p);
     if(bet[p]>cur+1e-9){lb=(ai?'올인 ':'')+(cur>0&&!(st===0&&cur<=1&&false)?(st===0?'레이즈':'레이즈'):'벳');if(st>0&&cur===0)lb=(ai?'올인 ':'')+'벳';cur=bet[p]}else lb=ai?'올인 콜':'콜';
     tok=ai?'jam':'R'+bet[p]}
-   acts[st].push([p,tok]);acted.add(p);lab[p]=lb;last=p+' '+lb+(tok==='c'||tok[0]==='R'||tok==='jam'?' '+f(bet[p])+'bb':'');
+   acts[st].push([p,tok]);acted.add(p);lab[p]=lb;last=p+' '+lb+(tok==='c'||tok[0]==='R'||tok==='jam'?' '+rpF(bet[p]):'');
    if(alive().length===1){endStreet();continue}
    const nx=nextFrom(p);if(nx)turn=nx;else{turn=null;endStreet()}}
   else if(e.t==='b'){if(phase!=='board')break;board.push(...e.c);st++;last=NM[st]+' '+e.c.map(dc).join(' ');
@@ -914,18 +922,18 @@ function tiL(G,R){const L={card:G.hp+(G.hc.length?' '+G.hc.join(''):''),stack:G.
  K.forEach(k=>{if(L[k]===undefined)L[k]=''});return L}
 function tiStart(){if(!T)return;const O=tiOrder(),hp=$('#tiHp').value,vp=$('#tiVp').value;
  if(!hp){toast('Hero 포지션을 골라 주세요');return}if(TIS.hc.length!==2){toast('내 카드 2장을 먼저 넣어 주세요');tiPick('Hero · '+hp+' 카드',2,tiAllV(),TIS.hc,c=>{TIS.hc=c.length===2?c:[];tiCardBtn()});return}if(vp&&vp===hp){toast('Hero와 상대 포지션이 같아요');return}
- const rs=tiN($('#tiRs').value)||100,stk0={};O.forEach(p=>stk0[p]=rs);const hs=tiN($('#tiHs').value),vs=tiN($('#tiVs').value);if(hs)stk0[hp]=hs;if(vp&&vs)stk0[vp]=vs;
+ const rs=tiSt($('#tiRs').value)||100,stk0={};O.forEach(p=>stk0[p]=rs);const hs=tiSt($('#tiHs').value),vs=tiSt($('#tiVs').value);if(hs)stk0[hp]=hs;if(vp&&vs)stk0[vp]=vs;
  const S=T.S,u=S.bb>0;const G={O,hp,vp,hc:TIS.hc.slice(),sh:{},stk0,log:[],ante:S.ante,sbv:u?S.sb/S.bb:.5,at:u?S.at/S.bb:(S.ante==='none'?0:1),memo:$('#tiMe').value.trim()};
  if(S.ante==='none')G.at=0;if(vp&&TIS.vc.length===2)G.sh[vp]=TIS.vc.slice();
- const seen=new Set([hp,vp].filter(Boolean));for(const x of (TIS.ex||[])){if(seen.has(x.p)){toast(x.p+' 자리가 겹쳐요');return}seen.add(x.p);const v=tiN(x.s);if(v)G.stk0[x.p]=v;if(x.c.length===2)G.sh[x.p]=x.c.slice()}
+ const seen=new Set([hp,vp].filter(Boolean));for(const x of (TIS.ex||[])){if(seen.has(x.p)){toast(x.p+' 자리가 겹쳐요');return}seen.add(x.p);const v=tiSt(x.s);if(v)G.stk0[x.p]=v;if(x.c.length===2)G.sh[x.p]=x.c.slice()}
  TIS.hp=hp;TIS.vp=vp;try{T.tis={hp,vp,rs:$('#tiRs').value,hs:$('#tiHs').value,vs:$('#tiVs').value,ex:(TIS.ex||[]).map(x=>({p:x.p,s:x.s}))};sv()}catch(e){}
- TI={G,raise:0,peek:0};const w=document.createElement('div');w.id='ti';
+ TI={G,raise:0,peek:0};RPU=TIU==='chip'&&tiBB()?tiBB():0;const w=document.createElement('div');w.id='ti';
  w.innerHTML=`<div class="rph"><button type="button" class="rpx" id="tiBk">‹ 설정</button><b>${esc(T.name)} · 핸드 입력</b><button type="button" class="rpx" id="tiPk">상대 카드</button></div>
   <div class="rpt" id="tiT"></div><div class="rpcap" id="tiC"></div><div id="tiA"></div>`;
  document.body.appendChild(w);document.body.style.overflow='hidden';
  $('#tiBk').onclick=()=>{if(TI.G.log.length&&!confirm('입력한 액션은 저장되지 않아요. 설정으로 돌아갈까요?'))return;tiClose()};
  $('#tiPk').onclick=()=>{TI.peek=!TI.peek;tiDraw()};tiDraw()}
-function tiClose(){TI=null;const w=$('#ti');if(w)w.remove();document.body.style.overflow=''}
+function tiClose(){TI=null;RPU=0;const w=$('#ti');if(w)w.remove();document.body.style.overflow=''}
 function tiUsed(G,R){return [...G.hc,...Object.values(G.sh).flat(),...R.board]}
 function tiDraw(){if(!TI)return;const G=TI.G,R=tiRun(G),Q={hp:G.hp,hc:G.hc,sh:G.sh};
  const fr={stk:R.stk,bet:R.bet,fold:R.fold,out:[],act:R.phase==='act'?R.turn:'',lab:R.lab,pot:R.pot,board:R.board,show:R.phase==='show'||R.phase==='end',win:R.win};
@@ -933,20 +941,20 @@ function tiDraw(){if(!TI)return;const G=TI.G,R=tiRun(G),Q={hp:G.hp,hc:G.hc,sh:G.
  const tot=R.pot+Object.values(R.bet).reduce((a,b)=>a+b,0);let cap='',a='';
  const undo=`<button type="button" id="tiU" ${G.log.length?'':'disabled'}>↶ 되돌리기</button>`,save=`<button type="button" class="tsv" id="tiS">저장</button>`;
  if(R.phase==='act'){const p=R.turn,tc=R.toCall,canChk=tc<=1e-9,big=R.cur>0;
-  cap=`<i>${NM[R.st]}</i><span><b>${p}</b> 차례${tc>0?' · 콜 '+f(tc)+'bb':''}${R.last?' <span style="opacity:.6">· 앞: '+esc(R.last)+'</span>':''}</span>`;
-  a=`<div class="tia"><button type="button" class="fo" data-k="f">FOLD</button><button type="button" class="ca" data-k="${canChk?'x':'c'}">${canChk?'CHECK':'CALL<small>'+f(tc)+'bb</small>'}</button><button type="button" class="ra" data-k="r">${big?'RAISE':'BET'}</button></div>`;
+  cap=`<i>${NM[R.st]}</i><span><b>${p}</b> 차례${tc>0?' · 콜 '+rpF(tc):''}${R.last?' <span style="opacity:.6">· 앞: '+esc(R.last)+'</span>':''}</span>`;
+  a=`<div class="tia"><button type="button" class="fo" data-k="f">FOLD</button><button type="button" class="ca" data-k="${canChk?'x':'c'}">${canChk?'CHECK':'CALL<small>'+rpF(tc)+'</small>'}</button><button type="button" class="ra" data-k="r">${big?'RAISE':'BET'}</button></div>`;
   if(TI.raise){const pv=R.pot+Object.values(R.bet).reduce((x,y)=>x+y,0),my=R.bet[p]||0,max=my+R.stk[p];let Qs=[];
-   if(R.st===0&&R.cur<=1)Qs=[[2,'2bb'],[2.2,'2.2bb'],[2.5,'2.5bb'],[3,'3bb']];
+   if(R.st===0&&R.cur<=1)Qs=[[2,'2배'],[2.2,'2.2배'],[2.5,'2.5배'],[3,'3배']];
    else if(R.cur>0)Qs=[[R.cur*2.5,'2.5배'],[R.cur*3,'3배'],[R.cur*4,'4배']];
    else Qs=[[pv*.33,'33%'],[pv*.5,'50%'],[pv*.75,'75%'],[pv,'팟']];
    Qs=Qs.map(([v,l])=>[Math.round(Math.min(v,max)*10)/10,l]);
-   a+=`<div class="tirz"><div class="q">${Qs.map(([v,l])=>`<button type="button" data-rv="${v}">${l}<br><b>${f(v)}bb</b></button>`).join('')}<button type="button" data-rv="${max}">올인<br><b>${f(max)}bb</b></button></div>
-    <div class="r"><input id="tiRv" inputmode="decimal" autocomplete="off" placeholder="${big?'몇 bb까지 레이즈':'몇 bb 벳'}"><button type="button" class="ok" id="tiRo">확인</button></div></div>`}
+   a+=`<div class="tirz"><div class="q">${Qs.map(([v,l])=>`<button type="button" data-rv="${v}">${l}<br><b>${rpF(v)}</b></button>`).join('')}<button type="button" data-rv="${max}">올인<br><b>${rpF(max)}</b></button></div>
+    <div class="r"><input id="tiRv" inputmode="decimal" autocomplete="off" placeholder="${(big?'얼마까지 레이즈':'얼마 벳')+(RPU?' (칩)':' (bb)')}"><button type="button" class="ok" id="tiRo">확인</button></div></div>`}
   a+=`<div class="tib">${undo}<button type="button" id="tiE">여기까지 저장</button>${save}</div>`}
- else if(R.phase==='board'){const need=R.st===0?3:1;cap=`<i>${NM[R.st]} 끝</i><span>${R.runout?'올인 · ':''}${NM[R.st+1]} 카드를 골라 주세요 · 팟 ${f(tot)}bb</span>`;
+ else if(R.phase==='board'){const need=R.st===0?3:1;cap=`<i>${NM[R.st]} 끝</i><span>${R.runout?'올인 · ':''}${NM[R.st+1]} 카드를 골라 주세요 · 팟 ${rpF(tot)}</span>`;
   a=`<div class="tiw"><button type="button" class="pri2" id="tiBd">${NM[R.st+1]} 카드 ${need}장 고르기</button></div><div class="tib">${undo}<button type="button" id="tiE">여기까지 저장</button>${save}</div>`}
  else{const al=G.O.filter(p=>!R.fold.includes(p));
-  cap=R.phase==='end'?`<i>끝</i><span>${R.win[0]} 팟 ${f(tot)}bb 가져감</span>`:`<i>쇼다운</i><span>팟 ${f(tot)}bb · 본 상대 카드가 있으면 넣어 주세요</span>`;
+  cap=R.phase==='end'?`<i>끝</i><span>${R.win[0]} 팟 ${rpF(tot)} 가져감</span>`:`<i>쇼다운</i><span>팟 ${rpF(tot)} · 본 상대 카드가 있으면 넣어 주세요</span>`;
   a=`<div class="tiw">${R.phase==='show'?al.filter(p=>p!==G.hp).map(p=>`<button type="button" data-sc="${p}">${p} 카드 ${G.sh[p]&&G.sh[p].length?cH(G.sh[p])+' (바꾸기)':'넣기 (선택)'}</button>`).join(''):''}</div><div class="tib">${undo}<span></span>${save}</div>`}
  $('#tiC').innerHTML=cap;$('#tiA').innerHTML=a;
  const A=$('#tiA');A.onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;
@@ -954,7 +962,7 @@ function tiDraw(){if(!TI)return;const G=TI.G,R=tiRun(G),Q={hp:G.hp,hc:G.hc,sh:G.
   if(b.id==='tiS'||b.id==='tiE'){tiSave(R);return}
   if(b.id==='tiBd'){const need=R.st===0?3:1;tiPick(NM[R.st+1]+' 카드',need,tiUsed(G,R),[],c=>{if(c.length===need){G.log.push({t:'b',c});tiDraw()}});return}
   if(b.dataset.sc){const p=b.dataset.sc;tiPick(p+' 카드',2,tiUsed(G,R).filter(c=>!(G.sh[p]||[]).includes(c)),G.sh[p]||[],c=>{if(c.length===2)G.sh[p]=c;else delete G.sh[p];tiDraw()});return}
-  if(b.id==='tiRo'){const v=tiN($('#tiRv').value);if(!v){toast('금액을 bb로 적어 주세요');return}if(v<=R.cur+1e-9&&v<(R.bet[R.turn]||0)+R.stk[R.turn]-1e-9){toast(f(R.cur)+'bb보다 크게 적어 주세요');return}G.log.push({t:'a',k:'r',to:v});TI.raise=0;tiDraw();return}
+  if(b.id==='tiRo'){let v=tiN($('#tiRv').value);if(!v){toast('금액을 적어 주세요');return}if(RPU)v=v/RPU;if(v<=R.cur+1e-9&&v<(R.bet[R.turn]||0)+R.stk[R.turn]-1e-9){toast(rpF(R.cur)+'보다 크게 적어 주세요');return}G.log.push({t:'a',k:'r',to:v});TI.raise=0;tiDraw();return}
   if(b.dataset.rv){G.log.push({t:'a',k:'r',to:+b.dataset.rv});TI.raise=0;tiDraw();return}
   const k=b.dataset.k;if(!k)return;if(k==='r'){TI.raise=!TI.raise;tiDraw();if(TI.raise){const i=$('#tiRv');if(i)i.focus()}return}
   G.log.push({t:'a',k});TI.raise=0;tiDraw()};
@@ -964,10 +972,10 @@ function tiSave(R){if(!T||!TI)return;const G=TI.G;if(!G.log.length&&!confirm('�
  T.hands.unshift(h);sv();hands();tiClose();TIS.hc=[];TIS.vc=[];(TIS.ex||[]).forEach(x=>x.c=[]);tiExDraw();tiCardBtn();$('#tiMe').value='';toast('저장됨 · 복기 탭에서 리플레이로 볼 수 있어요');tab(1)}
 (function tiInit(){if(!$('#tiset'))return;
  $('#tiM1').onclick=()=>tiMode('tb');$('#tiM0').onclick=()=>tiMode('txt');
- $('#tiGo').onclick=tiStart;
+ $('#tiGo').onclick=tiStart;$('#tiU1').onclick=()=>tiUnit('chip');$('#tiU0').onclick=()=>tiUnit('bb');
  $('#tiHc').onclick=()=>tiPick('Hero · '+($('#tiHp').value||'')+' 카드',2,tiAllV(),TIS.hc,c=>{TIS.hc=c.length===2?c:[];tiCardBtn()});
  $('#tiVc').onclick=()=>{if(!$('#tiVp').value){toast('상대 포지션을 먼저 골라 주세요');return}tiPick('상대 · '+$('#tiVp').value+' 카드',2,[...TIS.hc,...tiAllV().filter(c=>!TIS.vc.includes(c))],TIS.vc,c=>{TIS.vc=c.length===2?c:[];tiCardBtn()})};
- $('#tiset').addEventListener('click',e=>{const b=e.target.closest('[data-ts]');if(!b)return;const v=b.dataset.ts;$('#tiRs').value=v;$('#tiHs').value='';$('#tiVs').value='';(TIS.ex||[]).forEach(x=>x.s='');tiExDraw()});
+ $('#tiset').addEventListener('click',e=>{const b=e.target.closest('[data-ts]');if(!b)return;const v=TIU==='chip'&&tiBB()?String(b.dataset.ts*tiBB()):b.dataset.ts;$('#tiRs').value=v;$('#tiHs').value='';$('#tiVs').value='';(TIS.ex||[]).forEach(x=>x.s='');tiExDraw()});
  $('#tiVp').onchange=e=>{TIS.vp=e.target.value};$('#tiHp').onchange=e=>{TIS.hp=e.target.value};
  $('#mx').addEventListener('change',tiSetFill);
  $('#tiVa').onclick=()=>{const O=tiOrder();TIS.ex=TIS.ex||[];const u=tiExUsed(-1),p=O.find(q=>!u.includes(q));if(!p){toast('빈 자리가 없어요');return}TIS.ex.push({p,s:'',c:[]});tiExDraw()};
