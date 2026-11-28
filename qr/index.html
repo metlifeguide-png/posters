@@ -125,6 +125,15 @@ main>section>.mu,main>section>.top .mu,main>section .ln b{color:#9aa8c2}
 #ti .tirz .ok{background:#e9c46a;color:#241a05;border:0;border-radius:10px;padding:11px 16px;font:inherit;font-weight:800;cursor:pointer}
 #ti .tiw{width:100%;max-width:760px;display:flex;flex-direction:column;gap:6px;margin-top:8px}#ti .tiw button{border-radius:10px;padding:13px 0;font:inherit;font-size:16px;font-weight:800;cursor:pointer;border:1px solid #4a4058;background:#241d30;color:#f3eee2}#ti .tiw button.pri2{background:#e9c46a;color:#241a05;border-color:#e9c46a}
 #ti #tiA{width:100%;max-width:760px;display:flex;flex-direction:column;align-items:stretch}
+/*tifit*/ /* 11/28 휴대폰: 테이블 입력(#ti)만 테이블·차례·FOLD/CALL/RAISE·되돌리기/저장이 한 화면에 (레이즈 칸이 열리면 스크롤) */
+@media(max-width:759px){#ti{padding:max(6px,env(safe-area-inset-top)) 10px max(6px,env(safe-area-inset-bottom))}
+#ti .rph b{font-size:14px}#ti .rpx{padding:5px 10px;font-size:13px}
+#ti .rpt{flex-shrink:0;aspect-ratio:1/1.14;margin:4px 0;width:clamp(250px,calc((100vh - 190px) / 1.14),100%);width:clamp(250px,calc((100dvh - 190px) / 1.14),100%)}
+#ti .rpcap{min-height:36px;padding:5px 10px;font-size:14px}
+#ti .tia{margin-top:6px}#ti .tia button{padding:9px 0;font-size:15px}#ti .tia button small{font-size:11px}
+#ti .tib{margin-top:5px}#ti .tib button{padding:8px 0;font-size:13px}
+#ti .tiw{margin-top:6px}#ti .tiw button{padding:10px 0;font-size:15px}
+#ti .tirz{margin-top:6px;padding:8px}}
 body.qrtb #kt,body.qrtb #kw{display:none!important}
 #tipk{position:fixed;inset:0;z-index:9500;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:12px}
 #tipk>div{width:min(500px,100%);background:#211b2b;border:1px solid #b08a4a;border-radius:14px;padding:14px;color:#f3eee2;display:flex;flex-direction:column;gap:10px}
@@ -505,7 +514,7 @@ function cp(t){const ok=()=>toast('복사됨');function fb(){const a=document.cr
  if(navigator.clipboard)navigator.clipboard.writeText(t).then(ok,fb);else fb()}
 
 /* ---------- 화면 ---------- */
-function home(){flush();T=null;$('#app').hidden=true;$('#home').hidden=false;sync();
+function home(){flush();if($('#ti'))tiClose();T=null;$('#app').hidden=true;$('#home').hidden=false;sync();
  const l=[...D.tours].sort((a,b)=>b.ts-a.ts);$('#tlh').hidden=!l.length;
  $('#tl').innerHTML=l.map(t=>`<div class="tc" data-id="${t.id}"><b style="flex:1;min-width:0;overflow-wrap:anywhere">${esc(t.name)}</b><span class="mu" style="white-space:nowrap">${t.hands.length}핸드</span><span style="display:flex;gap:4px;flex-shrink:0"><button class="btn" data-a="ren" style="font-size:13px;padding:6px 9px" aria-label="대회 이름 수정">수정</button><button class="btn" data-a="del" style="font-size:13px;padding:6px 9px" aria-label="대회 삭제">삭제</button></span></div>`).join('')}
 function conv(L,bb){L={...L};['stack','pre','flop','turn','river'].forEach(k=>{if(L[k])L[k]=L[k].split(',').map(x=>x.replace(/^(\s*\S+\s+)(\d+(?:\.\d+)?)(bb)?/i,(m,a,n)=>a+f(n*bb))).join(',')});return L}
@@ -728,7 +737,7 @@ function init(){mk();kp();$('#tb0').onclick=()=>tab(0);$('#tb1').onclick=()=>tab
   else if(b.dataset.a==='del'){   // 대회 삭제 (안에 있는 핸드도 함께)
    if(!confirm(`'${t.name}' 대회를 삭제할까요?`+(t.hands.length?`\n안에 저장한 핸드 ${t.hands.length}개도 함께 지워지고 되돌릴 수 없어요.`:'')))return;
    D.tours=D.tours.filter(x=>x!==t);sv();home();toast('삭제했어요')}};
- $('#back').onclick=()=>{if(window.top===window&&history.state&&history.state.qr==='app'){history.back()}else home()};window.__qrBack=()=>{if(!$('#app').hidden){home();return true}return false};addEventListener('popstate',()=>{if(!$('#app').hidden)home()});['bsb','bbb','bat'].forEach(i=>{$('#'+i).oninput=blInput;$('#'+i).addEventListener('focus',()=>setKb(false))});
+ $('#back').onclick=()=>{if(window.top===window&&history.state&&history.state.qr==='app'){history.back()}else home()};window.__qrBack=()=>{if($('#ti')&&$('#tiBk')){$('#tiBk').click();return true}if(!$('#app').hidden){home();return true}return false};addEventListener('popstate',()=>{if(!$('#app').hidden)home()});['bsb','bbb','bat'].forEach(i=>{$('#'+i).oninput=blInput;$('#'+i).addEventListener('focus',()=>setKb(false))});
  $('#blsel').onchange=e=>{const v=e.target.value;if(!v)return;const [a,c]=v.split(',').map(Number);
   $('#bsb').value=a;$('#bbb').value=c;if($('#an').value!=='all'||!blN($('#bat').value))$('#bat').value=blAnte(c);blMan={};blSave()};
  $('#mx').onchange=e=>{T.S.max=+e.target.value;sv();upd()};$('#an').onchange=e=>{T.S.ante=e.target.value;const bb=blN($('#bbb').value);if(bb&&!blMan.bat){$('#bat').value=e.target.value==='bb'?bb:e.target.value==='none'?0:$('#bat').value;blSave()}else{sv();upd();blChips()}};
@@ -930,10 +939,12 @@ function tiStart(){if(!T)return;const O=tiOrder(),hp=$('#tiHp').value,vp=$('#tiV
  TI={G,raise:0,peek:0};RPU=TIU==='chip'&&tiBB()?tiBB():0;const w=document.createElement('div');w.id='ti';
  w.innerHTML=`<div class="rph"><button type="button" class="rpx" id="tiBk">‹ 설정</button><b>${esc(T.name)} · 핸드 입력</b><button type="button" class="rpx" id="tiPk">상대 카드</button></div>
   <div class="rpt" id="tiT"></div><div class="rpcap" id="tiC"></div><div id="tiA"></div>`;
- document.body.appendChild(w);document.body.style.overflow='hidden';
+ document.body.appendChild(w);document.body.style.overflow='hidden';tiParentFs(1);
  $('#tiBk').onclick=()=>{if(TI.G.log.length&&!confirm('입력한 액션은 저장되지 않아요. 설정으로 돌아갈까요?'))return;tiClose()};
  $('#tiPk').onclick=()=>{TI.peek=!TI.peek;tiDraw()};tiDraw()}
-function tiClose(){TI=null;RPU=0;const w=$('#ti');if(w)w.remove();document.body.style.overflow=''}
+function tiClose(){TI=null;RPU=0;const w=$('#ti');if(w)w.remove();document.body.style.overflow='';tiParentFs(0)}
+function tiParentFs(on){try{if(window.top!==window.self)parent.postMessage({t:'ttuk-qrfs',on:on?1:0},'*')}catch(e){}}   // 11/28 홈 안에서 열렸을 때: 테이블 입력 중엔 홈 위 고정 줄·탭·배너 숨김 /*qrfs*/
+addEventListener('pagehide',()=>tiParentFs(0));
 function tiUsed(G,R){return [...G.hc,...Object.values(G.sh).flat(),...R.board]}
 function tiDraw(){if(!TI)return;const G=TI.G,R=tiRun(G),Q={hp:G.hp,hc:G.hc,sh:G.sh};
  const fr={stk:R.stk,bet:R.bet,fold:R.fold,out:[],act:R.phase==='act'?R.turn:'',lab:R.lab,pot:R.pot,board:R.board,show:R.phase==='show'||R.phase==='end',win:R.win};
